@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 
 export default function HomePage() {
@@ -8,14 +8,8 @@ export default function HomePage() {
 
   const signInButtonNode = !session && (
     <div className="w-full flex justify-end p-4">
-      <Link href="/api/auth/signin" className="w-full max-w-xs">
-        <button
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition-colors duration-300"
-          onClick={(e) => {
-            e.preventDefault();
-            signIn();
-          }}
-        >
+      <Link href="/auth/signin" className="w-full max-w-xs">
+        <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition-colors duration-300">
           Sign In
         </button>
       </Link>
@@ -47,7 +41,7 @@ export default function HomePage() {
             {signInButtonNode}
           </div>
           <div className="text text-center text-red-500 font-semibold">
-            Google SSO
+            You are not authorized to view this page
           </div>
         </div>
       </div>
