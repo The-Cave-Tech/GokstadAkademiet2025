@@ -1,4 +1,6 @@
 "use client";
+//Stylingen må jobbes på mer
+
 import { useState } from "react";
 import AuthCard from "@/components/ui/AuthCard";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
