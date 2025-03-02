@@ -159,7 +159,8 @@ export function SignInForm() {
                 },
               ].map(({ src, text }) => (
                 <li key={text}>
-                  <button className="flex justify-center border w-full gap-2 rounded-lg p-2 hover:bg-gray-300">
+                  <button 
+                  className="flex justify-center border w-full gap-2 rounded-lg p-2 hover:bg-gray-300">
                     <Image
                       src={src}
                       alt={`${text} logo`}
