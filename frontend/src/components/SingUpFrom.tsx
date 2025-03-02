@@ -1,4 +1,7 @@
 "use client";
+
+//Stylingen må jobbes på mer
+
 import { useState } from "react";
 import AuthCard from "@/components/ui/AuthCard";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -121,18 +124,19 @@ export function SignUpForm() {
               </p>
             )}
 
-            {/* Submit-knapp */}
-            <button
-              type="submit"
-              className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
-            >
-              Opprett en bruker
-            </button>
           </form>
         }
         footer={
-          <div className="text-sm text-gray-700 text-center">
+          <div className="text-sm text-gray-700">
             <p>Ved å opprette en konto godtar du våre <Link href="/terms" className="text-blue-500 hover:underline">bruksvilkår</Link> og <Link href="/privacy" className="text-blue-500 hover:underline">personvernerklæring</Link>.</p>
+
+              {/* Submit-knapp */}
+              <button
+              type="submit"
+              className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 my-4"
+            >
+              Opprett en bruker
+            </button>
           </div>
         }
       />
