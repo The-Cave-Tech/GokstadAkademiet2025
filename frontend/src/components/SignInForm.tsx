@@ -1,9 +1,9 @@
 "use client";
-//Stylingen må jobbes på mer
-//validering fikser jeg sener med zod eller yup
+// Stylingen må jobbes på mer
+// Validering fikser jeg senere med zod eller yup
 
 import { useState } from "react";
-import AuthCard from "@/components/ui/AuthCard";
+import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
@@ -27,23 +27,21 @@ export function SignInForm() {
 
   return (
     <section className="w-100">
-      <AuthCard
-        header={
+      <Card className="max-w-md mx-auto">
+        <CardHeader>
           <section className="flex flex-col items-center gap-4">
             <h1 className="text-xl font-semibold">Logg Inn</h1>
             <SiteLogo width={90} height={40} />
-            </section>
-        }
-        content={
+          </section>
+        </CardHeader>
+
+        <CardBody>
           <form onSubmit={handleSubmit}>
             <fieldset className="space-y-4">
               <legend className="sr-only">Påloggingsdetaljer</legend>
 
               <section className="block">
-                <label
-                  htmlFor="email"
-                  className="text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="email" className="text-sm font-medium text-gray-700">
                   E-post
                 </label>
                 <input
@@ -58,15 +56,11 @@ export function SignInForm() {
                 />
                 <small id="email-desc" className="text-red-500">
                   Bruk en gyldig e-postadresse.
-                </small> {/* bare for visualisering. Skal fjernes senere */}
+                </small> {/* bare for visualisering */}
               </section>
 
-              {/* Passord */}
               <section className="block">
-                <label
-                  htmlFor="password"
-                  className="text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="password" className="text-sm font-medium text-gray-700">
                   Passord
                 </label>
                 <div className="relative">
@@ -97,11 +91,10 @@ export function SignInForm() {
                 </div>
                 <small id="password-desc" className="text-red-500">
                   Passord må være minst 8 tegn langt.
-                </small> {/* bare eksmepl til senere */}
+                </small> {/* bare eksempel */}
               </section>
             </fieldset>
 
-            {/* Husk meg og Glemt passord */}
             <div className="flex justify-between items-center my-4">
               <section className="flex items-center text-sm text-gray-700">
                 <input type="checkbox" id="remember" className="mr-2" />
@@ -112,14 +105,12 @@ export function SignInForm() {
               </a>
             </div>
 
-            {/* Feilmelding hvis pålogging feiler */}
             {errorMessage && (
               <p className="text-red-500 mt-2" role="alert" aria-live="polite">
                 {errorMessage}
               </p>
             )}
 
-            {/* Logg inn knapp */}
             <button
               type="submit"
               className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
@@ -128,16 +119,15 @@ export function SignInForm() {
             </button>
 
             <div className="flex gap-1 mt-4 text-center text-sm text-gray-700">
-            <p>
-              Har du ikke en konto?
-            </p>
-            <Link href="/signup"  className="text-blue-500 hover:underline">
+              <p>Har du ikke en konto?</p>
+              <Link href="/signup" className="text-blue-500 hover:underline">
                 Registrer deg
               </Link>
             </div>
           </form>
-        }
-        footer={
+        </CardBody>
+
+        <CardFooter>
           <div className="mt-4">
             <section className="flex items-center">
               <hr className="flex-grow border-t-2 border-gray-700" />
@@ -147,27 +137,18 @@ export function SignInForm() {
 
             <ul className="mt-4 flex flex-col gap-2">
               {[
-                {
-                  src: "/authlogo/facebook.svg",
-                  text: "Facebook"
-                },
-                {
-                  src: "/authlogo/microsoft.svg",
-                  text: "Microsoft"
-                },
-                { src: "/authlogo/google.svg", 
-                  text: "Google" 
-                },
+                { src: "/authlogo/facebook.svg", text: "Facebook" },
+                { src: "/authlogo/microsoft.svg", text: "Microsoft" },
+                { src: "/authlogo/google.svg", text: "Google" },
               ].map(({ src, text }) => (
                 <li key={text}>
-                  <button 
-                  className="flex justify-center border w-full gap-2 rounded-lg p-2 hover:bg-gray-300">
+                  <button className="flex justify-center border w-full gap-2 rounded-lg p-2 hover:bg-gray-300">
                     <Image
                       src={src}
                       alt={`${text} logo`}
                       width={24}
                       height={24}
-                      className="w-6 h-6" 
+                      className="w-6 h-6"
                     />
                     <span className="text-gray-900 dark:text-white">
                       Logg inn med {text}
@@ -177,8 +158,8 @@ export function SignInForm() {
               ))}
             </ul>
           </div>
-        }
-      />
+        </CardFooter>
+      </Card>
     </section>
   );
 }
