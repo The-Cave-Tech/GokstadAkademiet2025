@@ -1,10 +1,12 @@
 "use client";
-import { SignUpForm } from "@/components/SingUpFrom"; 
+import { SignUpForm } from "@/components/SignUpForm"; 
 import { AuthBackgroundImage } from "@/components/ui/AuthBackgroundImage";
 
 export default function SignUpRoute() {
   return (
-    <section className="relative flex flex-col custom-lg:flex-row items-center justify-center w-full h-full">
+    <section className="relative flex flex-col custom-lg:flex-row items-center justify-center w-full h-full"
+     aria-label="Sign up section"
+    >
       <AuthBackgroundImage
         className="absolute inset-0 w-full h-full custom-lg:hidden"
       />

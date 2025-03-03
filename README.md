@@ -6,3 +6,8 @@ TheCaveTech
 
 *Run
 
+cd frontend: npm run dev
+cd backend: npm run develop
+
+npm run test - to run test
+
