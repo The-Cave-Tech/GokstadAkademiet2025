@@ -1,0 +1,26 @@
+{
+  "kind": "singleType",
+  "collectionName": "auth_settings",
+  "info": {
+    "singularName": "auth-setting",
+    "pluralName": "auth-settings",
+    "displayName": "AuthSetting",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "AuthBackgroundImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    }
+  }
+}
