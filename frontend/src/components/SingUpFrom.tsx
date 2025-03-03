@@ -1,23 +1,23 @@
 "use client";
 
 //Stylingen må jobbes på mer
+// Enkel validering før Zod/Yup legges til senere
 
 import { useState } from "react";
 import AuthCard from "@/components/ui/AuthCard";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import Image from "next/image";
 import Link from "next/link";
+import { SiteLogo } from "./ui/SiteLogo";
 
 export function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [repeatPassword, setRepeatPassword] = useState(""); // Korrigert fra repaetPassword
+  const [repeatPassword, setRepeatPassword] = useState(""); 
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Enkel validering før Zod/Yup legges til senere
     if (!email.includes("@")) {
       setErrorMessage("Ugyldig e-postadresse.");
       return;
@@ -36,7 +36,7 @@ export function SignUpForm() {
         header={
           <section className="flex flex-col items-center gap-4">
             <h1 className="text-xl font-semibold">Opprett Konto</h1>
-            <Image src="/logo.png" alt="Logo" width={48} height={48} />
+            <SiteLogo width={90} height={40} />
             <div className="flex gap-1 mt-4 text-center text-sm text-gray-700">
               <p>Allerede har en konto?</p>
               <Link href="/signin" className="text-blue-500 hover:underline">
@@ -130,7 +130,7 @@ export function SignUpForm() {
           <div className="text-sm text-gray-700">
             <p>Ved å opprette en konto godtar du våre <Link href="/terms" className="text-blue-500 hover:underline">bruksvilkår</Link> og <Link href="/privacy" className="text-blue-500 hover:underline">personvernerklæring</Link>.</p>
 
-              {/* Submit-knapp */}
+              {/* Opprett -knapp */}
               <button
               type="submit"
               className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 my-4"

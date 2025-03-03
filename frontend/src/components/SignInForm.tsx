@@ -1,11 +1,13 @@
 "use client";
 //Stylingen må jobbes på mer
+//validering fikser jeg sener med zod eller yup
 
 import { useState } from "react";
 import AuthCard from "@/components/ui/AuthCard";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
+import { SiteLogo } from "./ui/SiteLogo";
 
 export function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,7 +16,6 @@ export function SignInForm() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
-    //validering fikser jeg sener med zod eller yup
     e.preventDefault();
     if (!email.includes("@")) {
       setErrorMessage("Ugyldig e-postadresse.");
@@ -30,8 +31,8 @@ export function SignInForm() {
         header={
           <section className="flex flex-col items-center gap-4">
             <h1 className="text-xl font-semibold">Logg Inn</h1>
-            <Image src="/logo.png" alt="Logo" width={48} height={48} />
-          </section>
+            <SiteLogo width={90} height={40} />
+            </section>
         }
         content={
           <form onSubmit={handleSubmit}>
@@ -57,7 +58,7 @@ export function SignInForm() {
                 />
                 <small id="email-desc" className="text-red-500">
                   Bruk en gyldig e-postadresse.
-                </small> {/* bare eksmepl til senere */}
+                </small> {/* bare for visualisering. Skal fjernes senere */}
               </section>
 
               {/* Passord */}
