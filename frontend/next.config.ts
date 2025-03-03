@@ -2,7 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ['localhost'], 
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
+    ],
   },
   /*  i18n: {
     locales: ['en', 'no'],  // Støtter engelsk og norsk
@@ -11,3 +16,4 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
