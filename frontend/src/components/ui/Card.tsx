@@ -1,4 +1,3 @@
-// src/components/ui/Card.tsx
 "use client";
 
 const Card = ({ children, className, ...props }: CardProps) => {
