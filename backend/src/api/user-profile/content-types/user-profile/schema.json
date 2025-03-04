@@ -14,7 +14,7 @@
     "profileName": {
       "type": "string"
     },
-    "Bio": {
+    "bio": {
       "type": "text"
     },
     "backgroundImage": {

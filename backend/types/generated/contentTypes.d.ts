@@ -443,7 +443,7 @@ export interface ApiUserProfileUserProfile extends Struct.CollectionTypeSchema {
     backgroundImage: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios'
     >;
-    Bio: Schema.Attribute.Text;
+    bio: Schema.Attribute.Text;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
