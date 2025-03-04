@@ -3,9 +3,11 @@ export async function fetchUserProfile() {
     // Assume we get the token later for JWT
     const token = localStorage.getItem('auth_token');  // Example: Storing JWT in localStorage
     const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL;
+
+    const userId = 2; // Hardkoded, will be jwt functionality later
   
-    // Define the user profile endpoint (assuming `me` route is supported in Strapi)
-    const profileUrl = `${baseUrl}/user-profile/me`;
+    // Define the user profile endpoint
+    const profileUrl = `${baseUrl}/api/user-profiles?${userId}`;
   
     try {
       const headers: HeadersInit = {
@@ -27,8 +29,13 @@ export async function fetchUserProfile() {
         throw new Error(`Failed to fetch user profile. Status: ${response.status}`);
       }
   
-      const data = await response.json();
-      return data;  // Return the user profile data
+      const results = await response.json();
+
+      const profile = results.data[0];
+
+      console.log(`Fetched data from user profile api`, profile);
+
+      return profile;  // Return the user profile data
   
     } catch (error) {
       console.error('Error fetching user profile:', error);

@@ -39,11 +39,11 @@
         "audios"
       ]
     },
-    "users": {
+    "user": {
       "type": "relation",
-      "relation": "oneToMany",
+      "relation": "oneToOne",
       "target": "plugin::users-permissions.user",
-      "mappedBy": "user_profile"
+      "inversedBy": "user_profile"
     }
   }
 }

@@ -13,7 +13,7 @@ export default function Dashboard() {
             const profileData = await fetchUserProfile();
             setProfile(profileData);
         }
-
+        console.log(profile)
         fetchData();
     }, []);
 
