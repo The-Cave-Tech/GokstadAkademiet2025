@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { getStrapiData } from "@/lib/services/strapiApiData";
 
-export function SiteLogo({ className, width = 145, height = 55 }: LogoProps) {
+export function SiteLogo({ className, style, width = 145, height = 55 }: LogoProps) {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,18 +28,20 @@ export function SiteLogo({ className, width = 145, height = 55 }: LogoProps) {
   if (error) return <p>{error}</p>;
 
   return logoUrl ? (
-    <div className={className}> {/* Under import can have custom size on logo */}
+    <div className={className}>
       <Image
         src={logoUrl}
         alt="Site Logo"
-        width={width}  
-        height={height}  
+        width={width}
+        height={height}
         priority
+        style={{ width: "100%", height: "auto", ...style }}
       />
     </div>
   ) : (
     <p>Loading logo...</p>
   );
 }
+
 
 

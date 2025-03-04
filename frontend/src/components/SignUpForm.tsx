@@ -35,7 +35,9 @@ export function SignUpForm() {
         <CardHeader>
           <section className="flex flex-col items-center gap-4">
             <h1 className="text-xl font-semibold">Opprett Konto</h1>
-            <SiteLogo width={90} height={40} />
+            <SiteLogo 
+            className="/* kommer til å være handi ved darkmode */" 
+            style={{ width: "90px", height: "45px"}} />
             <div className="flex gap-1 mt-4 text-center text-sm text-gray-700">
               <p>Allerede har en konto?</p>
               <Link href="/signin" className="text-blue-500 hover:underline">
