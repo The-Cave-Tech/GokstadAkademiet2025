@@ -31,7 +31,9 @@ export function SignInForm() {
         <CardHeader>
           <section className="flex flex-col items-center gap-4">
             <h1 className="text-xl font-semibold">Logg Inn</h1>
-            <SiteLogo width={90} height={40} />
+            <SiteLogo 
+            className="/* kommer til å være handi ved darkmode */" 
+            style={{ width: "90px", height: "45px"}} />
           </section>
         </CardHeader>
 
@@ -41,7 +43,10 @@ export function SignInForm() {
               <legend className="sr-only">Påloggingsdetaljer</legend>
 
               <section className="block">
-                <label htmlFor="email" className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="email"
+                  className="text-sm font-medium text-gray-700"
+                >
                   E-post
                 </label>
                 <input
@@ -56,11 +61,15 @@ export function SignInForm() {
                 />
                 <small id="email-desc" className="text-red-500">
                   Bruk en gyldig e-postadresse.
-                </small> {/* bare for visualisering */}
+                </small>{" "}
+                {/* bare for visualisering */}
               </section>
 
               <section className="block">
-                <label htmlFor="password" className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="password"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Passord
                 </label>
                 <div className="relative">
@@ -91,7 +100,8 @@ export function SignInForm() {
                 </div>
                 <small id="password-desc" className="text-red-500">
                   Passord må være minst 8 tegn langt.
-                </small> {/* bare eksempel */}
+                </small>{" "}
+                {/* bare eksempel */}
               </section>
             </fieldset>
 
