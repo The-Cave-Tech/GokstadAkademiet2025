@@ -4,7 +4,8 @@
   "info": {
     "singularName": "user-profile",
     "pluralName": "user-profiles",
-    "displayName": "UserProfile"
+    "displayName": "UserProfile",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -17,24 +18,32 @@
       "type": "text"
     },
     "backgroundImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images",
         "files",
         "videos",
         "audios"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
     },
     "profilePicture": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images",
         "files",
         "videos",
         "audios"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
+    },
+    "users": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "user_profile"
     }
   }
 }

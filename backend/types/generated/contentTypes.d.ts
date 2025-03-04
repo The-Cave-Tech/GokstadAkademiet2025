@@ -431,6 +431,7 @@ export interface ApiGlobalSettingGlobalSetting extends Struct.SingleTypeSchema {
 export interface ApiUserProfileUserProfile extends Struct.CollectionTypeSchema {
   collectionName: 'user_profiles';
   info: {
+    description: '';
     displayName: 'UserProfile';
     pluralName: 'user-profiles';
     singularName: 'user-profile';
@@ -460,6 +461,10 @@ export interface ApiUserProfileUserProfile extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    users: Schema.Attribute.Relation<
+      'oneToMany',
+      'plugin::users-permissions.user'
+    >;
   };
 }
 
@@ -953,6 +958,10 @@ export interface PluginUsersPermissionsUser
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    user_profile: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::user-profile.user-profile'
+    >;
     username: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique &
