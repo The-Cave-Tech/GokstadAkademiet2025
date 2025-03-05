@@ -5,28 +5,12 @@ import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Link from "next/link";
 import { SiteLogo } from "@/components/ui/SiteLogo";
+import { register } from "@/data/actions/auth-actions";
+import { useActionState } from "react"; // Oppdatert import
 
 export function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [repeatPassword, setRepeatPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.includes("@")) {
-      setErrorMessage("Ugyldig e-postadresse.");
-      return;
-    }
-    if (password !== repeatPassword) {
-      setErrorMessage("Passordene må være like.");
-      return;
-    }
-    setErrorMessage("");
-    console.log("Submitted:", { username, email, password, repeatPassword });
-  };
+  const [state, formAction] = useActionState(register, { message: "", errors: {} }); // Oppdatert fra useFormState til useActionState
 
   return (
     <section className="w-full max-w-md">
@@ -45,7 +29,7 @@ export function SignUpForm() {
         </CardHeader>
 
         <CardBody>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form action={formAction} className="space-y-4">
             <fieldset className="space-y-4">
               <legend className="sr-only">Registreringsdetaljer</legend>
 
@@ -56,8 +40,7 @@ export function SignUpForm() {
                 <input
                   type="text"
                   id="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  name="username"
                   className="w-full p-2 mt-1 border border-gray-300 rounded-md"
                   placeholder="Skriv inn brukernavn"
                   required
@@ -72,8 +55,7 @@ export function SignUpForm() {
                 <input
                   type="email"
                   id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  name="email"
                   className="w-full p-2 mt-1 border border-gray-300 rounded-md"
                   placeholder="Skriv inn e-post"
                   required
@@ -88,8 +70,7 @@ export function SignUpForm() {
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  name="password"
                   className="w-full p-2 mt-1 border border-gray-300 rounded-md"
                   placeholder="Lag et passord"
                   required
@@ -105,8 +86,7 @@ export function SignUpForm() {
                   <input
                     type={showPassword ? "text" : "password"}
                     id="repeat_password"
-                    value={repeatPassword}
-                    onChange={(e) => setRepeatPassword(e.target.value)}
+                    name="repeatPassword"
                     className="w-full p-2 mt-1 border border-gray-300 rounded-md"
                     placeholder="Gjenta passord"
                     required
@@ -123,18 +103,14 @@ export function SignUpForm() {
                     {showPassword ? <FaEyeSlash className="text-xl" /> : <FaEye className="text-xl" />}
                   </button>
                 </div>
-                {errorMessage === "Passordene må være like." && (
-                  <small className="text-red-500">Passordene må være like.</small>
-                )}
               </section>
             </fieldset>
 
-            {errorMessage &&
-              !["Ugyldig e-postadresse.", "Passordene må være like."].includes(errorMessage) && (
-                <p className="text-red-500 mt-2" role="alert" aria-live="polite">
-                  {errorMessage}
-                </p>
-              )}
+            {state.message && (
+              <p className="text-red-500 mt-2" role="alert" aria-live="polite">
+                {state.message}
+              </p>
+            )}
 
             <button
               type="submit"

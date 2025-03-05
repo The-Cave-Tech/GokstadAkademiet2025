@@ -13,13 +13,7 @@ export default {
         'custom-lg': '850px', 
       },
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        "header-bg": "var(--header-bg)",
-        "header-text": "var(--header-text)",
-        primary: "var(--primary)",
-        "button-bg": "var(--button-bg)",
-        "button-text": "var(--button-text)",
+        background: "var(--background)"
       },
     },
   },
