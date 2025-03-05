@@ -6,12 +6,26 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Link from "next/link";
 import { SiteLogo } from "@/components/ui/SiteLogo";
 import { register } from "@/data/actions/auth-actions";
-import { useActionState } from "react"; // Oppdatert import
+import { useActionState } from "react"; 
+
+const signupFormState = {
+  message: "",
+  errors: {},
+  data: {
+    username: "",
+    email: "",
+    password: "",
+    repeatPassword: "",
+  },
+};
+
 
 export function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const [state, formAction] = useActionState(register, { message: "", errors: {} }); // Oppdatert fra useFormState til useActionState
+  const [formState, formAction] = useActionState(register, signupFormState);
 
+  console.log("## will render on client ##");
+  console.log(formState);
   return (
     <section className="w-full max-w-md">
       <Card className="max-w-md mx-auto">
@@ -106,9 +120,9 @@ export function SignUpForm() {
               </section>
             </fieldset>
 
-            {state.message && (
+            {formState.message && (
               <p className="text-red-500 mt-2" role="alert" aria-live="polite">
-                {state.message}
+                {formState.message}
               </p>
             )}
 
