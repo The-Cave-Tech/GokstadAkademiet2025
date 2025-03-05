@@ -1,19 +1,17 @@
 "use client";
 
-//Stylingen må jobbes på mer
-// Enkel validering før Zod/Yup legges til senere
-
 import { useState } from "react";
-import AuthCard from "@/components/ui/AuthCard";
+import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Link from "next/link";
-import { SiteLogo } from "./ui/SiteLogo";
+import { SiteLogo } from "@/components/ui/SiteLogo";
 
 export function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [repeatPassword, setRepeatPassword] = useState(""); 
+  const [repeatPassword, setRepeatPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -27,16 +25,16 @@ export function SignUpForm() {
       return;
     }
     setErrorMessage("");
-    console.log("Submitted:", { email, password, repeatPassword });
+    console.log("Submitted:", { username, email, password, repeatPassword });
   };
 
   return (
     <section className="w-full max-w-md">
-      <AuthCard
-        header={
+      <Card className="max-w-md mx-auto">
+        <CardHeader>
           <section className="flex flex-col items-center gap-4">
             <h1 className="text-xl font-semibold">Opprett Konto</h1>
-            <SiteLogo width={90} height={40} />
+            <SiteLogo className="/* Dark mode støtte */" style={{ width: "90px", height: "45px" }} />
             <div className="flex gap-1 mt-4 text-center text-sm text-gray-700">
               <p>Allerede har en konto?</p>
               <Link href="/signin" className="text-blue-500 hover:underline">
@@ -44,13 +42,29 @@ export function SignUpForm() {
               </Link>
             </div>
           </section>
-        }
-        content={
+        </CardHeader>
+
+        <CardBody>
           <form onSubmit={handleSubmit} className="space-y-4">
             <fieldset className="space-y-4">
               <legend className="sr-only">Registreringsdetaljer</legend>
 
-              {/* E-post */}
+              <section className="block">
+                <label htmlFor="username" className="text-sm font-medium text-gray-700">
+                  Brukernavn
+                </label>
+                <input
+                  type="text"
+                  id="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full p-2 mt-1 border border-gray-300 rounded-md"
+                  placeholder="Skriv inn brukernavn"
+                  required
+                  autoComplete="username"
+                />
+              </section>
+
               <section className="block">
                 <label htmlFor="email" className="text-sm font-medium text-gray-700">
                   E-post
@@ -63,13 +77,10 @@ export function SignUpForm() {
                   className="w-full p-2 mt-1 border border-gray-300 rounded-md"
                   placeholder="Skriv inn e-post"
                   required
+                  autoComplete="email"
                 />
-                {errorMessage === "Ugyldig e-postadresse." && (
-                  <small className="text-red-500">Bruk en gyldig e-postadresse.</small>
-                )}
               </section>
 
-              {/* Passord */}
               <section className="block">
                 <label htmlFor="password" className="text-sm font-medium text-gray-700">
                   Passord
@@ -82,23 +93,24 @@ export function SignUpForm() {
                   className="w-full p-2 mt-1 border border-gray-300 rounded-md"
                   placeholder="Lag et passord"
                   required
+                  autoComplete="new-password"
                 />
               </section>
 
-              {/* Gjenta Passord */}
               <section className="block">
                 <label htmlFor="repeat_password" className="text-sm font-medium text-gray-700">
-                  Passord
+                  Gjenta passord
                 </label>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
                     id="repeat_password"
-                    value={repeatPassword} 
-                    onChange={(e) => setRepeatPassword(e.target.value)} 
+                    value={repeatPassword}
+                    onChange={(e) => setRepeatPassword(e.target.value)}
                     className="w-full p-2 mt-1 border border-gray-300 rounded-md"
                     placeholder="Gjenta passord"
                     required
+                    autoComplete="new-password"
                   />
                   <button
                     type="button"
@@ -117,29 +129,38 @@ export function SignUpForm() {
               </section>
             </fieldset>
 
-            {/* Feilmelding */}
-            {errorMessage && ![ "Ugyldig e-postadresse.", "Passordene må være like."].includes(errorMessage) && (
-              <p className="text-red-500 mt-2" role="alert" aria-live="polite">
-                {errorMessage}
-              </p>
-            )}
+            {errorMessage &&
+              !["Ugyldig e-postadresse.", "Passordene må være like."].includes(errorMessage) && (
+                <p className="text-red-500 mt-2" role="alert" aria-live="polite">
+                  {errorMessage}
+                </p>
+              )}
 
-          </form>
-        }
-        footer={
-          <div className="text-sm text-gray-700">
-            <p>Ved å opprette en konto godtar du våre <Link href="/terms" className="text-blue-500 hover:underline">bruksvilkår</Link> og <Link href="/privacy" className="text-blue-500 hover:underline">personvernerklæring</Link>.</p>
-
-              {/* Opprett -knapp */}
-              <button
+            <button
               type="submit"
-              className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 my-4"
+              className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
             >
               Opprett en bruker
             </button>
+          </form>
+        </CardBody>
+
+        <CardFooter>
+          <div className="text-sm text-gray-700">
+            <p>
+              Ved å opprette en konto godtar du våre{" "}
+              <Link href="/terms" className="text-blue-500 hover:underline">
+                bruksvilkår
+              </Link>{" "}
+              og{" "}
+              <Link href="/privacy" className="text-blue-500 hover:underline">
+                personvernerklæring
+              </Link>
+              .
+            </p>
           </div>
-        }
-      />
+        </CardFooter>
+      </Card>
     </section>
   );
 }

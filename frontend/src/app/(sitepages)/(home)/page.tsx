@@ -12,7 +12,7 @@ export default function Home() {
 
   return (
     <main>
-      <Button variant="danger" size="large" onClick={handleRedirect}>
+      <Button onClick={handleRedirect}>
         Logg inn
       </Button>
     </main>
