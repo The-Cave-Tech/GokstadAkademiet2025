@@ -3,11 +3,11 @@ import { render, screen } from '@testing-library/react';
 import SignInRoute from '@/app/(auth)/signin/page';
 import SignUpRoute from '@/app/(auth)/signup/page';
 
-vi.mock('@/components/SignInForm', () => ({
+vi.mock('@/components/authform/SignInForm', () => ({
   SignInForm: () => <div data-testid="mock-signin-form">Sign In Form</div>,
 }));
 
-vi.mock('@/components/SignUpForm', () => ({
+vi.mock('@/components/authform/SignUpForm', () => ({
   SignUpForm: () => <div data-testid="mock-signup-form">Sign Up Form</div>,
 }));
 
