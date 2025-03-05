@@ -1,15 +1,14 @@
 "use client";
-// Stylingen må jobbes på mer
-// Enkel validering før Zod/Yup legges til senere
 
 import { useState } from "react";
 import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Link from "next/link";
-import { SiteLogo } from "./ui/SiteLogo";
+import { SiteLogo } from "@/components/ui/SiteLogo";
 
 export function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
@@ -26,7 +25,7 @@ export function SignUpForm() {
       return;
     }
     setErrorMessage("");
-    console.log("Submitted:", { email, password, repeatPassword });
+    console.log("Submitted:", { username, email, password, repeatPassword });
   };
 
   return (
@@ -35,9 +34,7 @@ export function SignUpForm() {
         <CardHeader>
           <section className="flex flex-col items-center gap-4">
             <h1 className="text-xl font-semibold">Opprett Konto</h1>
-            <SiteLogo 
-            className="/* kommer til å være handi ved darkmode */" 
-            style={{ width: "90px", height: "45px"}} />
+            <SiteLogo className="/* Dark mode støtte */" style={{ width: "90px", height: "45px" }} />
             <div className="flex gap-1 mt-4 text-center text-sm text-gray-700">
               <p>Allerede har en konto?</p>
               <Link href="/signin" className="text-blue-500 hover:underline">
@@ -53,6 +50,22 @@ export function SignUpForm() {
               <legend className="sr-only">Registreringsdetaljer</legend>
 
               <section className="block">
+                <label htmlFor="username" className="text-sm font-medium text-gray-700">
+                  Brukernavn
+                </label>
+                <input
+                  type="text"
+                  id="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full p-2 mt-1 border border-gray-300 rounded-md"
+                  placeholder="Skriv inn brukernavn"
+                  required
+                  autoComplete="username"
+                />
+              </section>
+
+              <section className="block">
                 <label htmlFor="email" className="text-sm font-medium text-gray-700">
                   E-post
                 </label>
@@ -64,10 +77,8 @@ export function SignUpForm() {
                   className="w-full p-2 mt-1 border border-gray-300 rounded-md"
                   placeholder="Skriv inn e-post"
                   required
+                  autoComplete="email"
                 />
-                {errorMessage === "Ugyldig e-postadresse." && (
-                  <small className="text-red-500">Bruk en gyldig e-postadresse.</small>
-                )}
               </section>
 
               <section className="block">
@@ -82,12 +93,13 @@ export function SignUpForm() {
                   className="w-full p-2 mt-1 border border-gray-300 rounded-md"
                   placeholder="Lag et passord"
                   required
+                  autoComplete="new-password"
                 />
               </section>
 
               <section className="block">
                 <label htmlFor="repeat_password" className="text-sm font-medium text-gray-700">
-                  Gjenta Passord
+                  Gjenta passord
                 </label>
                 <div className="relative">
                   <input
@@ -98,6 +110,7 @@ export function SignUpForm() {
                     className="w-full p-2 mt-1 border border-gray-300 rounded-md"
                     placeholder="Gjenta passord"
                     required
+                    autoComplete="new-password"
                   />
                   <button
                     type="button"

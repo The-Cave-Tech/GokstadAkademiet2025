@@ -1,5 +1,5 @@
 "use client";
-import { SignUpForm } from "@/components/SignUpForm"; 
+import { SignUpForm } from "@/components/authform/SignUpForm"; 
 import { AuthBackgroundImage } from "@/components/ui/AuthBackgroundImage";
 
 export default function SignUpRoute() {
