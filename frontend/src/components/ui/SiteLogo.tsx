@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { getStrapiData } from "@/lib/services/strapiApiData";
+import { getStrapiData } from "@/data/services/strapiApiData";
 
 export function SiteLogo({ className, style, width = 145, height = 55 }: LogoProps) {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);

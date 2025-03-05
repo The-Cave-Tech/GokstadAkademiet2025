@@ -7,7 +7,7 @@ import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
-import { SiteLogo } from "./ui/SiteLogo";
+import { SiteLogo } from "@/components/ui/SiteLogo";
 
 export function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -32,8 +32,9 @@ export function SignInForm() {
           <section className="flex flex-col items-center gap-4">
             <h1 className="text-xl font-semibold">Logg Inn</h1>
             <SiteLogo 
-            className="/* kommer til å være handi ved darkmode */" 
-            style={{ width: "90px", height: "45px"}} />
+              className="/* kommer til å være handi ved darkmode */" 
+              style={{ width: "90px", height: "45px"}} 
+            />
           </section>
         </CardHeader>
 
@@ -57,6 +58,7 @@ export function SignInForm() {
                   className="w-full p-2 mt-1 border border-gray-300 rounded-md"
                   placeholder="Skriv inn e-post"
                   required
+                  autoComplete="email"
                   aria-describedby="email-desc"
                 />
                 <small id="email-desc" className="text-red-500">
@@ -81,6 +83,7 @@ export function SignInForm() {
                     className="w-full p-2 mt-1 border border-gray-300 rounded-md"
                     placeholder="Skriv inn passord"
                     required
+                    autoComplete="current-password"
                     aria-describedby="password-desc"
                   />
                   <button
