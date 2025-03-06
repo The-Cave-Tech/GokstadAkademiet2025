@@ -1,9 +1,9 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { getStrapiData } from "@/lib/services/strapiApiData";
+import { getStrapiData } from "@/lib/data/services/strapiApiData";
 
-export function AuthBackgroundImage({ className}: AuthBackgroundImageProps) {
+export function AuthBackgroundImage({ className }: AuthBackgroundImageProps) {
   const [data, setData] = useState<{ AuthBackgroundImage: string | null; altText?: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,4 +50,3 @@ export function AuthBackgroundImage({ className}: AuthBackgroundImageProps) {
     </div>
   );
 }
-
