@@ -29,7 +29,7 @@ export default function Dashboard() {
           {profile.backgroundImage && (
             <div
               className="absolute top-0 left-0 right-0 h-64 bg-cover bg-center opacity-50"
-              style={{ backgroundImage: `url(${profile.backgroundImage})` }}
+              style={{ backgroundImage: `url(${profile.backgroundImage.url})` }}
             />
           )}
         </div>
@@ -57,7 +57,6 @@ export default function Dashboard() {
             footer
           />
         </Link>
-
         <AuthCard
           header={<h1>This is card link</h1>}
           content={

@@ -1,7 +1,11 @@
 export interface UserProfile {
-    id: number;
-    profileName: string;
-    bio?: string;
-    profileImage?: string;
-    backgroundImage?: string;
+  id: number;
+  profileName: string;
+  bio?: string;
+  profileImage: {
+    url: string;
+  };
+  backgroundImage: {
+    url: string;
+  };
 }
