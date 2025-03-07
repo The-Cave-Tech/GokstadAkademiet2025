@@ -24,7 +24,7 @@ export default function Dashboard() {
   if (!profile) return <p>Loading.....</p>;
 
   return (
-    <section className="grid gap-5 my-10">
+    <section className="grid gap-5 my-10 justify-center items-center px-10">
       <section className="max-w-4xl mx-auto px-4 py-8">
         <div>
           {/* Background Image */}
@@ -49,114 +49,130 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           <Link href="/dashboard/user/personalInfo">
             <AuthCard
-              className="flex flex-col justify-center items-center bg-cyan-200 shadow-lg shadow-cyan-500/50 size-60"
-              header={<h1>My personal info</h1>}
+              className="relative flex flex-col bg-cyan-200 shadow-lg shadow-cyan-500/50 p-4"
+              header={<h1 className="text-left">My personal Info</h1>}
               content={
-                <section className="flex gap-5">
-                  <section className="flex flex-col gap-5">
-                    <p>We are gonna have a blast</p>
-                  </section>
+                <section className="text-left space-y-2">
+                  <p>All my personal info</p>
                 </section>
               }
-              footer
+              footer={
+                <aside className="absolute bottom-5 right-5 text-gray-500 text-sm">
+                  <p>Pil</p>
+                </aside>
+              }
             />
           </Link>
-          <Link href="/dashboard/user/personalInfo">
+          <Link href="/dashboard/user/myEvents">
             <AuthCard
-              className="flex flex-col justify-center items-center bg-cyan-200 shadow-lg shadow-cyan-500/50 size-60"
-              header={<h1>My personal info</h1>}
+              className="relative flex flex-col bg-cyan-200 shadow-lg shadow-cyan-500/50 p-4"
+              header={<h1 className="text-left">My events</h1>}
               content={
-                <section className="flex gap-5">
-                  <section className="flex flex-col gap-5">
-                    <p>We are gonna have a blast</p>
-                  </section>
+                <section className="text-left space-y-2">
+                  <p>All my events</p>
                 </section>
               }
-              footer
+              footer={
+                <aside className="absolute bottom-5 right-5 text-gray-500 text-sm">
+                  <p>Pil</p>
+                </aside>
+              }
             />
           </Link>
-          <Link href="/dashboard/user/personalInfo">
+          <Link href="/dashboard/user/myPosts">
             <AuthCard
-              className="flex flex-col justify-center items-center bg-cyan-200 shadow-lg shadow-cyan-500/50 size-60"
-              header={<h1>My personal info</h1>}
+              className="relative flex flex-col bg-cyan-200 shadow-lg shadow-cyan-500/50 p-4"
+              header={<h1 className="text-left">My posts</h1>}
               content={
-                <section className="flex gap-5">
-                  <section className="flex flex-col gap-5">
-                    <p>We are gonna have a blast</p>
-                  </section>
+                <section className="text-left space-y-2">
+                  <p>All my posts</p>
                 </section>
               }
-              footer
+              footer={
+                <aside className="absolute bottom-5 right-5 text-gray-500 text-sm">
+                  <p>Pil</p>
+                </aside>
+              }
             />
           </Link>
-          <Link href="/dashboard/user/personalInfo">
+          <Link href="/dashboard/user/myEvents">
             <AuthCard
-              className="flex flex-col justify-center items-center bg-cyan-200 shadow-lg shadow-cyan-500/50 size-60"
-              header={<h1>My personal info</h1>}
+              className="relative flex flex-col bg-cyan-200 shadow-lg shadow-cyan-500/50 p-4"
+              header={<h1 className="text-left">My events</h1>}
               content={
-                <section className="flex gap-5">
-                  <section className="flex flex-col gap-5">
-                    <p>We are gonna have a blast</p>
-                  </section>
+                <section className="text-left space-y-2">
+                  <p>We are gonna have a blast</p>
                 </section>
               }
-              footer
+              footer={
+                <aside className="absolute bottom-5 right-5 text-gray-500 text-sm">
+                  <p>Pil</p>
+                </aside>
+              }
             />
           </Link>
-          <Link href="/dashboard/user/personalInfo">
+          <Link href="/dashboard/user/myEvents">
             <AuthCard
-              className="flex flex-col justify-center items-center bg-cyan-200 shadow-lg shadow-cyan-500/50 size-60"
-              header={<h1>My personal info</h1>}
+              className="relative flex flex-col bg-cyan-200 shadow-lg shadow-cyan-500/50 p-4"
+              header={<h1 className="text-left">My events</h1>}
               content={
-                <section className="flex gap-5">
-                  <section className="flex flex-col gap-5">
-                    <p>We are gonna have a blast</p>
-                  </section>
+                <section className="text-left space-y-2">
+                  <p>We are gonna have a blast</p>
                 </section>
               }
-              footer
+              footer={
+                <aside className="absolute bottom-5 right-5 text-gray-500 text-sm">
+                  <p>Pil</p>
+                </aside>
+              }
             />
           </Link>
-          <Link href="/dashboard/user/personalInfo">
+          <Link href="/dashboard/user/myEvents">
             <AuthCard
-              className="flex flex-col justify-center items-center bg-cyan-200 shadow-lg shadow-cyan-500/50 size-60"
-              header={<h1>My personal info</h1>}
+              className="relative flex flex-col bg-cyan-200 shadow-lg shadow-cyan-500/50 p-4"
+              header={<h1 className="text-left">My events</h1>}
               content={
-                <section className="flex gap-5">
-                  <section className="flex flex-col gap-5">
-                    <p>We are gonna have a blast</p>
-                  </section>
+                <section className="text-left space-y-2">
+                  <p>We are gonna have a blast</p>
                 </section>
               }
-              footer
+              footer={
+                <aside className="absolute bottom-5 right-5 text-gray-500 text-sm">
+                  <p>Pil</p>
+                </aside>
+              }
             />
           </Link>
-          <Link href="/dashboard/user/personalInfo">
+          <Link href="/dashboard/user/myEvents">
             <AuthCard
-              className="flex flex-col justify-center items-center bg-cyan-200 shadow-lg shadow-cyan-500/50 size-60"
-              header={<h1>My personal info</h1>}
+              className="relative flex flex-col bg-cyan-200 shadow-lg shadow-cyan-500/50 p-4"
+              header={<h1 className="text-left">My events</h1>}
               content={
-                <section className="flex gap-5">
-                  <section className="flex flex-col gap-5">
-                    <p>We are gonna have a blast</p>
-                  </section>
+                <section className="text-left space-y-2">
+                  <p>We are gonna have a blast</p>
                 </section>
               }
-              footer
+              footer={
+                <aside className="absolute bottom-5 right-5 text-gray-500 text-sm">
+                  <p>Pil</p>
+                </aside>
+              }
             />
           </Link>
-          <Link href="/dashboard/user/personalInfo">
+          <Link href="/dashboard/user/myEvents">
             <AuthCard
-              className="flex flex-col justify-center items-center bg-cyan-200 shadow-lg shadow-cyan-500/50 size-60"
-              header={<h1>My personal info</h1>}
+              className="relative flex flex-col bg-cyan-200 shadow-lg shadow-cyan-500/50 p-4"
+              header={<h1 className="text-left">My events</h1>}
               content={
-                <section className="flex gap-5">
-                  <section className="flex flex-col gap-5">
-                    <p>We are gonna have a blast</p>
-                  </section>
+                <section className="text-left space-y-2">
+                  <p>We are gonna have a blast</p>
                 </section>
               }
-              footer
+              footer={
+                <aside className="absolute bottom-5 right-5 text-gray-500 text-sm">
+                  <p>Pil</p>
+                </aside>
+              }
             />
           </Link>
         </div>
@@ -164,53 +180,45 @@ export default function Dashboard() {
       {/* Section only for admin role */}
       {role === "admin" && (
         <section aria-label="Administer system">
-          <div className="flex py-5 items-center w-[100vw]">
+          <div className="flex py-5 items-center md:min-w-[100vw]">
             <div className="flex-grow border-t-4 border-green-400"></div>
             <span className="flex-shrink mx-4 text-red-900">
               Only for admin
             </span>
             <div className="flex-grow border-t-4 border-green-400"></div>
           </div>
-          <article className="mx-auto p-4">
+          <article className="mx-auto p-4 grid justify-center">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              <Link href="/dashboard/admin/personalInfo">
+              <Link href="/dashboard/admin/users">
                 <AuthCard
-                  className="flex flex-col justify-center items-center bg-cyan-200 shadow-lg shadow-cyan-500/50 size-70"
-                  header={<h1>Administrate users</h1>}
+                  className="relative flex flex-col bg-cyan-200 shadow-lg shadow-cyan-500/50 p-4"
+                  header={<h1 className="text-left">Every registered user</h1>}
                   content={
-                    <section className="flex gap-5">
-                      <section className="flex flex-col gap-5">
-                        <p>We are gonna have a blast</p>
-                        <p>Change memberships</p>
-                      </section>
+                    <section className="text-left space-y-2">
+                      <p>Check all users on your system</p>
                     </section>
                   }
-                  footer
+                  footer={
+                    <aside className="absolute bottom-5 right-5 text-gray-500 text-sm">
+                      <p>Pil</p>
+                    </aside>
+                  }
                 />
               </Link>
-              <Link href="/dashboard/admin/personalInfo">
+              <Link href="/dashboard/admin/posts">
                 <AuthCard
-                  className="flex flex-col justify-center items-center bg-cyan-200 shadow-lg shadow-cyan-500/50 size-70"
-                  header={<h1>Bought items</h1>}
+                  className="relative flex flex-col bg-cyan-200 shadow-lg shadow-cyan-500/50 p-4"
+                  header={<h1 className="text-left">Every users posts</h1>}
                   content={
-                    <section className="flex flex-col gap-5">
-                      <p>We are gonna have a blast</p>
-                      <p>Look at items bought</p>
+                    <section className="text-left space-y-2">
+                      <p>Check everything that has been posted</p>
                     </section>
                   }
-                  footer
-                />
-              </Link>
-              <Link href="/dashboard/admin/personalInfo">
-                <AuthCard
-                  className="flex flex-col justify-center items-center bg-cyan-200 shadow-lg shadow-cyan-500/50 size-70"
-                  header={<h1>Change events</h1>}
-                  content={
-                    <section className="flex flex-col gap-5">
-                      <p>We are gonna have a blast</p>
-                    </section>
+                  footer={
+                    <aside className="absolute bottom-5 right-5 text-gray-500 text-sm">
+                      <p>Pil</p>
+                    </aside>
                   }
-                  footer
                 />
               </Link>
             </div>
