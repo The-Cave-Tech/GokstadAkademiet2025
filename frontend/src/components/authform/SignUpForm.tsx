@@ -2,32 +2,18 @@
 
 import { useState} from "react";
 import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Link from "next/link";
 import { SiteLogo } from "@/components/ui/SiteLogo";
 import { register } from "@/lib/data/actions/auth-actions";
 import { useActionState } from "react";
 import { ZodErrors } from "@/components/ZodErrors";
+import { PasswordToggle } from "../ui/random/PasswordToggle";
 
 const initialState = {
   zodErrors: null,
   strapiErrors: null,
-  message: "",
   values: {},
 };
-
-const PasswordToggle = ({ showPassword, togglePassword }: { showPassword: boolean; togglePassword: () => void }) => (
-  <button
-    type="button"
-    onClick={togglePassword}
-    className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500"
-    aria-label="Veksle synlighet av passord"
-    aria-pressed={showPassword}
-    title="Veksle synlighet av passord"
-  >
-    {showPassword ? <FaEyeSlash className="text-xl" /> : <FaEye className="text-xl" />}
-  </button>
-); // Skal lage en custom component der jeg samler alle knapper med auth å gjøre
 
 export function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -44,9 +30,8 @@ export function SignUpForm() {
     setFormValues((prev) => ({ ...prev, [name]: value }));
   };
 
-  
   const inputClass = "w-full p-2 mt-1 border border-gray-300 rounded-md";
-  const labelClass = "text-sm font-medium text-gray-700";
+  const labelClass = "text-base font-roboto font-normal text-gray-700";
 
   return (
     <section className="w-full max-w-md">
@@ -66,10 +51,6 @@ export function SignUpForm() {
           </CardHeader>
 
           <CardBody>
-            {formState.message && (
-              <p className="text-red-500 text-center">{formState.message}</p>
-            )}
-
             <fieldset className="space-y-4">
               <legend className="sr-only">Registreringsdetaljer</legend>
 
@@ -88,7 +69,7 @@ export function SignUpForm() {
                   value={formValues.username}
                   onChange={handleChange}
                 />
-                <ZodErrors error={formState?.zodErrors?.username ?? []} />
+                <ZodErrors error={formState?.zodErrors?.username ?? []}/>
               </section>
 
               <section className="block">

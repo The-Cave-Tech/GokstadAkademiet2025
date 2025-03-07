@@ -9,7 +9,7 @@ const usernameValidation = z
   .string()
   .min(6, { message: "Brukernavn må være minst 6 tegn" })
   .max(20, { message: "Brukernavn må være maks 20 tegn" })
-  .regex(/[0-9]/, { message: "Passord må inneholde minst ett tall" })
+  .regex(/[0-9]/, { message: "Brukernavn må inneholde minst ett tall" })
   .regex(usernameRegex, { 
     message: "Brukernavn kan kun inneholde bokstaver, tall, bindestrek og understrek" 
   })

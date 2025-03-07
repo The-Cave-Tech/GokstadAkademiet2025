@@ -6,6 +6,5 @@ type SignInSchema = z.infer<typeof signInSchema>;
 type FormState = {
      zodErrors: Partial<Record<keyof z.infer<typeof signUpSchema>, string[]>> | null;
      strapiErrors: null;
-     message: string;
      values?: Partial<z.infer<typeof signUpSchema>>; 
   }
