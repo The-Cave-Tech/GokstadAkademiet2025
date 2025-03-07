@@ -16,30 +16,30 @@ export default function Footer() {
   const [backgroundColor, setBackgroundColor] = useState<string>("#1F2937");
 
   useEffect(() => {
-    const fetchStrapiData = async (url: string) => {
-      const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL;
-      const token = process.env.STRAPI_API_TOKEN; 
-
+    const fetchFooterData = async () => {
       try {
-        const response = await fetch(baseUrl + url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await response.json();
-        return data;
+        const { data } = await getStrapiData("/api/global-setting?populate=*");
+
+        const attributes = data?.attributes;
+
+        if (attributes) {
+          setSocialLinks(attributes.SocialLinks || []);
+          setFooterText(
+            attributes.footerText || "© TheCaveTech. All rights reserved."
+          );
+          setBackgroundColor(attributes.footerBackgroundColor || "#1F2937");
+        }
       } catch (error) {
-        console.error(error);
+        console.error("Failed to fetch footer data:", error);
       }
     };
 
-    
+    fetchFooterData();
   }, []);
 
   return (
     <footer className="p-8 text-white" style={{ backgroundColor }}>
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-       
         <SiteLogo className="w-36" />
 
         <ul className="flex gap-4">
@@ -53,7 +53,6 @@ export default function Footer() {
         </ul>
       </div>
 
-      
       <p className="text-center mt-4 text-sm">
         &copy; {new Date().getFullYear()} {footerText}
       </p>
