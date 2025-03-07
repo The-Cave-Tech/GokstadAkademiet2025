@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Link from "next/link";
@@ -38,32 +38,13 @@ export function SignUpForm() {
     password: "",
     repeatPassword: "",
   });
-
-  // Logg skjemaets verdier når de endres (klientside)
-  useEffect(() => {
-    console.log("[Client] SignUpForm - Current form values:", formValues);
-  }, [formValues]);
-
-  // Håndter serverrespons og oppdater skjema ved valideringsfeil
-  useEffect(() => {
-    if (formState.zodErrors && formState.values) {
-      console.log("[Client] SignUpForm - Validation errors from server:", formState.zodErrors);
-      setFormValues({
-        username: formState.zodErrors.username ? "" : (formState.values.username || ""),
-        email: formState.zodErrors.email ? "" : (formState.values.email || ""),
-        password: formState.zodErrors.password ? "" : (formState.values.password || ""),
-        repeatPassword: formState.zodErrors.repeatPassword ? "" : (formState.values.repeatPassword || ""),
-      });
-    }
-  }, [formState.zodErrors, formState.values]);
-
-  // Håndter input-endringer
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+ 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {  // Håndter input-endringer
     const { name, value } = e.target;
     setFormValues((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Felles klasse for alle input-felt for å redusere stil-gjentagelse
+  
   const inputClass = "w-full p-2 mt-1 border border-gray-300 rounded-md";
   const labelClass = "text-sm font-medium text-gray-700";
 
