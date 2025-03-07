@@ -26,15 +26,12 @@ export function SignInForm() {
   };
 
   return (
-    <section className="w-100">
+    <section className="w-full max-w-md">
       <Card className="max-w-md mx-auto">
         <CardHeader>
           <section className="flex flex-col items-center gap-4">
             <h1 className="text-xl font-semibold">Logg Inn</h1>
-            <SiteLogo 
-              className="/* kommer til å være handi ved darkmode */" 
-              style={{ width: "90px", height: "45px"}} 
-            />
+            <SiteLogo className="/* Dark mode støtte */" style={{ width: "90px", height: "45px" }} />
           </section>
         </CardHeader>
 
@@ -48,7 +45,7 @@ export function SignInForm() {
                   htmlFor="email"
                   className="text-sm font-medium text-gray-700"
                 >
-                  E-post
+                  E-post eller brukernavn
                 </label>
                 <input
                   type="email"
@@ -56,7 +53,7 @@ export function SignInForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full p-2 mt-1 border border-gray-300 rounded-md"
-                  placeholder="Skriv inn e-post"
+                  placeholder="Skriv inn e-post eller brukernavn"
                   required
                   autoComplete="email"
                   aria-describedby="email-desc"
@@ -142,7 +139,7 @@ export function SignInForm() {
 
         <CardFooter>
           <div className="mt-4">
-            <section className="flex items-center">
+            <section className="flex gap-1 mt-4 text-center items-center text-sm text-gray-700">
               <hr className="flex-grow border-t-2 border-gray-700" />
               <span className="mx-4 text-sm text-gray-700">Eller</span>
               <hr className="flex-grow border-t-2 border-gray-700" />
