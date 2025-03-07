@@ -34,7 +34,7 @@ export function SignUpForm() {
   const labelClass = "text-base font-roboto font-normal text-gray-700";
 
   return (
-    <section className="w-full max-w-md">
+    <section className="auth-card-section w-full max-w-md">
       <form action={formAction} className="space-y-4">
         <Card className="max-w-md mx-auto">
           <CardHeader>

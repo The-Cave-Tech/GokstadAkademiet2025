@@ -6,7 +6,14 @@ const nextConfig: NextConfig = {
       {
         protocol: "http",
         hostname: "localhost",
-      },
+      }, 
+     /*  remotePatterns: [
+        {
+          protocol: "http",
+          hostname: "192.168.10.136",
+          port: "1337",
+          pathname: "/uploads/**",
+        }, */
     ],
   },
   /*  i18n: {

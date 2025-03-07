@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { SiteLogo } from "./SiteLogo";
 
 export const Header = () => {
   return (
@@ -8,7 +9,7 @@ export const Header = () => {
         {/* Logo */}
         <div className="flex-shrink-0">
           <Link href="/">
-              <img src="/logo.png" alt="Logo" className="h-8 w-auto" />
+              <SiteLogo className="/* Dark mode støtte */" style={{ width: "90px", height: "45px" }} />
           </Link>
         </div>
         {/* Navigation Links */}

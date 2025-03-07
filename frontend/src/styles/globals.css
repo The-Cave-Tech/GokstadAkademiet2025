@@ -16,3 +16,10 @@ body {
   padding: 0;
   background-color: var(--background);
 }
+
+/* @media (max-width: 639px) {
+  .auth-card-section {
+    background-color: rgb(128, 32, 32);
+    padding: 1rem;
+  }
+} */
