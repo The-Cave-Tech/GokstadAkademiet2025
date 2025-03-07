@@ -9,10 +9,14 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        roboto: ['var(--font-roboto)', 'sans-serif'],
+      },
       screens: {
         'custom-lg': '850px', 
       },
       colors: {
+        'zodValidation': '#b41400',
         background: "var(--background)"
       },
     },

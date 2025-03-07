@@ -35,7 +35,7 @@ export function SiteLogo({ className, style, width = 145, height = 55 }: LogoPro
         width={width}
         height={height}
         priority
-        style={{ width: "100%", height: "auto", ...style }}
+        style={{ width: "auto", height: "auto", ...style }}
       />
     </div>
   ) : (
