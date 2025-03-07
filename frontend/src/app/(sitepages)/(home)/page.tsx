@@ -1,25 +1,23 @@
 "use client";
 
-import { useRouter } from 'next/navigation';
-import { Button } from "@/components/ui/button"; 
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import Footer from "@/components/ui/Footer"; 
 
 export default function Home() {
   const router = useRouter();
 
   const handleRedirect = () => {
-    router.push('/signin');
+    router.push("/signin");
   };
 
   return (
-    <main>
-      <Button onClick={handleRedirect}>
-        Logg inn
-      </Button>
+    <main className="flex flex-col min-h-screen justify-between">
+      <div className="flex-grow flex justify-center items-center">
+        <Button onClick={handleRedirect}>Logg inn</Button>
+      </div>
+
+      <Footer />
     </main>
   );
 }
-
-
-
-
-
