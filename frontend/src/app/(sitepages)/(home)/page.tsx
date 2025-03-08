@@ -1,20 +1,10 @@
 "use client";
 
-import { useRouter } from 'next/navigation';
-import { Button } from "@/components/ui/Button"; 
-
 export default function Home() {
-  const router = useRouter();
-
-  const handleRedirect = () => {
-    router.push('/signin');
-  };
-
+  
   return (
-    <main>
-      <Button onClick={handleRedirect}>
-        Logg inn
-      </Button>
+    <main className="mt-24">
+     <p>This is THE-CAVETECH-</p>
     </main>
   );
 }

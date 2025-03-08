@@ -1,6 +1,6 @@
 "use client";
 
-import { useState} from "react";
+import { useState } from "react";
 import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
 import Link from "next/link";
 import { SiteLogo } from "@/components/ui/SiteLogo";
@@ -8,8 +8,11 @@ import { register } from "@/lib/data/actions/auth-actions";
 import { useActionState } from "react";
 import { ZodErrors } from "@/components/ZodErrors";
 import { PasswordToggle } from "../ui/random/PasswordToggle";
+import { useValidation } from "@/hooks/useSignUpValidation";
+import { authFieldError } from "@/lib/utils/authFieldError";
 
-const initialState = {
+
+const initialState: FormState = {
   zodErrors: null,
   strapiErrors: null,
   values: {},
@@ -17,30 +20,38 @@ const initialState = {
 
 export function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const [formState, formAction] = useActionState(register, initialState);
   const [formValues, setFormValues] = useState({
     username: "",
     email: "",
     password: "",
     repeatPassword: "",
   });
- 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {  // Håndter input-endringer
+  const { validationErrors, validateField } = useValidation();
+
+  const [formState, formAction] = useActionState<FormState, FormData>(register,initialState);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormValues((prev) => ({ ...prev, [name]: value }));
+    validateField(name as ValidationErrorKeys, value);
   };
 
   const inputClass = "w-full p-2 mt-1 border border-gray-300 rounded-md";
   const labelClass = "text-base font-roboto font-normal text-gray-700";
+  console.log("Form State:", formState);
+  console.log("Validation Errors:", validationErrors);
 
   return (
-    <section className="auth-card-section w-full max-w-md">
+    <section className="auth-card-section flex items-center justify-center min-h-[calc(100vh-64px)] mt-16">
       <form action={formAction} className="space-y-4">
         <Card className="max-w-md mx-auto">
           <CardHeader>
             <section className="flex flex-col items-center gap-4">
               <h1 className="text-xl font-semibold">Opprett Konto</h1>
-              <SiteLogo className="/* Dark mode støtte */" style={{ width: "90px", height: "45px" }} />
+              <SiteLogo
+                className="/* Dark mode støtte */"
+                style={{ width: "90px", height: "45px" }}
+              />
               <div className="flex gap-1 mt-4 text-center text-sm text-gray-700">
                 <p>Allerede har en konto?</p>
                 <Link href="/signin" className="text-blue-500 hover:underline">
@@ -69,7 +80,7 @@ export function SignUpForm() {
                   value={formValues.username}
                   onChange={handleChange}
                 />
-                <ZodErrors error={formState?.zodErrors?.username ?? []}/>
+                <ZodErrors error={authFieldError(validationErrors, formState?.zodErrors ?? {}, "username")} />
               </section>
 
               <section className="block">
@@ -87,7 +98,7 @@ export function SignUpForm() {
                   value={formValues.email}
                   onChange={handleChange}
                 />
-                <ZodErrors error={formState?.zodErrors?.email ?? []} />
+               <ZodErrors error={authFieldError(validationErrors, formState?.zodErrors ?? {}, "email")} />
               </section>
 
               <section className="block">
@@ -111,7 +122,7 @@ export function SignUpForm() {
                     togglePassword={() => setShowPassword((prev) => !prev)}
                   />
                 </div>
-                <ZodErrors error={formState?.zodErrors?.password ?? []} />
+                <ZodErrors error={authFieldError(validationErrors, formState?.zodErrors ?? {}, "password")} />
               </section>
 
               <section className="block">
@@ -135,7 +146,7 @@ export function SignUpForm() {
                     togglePassword={() => setShowPassword((prev) => !prev)}
                   />
                 </div>
-                <ZodErrors error={formState?.zodErrors?.repeatPassword ?? []} />
+                <ZodErrors error={authFieldError(validationErrors, formState?.zodErrors ?? {}, "repeatPassword")} />
               </section>
             </fieldset>
 
@@ -168,7 +179,8 @@ export function SignUpForm() {
           <CardFooter>
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"            >
+              className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
+            >
               Opprett konto
             </button>
           </CardFooter>

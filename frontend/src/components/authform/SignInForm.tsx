@@ -26,7 +26,7 @@ export function SignInForm() {
   };
 
   return (
-    <section className="auth-card-section w-full max-w-md">
+    <section className="auth-card-section flex items-center justify-center min-h-[calc(100vh-64px)] mt-16">
       <Card className="max-w-md mx-auto">
         <CardHeader>
           <section className="flex flex-col items-center gap-4">

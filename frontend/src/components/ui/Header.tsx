@@ -3,7 +3,7 @@ import { SiteLogo } from "./SiteLogo";
 
 export const Header = () => {
   return (
-    <header className="bg-white shadow">
+    <header className="fixed top-0 w-full z-50 bg-white shadow">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between h-16">
         {/* Logo */}
@@ -30,7 +30,7 @@ export const Header = () => {
         </nav>
         {/* Login Button */}
         <div>
-          <Link className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="/login">
+          <Link className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="/signin">
               Login
           </Link>
         </div>
