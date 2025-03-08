@@ -7,12 +7,12 @@ import { SiteLogo } from "@/components/ui/SiteLogo";
 import { register } from "@/lib/data/actions/auth-actions";
 import { useActionState } from "react";
 import { ZodErrors } from "@/components/ZodErrors";
-import { PasswordToggle } from "../ui/random/PasswordToggle";
+import { PasswordToggle } from "../ui/custom/PasswordToggle";
 import { useValidation } from "@/hooks/useSignUpValidation";
 import { authFieldError } from "@/lib/utils/authFieldError";
 
 
-const initialState: FormState = {
+const initialState: RegisterFormState = {
   zodErrors: null,
   strapiErrors: null,
   values: {},
@@ -28,7 +28,7 @@ export function SignUpForm() {
   });
   const { validationErrors, validateField } = useValidation();
 
-  const [formState, formAction] = useActionState<FormState, FormData>(register,initialState);
+  const [formState, formAction] = useActionState<RegisterFormState, FormData>(register,initialState);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

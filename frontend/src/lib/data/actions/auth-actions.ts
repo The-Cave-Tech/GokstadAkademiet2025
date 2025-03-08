@@ -1,21 +1,26 @@
 "use server";
 
-import { signUpSchema } from "@/lib/validation/authInput";
+import { signInSchema, signUpSchema } from "@/lib/validation/authInput";
 import { redirect } from "next/navigation";
-import { z } from "zod";
-
 /**
- * Registrerer en ny bruker basert på skjema-data.
- * @param prevState - Tidligere tilstand fra skjemaet
- * @param formData - Skjemadata sendt fra klienten
- * @returns FormState - Oppdatert tilstand med feil eller suksess
+ * Håndterer autentisering (registrering/innlogging) med validering og tilstandsoppdatering.
+ * @param schema - Zod skjema for validering
+ * @param prevState - Forrige tilstand av skjemaet
+ * @param formData - Skjemadata fra klienten
+ * @param redirectPath - URL til hvor brukeren skal sendes ved suksess
+ * @returns Oppdatert skjema-tilstand eller redirect ved suksess
  */
-export async function register(prevState: FormState, formData: FormData): Promise<FormState> {
+async function handleAuth<T extends typeof signUpSchema | typeof signInSchema>(
+  schema: T,
+  prevState: T extends typeof signUpSchema ? RegisterFormState : LoginFormState,
+  formData: FormData,
+  redirectPath: string
+): Promise<T extends typeof signUpSchema ? RegisterFormState : LoginFormState> {
   const fields = Object.fromEntries(formData.entries());
-  console.log("[Server] Register - Input data:", fields);
+  console.log("[Server] Auth - Input data:", fields);
 
-  const validation = signUpSchema.safeParse(fields);
-  console.log("[Server] Register - Validation result:", {
+  const validation = schema.safeParse(fields);
+  console.log("[Server] Auth - Validation result:", {
     success: validation.success,
     errors: validation.success ? null : validation.error.flatten().fieldErrors,
   });
@@ -26,34 +31,32 @@ export async function register(prevState: FormState, formData: FormData): Promis
         key,
         [errors[0]],
       ])
-    ) as Partial<Record<keyof z.infer<typeof signUpSchema>, string[]>>;
+    ) as ValidationErrors;
 
-    console.warn("[Server] Register - Validation failed:", firstErrors);
+    console.warn("[Server] Auth - Validation failed:", firstErrors);
 
     return {
       ...prevState,
       zodErrors: firstErrors,
       strapiErrors: null,
       values: fields,
-    };
+    } as T extends typeof signUpSchema ? RegisterFormState : LoginFormState;
   }
 
-  // TODO: Legg til faktisk API-kall registreringslogikk til Strapi
-  redirect("/signin");
+  // TODO: Legg til API-kall til Strapi for registrering/innlogging
+  redirect(redirectPath);
 }
 
+/**
+ * Registrerer en ny bruker.
+ */
+export async function register(prevState: RegisterFormState, formData: FormData): Promise<RegisterFormState> {
+  return handleAuth(signUpSchema, prevState, formData, "/signin");
+}
 
-
-
-  
-
-/* // SignIn event
-export async function login(formData: FormData) {
-    
-  }
-  
-  // SignOut event
-  export async function logout() {
-   
-  } */
-  
+/**
+ * Logger inn en bruker.
+ */
+export async function login(prevState: LoginFormState, formData: FormData): Promise<LoginFormState> {
+  return handleAuth(signInSchema, prevState, formData, "/dashboard");
+}
