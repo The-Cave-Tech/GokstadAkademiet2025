@@ -40,30 +40,30 @@ export default function Dashboard() {
 
   return (
     <section className="grid gap-5 my-10 justify-center items-center px-10">
-      <section className="max-w-4xl mx-auto px-4 py-8">
-        <div>
-          {/* Background Image */}
-          {profile.backgroundImage && (
+      <section className="w-full mx-auto px-4 py-8">
+        {/* Background Image Section */}
+        <div
+          className="relative w-full h-[50vh] sm:h-80 bg-cover bg-center mb-8"
+          style={{ backgroundImage: `url(${baseUrl}${profile.backgroundImage?.url})` }}
+        >
+          {/* Profile Picture Section */}
+          {profile.profilePicture && (
             <div
-              className="relative w-full h-48 bg-cover bg-center mb-8"
-              style={{ backgroundImage: `url(${baseUrl}${profile.backgroundImage?.url})` }}
+              className="ml-[2%] absolute left-[50%] transform -translate-x-[50%] sm:left-0 sm:translate-x-4 sm:bottom-0 sm:translate-y-1/2 w-32 h-32 rounded-full border-4 border-violet-400 bg-cover bg-center lg:rounded-full"
+              style={{
+                backgroundImage: `url(${baseUrl}${profile.profilePicture?.url})`,
+              }}
             />
           )}
         </div>
-        <div className="flex flex-col justify-center items-center gap-8">
+
+        {/* Text Content (Profile Name & Bio) */}
+        <div className="flex flex-col justify-center items-center gap-4 px-[20%]">
           <h1 className="text-5xl">{profile.profileName}</h1>
           <p className="text-center">{profile.bio}</p>
         </div>
-        {profile.profileImage && (
-          <div className="flex justify-center mb-8">
-            <img
-              className="rounded-full w-32 h-32 object-cover"
-              src={`${baseUrl}${profile.profileImage?.url}`}
-              alt="Profile picture"
-            />
-          </div>
-        )}
       </section>
+
       <div className="flex items-center">
         <div className="flex-grow border-t-4 border-green-400"></div>
         <span className="flex-shrink mx-4 text-red-900">Adminstration</span>

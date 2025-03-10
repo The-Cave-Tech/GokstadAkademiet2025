@@ -2,7 +2,7 @@ export interface UserProfile {
   id: number;
   profileName: string;
   bio?: string;
-  profileImage: {
+  profilePicture: {
     url: string;
   };
   backgroundImage: {
