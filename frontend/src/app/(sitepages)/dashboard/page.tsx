@@ -9,19 +9,34 @@ import Link from "next/link";
 export default function Dashboard() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [role, setRole] = useState(""); // Should be context with role from strapi
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL;
 
   useEffect(() => {
     // Call function to fetch user profile
     const fetchData = async () => {
       const profileData = await fetchUserProfile();
+      console.log(profileData);
       setProfile(profileData);
       setRole("admin"); // Will be used with context later
+      setIsLoading(false); // Stop loading once data is fetched
     };
-    console.log(profile);
     fetchData();
   }, []);
 
-  if (!profile) return <p>Loading.....</p>;
+  if (isLoading) {
+    return (
+      <div className="text-center m-9">
+        <p className="text-2xl">Loading....</p>
+      </div>
+    );
+  } else if (!profile) {
+    return (
+      <div className="text-center m-9">
+        <p>No profile found</p>
+      </div>
+    );
+  } // Handle missing profile case
 
   return (
     <section className="grid gap-5 my-10 justify-center items-center px-10">
@@ -30,8 +45,8 @@ export default function Dashboard() {
           {/* Background Image */}
           {profile.backgroundImage && (
             <div
-              className="absolute top-0 left-0 right-0 h-64 bg-cover bg-center opacity-50"
-              style={{ backgroundImage: `url(${profile.backgroundImage.url})` }}
+              className="relative w-full h-48 bg-cover bg-center mb-8"
+              style={{ backgroundImage: `url(${baseUrl}${profile.backgroundImage?.url})` }}
             />
           )}
         </div>
@@ -39,6 +54,15 @@ export default function Dashboard() {
           <h1 className="text-5xl">{profile.profileName}</h1>
           <p className="text-center">{profile.bio}</p>
         </div>
+        {profile.profileImage && (
+          <div className="flex justify-center mb-8">
+            <img
+              className="rounded-full w-32 h-32 object-cover"
+              src={`${baseUrl}${profile.profileImage?.url}`}
+              alt="Profile picture"
+            />
+          </div>
+        )}
       </section>
       <div className="flex items-center">
         <div className="flex-grow border-t-4 border-green-400"></div>
@@ -182,9 +206,7 @@ export default function Dashboard() {
         <section aria-label="Administer system">
           <div className="flex py-5 items-center md:min-w-[100vw]">
             <div className="flex-grow border-t-4 border-green-400"></div>
-            <span className="flex-shrink mx-4 text-red-900">
-              Only for admin
-            </span>
+            <span className="flex-shrink mx-4 text-red-900">Only for admin</span>
             <div className="flex-grow border-t-4 border-green-400"></div>
           </div>
           <article className="mx-auto p-4 grid justify-center">
