@@ -8,9 +8,10 @@ import { register } from "@/lib/data/actions/auth-actions";
 import { useActionState } from "react";
 import { ZodErrors } from "@/components/ZodErrors";
 import { PasswordToggle } from "../ui/custom/PasswordToggle";
-import { useValidation } from "@/hooks/useSignUpValidation";
 import { authFieldError } from "@/lib/utils/authFieldError";
-
+import { useSignUpValidation } from "@/hooks/useValidation";
+import { RegisterFormState, SignUpValidationErrorKeys } from "@/types/auth";
+import { SignUpFormData } from "@/lib/validation/authInput";
 
 const initialState: RegisterFormState = {
   zodErrors: null,
@@ -20,20 +21,20 @@ const initialState: RegisterFormState = {
 
 export function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const [formValues, setFormValues] = useState({
+  const [formValues, setFormValues] = useState<SignUpFormData>({
     username: "",
     email: "",
     password: "",
     repeatPassword: "",
   });
-  const { validationErrors, validateField } = useValidation();
+  const { validationErrors, validateField } = useSignUpValidation();
 
-  const [formState, formAction] = useActionState<RegisterFormState, FormData>(register,initialState);
+  const [formState, formAction] = useActionState(register, initialState);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormValues((prev) => ({ ...prev, [name]: value }));
-    validateField(name as ValidationErrorKeys, value);
+    validateField(name as SignUpValidationErrorKeys, value);
   };
 
   const inputClass = "w-full p-2 mt-1 border border-gray-300 rounded-md";
@@ -77,10 +78,13 @@ export function SignUpForm() {
                   placeholder="Skriv inn brukernavn"
                   required
                   autoComplete="username"
+                  aria-describedby="Skriv inn brukernavn"
                   value={formValues.username}
                   onChange={handleChange}
                 />
-                <ZodErrors error={authFieldError(validationErrors, formState?.zodErrors ?? {}, "username")} />
+                <ZodErrors
+                  error={authFieldError(validationErrors, formState.zodErrors ?? validationErrors, "username")}
+                />
               </section>
 
               <section className="block">
@@ -98,7 +102,9 @@ export function SignUpForm() {
                   value={formValues.email}
                   onChange={handleChange}
                 />
-               <ZodErrors error={authFieldError(validationErrors, formState?.zodErrors ?? {}, "email")} />
+                <ZodErrors
+                  error={authFieldError(validationErrors, formState.zodErrors ?? validationErrors, "email")}
+                />
               </section>
 
               <section className="block">
@@ -116,17 +122,21 @@ export function SignUpForm() {
                     autoComplete="new-password"
                     value={formValues.password}
                     onChange={handleChange}
+                    aria-describedby="ny passord"
                   />
                   <PasswordToggle
                     showPassword={showPassword}
                     togglePassword={() => setShowPassword((prev) => !prev)}
                   />
                 </div>
-                <ZodErrors error={authFieldError(validationErrors, formState?.zodErrors ?? {}, "password")} />
+                <ZodErrors
+                  error={authFieldError(validationErrors, formState.zodErrors ?? validationErrors, "password")}
+                />
               </section>
 
               <section className="block">
-                <label htmlFor="repeat_password" className={labelClass}>
+                <label htmlFor="repeat_password" 
+                className={labelClass}>
                   Gjenta passord
                 </label>
                 <div className="relative">
@@ -140,13 +150,16 @@ export function SignUpForm() {
                     autoComplete="new-password"
                     value={formValues.repeatPassword}
                     onChange={handleChange}
+                    aria-describedby="gjenta passord"
                   />
                   <PasswordToggle
                     showPassword={showPassword}
                     togglePassword={() => setShowPassword((prev) => !prev)}
                   />
                 </div>
-                <ZodErrors error={authFieldError(validationErrors, formState?.zodErrors ?? {}, "repeatPassword")} />
+                <ZodErrors
+                  error={authFieldError(validationErrors, formState.zodErrors ?? validationErrors, "repeatPassword")}
+                />
               </section>
             </fieldset>
 

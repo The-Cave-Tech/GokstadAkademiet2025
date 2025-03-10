@@ -1,10 +1,12 @@
+import { SignUpValidationErrors, SignInValidationErrors } from "@/types/auth";
+
 export function authFieldError(
-    validationErrors: Record<string, string[] | undefined>,
-    formStateErrors: Record<string, string[] | undefined>,
-    fieldName: string
-  ) {
-    return validationErrors[fieldName]?.length
-      ? validationErrors[fieldName]
-      : formStateErrors[fieldName] ?? [];
-  }
+  validationErrors: SignUpValidationErrors | SignInValidationErrors,
+  formStateErrors: SignUpValidationErrors | SignInValidationErrors,
+  fieldName: keyof SignUpValidationErrors | keyof SignInValidationErrors
+): string[] {
+  return validationErrors[fieldName as keyof typeof validationErrors].length > 0
+    ? validationErrors[fieldName as keyof typeof validationErrors]
+    : formStateErrors[fieldName as keyof typeof formStateErrors];
+}
   

@@ -1,29 +1,50 @@
 "use client";
-// Stylingen må jobbes på mer
-// Validering fikser jeg senere med zod eller yup
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
 import { SiteLogo } from "@/components/ui/SiteLogo";
+import { useSignInValidation } from "@/hooks/useValidation";
+import { login } from "@/lib/data/actions/auth-actions";
+import { LoginFormState, SignInValidationErrorKeys } from "@/types/auth";
+import { SignInFormData } from "@/lib/validation/authInput";
+import { authFieldError } from "@/lib/utils/authFieldError";
+import { ZodErrors } from "../ZodErrors";
+import { PasswordToggle } from "../ui/custom/PasswordToggle";
+
+const initialState: LoginFormState = {
+  zodErrors: null,
+  strapiErrors: null,
+  values: {},
+};
 
 export function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [formValues, setFormValues] = useState<SignInFormData>({
+    identifier: "",
+    password: "",
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.includes("@")) {
-      setErrorMessage("Ugyldig e-postadresse.");
-      return;
+  const { validationErrors, validateField } = useSignInValidation();
+  const [formState, formAction] = useActionState(login, initialState);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, checked } = e.target;
+    if (name === "remember") {
+      setRememberMe(checked); // Use checked for checkbox instead of value
+      console.log("Remember me changed to:", checked); // Debug log
+    } else {
+      setFormValues((prev) => ({ ...prev, [name]: value }));
+      validateField(name as SignInValidationErrorKeys, value);
     }
-    setErrorMessage("");
-    console.log("Submitted:", { email, password });
   };
+
+  const inputClass = "w-full p-2 mt-1 border border-gray-300 rounded-md";
+  const labelClass = "text-base font-roboto font-normal text-gray-700";
+  console.log("Form State:", formState);
+  console.log("Validation Errors:", validationErrors);
 
   return (
     <section className="auth-card-section flex items-center justify-center min-h-[calc(100vh-64px)] mt-16">
@@ -36,90 +57,75 @@ export function SignInForm() {
         </CardHeader>
 
         <CardBody>
-          <form onSubmit={handleSubmit}>
+          <form action={formAction}>
             <fieldset className="space-y-4">
               <legend className="sr-only">Påloggingsdetaljer</legend>
 
               <section className="block">
-                <label
-                  htmlFor="email"
-                  className="text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="identifier" className={labelClass}>
                   E-post eller brukernavn
                 </label>
                 <input
-                  type="email"
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full p-2 mt-1 border border-gray-300 rounded-md"
+                  type="text"
+                  id="identifier"
+                  name="identifier"
+                  value={formValues.identifier}
+                  onChange={handleChange}
+                  className={inputClass}
                   placeholder="Skriv inn e-post eller brukernavn"
                   required
-                  autoComplete="email"
-                  aria-describedby="email-desc"
+                  autoComplete="email eller brukernavn"
+                  aria-describedby="Skriv inn brukernavn eller passord"
                 />
-                <small id="email-desc" className="text-red-500">
-                  Bruk en gyldig e-postadresse.
-                </small>{" "}
-                {/* bare for visualisering */}
+                <ZodErrors
+                  error={authFieldError(validationErrors, formState.zodErrors ?? validationErrors, "identifier")}
+                />
               </section>
 
               <section className="block">
-                <label
-                  htmlFor="password"
-                  className="text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="password" className={labelClass}>
                   Passord
                 </label>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
                     id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full p-2 mt-1 border border-gray-300 rounded-md"
+                    name="password"
+                    value={formValues.password}
+                    onChange={handleChange}
+                    className={inputClass}
                     placeholder="Skriv inn passord"
                     required
                     autoComplete="current-password"
-                    aria-describedby="password-desc"
+                    aria-describedby="passord"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500"
-                    aria-label="Veksle synlighet av passord"
-                    aria-pressed={showPassword}
-                    title="Veksle synlighet av passord"
-                  >
-                    {showPassword ? (
-                      <FaEyeSlash className="text-xl" />
-                    ) : (
-                      <FaEye className="text-xl" />
-                    )}
-                  </button>
+                  <PasswordToggle
+                    showPassword={showPassword}
+                    togglePassword={() => setShowPassword((prev) => !prev)}
+                  />
                 </div>
-                <small id="password-desc" className="text-red-500">
-                  Passord må være minst 8 tegn langt.
-                </small>{" "}
-                {/* bare eksempel */}
+                <ZodErrors
+                  error={authFieldError(validationErrors, formState.zodErrors ?? validationErrors, "password")}
+                />
               </section>
             </fieldset>
 
             <div className="flex justify-between items-center my-4">
               <section className="flex items-center text-sm text-gray-700">
-                <input type="checkbox" id="remember" className="mr-2" />
+                <input
+                  type="checkbox"
+                  id="remember"
+                  name="remember"
+                  checked={rememberMe}
+                  onChange={handleChange}
+                  className="mr-2"
+                />
                 <label htmlFor="remember">Husk meg</label>
               </section>
               <a href="#" className="text-sm text-blue-500 hover:underline">
                 Glemt passord?
               </a>
             </div>
-
-            {errorMessage && (
-              <p className="text-red-500 mt-2" role="alert" aria-live="polite">
-                {errorMessage}
-              </p>
-            )}
 
             <button
               type="submit"
@@ -172,4 +178,4 @@ export function SignInForm() {
       </Card>
     </section>
   );
-}
+} 
