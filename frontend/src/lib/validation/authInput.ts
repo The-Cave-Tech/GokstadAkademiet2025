@@ -8,11 +8,11 @@ const usernameValidation = z
   .min(6, { message: "Brukernavn må være minst 6 tegn" })
   .max(20, { message: "Brukernavn må være maks 20 tegn" })
   .regex(/[0-9]/, { message: "Brukernavn må inneholde minst ett tall" })
-  .regex(usernameRegex, { 
-    message: "Brukernavn kan kun inneholde bokstaver, tall, bindestrek og understrek" 
+  .regex(usernameRegex, {
+    message: "Brukernavn kan kun inneholde bokstaver, tall, bindestrek og understrek",
   })
   .trim()
-  .transform(val => val.toLowerCase());
+  .transform((val) => val.toLowerCase());
 
 const passwordValidation = z
   .string()
@@ -20,8 +20,8 @@ const passwordValidation = z
   .max(100, { message: "Passord må være maks 100 tegn" })
   .regex(/[A-Z]/, { message: "Passord må inneholde minst én stor bokstav" })
   .regex(/[0-9]/, { message: "Passord må inneholde minst ett tall" })
-  .regex(/[!@#$%^&*(),.?":{}|<>]/, { 
-    message: "Passord må inneholde minst ett spesialtegn, bokstav og tall" 
+  .regex(/[!@#$%^&*(),.?":{}|<>]/, {
+    message: "Passord må inneholde minst ett spesialtegn",
   })
   .trim();
 
@@ -30,9 +30,16 @@ const emailValidation = z
   .email({ message: "Gyldig e-postadresse: ola@nordman.no" })
   .max(100, { message: "E-post må være maks 100 tegn" })
   .trim()
-  .transform(val => val.toLowerCase());
+  .transform((val) => val.toLowerCase());
 
 const repeatPasswordValidation = z.string().trim();
+
+export type SignUpFormData = {
+  username: string;
+  email: string;
+  password: string;
+  repeatPassword: string;
+};
 
 export const signUpSchema = z
   .object({
@@ -50,6 +57,12 @@ export const signUpSchema = z
       });
     }
   });
+
+export type SignInFormData = {
+  identifier: string;
+  password: string;
+  rememberMe?: boolean;
+};
 
 export const signInSchema = z.object({
   identifier: z
