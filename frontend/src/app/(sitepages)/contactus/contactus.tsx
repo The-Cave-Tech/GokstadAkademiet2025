@@ -19,10 +19,11 @@ const KontaktOss = () => {
       try {
         const data = await getStrapiData("/api/contact-info");
         console.log("Fetched contact info:", data);
+
         setContactInfo({
-          adresse: data?.data?.adresse || "Ikke tilgjengelig",
-          telefon: data?.data?.telefon || "Ikke tilgjengelig",
-          epost: data?.data?.epost || "Ikke tilgjengelig",
+          adresse: data?.data?.Address || "Ikke tilgjengelig",
+          telefon: data?.data?.Phone || "Ikke tilgjengelig",
+          epost: data?.data?.Email || "Ikke tilgjengelig",
         });
       } catch (error) {
         console.error("Failed to fetch contact info", error);
