@@ -7,20 +7,41 @@ interface DashboardMenuProps {
 }
 
 const menuItems: MenuItem[] = [
-  { href: "/dashboard/user/personalInfo", title: "My Personal Info", desc: "All my personal info" },
-  { href: "/dashboard/user/myEvents", title: "My Events", desc: "We are gonna have a blast" },
+  {
+    href: "/dashboard/user/personalInfo",
+    title: "My Personal Info",
+    desc: "All my personal info",
+  },
+  {
+    href: "/dashboard/user/myEvents",
+    title: "My Events",
+    desc: "We are gonna have a blast",
+  },
   { href: "/dashboard/user/myPosts", title: "My Posts", desc: "All my posts" },
+  {
+    href: "/dashboard/user/myEvents",
+    title: "My Events",
+    desc: "We are gonna have a blast",
+  },
 ];
 
 const adminItems: MenuItem[] = [
-  { href: "/dashboard/admin/users", title: "Every registered user", desc: "Check all users on your system" },
-  { href: "/dashboard/admin/posts", title: "Every user's posts", desc: "Check everything that has been posted" },
+  {
+    href: "/dashboard/admin/users",
+    title: "Every registered user",
+    desc: "Check all users on your system",
+  },
+  {
+    href: "/dashboard/admin/posts",
+    title: "Every user's posts",
+    desc: "Check everything that has been posted",
+  },
 ];
 
 export default function DashboardMenu({ role }: DashboardMenuProps) {
   return (
-    <section className="mx-auto p-4 w-full">
-      <div className="flex items-center pb-5">
+    <section className="mx-auto p-4 w-screen flex flex-col items-center gap-5">
+      <div className="flex items-center w-screen pb-5">
         <div className="flex-grow border-t-4 border-green-400"></div>
         <span className="flex-shrink mx-4 text-red-900">Adminstration</span>
         <div className="flex-grow border-t-4 border-green-400"></div>
@@ -29,7 +50,7 @@ export default function DashboardMenu({ role }: DashboardMenuProps) {
         {menuItems.map((item) => (
           <Link key={item.href} href={item.href}>
             <AuthCard
-              className="relative flex flex-col bg-cyan-200 shadow-lg shadow-cyan-500/50 p-4"
+              className="relative flex flex-col bg-cyan-200 shadow-lg shadow-cyan-500/50 p-4 max-w-[350px]"
               header={<h1 className="text-left">{item.title}</h1>}
               content={<p className="text-left">{item.desc}</p>}
               footer={
@@ -44,9 +65,11 @@ export default function DashboardMenu({ role }: DashboardMenuProps) {
 
       {role === "admin" && (
         <section>
-          <div className="flex py-5 items-center">
+          <div className="flex py-5 items-center w-screen">
             <div className="flex-grow border-t-4 border-green-400"></div>
-            <span className="flex-shrink mx-4 text-red-900">Only for admin</span>
+            <span className="flex-shrink mx-4 text-red-900">
+              Only for admin
+            </span>
             <div className="flex-grow border-t-4 border-green-400"></div>
           </div>
           <article className="mx-auto p-4 grid justify-center">
