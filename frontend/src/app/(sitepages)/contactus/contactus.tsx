@@ -45,7 +45,29 @@ const KontaktOss = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form Data:", formData);
+
+    const { navn, telefon, epost, melding } = formData;
+
+    // Konstruer mailto-link
+    const mailtoLink = `mailto:aslan.khatuev@outlook.com?subject=Ny melding fra kontaktskjema&body=
+    Navn: ${encodeURIComponent(navn)}
+    %0D%0A
+    Telefon: ${encodeURIComponent(telefon)}
+    %0D%0A
+    E-post: ${encodeURIComponent(epost)}
+    %0D%0A
+    Melding: ${encodeURIComponent(melding)}`;
+
+    // Åpner brukerens e-postklient
+    window.location.href = mailtoLink;
+
+    // Tilbakestill skjemaet
+    setFormData({
+      navn: "",
+      telefon: "",
+      epost: "",
+      melding: "",
+    });
   };
 
   return (
