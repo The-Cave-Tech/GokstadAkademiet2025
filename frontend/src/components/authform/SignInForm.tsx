@@ -7,7 +7,7 @@ import Link from "next/link";
 import { SiteLogo } from "@/components/ui/SiteLogo";
 import { useSignInValidation } from "@/hooks/useValidation";
 import { login } from "@/lib/data/actions/auth-actions";
-import { LoginFormState, SignInValidationErrorKeys } from "@/types/auth";
+import { LoginFormState, SignInValidationErrorKeys } from "@/types/auth.types";
 import { SignInFormData } from "@/lib/validation/authInput";
 import { authFieldError } from "@/lib/utils/authFieldError";
 import { ZodErrors } from "../ZodErrors";
@@ -73,9 +73,9 @@ export function SignInForm() {
                   onChange={handleChange}
                   className={inputClass}
                   placeholder="Skriv inn e-post eller brukernavn"
-                  required
+                  
                   autoComplete="email eller brukernavn"
-                  aria-describedby="Skriv inn brukernavn eller passord"
+                  aria-describedby="Skriv inn brukernavn eller epost"
                 />
                 <ZodErrors
                   error={authFieldError(validationErrors, formState.zodErrors ?? validationErrors, "identifier")}
@@ -95,7 +95,7 @@ export function SignInForm() {
                     onChange={handleChange}
                     className={inputClass}
                     placeholder="Skriv inn passord"
-                    required
+                    
                     autoComplete="current-password"
                     aria-describedby="passord"
                   />

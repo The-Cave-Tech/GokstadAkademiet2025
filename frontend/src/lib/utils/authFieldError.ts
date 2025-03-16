@@ -1,4 +1,4 @@
-import { SignUpValidationErrors, SignInValidationErrors } from "@/types/auth";
+import { SignUpValidationErrors, SignInValidationErrors } from "@/types/auth.types";
 
 export function authFieldError(
   validationErrors: SignUpValidationErrors | SignInValidationErrors,
