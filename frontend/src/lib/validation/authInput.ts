@@ -1,39 +1,64 @@
 import { z } from "zod";
 
 const usernameRegex = /^[a-zA-Z0-9_-]+$/;
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const dangerousCharsRegex = /[<>"'%;()&+`|/\\[\]=]/;
 
 const usernameValidation = z
   .string()
+  .trim() 
   .min(6, { message: "Brukernavn må være minst 6 tegn" })
   .max(20, { message: "Brukernavn må være maks 20 tegn" })
   .regex(/[0-9]/, { message: "Brukernavn må inneholde minst ett tall" })
   .regex(usernameRegex, {
     message: "Brukernavn kan kun inneholde bokstaver, tall, bindestrek og understrek",
   })
-  .trim()
-  .transform((val) => val.toLowerCase());
+  .refine((val) => !dangerousCharsRegex.test(val), {
+    message: "Brukernavn inneholder forbudte tegn",
+  })
+  .transform((val) =>
+    val
+      .toLowerCase()
+      .replace(dangerousCharsRegex, "") 
+  );
 
 const passwordValidation = z
   .string()
+  .trim()
   .min(8, { message: "Passord må være minst 8 tegn" })
   .max(100, { message: "Passord må være maks 100 tegn" })
   .regex(/[A-Z]/, { message: "Passord må inneholde minst én stor bokstav" })
+  .regex(/[a-z]/, { message: "Passord må inneholde minst én liten bokstav" })
   .regex(/[0-9]/, { message: "Passord må inneholde minst ett tall" })
   .regex(/[!@#$%^&*(),.?":{}|<>]/, {
     message: "Passord må inneholde minst ett spesialtegn",
   })
-  .trim();
+  .refine((val) => !dangerousCharsRegex.test(val), {
+    message: "Passord inneholder forbudte tegn",
+  })
+  .refine((val) => !val.includes(" "), {
+    message: "Passord kan ikke inneholde mellomrom",
+  });
 
 const emailValidation = z
   .string()
-  .email({ message: "Gyldig e-postadresse: ola@nordman.no" })
-  .max(100, { message: "E-post må være maks 100 tegn" })
   .trim()
-  .transform((val) => val.toLowerCase());
+  .email({ message: "Ugyldig e-postadresse, f.eks. ola@nordmann.no" })
+  .max(100, { message: "E-post må være maks 100 tegn" })
+  .refine((val) => !dangerousCharsRegex.test(val), {
+    message: "E-post inneholder forbudte tegn",
+  })
+  .transform((val) =>
+    val
+      .toLowerCase()
+      .replace(dangerousCharsRegex, "") 
+  );
 
-const repeatPasswordValidation = z.string().trim();
+const repeatPasswordValidation = z
+  .string()
+  .trim()
+  .min(1, { message: "Bekreft passordet ditt" });
 
+// Registreringsskjema
 export type SignUpFormData = {
   username: string;
   email: string;
@@ -58,6 +83,7 @@ export const signUpSchema = z
     }
   });
 
+// Påloggingsskjema
 export type SignInFormData = {
   identifier: string;
   password: string;
@@ -67,15 +93,24 @@ export type SignInFormData = {
 export const signInSchema = z.object({
   identifier: z
     .string()
-    .min(3, { message: "Skriv inn minst 3 tegn" })
-    .max(100, { message: "Maks 100 tegn" })
     .trim()
-    .refine((val) => emailRegex.test(val) || usernameRegex.test(val), {
-      message: "Må være en gyldig e-post eller brukernavn",
+    .min(1, { message: "Fyll inn brukernavn eller e-post" })
+    .max(100, { message: "Maks 100 tegn" })
+    .refine((val) => !dangerousCharsRegex.test(val), {
+      message: "Identifikator inneholder forbudte tegn",
+    })
+    .transform((val) =>
+      val
+        .toLowerCase()
+        .replace(dangerousCharsRegex, "") 
+    ),
+  password: z
+    .string()
+    .trim()
+    .min(1, { message: "Fyll inn passord" })
+    .max(100, { message: "Maks 100 tegn" })
+    .refine((val) => !dangerousCharsRegex.test(val), {
+      message: "Passord inneholder forbudte tegn",
     }),
-  password: passwordValidation,
   rememberMe: z.boolean().optional(),
 });
-
-
-
