@@ -51,6 +51,21 @@ export default function Footer() {
             </li>
           ))}
         </ul>
+        
+        <ul className="flex gap-4 mt-6 md:mt-0">
+          <li>
+            <Link href="/shop">Nettbutikk</Link>
+          </li>
+          <li>
+            <Link href="/blog">Blogg</Link>
+          </li>
+          <li>
+            <Link href="/about-us">Om oss</Link>
+          </li>
+          <li>
+            <Link href="/contact-us">Kontakt oss</Link>
+          </li>
+        </ul>
       </div>
 
       <p className="text-center mt-4 text-sm">
