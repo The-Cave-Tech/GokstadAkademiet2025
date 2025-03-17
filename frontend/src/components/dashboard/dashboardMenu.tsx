@@ -23,6 +23,11 @@ const menuItems: MenuItem[] = [
     title: "My reservations",
     desc: "We are gonna have a blast",
   },
+  {
+    href: "/dashboard/user/payments",
+    title: "View my payment history",
+    desc: "We are gonna have a blast",
+  },
 ];
 
 const adminItems: MenuItem[] = [
