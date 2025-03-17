@@ -19,8 +19,8 @@ const menuItems: MenuItem[] = [
   },
   { href: "/dashboard/user/myPosts", title: "My Posts", desc: "All my posts" },
   {
-    href: "/dashboard/user/myEvents",
-    title: "My Events",
+    href: "/dashboard/user/reservations",
+    title: "My reservations",
     desc: "We are gonna have a blast",
   },
 ];
