@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getStrapiData } from "@/data/services/strapiApiData";
+import { validateField, validateForm } from "@/lib/utils/validateForm"; // ✅ Import validering
 
 const KontaktOss = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +9,12 @@ const KontaktOss = () => {
     epost: "",
     melding: "",
   });
+
+  const [errors, setErrors] = useState({
+    telefon: "",
+    epost: "",
+  });
+
   const [contactInfo, setContactInfo] = useState({
     adresse: "Laster...",
     telefon: "Laster...",
@@ -18,8 +25,6 @@ const KontaktOss = () => {
     async function fetchContactInfo() {
       try {
         const data = await getStrapiData("/api/contact-info");
-        console.log("Fetched contact info:", data);
-
         setContactInfo({
           adresse: data?.data?.Address || "Ikke tilgjengelig",
           telefon: data?.data?.Phone || "Ikke tilgjengelig",
@@ -32,23 +37,28 @@ const KontaktOss = () => {
     fetchContactInfo();
   }, []);
 
-  useEffect(() => {
-    console.log("Oppdatert contactInfo:", contactInfo);
-  }, [contactInfo]);
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // ✅ Kjør validering fra validateForm.ts
+    setErrors((prev) => ({ ...prev, [name]: validateField(name, value) }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const newErrors = validateForm(formData); // ✅ Kjør validering
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).some((err) => err !== "")) {
+      return; // Stopper hvis det er feil
+    }
+
     const { navn, telefon, epost, melding } = formData;
 
-    // Konstruer mailto-link
     const mailtoLink = `mailto:aslan.khatuev@outlook.com?subject=Ny melding fra kontaktskjema&body=
     Navn: ${encodeURIComponent(navn)}
     %0D%0A
@@ -58,46 +68,50 @@ const KontaktOss = () => {
     %0D%0A
     Melding: ${encodeURIComponent(melding)}`;
 
-    // Åpner brukerens e-postklient
     window.location.href = mailtoLink;
 
-    // Tilbakestill skjemaet
     setFormData({
       navn: "",
       telefon: "",
       epost: "",
       melding: "",
     });
+
+    setErrors({
+      telefon: "",
+      epost: "",
+    });
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 md:p-8 lg:p-16 bg-gray-100 min-h-screen">
-      <div className="flex flex-col md:flex-row items-start w-full max-w-4xl gap-8">
-        <div className="w-full md:w-1/2 bg-white p-8 rounded-lg shadow-md h-full">
-          <h2 className="text-2xl mb-4 font-semibold text-blue-600">
+    <div className="flex flex-col items-center justify-center p-8 md:p-12 lg:p-20 bg-gray-100 min-h-screen">
+      <div className="flex flex-col lg:flex-row items-start w-full max-w-5xl gap-12">
+        <div className="w-full lg:w-1/2 bg-white p-10 rounded-lg shadow-lg">
+          <h2 className="text-3xl mb-6 font-bold text-blue-700">
             Kontaktinformasjon
           </h2>
-          <p className="mb-4">
+          <p className="mb-5 text-lg">
             <strong>Adresse:</strong> {contactInfo.adresse}
           </p>
-          <p className="mb-4">
+          <p className="mb-5 text-lg">
             <strong>Telefon:</strong> {contactInfo.telefon}
           </p>
-          <p className="mb-4">
+          <p className="mb-5 text-lg">
             <strong>E-post:</strong> {contactInfo.epost}
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="w-full md:w-1/2 bg-white p-8 rounded-lg shadow-md h-full"
+          className="w-full lg:w-1/2 bg-white p-10 rounded-lg shadow-lg"
         >
-          <h2 className="text-2xl mb-6 font-semibold text-blue-600">
+          <h2 className="text-3xl mb-8 font-bold text-blue-700">
             Kontaktskjema
           </h2>
-          <div className="flex flex-col md:flex-row gap-4 mb-4">
+
+          <div className="flex flex-col md:flex-row gap-6 mb-6">
             <div className="flex-1">
-              <label htmlFor="navn" className="block mb-1">
+              <label htmlFor="navn" className="block mb-2 text-lg">
                 Navn
               </label>
               <input
@@ -106,14 +120,14 @@ const KontaktOss = () => {
                 name="navn"
                 value={formData.navn}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded"
+                className="w-full border border-gray-300 p-3 rounded-lg text-lg"
                 required
               />
             </div>
 
             <div className="flex-1">
-              <label htmlFor="telefon" className="block mb-1">
-                Telefonnummer
+              <label htmlFor="telefon" className="block mb-2 text-lg">
+                Telefon
               </label>
               <input
                 type="tel"
@@ -121,14 +135,17 @@ const KontaktOss = () => {
                 name="telefon"
                 value={formData.telefon}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded"
+                className="w-full border border-gray-300 p-3 rounded-lg text-lg"
                 required
               />
+              {errors.telefon && (
+                <p className="text-red-500 text-sm">{errors.telefon}</p>
+              )}
             </div>
           </div>
 
-          <div className="mb-4">
-            <label htmlFor="epost" className="block mb-1">
+          <div className="mb-6">
+            <label htmlFor="epost" className="block mb-2 text-lg">
               E-post
             </label>
             <input
@@ -137,13 +154,16 @@ const KontaktOss = () => {
               name="epost"
               value={formData.epost}
               onChange={handleChange}
-              className="w-full border border-gray-300 p-2 rounded"
+              className="w-full border border-gray-300 p-3 rounded-lg text-lg"
               required
             />
+            {errors.epost && (
+              <p className="text-red-500 text-sm">{errors.epost}</p>
+            )}
           </div>
 
-          <div className="mb-4">
-            <label htmlFor="melding" className="block mb-1">
+          <div className="mb-6">
+            <label htmlFor="melding" className="block mb-2 text-lg">
               Melding
             </label>
             <textarea
@@ -151,14 +171,14 @@ const KontaktOss = () => {
               name="melding"
               value={formData.melding}
               onChange={handleChange}
-              className="w-full border border-gray-300 p-2 rounded h-32"
+              className="w-full border border-gray-300 p-3 rounded-lg text-lg h-40"
               required
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
+            className="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition"
           >
             Send Melding
           </button>
