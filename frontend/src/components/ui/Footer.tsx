@@ -51,7 +51,7 @@ export default function Footer() {
             </li>
           ))}
         </ul>
-        
+
         <ul className="flex gap-4 mt-6 md:mt-0">
           <li>
             <Link href="/shop">Nettbutikk</Link>
