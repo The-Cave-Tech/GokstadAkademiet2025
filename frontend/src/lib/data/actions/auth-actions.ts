@@ -8,7 +8,7 @@ import {
   SignUpValidationErrors,
   SignInValidationErrors,
 } from "@/types/auth.types";
-import { registerUserService} from "@/lib/data/services/userAuth";
+import { loginUserService, registerUserService} from "@/lib/data/services/userAuth";
 
 /**
  * Registrerer en ny bruker.
@@ -114,9 +114,38 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
   }
 
   try {
+    const { identifier, password } = fields;
+    const rememberMe = fields.remember === "on";
+    console.log(rememberMe + "Husk meg skal implementeres senere");
+    
+
+    const response = await loginUserService({ identifier, password });
+    console.log("[Server] Login - Success:", response);
+    
+    // husk meg funksjonalitet skal ha egen fil som blir imortert her
+  
+    
+    // Jwt og cockie håndtering skal implementeres senere
+    // Dette er en forenklet implementasjon for å teste. 
+    if (typeof window !== "undefined") {
+      localStorage.setItem("token", response.jwt);
+      localStorage.setItem("user", JSON.stringify(response.user));
+    }
+    
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Ukjent feil oppstod";
     console.error("[Server] Login - Error:", error);
+    
+    // Håndtere spesifikke feilmeldinger fra Strapi
+    if (errorMessage.includes("Invalid identifier or password")) {
+      return {
+        ...prevState,
+        zodErrors: null,
+        strapiErrors: { message: "Ugyldig brukernavn/e-post eller passord" },
+        values: fields,
+      };
+    }
+    
     return {
       ...prevState,
       zodErrors: null,

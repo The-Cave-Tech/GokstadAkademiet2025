@@ -31,20 +31,22 @@ export function SignInForm() {
   const [formState, formAction] = useActionState(login, initialState);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, checked } = e.target;
-    if (name === "remember") {
-      setRememberMe(checked); // Use checked for checkbox instead of value
-      console.log("Remember me changed to:", checked); // Debug log
+    const { name, value, checked, type } = e.target;
+    
+    if (type === "checkbox") {
+      setRememberMe(checked);
     } else {
-      setFormValues((prev) => ({ ...prev, [name]: value }));
+      const newValues = { ...formValues, [name]: value };
+      setFormValues(newValues);
       validateField(name as SignInValidationErrorKeys, value);
     }
   };
 
   const inputClass = "w-full p-2 mt-1 border border-gray-300 rounded-md";
   const labelClass = "text-base font-roboto font-normal text-gray-700";
-  console.log("Form State:", formState);
-  console.log("Validation Errors:", validationErrors);
+
+  // Vis eventuelle Strapi-feil
+  const strapiError = formState.strapiErrors?.message;
 
   return (
     <section className="auth-card-section flex items-center justify-center min-h-[calc(100vh-64px)] mt-16">
@@ -58,6 +60,12 @@ export function SignInForm() {
 
         <CardBody>
           <form action={formAction}>
+            {strapiError && (
+              <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
+                {strapiError}
+              </div>
+            )}
+            
             <fieldset className="space-y-4">
               <legend className="sr-only">Påloggingsdetaljer</legend>
 
@@ -73,8 +81,7 @@ export function SignInForm() {
                   onChange={handleChange}
                   className={inputClass}
                   placeholder="Skriv inn e-post eller brukernavn"
-                  
-                  autoComplete="email eller brukernavn"
+                  autoComplete="email username"
                   aria-describedby="Skriv inn brukernavn eller epost"
                 />
                 <ZodErrors
@@ -95,7 +102,6 @@ export function SignInForm() {
                     onChange={handleChange}
                     className={inputClass}
                     placeholder="Skriv inn passord"
-                    
                     autoComplete="current-password"
                     aria-describedby="passord"
                   />
@@ -178,4 +184,4 @@ export function SignInForm() {
       </Card>
     </section>
   );
-} 
+}

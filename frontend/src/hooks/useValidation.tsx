@@ -37,21 +37,33 @@ export function useSignInValidation() {
     password: [],
   });
 
-  const validateField = (name: SignInValidationErrorKeys, value: string, formValues: Record<string, string>) => {
+  const validateField = (name: SignInValidationErrorKeys, value: string) => {
+    // Oppretter en objekt med alle verdier for validering
+    const formValues: Record<string, string> = { identifier: "", password: "" };
+    formValues[name] = value;
+    
     // Hvis feltet er tomt, fjern feilmeldingen
     if (!value) {
       setValidationErrors((prev) => ({ ...prev, [name]: [] }));
       return;
     }
 
-    const validation = signInSchema.safeParse({ ...formValues, [name]: value });
+    const validation = signInSchema.safeParse(formValues);
 
-    setValidationErrors((prev) => ({
-      ...prev,
-      [name]: validation.success
-        ? []
-        : validation.error.flatten().fieldErrors[name]?.slice(0, 1) ?? [],
-    }));
+    // Hvis validering feiler, legg til feilmelding
+    if (!validation.success) {
+      const fieldError = validation.error.flatten().fieldErrors[name]?.slice(0, 1) ?? [];
+      setValidationErrors((prev) => ({
+        ...prev,
+        [name]: fieldError,
+      }));
+    } else {
+      // Hvis validering er vellykket, fjern feilmelding
+      setValidationErrors((prev) => ({
+        ...prev,
+        [name]: [],
+      }));
+    }
   };
 
   return { validationErrors, validateField };
