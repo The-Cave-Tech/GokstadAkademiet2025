@@ -8,7 +8,7 @@ import { SiteLogo } from "@/components/ui/SiteLogo";
 import { useSignInValidation } from "@/hooks/useValidation";
 import { login } from "@/lib/data/actions/auth-actions";
 import { LoginFormState, SignInValidationErrorKeys } from "@/types/auth.types";
-import { SignInFormData } from "@/lib/validation/authInput";
+import { SignInFormData } from "@/lib/validation/validationSchemas";
 import { authFieldError } from "@/lib/utils/authFieldError";
 import { ZodErrors } from "../ZodErrors";
 import { PasswordToggle } from "../ui/custom/PasswordToggle";
@@ -45,9 +45,6 @@ export function SignInForm() {
   const inputClass = "w-full p-2 mt-1 border border-gray-300 rounded-md";
   const labelClass = "text-base font-roboto font-normal text-gray-700";
 
-  // Vis eventuelle Strapi-feil
-  const strapiError = formState.strapiErrors?.message;
-
   return (
     <section className="auth-card-section flex items-center justify-center min-h-[calc(100vh-64px)] mt-16">
       <Card className="max-w-md mx-auto">
@@ -60,10 +57,10 @@ export function SignInForm() {
 
         <CardBody>
           <form action={formAction}>
-            {strapiError && (
-              <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
-                {strapiError}
-              </div>
+            {formState.strapiErrors?.message && (
+              <p className="text-red-500 text-center text-xs sm:text-sm font-medium animate-fade-in">
+                {formState.strapiErrors?.message}
+              </p>
             )}
             
             <fieldset className="space-y-4">
