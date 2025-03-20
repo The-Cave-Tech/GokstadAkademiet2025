@@ -11,7 +11,7 @@ import { PasswordToggle } from "@/components/ui/custom/PasswordToggle";
 import { authFieldError } from "@/lib/utils/authFieldError";
 import { useSignUpValidation } from "@/hooks/useValidation";
 import { RegisterFormState, SignUpValidationErrorKeys } from "@/types/auth.types";
-import { SignUpFormData } from "@/lib/validation/authInput";
+import { SignUpFormData } from "@/lib/validation/validationSchemas";
 
 const initialState: RegisterFormState = {
   zodErrors: null,
@@ -76,6 +76,7 @@ export function SignUpForm() {
     if (clientError || (isSubmitted && serverError)) return "border-red-500 focus:ring-red-200"; 
     return "border-gray-300 focus:ring-black"; 
   };
+
 
   const showAsterisk = (field: SignUpValidationErrorKeys) => {
     if (!isSubmitted) {

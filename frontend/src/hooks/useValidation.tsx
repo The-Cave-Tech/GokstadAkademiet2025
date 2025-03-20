@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { signInSchema, signUpSchema } from "@/lib/validation/authInput";
+import { signInSchema, signUpSchema } from "@/lib/validation/validationSchemas";
 import { SignUpValidationErrors, SignInValidationErrors, SignUpValidationErrorKeys, SignInValidationErrorKeys } from "@/types/auth.types";
 
 export function useSignUpValidation() {
@@ -11,13 +11,11 @@ export function useSignUpValidation() {
   });
 
   const validateField = (name: SignUpValidationErrorKeys, value: string, formValues: Record<string, string>) => {
-    // Hvis feltet er tomt, fjern feilmeldingen med mindre skjemaet er sendt
     if (!value) {
       setValidationErrors((prev) => ({ ...prev, [name]: [] }));
       return;
     }
 
-    // Valider hele skjemaet for å håndtere avhengigheter (f.eks. password vs repeatPassword)
     const validation = signUpSchema.safeParse({ ...formValues, [name]: value });
 
     setValidationErrors((prev) => ({
@@ -38,11 +36,9 @@ export function useSignInValidation() {
   });
 
   const validateField = (name: SignInValidationErrorKeys, value: string) => {
-    // Oppretter en objekt med alle verdier for validering
     const formValues: Record<string, string> = { identifier: "", password: "" };
     formValues[name] = value;
     
-    // Hvis feltet er tomt, fjern feilmeldingen
     if (!value) {
       setValidationErrors((prev) => ({ ...prev, [name]: [] }));
       return;
@@ -50,7 +46,6 @@ export function useSignInValidation() {
 
     const validation = signInSchema.safeParse(formValues);
 
-    // Hvis validering feiler, legg til feilmelding
     if (!validation.success) {
       const fieldError = validation.error.flatten().fieldErrors[name]?.slice(0, 1) ?? [];
       setValidationErrors((prev) => ({
@@ -58,7 +53,6 @@ export function useSignInValidation() {
         [name]: fieldError,
       }));
     } else {
-      // Hvis validering er vellykket, fjern feilmelding
       setValidationErrors((prev) => ({
         ...prev,
         [name]: [],
