@@ -104,6 +104,13 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
     const response = await loginUserService({ identifier, password });
     console.log("[Server] Login - Success. JWT:", response.jwt);
     
+    if (!response || !response.jwt) {
+      throw new Error("Ingen token mottatt fra serveren")
+    }
+
+    console.log("[Server] Jwt mottatt");
+    
+
     setAuthCookie(response.jwt);
     
   } catch (error) {
