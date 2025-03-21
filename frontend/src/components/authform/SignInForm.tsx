@@ -9,7 +9,7 @@ import { useSignInValidation } from "@/hooks/useValidation";
 import { login } from "@/lib/data/actions/auth-actions";
 import { LoginFormState, SignInValidationErrorKeys } from "@/types/auth.types";
 import { SignInFormData } from "@/lib/validation/validationSchemas";
-import { authFieldError } from "@/lib/utils/authFieldError";
+import { authFieldError } from "@/lib/utils/serverAction-errorHandler"; 
 import { ZodErrors } from "../ZodErrors";
 import { PasswordToggle } from "../ui/custom/PasswordToggle";
 
