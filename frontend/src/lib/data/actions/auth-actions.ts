@@ -10,6 +10,7 @@ import {
 } from "@/types/auth.types";
 import { loginUserService, registerUserService} from "@/lib/data/services/userAuth";
 import { setAuthCookie } from "@/lib/utils/cookie";
+import { handleStrapiError, handleValidationErrors } from "@/lib/utils/serverAction-errorHandler";
 
 
 /**
@@ -26,20 +27,13 @@ export async function register(prevState: RegisterFormState, formData: FormData)
   });
 
   if (!validation.success) {
-    const fieldErrors = Object.fromEntries(
-      Object.entries(validation.error.flatten().fieldErrors).map(([key, errors]) => [
-        key,
-        errors ? [errors[0]] : [],
-      ])
-    );
-
-    const errors: SignUpValidationErrors = {
+    const errors = handleValidationErrors(validation.error, {
       username: [],
       email: [],
       password: [],
       repeatPassword: [],
-      ...fieldErrors,
-    };
+    }) as SignUpValidationErrors;
+    
     console.warn("[Server] Auth - Validation failed:", errors);
 
     return {
@@ -53,20 +47,17 @@ export async function register(prevState: RegisterFormState, formData: FormData)
   try {
     const { username, email, password } = fields;
     const response = await registerUserService({ username, email, password });
-    console.log("[Server] Register - Success:", response);
+    
+    console.log("[Server] Register - Success. JWT:", response.jwt);
+    
+    // NB: Vi setter IKKE auth-cookie her siden brukeren skal bekrefte e-post i fremtiden
+    
+   //lenken skal byttes ut senere
+   
+    
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Ukjent feil oppstod";
+    const errorMessage = handleStrapiError(error);
     console.error("[Server] Register - Error:", error);
-
-    // Oversett Strapi-feil til norsk
-    if (errorMessage.includes("Email or Username are already taken")) {
-      return {
-        ...prevState,
-        zodErrors: null,
-        strapiErrors: { message: "E-post eller brukernavn er allerede tatt" },
-        values: fields,
-      };
-    }
 
     return {
       ...prevState,
@@ -75,7 +66,6 @@ export async function register(prevState: RegisterFormState, formData: FormData)
       values: fields,
     };
   }
-
   redirect("/signin");
 }
 
@@ -93,18 +83,11 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
   });
 
   if (!validation.success) {
-    const fieldErrors = Object.fromEntries(
-      Object.entries(validation.error.flatten().fieldErrors).map(([key, errors]) => [
-        key,
-        errors ? [errors[0]] : [],
-      ])
-    );
-
-    const errors: SignInValidationErrors = {
+    const errors = handleValidationErrors(validation.error, {
       identifier: [],
       password: [],
-      ...fieldErrors,
-    };
+    }) as SignInValidationErrors;
+
     console.warn("[Server] Auth - Validation failed:", errors);
 
     return {
@@ -121,23 +104,11 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
     const response = await loginUserService({ identifier, password });
     console.log("[Server] Login - Success. JWT:", response.jwt);
     
-    // Sett JWT som httpOnly-cookie
     setAuthCookie(response.jwt);
-  
     
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Ukjent feil oppstod";
+    const errorMessage = handleStrapiError(error);
     console.error("[Server] Login - Error:", error);
-    
-    // Håndtere spesifikke feilmeldinger fra Strapi
-    if (errorMessage.includes("Invalid identifier or password")) {
-      return {
-        ...prevState,
-        zodErrors: null,
-        strapiErrors: { message: "Ugyldig brukernavn/e-post eller passord" },
-        values: fields,
-      };
-    }
     
     return {
       ...prevState,
@@ -146,6 +117,5 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
       values: fields,
     };
   }
-
   redirect("/loggettest");
 }
