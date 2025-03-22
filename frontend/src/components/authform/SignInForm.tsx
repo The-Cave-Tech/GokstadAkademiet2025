@@ -9,7 +9,7 @@ import { useSignInValidation } from "@/hooks/useValidation";
 import { login } from "@/lib/data/actions/auth-actions";
 import { LoginFormState, SignInValidationErrorKeys } from "@/types/auth.types";
 import { SignInFormData } from "@/lib/validation/validationSchemas";
-import { authFieldError } from "@/lib/utils/serverAction-errorHandler"; 
+import { authFieldError } from "@/lib/utils/serverAction-errorHandler";
 import { ZodErrors } from "../ZodErrors";
 import { PasswordToggle } from "../ui/custom/PasswordToggle";
 
@@ -32,7 +32,7 @@ export function SignInForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, checked, type } = e.target;
-    
+
     if (type === "checkbox") {
       setRememberMe(checked);
     } else {
@@ -51,7 +51,10 @@ export function SignInForm() {
         <CardHeader>
           <section className="flex flex-col items-center gap-4">
             <h1 className="text-xl font-semibold">Logg Inn</h1>
-            <SiteLogo className="/* Dark mode støtte */" style={{ width: "90px", height: "45px" }} />
+            <SiteLogo
+              className="/* Dark mode støtte */"
+              style={{ width: "90px", height: "45px" }}
+            />
           </section>
         </CardHeader>
 
@@ -62,7 +65,7 @@ export function SignInForm() {
                 {formState.strapiErrors?.message}
               </p>
             )}
-            
+
             <fieldset className="space-y-4">
               <legend className="sr-only">Påloggingsdetaljer</legend>
 
@@ -82,7 +85,11 @@ export function SignInForm() {
                   aria-describedby="Skriv inn brukernavn eller epost"
                 />
                 <ZodErrors
-                  error={authFieldError(validationErrors, formState.zodErrors ?? validationErrors, "identifier")}
+                  error={authFieldError(
+                    validationErrors,
+                    formState.zodErrors ?? validationErrors,
+                    "identifier"
+                  )}
                 />
               </section>
 
@@ -108,7 +115,11 @@ export function SignInForm() {
                   />
                 </div>
                 <ZodErrors
-                  error={authFieldError(validationErrors, formState.zodErrors ?? validationErrors, "password")}
+                  error={authFieldError(
+                    validationErrors,
+                    formState.zodErrors ?? validationErrors,
+                    "password"
+                  )}
                 />
               </section>
             </fieldset>
