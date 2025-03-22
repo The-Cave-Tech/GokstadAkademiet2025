@@ -100,6 +100,7 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
 
   try {
     const { identifier, password } = fields;
+    const rememberMe = fields.remember === "on";
     
     const response = await loginUserService({ identifier, password });
     console.log("[Server] Login - Success. JWT:", response.jwt);
@@ -111,7 +112,7 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
     console.log("[Server] Jwt mottatt");
     
 
-    setAuthCookie(response.jwt);
+    await setAuthCookie(response.jwt, rememberMe);
     
   } catch (error) {
     const errorMessage = handleStrapiError(error);

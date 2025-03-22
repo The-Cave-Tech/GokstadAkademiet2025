@@ -59,14 +59,6 @@ const repeatPasswordValidation = z
   .trim()
   .min(1, { message: "Bekreft passordet ditt" });
 
-// Registreringsskjema
-export type SignUpFormData = {
-  username: string;
-  email: string;
-  password: string;
-  repeatPassword: string;
-};
-
 export const signUpSchema = z
   .object({
     username: usernameValidation,
@@ -84,34 +76,35 @@ export const signUpSchema = z
     }
   });
 
-// Påloggingsskjema
-export type SignInFormData = {
-  identifier: string;
-  password: string;
-  rememberMe?: boolean;
-};
+  export type SignUpFormData = z.infer<typeof signUpSchema>;
 
-export const signInSchema = z.object({
-  identifier: z
-    .string()
-    .trim()
-    .min(1, { message: "Fyll inn brukernavn eller e-post" })
-    .max(100, { message: "Maks 100 tegn" })
-    .refine((val) => !dangerousCharsRegex.test(val), {
-      message: "Identifikator inneholder forbudte tegn",
-    })
-    .transform((val) =>
-      val
-        .toLowerCase()
-        .replace(dangerousCharsRegex, "") 
-    ),
-  password: z
-    .string()
-    .trim()
-    .min(1, { message: "Fyll inn passord" })
-    .max(100, { message: "Maks 100 tegn" })
-    .refine((val) => !dangerousCharsRegex.test(val), {
-      message: "Passord inneholder forbudte tegn",
-    }),
-  rememberMe: z.boolean().optional(),
-});
+  export const signInSchema = z.object({
+    identifier: z
+      .string()
+      .trim()
+      .min(1, { message: "Fyll inn brukernavn eller e-post" })
+      .max(100, { message: "Maks 100 tegn" })
+      .refine((val) => !dangerousCharsRegex.test(val), {
+        message: "Identifikator inneholder forbudte tegn",
+      })
+      .transform((val) =>
+        val
+          .toLowerCase()
+          .replace(dangerousCharsRegex, "") 
+      ),
+    password: z
+      .string()
+      .trim()
+      .min(1, { message: "Fyll inn passord" })
+      .max(100, { message: "Maks 100 tegn" })
+      .refine((val) => !dangerousCharsRegex.test(val), {
+        message: "Passord inneholder forbudte tegn",
+      }),
+    remember: z.enum(["on"]).optional(),
+  });
+  
+  export type SignInFormData = {
+    identifier: string;
+    password: string;
+    remember?: boolean;
+  };
