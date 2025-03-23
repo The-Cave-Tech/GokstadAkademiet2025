@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getStrapiData } from "@/data/services/strapiApiData";
-import { validateField, validateForm } from "@/lib/utils/validateForm"; // ✅ Import validering
+import { validateField, validateForm } from "@/lib/utils/validateForm"; 
 
 const KontaktOss = () => {
   const [formData, setFormData] = useState({
@@ -43,18 +43,18 @@ const KontaktOss = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // ✅ Kjør validering fra validateForm.ts
+    
     setErrors((prev) => ({ ...prev, [name]: validateField(name, value) }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newErrors = validateForm(formData); // ✅ Kjør validering
+    const newErrors = validateForm(formData); 
     setErrors(newErrors);
 
     if (Object.values(newErrors).some((err) => err !== "")) {
-      return; // Stopper hvis det er feil
+      return; 
     }
 
     const { navn, telefon, epost, melding } = formData;
