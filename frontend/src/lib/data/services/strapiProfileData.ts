@@ -1,42 +1,46 @@
-export async function fetchUserProfile() {
-  // Assume we get the token later for JWT
-  const token = localStorage.getItem("auth_token"); // Example: Storing JWT in localStorage
+export async function fetchProfileByName(
+  name: string = "UX/UI Designer"
+): Promise<any | null> {
   const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL;
 
-  const userId = 4; // Hardcoded for testing, replace with JWT later
-
-  // Define the user profile endpoint
-  const profileUrl = `${baseUrl}/api/user-profiles?${userId}&populate=*`;
+  if (!baseUrl) {
+    console.error(
+      "No API URL found. Please configure NEXT_PUBLIC_STRAPI_API_URL"
+    );
+    return null;
+  }
 
   try {
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-    };
-
-    // If JWT is available, add it to the authorization header
-    if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
-    }
-
-    // Perform the fetch request with or without JWT
-    const response = await fetch(profileUrl, {
-      method: "GET",
-      headers: headers,
-    });
+    // Fetch all profiles
+    const response = await fetch(`${baseUrl}/api/user-profiles?populate=*`);
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch user profile. Status: ${response.status}`);
+      throw new Error(`API request failed with status ${response.status}`);
     }
 
-    const results = await response.json();
+    const result = await response.json();
 
-    const profile = results.data[0]; // Fetch first instance
+    if (!result.data || result.data.length === 0) {
+      console.warn("No profiles found");
+      return null;
+    }
 
-    console.log(`Fetched data from user profile API`, profile);
+    // Find profile by name
+    const foundProfile = result.data.find(
+      (profile: any) => profile.profileName === name
+    );
 
-    return profile; // Return the user profile data
+    if (foundProfile) {
+      console.log(`Successfully found profile: ${foundProfile.profileName}`);
+      return foundProfile;
+    } else {
+      console.warn(
+        `Profile with name "${name}" not found, returning first profile`
+      );
+      return result.data[0];
+    }
   } catch (error) {
-    console.error("Error fetching user profile:", error);
-    return null; // Handle error gracefully
+    console.error("Error fetching profiles:", error);
+    return null;
   }
 }

@@ -432,7 +432,7 @@ export interface ApiUserProfileUserProfile extends Struct.CollectionTypeSchema {
   collectionName: 'user_profiles';
   info: {
     description: '';
-    displayName: 'UserProfile';
+    displayName: 'User-Profile';
     pluralName: 'user-profiles';
     singularName: 'user-profile';
   };
@@ -464,6 +464,9 @@ export interface ApiUserProfileUserProfile extends Struct.CollectionTypeSchema {
     user: Schema.Attribute.Relation<
       'oneToOne',
       'plugin::users-permissions.user'
+    >;
+    userRole: Schema.Attribute.Enumeration<
+      ['user', 'user_member_1', 'user_member_2', 'admin']
     >;
   };
 }

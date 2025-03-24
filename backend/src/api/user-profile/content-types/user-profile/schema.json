@@ -4,7 +4,7 @@
   "info": {
     "singularName": "user-profile",
     "pluralName": "user-profiles",
-    "displayName": "UserProfile",
+    "displayName": "User-Profile",
     "description": ""
   },
   "options": {
@@ -44,6 +44,15 @@
       "relation": "oneToOne",
       "target": "plugin::users-permissions.user",
       "inversedBy": "user_profile"
+    },
+    "userRole": {
+      "type": "enumeration",
+      "enum": [
+        "user",
+        "user_member_1",
+        "user_member_2",
+        "admin"
+      ]
     }
   }
 }

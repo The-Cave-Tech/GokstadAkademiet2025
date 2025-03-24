@@ -1,13 +1,20 @@
+// types/dashboard.ts
+
+export interface MenuItem {
+  href: string;
+  title: string;
+  desc: string;
+}
+
+// types/dashboard.ts
 export interface UserProfile {
   id: number;
   profileName: string;
   bio?: string;
-  profilePicture?: {
-    url: string;
-  };
-  backgroundImage?: {
-    url: string;
-  };
+  userRole?: string;
+  profilePicture?: any;
+  backgroundImage?: any;
+  // Add any other fields from the API response
 }
 
 export interface DashboardProps {
@@ -16,8 +23,14 @@ export interface DashboardProps {
   isLoading: boolean;
 }
 
-export interface MenuItem {
-  href: string;
-  title: string;
-  desc: string;
+// This is the interface that's missing
+export interface StrapiProfileResponse {
+  id: number;
+  attributes: UserProfile;
+}
+
+export interface DashboardProps {
+  profile: UserProfile | null;
+  role: string;
+  isLoading: boolean;
 }
