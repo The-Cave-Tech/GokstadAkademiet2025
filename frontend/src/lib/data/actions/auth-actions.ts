@@ -1,5 +1,7 @@
 "use server";
 
+// påminnelse til oss: fjerne alle konsoll logger når vi er ferdige, de eksponerer sensitiv informasjon
+
 import { signInSchema, signUpSchema } from "@/lib/validation/validationSchemas";
 import { redirect } from "next/navigation";
 import {
@@ -9,7 +11,7 @@ import {
   SignInValidationErrors,
 } from "@/types/auth.types";
 import { loginUserService, registerUserService} from "@/lib/data/services/userAuth";
-import { setAuthCookie } from "@/lib/utils/cookie";
+import { removeAuthCookie, setAuthCookie } from "@/lib/utils/cookie";
 import { handleStrapiError, handleValidationErrors } from "@/lib/utils/serverAction-errorHandler";
 
 
@@ -126,4 +128,19 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
     };
   }
   redirect("/loggettest");
+}
+
+/**
+ * Logger ut en bruker.
+ */
+export async function logout(): Promise<void> {
+  try {
+    console.log("[Server] Logout - Starting logout process");
+    await removeAuthCookie();
+    console.log("[Server] Logout - Successfully removed auth cookie");
+  } catch (error) {
+    console.error("[Server] Logout - Error during logout:", error);
+    throw error;
+  }
+  redirect("/?message=Du er logget ut");
 }
