@@ -1,11 +1,29 @@
 "use client"
 
 import Link from "next/link"
-import { SiteLogo } from "./SiteLogo";
-import { useState } from "react";
+import { SiteLogo } from "@/components/ui/SiteLogo";
+import { useState, useEffect } from "react";
+import { LogoutButton } from "@/components/LogoutButton"; // Bruker absolutt importsti
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
+  // Sjekk innloggingsstatus når komponenten lastes
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/check');
+        const data = await response.json();
+        setIsLoggedIn(data.authenticated);
+      } catch (error) {
+        console.error("Failed to check authentication status:", error);
+        setIsLoggedIn(false);
+      }
+    };
+    
+    checkAuth();
+  }, []);
   
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -59,11 +77,15 @@ export const Header = () => {
               </Link>
             </nav>
             
-            {/* Login Button - Desktop */}
+            {/* Login/Logout Button - Desktop */}
             <div className="hidden md:block">
-              <Link className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="/signin">
-                Login
-              </Link>
+              {isLoggedIn ? (
+                <LogoutButton className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" />
+              ) : (
+                <Link className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="/signin">
+                  Login
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -83,9 +105,13 @@ export const Header = () => {
             <Link className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded" href="/kontakt-oss">
               Kontakt oss
             </Link>
-            <Link className="block px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" href="/signin">
-              Login
-            </Link>
+            {isLoggedIn ? (
+              <LogoutButton className="block w-full text-left px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600" />
+            ) : (
+              <Link className="block px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" href="/signin">
+                Login
+              </Link>
+            )}
           </div>
         </div>
       </header>

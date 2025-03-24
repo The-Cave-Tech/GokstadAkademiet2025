@@ -22,7 +22,11 @@ export async function setAuthCookie(token: string, rememberMe: boolean = false):
 
 export async function removeAuthCookie(): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.delete("authToken");
+  cookieStore.delete({
+    name: "authToken",
+    path: "/",
+    domain: new URL(process.env.NEXTAUTH_URL || "http://localhost:3000").hostname,
+  });
   console.log("[Server] Auth - JWT cookie removed");
 }
 
