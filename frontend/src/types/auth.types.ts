@@ -1,5 +1,3 @@
-// auth.types.ts
-
 export interface SignUpValidationErrors {
   username: string[];
   email: string[];
