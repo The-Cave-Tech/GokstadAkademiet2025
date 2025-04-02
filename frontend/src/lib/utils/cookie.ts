@@ -2,22 +2,20 @@
 
 import { cookies } from "next/headers";
 
-export async function setAuthCookie(token: string, rememberMe: boolean = false): Promise<void> {
+export async function setAuthCookie(token: string): Promise<void> {
   const cookieStore = await cookies();
-  const standardMaxAge = 2 * 60 * 60; //2 timer
-  const extendedMaxAge = 7 * 24 * 60 * 60; //7 dager
-  const maxAge = rememberMe ? extendedMaxAge : standardMaxAge;
+  const maxAge = 2 * 60 * 60; // 2 hours
   
   cookieStore.set("authToken", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     domain: new URL(process.env.NEXTAUTH_URL || "http://localhost:3000").hostname,
     sameSite: "strict",
-    maxAge: maxAge,
+    maxAge, 
     path: "/"
   });
   
-  console.log(`[Server] Auth - Set JWT cookie with ${rememberMe ? 'extended (7 days)' : 'standard (2 hours)'} expiration`);
+  console.log("[Server] Auth - Set JWT cookie with 2 hours expiration");
 }
 
 export async function removeAuthCookie(): Promise<void> {
@@ -41,4 +39,4 @@ export async function getAuthCookie(): Promise<string | null> {
 
   console.log("[Server] Auth - JWT cookie accessed");
   return cookie.value;
-} // 
+}

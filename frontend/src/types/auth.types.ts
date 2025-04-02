@@ -24,6 +24,7 @@ export interface LoginFormState {
   zodErrors: SignInValidationErrors | null;
   strapiErrors: StrapiError | null;
   values: Record<string, string>;
+  success: Boolean;
 }
 
 export type SignUpValidationErrorKeys = keyof SignUpValidationErrors;
