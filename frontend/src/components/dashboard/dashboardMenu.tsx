@@ -9,62 +9,29 @@ interface DashboardMenuProps {
 // Base menu items for all users
 const menuItems: MenuItem[] = [
   {
-    href: "/dashboard/user/personalInfo",
-    title: "My Personal Info",
-    desc: "All my personal info",
-  },
-  {
-    href: "/dashboard/user/myEvents",
-    title: "My Events",
-    desc: "We are gonna have a blast",
-  },
-  {
-    href: "/dashboard/user/myPosts",
-    title: "My Posts",
-    desc: "All my posts",
+    href: "/dashboard/user/my-account",
+    title: "Min Konto",
+    desc: "Endre konto informasjon",
   },
   {
     href: "/dashboard/user/reservations",
-    title: "My reservations",
-    desc: "We are gonna have a blast",
+    title: "Mine reservasjoner",
+    desc: "Administrer reservasjoner",
   },
   {
     href: "/dashboard/user/payments",
-    title: "View my payment history",
-    desc: "We are gonna have a blast",
-  },
-];
-
-// Member level 1 specific items
-const memberLevel1Items: MenuItem[] = [
-  {
-    href: "/dashboard/member/discount",
-    title: "Member Discounts",
-    desc: "Special discounts for Level 1 members",
+    title: "Mine betalinger",
+    desc: "Se betalinger gjort",
   },
   {
-    href: "/dashboard/member/special-events",
-    title: "Member Events",
-    desc: "Exclusive events for members",
-  },
-];
-
-// Member level 2 specific items
-const memberLevel2Items: MenuItem[] = [
-  {
-    href: "/dashboard/premium/vip-access",
-    title: "VIP Access",
-    desc: "Premium access to VIP features",
+    href: "/dashboard/user/donate",
+    title: "Donering",
+    desc: "Se dine tidligere donasjoner og doner",
   },
   {
-    href: "/dashboard/premium/priority-support",
-    title: "Priority Support",
-    desc: "Get help faster with priority support",
-  },
-  {
-    href: "/dashboard/premium/exclusive-content",
-    title: "Exclusive Content",
-    desc: "Content only for premium members",
+    href: "/dashboard/user/blogg",
+    title: "Administrer blogg",
+    desc: "Se, endre, legge til og slette dine delte innlegg",
   },
 ];
 
@@ -72,13 +39,28 @@ const memberLevel2Items: MenuItem[] = [
 const adminItems: MenuItem[] = [
   {
     href: "/dashboard/admin/users",
-    title: "Every registered user",
-    desc: "Check all users on your system",
+    title: "Administrer brukere",
+    desc: "Se, legge til, arkivere brukere",
   },
   {
-    href: "/dashboard/admin/posts",
-    title: "Every user's posts",
-    desc: "Check everything that has been posted",
+    href: "/dashboard/admin/sponsors",
+    title: "Våre sponsorer",
+    desc: "Se, legg til kontakt info til sponsorer",
+  },
+  {
+    href: "/dashboard/admin/events",
+    title: "Administrere arrangementer",
+    desc: "Se alle, legge til, fjerne og oppdatere arrangementer",
+  },
+  {
+    href: "/dashboard/admin/store",
+    title: "Nettbutikk",
+    desc: "Link til strapi for adminstrering av nettbutikk",
+  },
+  {
+    href: "/dashboard/admin/content",
+    title: "Innholdshåndtering",
+    desc: "Fiks alt innholdet som prosjekter, eventer og blogger",
   },
 ];
 
@@ -87,12 +69,8 @@ export default function DashboardMenu({ role }: DashboardMenuProps) {
   const getVisibleMenuItems = (): MenuItem[] => {
     let visibleItems = [...menuItems];
 
-    if (role === "user_member_1" || role === "admin") {
-      visibleItems = [...visibleItems, ...memberLevel1Items];
-    }
-
-    if (role === "user_member_2" || role === "admin") {
-      visibleItems = [...visibleItems, ...memberLevel2Items];
+    if (role === "admin") {
+      visibleItems = [...visibleItems];
     }
 
     return visibleItems;
