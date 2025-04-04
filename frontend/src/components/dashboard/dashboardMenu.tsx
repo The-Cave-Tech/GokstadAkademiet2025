@@ -48,18 +48,23 @@ const adminItems: MenuItem[] = [
     desc: "Se, legg til kontakt info til sponsorer",
   },
   {
-    href: "/dashboard/admin/events",
-    title: "Administrere arrangementer",
-    desc: "Se alle, legge til, fjerne og oppdatere arrangementer",
-  },
-  {
     href: "/dashboard/admin/store",
     title: "Nettbutikk",
     desc: "Link til strapi for adminstrering av nettbutikk",
   },
   {
-    href: "/dashboard/admin/content",
-    title: "Innholdshåndtering",
+    href: "/dashboard/admin/events",
+    title: "Administrer arrangementer",
+    desc: "Fiks alt innholdet som prosjekter, eventer og blogger",
+  },
+  {
+    href: "/dashboard/admin/projects",
+    title: "Administrer prosjekter",
+    desc: "Fiks alt innholdet som prosjekter, eventer og blogger",
+  },
+  {
+    href: "/dashboard/admin/bloggAdmin",
+    title: "Adminsitrer blogger",
     desc: "Fiks alt innholdet som prosjekter, eventer og blogger",
   },
 ];

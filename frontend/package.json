@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@strapi/client": "^1.1.0",
     "next": "15.1.7",
     "next-auth": "^4.24.11",
     "node": "^23.9.0",
