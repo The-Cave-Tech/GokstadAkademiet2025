@@ -1,9 +1,9 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
-export interface UserInformationUserInformation extends Struct.ComponentSchema {
-  collectionName: 'components_user_information_user_informations';
+export interface UserProfile extends Struct.ComponentSchema {
+  collectionName: 'components_user_profiles';
   info: {
-    displayName: 'User Information';
+    displayName: 'Profile';
   };
   attributes: {};
 }
@@ -11,7 +11,7 @@ export interface UserInformationUserInformation extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
-      'user-information.user-information': UserInformationUserInformation;
+      'user.profile': UserProfile;
     }
   }
 }
