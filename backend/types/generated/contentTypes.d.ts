@@ -432,7 +432,7 @@ export interface ApiLandingPageLandingPage extends Struct.SingleTypeSchema {
   collectionName: 'landing_pages';
   info: {
     description: '';
-    displayName: 'Landing Page';
+    displayName: 'landingPageHero';
     pluralName: 'landing-pages';
     singularName: 'landing-page';
   };

@@ -4,7 +4,7 @@
   "info": {
     "singularName": "landing-page",
     "pluralName": "landing-pages",
-    "displayName": "Landing Page",
+    "displayName": "landingPageHero",
     "description": ""
   },
   "options": {
@@ -23,14 +23,15 @@
       "type": "text"
     },
     "IntroductionImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images",
         "files",
         "videos",
         "audios"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
     }
   }
 }

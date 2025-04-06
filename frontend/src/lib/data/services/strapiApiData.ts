@@ -3,7 +3,7 @@ export async function fetchStrapiData(url: string, options: RequestInit = {}) {
   try {
     const response = await fetch(baseUrl + url, {
       method: "GET",
-      ...options, // Sprer inn alternativer for å overstyre metode, headers, body, etc.
+      ...options,
     });
     const data = await response.json();
     if (!response.ok) {

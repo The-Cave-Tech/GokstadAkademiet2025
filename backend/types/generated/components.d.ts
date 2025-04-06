@@ -4,7 +4,7 @@ export interface LandingPageHeroSection extends Struct.ComponentSchema {
   collectionName: 'components_landing_page_hero_sections';
   info: {
     description: '';
-    displayName: 'Hero Section';
+    displayName: 'HeroSection';
   };
   attributes: {
     landingImage: Schema.Attribute.Media<
