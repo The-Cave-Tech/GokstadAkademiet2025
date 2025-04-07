@@ -1,4 +1,5 @@
 import { UserProfile } from "@/types/dashboard";
+import { getImageUrl } from "@/lib/utils/getImages";
 
 // Add the props interface
 interface DashboardProfileProps {
@@ -6,15 +7,6 @@ interface DashboardProfileProps {
 }
 
 export default function DashboardProfile({ profile }: DashboardProfileProps) {
-  const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL;
-
-  // Helper function to get image URL
-  const getImageUrl = (imageField: any): string | null => {
-    if (!imageField) return null;
-    if (imageField.url) return `${baseUrl}${imageField.url}`;
-    return null;
-  };
-
   const profilePictureUrl = getImageUrl(profile.profilePicture);
   const backgroundImageUrl = getImageUrl(profile.backgroundImage);
 
