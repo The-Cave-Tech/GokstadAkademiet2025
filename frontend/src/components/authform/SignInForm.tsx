@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { SiteLogo } from "@/components/ui/SiteLogo";
 import { useSignInValidation } from "@/hooks/useValidation";
-import { login } from "@/lib/data/actions/auth-actions";
+import { login } from "@/lib/data/actions/auth";
 import { LoginFormState, SignInValidationErrorKeys } from "@/types/auth.types";
 import { SignInFormData } from "@/lib/validation/validationSchemas";
 import { authFieldError } from "@/lib/utils/serverAction-errorHandler";
