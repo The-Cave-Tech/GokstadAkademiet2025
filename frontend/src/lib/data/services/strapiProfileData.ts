@@ -1,18 +1,17 @@
-export async function fetchProfileByName(
-  name: string = "UX/UI Designer"
-): Promise<any | null> {
-  const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL;
-
-  if (!baseUrl) {
-    console.error(
-      "No API URL found. Please configure NEXT_PUBLIC_STRAPI_API_URL"
-    );
-    return null;
-  }
-
+export async function fetchLoggedInUserProfile(): Promise<any | null> {
   try {
-    // Fetch all profiles
-    const response = await fetch(`${baseUrl}/api/user-profiles?populate=*`);
+    const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL;
+
+    // Make request with credentials included to send cookies
+    const response = await fetch(`${baseUrl}/api/users/me?populate=*`, {
+      method: "GET",
+      credentials: "include", // This tells fetch to include cookies in the request
+      headers: {
+        "Content-Type": "application/json",
+        // You could also explicitly extract and add the authentication cookie if needed
+        // 'Authorization': `Bearer ${getCookieValue('your-auth-cookie-name')}`,
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`API request failed with status ${response.status}`);
@@ -20,27 +19,15 @@ export async function fetchProfileByName(
 
     const result = await response.json();
 
-    if (!result.data || result.data.length === 0) {
-      console.warn("No profiles found");
+    if (!result || !result.data) {
+      console.warn("User profile not found");
       return null;
     }
 
-    // Find profile by name
-    const foundProfile = result.data.find(
-      (profile: any) => profile.profileName === name
-    );
-
-    if (foundProfile) {
-      console.log(`Successfully found profile: ${foundProfile.profileName}`);
-      return foundProfile;
-    } else {
-      console.warn(
-        `Profile with name "${name}" not found, returning first profile`
-      );
-      return result.data[0];
-    }
+    console.log(`Successfully fetched user profile`);
+    return result.data;
   } catch (error) {
-    console.error("Error fetching profiles:", error);
+    console.error("Error fetching user profile:", error);
     return null;
   }
 }
