@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_layout_two_columns",
+  "info": {
+    "displayName": "Two columns",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "leftColumn": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.content-block"
+    },
+    "rightColumn": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.content-block"
+    }
+  }
+}

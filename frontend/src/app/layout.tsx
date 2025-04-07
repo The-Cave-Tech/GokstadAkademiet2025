@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/globals.css";
+import { ToastProvider } from "@/components/dashboard/projects/modal/ToastContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,17 +15,18 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "The Cave Tech",
-  description: "Hjelper enkeltpersoner å få erfaring gjennom virkelige prosjekter og åpne kildekodeløsninger.",
-  keywords: "The Cave Tech, makerspace, tekk erfaring, åpen kildekode, nettverk",
+  description:
+    "Hjelper enkeltpersoner å få erfaring gjennom virkelige prosjekter og åpne kildekodeløsninger.",
+  keywords:
+    "The Cave Tech, makerspace, tekk erfaring, åpen kildekode, nettverk",
   openGraph: {
     title: "The Cave Tech",
-    description: "En ideell organisasjon som hjelper enkeltpersoner med å få erfaring gjennom virkelige tech-prosjekter.",
+    description:
+      "En ideell organisasjon som hjelper enkeltpersoner med å få erfaring gjennom virkelige tech-prosjekter.",
     url: "https://www.thecavetech.com",
     type: "website",
   },
 }; // Må kansje endres til den info TheCaveTech ønsker?
-
-
 
 export default function RootLayout({
   children,
@@ -36,7 +38,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );

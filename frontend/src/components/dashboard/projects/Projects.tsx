@@ -1,20 +1,16 @@
-"use client";
 import React, { useState } from "react";
-import ProjectsList from "@/components/dashboard/projects/ProjectList";
-import CreateProjectForm from "@/components/dashboard/projects/CreateProjectForm";
-import Modal from "@/components/dashboard/projects/modal/Modal";
-import { useToast } from "@/components/dashboard/projects/modal/ToastContext";
+import ProjectsList from "./ProjectList";
+import CreateProjectForm from "./CreateProjectForm";
+import Modal from "./modal/Modal";
 
 const ProjectsPage: React.FC = () => {
   // State to track when to refresh the projects list
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { showToast } = useToast();
 
   // Increment the refreshTrigger to cause a refresh of the ProjectsList
   const handleProjectCreated = () => {
     setRefreshTrigger((prev) => prev + 1);
-    showToast("Project created successfully!", "success");
   };
 
   // Open modal
