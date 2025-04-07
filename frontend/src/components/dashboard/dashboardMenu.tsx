@@ -20,14 +20,14 @@ export default function DashboardMenu({ role }: DashboardMenuProps) {
 
   return (
     <section className="mx-auto p-4 w-screen flex flex-col items-center gap-5">
-      <div className="flex items-center w-screen pb-5">
+      <section className="flex items-center w-screen pb-5">
         <div className="flex-grow border-t-4 border-green-400"></div>
         <span className="flex-shrink mx-4 text-red-900">Administration</span>
         <div className="flex-grow border-t-4 border-green-400"></div>
-      </div>
+      </section>
 
       {/* All regular and role-specific menu items */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {getVisibleMenuItems().map((item) => (
           <Link key={item.href} href={item.href}>
             <AuthCard
@@ -42,7 +42,7 @@ export default function DashboardMenu({ role }: DashboardMenuProps) {
             />
           </Link>
         ))}
-      </div>
+      </section>
 
       {/* Admin section */}
       {role === "admin" && (

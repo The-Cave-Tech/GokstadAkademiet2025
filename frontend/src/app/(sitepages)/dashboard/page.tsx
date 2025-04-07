@@ -42,7 +42,7 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div>
+    <section>
       {error && (
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 m-4">
           <p>{error}</p>
@@ -54,6 +54,6 @@ export default function DashboardPage() {
         isLoading={isLoading}
         role={profile?.userRole || "user"}
       />
-    </div>
+    </section>
   );
 }
