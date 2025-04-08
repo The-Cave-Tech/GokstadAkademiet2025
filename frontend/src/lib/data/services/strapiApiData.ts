@@ -1,19 +1,17 @@
-export async function getStrapiData(url: string, options = {}) {
+export async function fetchStrapiData(url: string, options: RequestInit = {}) {
   const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL;
   try {
     const response = await fetch(baseUrl + url, {
-      credentials: "include", // Include cookies
-      ...options, // Allow passing additional options
+      method: "GET",
+      ...options, // Sprer inn alternativer for å overstyre metode, headers, body, etc.
     });
-
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`);
-    }
-
     const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error?.message || "Forespørsel feilet");
+    }
     return data;
   } catch (error) {
-    console.error(error);
-    return null;
+    console.error("Strapi Fetch Error:", error);
+    throw error;
   }
 }

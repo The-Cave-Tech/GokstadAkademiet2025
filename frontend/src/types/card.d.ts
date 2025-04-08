@@ -1,7 +1,19 @@
 type CardProps = {
-    header?: React.ReactNode;
-    content: React.ReactNode;
-    footer?: React.ReactNode;
-    className?: string;
-  }
-  
+  children: React.ReactNode;
+  className?: string;
+};
+
+type CardHeaderProps = {
+  children: React.ReactNode;
+  className?: string;
+};
+
+type CardBodyProps = {
+  children: React.ReactNode;
+  className?: string;
+};
+
+type CardFooterProps = {
+  children: React.ReactNode;
+  className?: string;
+};

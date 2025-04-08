@@ -1,16 +1,19 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { getStrapiData } from "@/lib/data/services/strapiApiData";
+import { fetchStrapiData } from "@/lib/data/services/strapiApiData";
 
 export function AuthBackgroundImage({ className }: AuthBackgroundImageProps) {
-  const [data, setData] = useState<{ AuthBackgroundImage: string | null; altText?: string } | null>(null);
+  const [data, setData] = useState<{
+    AuthBackgroundImage: string | null;
+    altText?: string;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data } = await getStrapiData("/api/auth-setting?populate=*");
+        const { data } = await fetchStrapiData("/api/auth-setting?populate=*");
         const imageData = data?.AuthBackgroundImage;
         if (imageData?.url) {
           const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL;

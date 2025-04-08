@@ -9,17 +9,15 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        roboto: ['var(--font-roboto)', 'sans-serif'],
+      },
       screens: {
         'custom-lg': '850px', 
       },
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        "header-bg": "var(--header-bg)",
-        "header-text": "var(--header-text)",
-        primary: "var(--primary)",
-        "button-bg": "var(--button-bg)",
-        "button-text": "var(--button-text)",
+        'zodValidation': '#b41400',
+        background: "var(--background)"
       },
     },
   },

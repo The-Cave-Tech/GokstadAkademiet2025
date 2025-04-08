@@ -1,16 +1,23 @@
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { getStrapiData } from "@/lib/data/services/strapiApiData";
+import { fetchStrapiData } from "@/lib/data/services/strapiApiData";
 
-export function SiteLogo({ className, width = 145, height = 55 }: LogoProps) {
+export function SiteLogo({
+  className,
+  style,
+  width = 145,
+  height = 55,
+}: LogoProps) {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchLogo = async () => {
       try {
-        const { data } = await getStrapiData("/api/global-setting?populate=*");
+        const { data } = await fetchStrapiData(
+          "/api/global-setting?populate=*"
+        );
         const logoData = data?.SiteLogo;
         if (logoData?.url) {
           const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL;
@@ -29,14 +36,13 @@ export function SiteLogo({ className, width = 145, height = 55 }: LogoProps) {
 
   return logoUrl ? (
     <div className={className}>
-      {" "}
-      {/* Under import can have custom size on logo */}
       <Image
         src={logoUrl}
         alt="Site Logo"
         width={width}
         height={height}
         priority
+        style={{ width: "auto", height: "auto", ...style }}
       />
     </div>
   ) : (
