@@ -3,11 +3,11 @@ import type { Schema, Struct } from '@strapi/strapi';
 export interface BlocksContentBlock extends Struct.ComponentSchema {
   collectionName: 'components_blocks_content_blocks';
   info: {
+    description: '';
     displayName: 'Content Block';
   };
   attributes: {
     Content: Schema.Attribute.Text;
-    Image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     Title: Schema.Attribute.String;
   };
 }
@@ -15,12 +15,22 @@ export interface BlocksContentBlock extends Struct.ComponentSchema {
 export interface LayoutFullWidth extends Struct.ComponentSchema {
   collectionName: 'components_layout_full_widths';
   info: {
-    displayName: 'Full Width';
+    description: '';
+    displayName: 'full-width';
   };
   attributes: {
-    Content: Schema.Attribute.Text;
-    Image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
-    Title: Schema.Attribute.String;
+    content: Schema.Attribute.Text;
+  };
+}
+
+export interface LayoutImageText extends Struct.ComponentSchema {
+  collectionName: 'components_layout_image_texts';
+  info: {
+    displayName: 'image-text';
+  };
+  attributes: {
+    mediaPosition: Schema.Attribute.Enumeration<['left,', 'right']>;
+    text: Schema.Attribute.Blocks;
   };
 }
 
@@ -28,11 +38,13 @@ export interface LayoutTwoColumns extends Struct.ComponentSchema {
   collectionName: 'components_layout_two_columns';
   info: {
     description: '';
-    displayName: 'Two columns';
+    displayName: 'two-columns';
   };
   attributes: {
-    leftColumn: Schema.Attribute.Component<'blocks.content-block', false>;
-    rightColumn: Schema.Attribute.Component<'blocks.content-block', false>;
+    leftColumnContent: Schema.Attribute.Blocks;
+    leftColumnTitle: Schema.Attribute.String;
+    rightColumnContent: Schema.Attribute.Blocks;
+    rightColumnTitle: Schema.Attribute.String;
   };
 }
 
@@ -41,6 +53,7 @@ declare module '@strapi/strapi' {
     export interface ComponentSchemas {
       'blocks.content-block': BlocksContentBlock;
       'layout.full-width': LayoutFullWidth;
+      'layout.image-text': LayoutImageText;
       'layout.two-columns': LayoutTwoColumns;
     }
   }

@@ -1,20 +1,22 @@
 {
   "collectionName": "components_layout_two_columns",
   "info": {
-    "displayName": "Two columns",
+    "displayName": "two-columns",
     "description": ""
   },
   "options": {},
   "attributes": {
-    "leftColumn": {
-      "type": "component",
-      "repeatable": false,
-      "component": "blocks.content-block"
+    "leftColumnTitle": {
+      "type": "string"
     },
-    "rightColumn": {
-      "type": "component",
-      "repeatable": false,
-      "component": "blocks.content-block"
+    "leftColumnContent": {
+      "type": "blocks"
+    },
+    "rightColumnTitle": {
+      "type": "string"
+    },
+    "rightColumnContent": {
+      "type": "blocks"
     }
   }
 }

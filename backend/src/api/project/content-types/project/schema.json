@@ -11,16 +11,13 @@
     "draftAndPublish": true
   },
   "attributes": {
-    "Title": {
+    "title": {
       "type": "string"
     },
-    "Slug": {
-      "type": "integer"
-    },
-    "Description": {
+    "description": {
       "type": "text"
     },
-    "Image": {
+    "image": {
       "type": "media",
       "multiple": false,
       "required": false,
@@ -35,6 +32,7 @@
       "type": "dynamiczone",
       "components": [
         "layout.two-columns",
+        "layout.image-text",
         "layout.full-width"
       ]
     }

@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_layout_image_texts",
+  "info": {
+    "displayName": "image-text"
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "blocks"
+    },
+    "mediaPosition": {
+      "type": "enumeration",
+      "enum": [
+        "left,",
+        "right"
+      ]
+    }
+  }
+}

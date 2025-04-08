@@ -474,11 +474,11 @@ export interface ApiProjectProject extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    Description: Schema.Attribute.Text;
+    description: Schema.Attribute.Text;
     dynamicZone: Schema.Attribute.DynamicZone<
-      ['layout.two-columns', 'layout.full-width']
+      ['layout.two-columns', 'layout.image-text', 'layout.full-width']
     >;
-    Image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -486,54 +486,10 @@ export interface ApiProjectProject extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    Slug: Schema.Attribute.Integer;
-    Title: Schema.Attribute.String;
+    title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-  };
-}
-
-export interface ApiUserProfileUserProfile extends Struct.CollectionTypeSchema {
-  collectionName: 'user_profiles';
-  info: {
-    description: '';
-    displayName: 'User-Profile';
-    pluralName: 'user-profiles';
-    singularName: 'user-profile';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    backgroundImage: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios'
-    >;
-    bio: Schema.Attribute.Text;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::user-profile.user-profile'
-    > &
-      Schema.Attribute.Private;
-    profileName: Schema.Attribute.String;
-    profilePicture: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios'
-    >;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    user: Schema.Attribute.Relation<
-      'oneToOne',
-      'plugin::users-permissions.user'
-    >;
-    userRole: Schema.Attribute.Enumeration<
-      ['user', 'user_member_1', 'user_member_2', 'admin']
-    >;
   };
 }
 
@@ -1027,10 +983,6 @@ export interface PluginUsersPermissionsUser
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    user_profile: Schema.Attribute.Relation<
-      'oneToOne',
-      'api::user-profile.user-profile'
-    >;
     username: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique &
@@ -1054,7 +1006,6 @@ declare module '@strapi/strapi' {
       'api::event.event': ApiEventEvent;
       'api::global-setting.global-setting': ApiGlobalSettingGlobalSetting;
       'api::project.project': ApiProjectProject;
-      'api::user-profile.user-profile': ApiUserProfileUserProfile;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

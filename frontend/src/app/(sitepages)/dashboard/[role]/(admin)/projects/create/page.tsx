@@ -8,22 +8,47 @@ export default function CreateProjectPage() {
     "use server";
 
     try {
-      // Extract form data
-      const title = formData.get("title") as string;
-      const description = formData.get("description") as string;
-      const layout = formData.get("layout") as string;
+      // Get basic fields
+      const title = formData.get("title");
+      const description = formData.get("description");
 
-      // Prepare data for Strapi
+      // Prepare layouts array based on the selected layout type
+      const layoutType = formData.get("layoutType");
+      let layouts = [];
+
+      if (layoutType === "full-width") {
+        layouts.push({
+          __component: "layouts.full-width",
+          content: formData.get("content"),
+        });
+      } else if (layoutType === "two-columns") {
+        layouts.push({
+          __component: "layouts.two-columns",
+          leftColumnTitle: formData.get("leftColumnTitle"),
+          leftColumnContent: formData.get("leftColumnContent"),
+          rightColumnTitle: formData.get("rightColumnTitle"),
+          rightColumnContent: formData.get("rightColumnContent"),
+        });
+      } else if (layoutType === "image-text") {
+        layouts.push({
+          __component: "layouts.image-text",
+          text: formData.get("textContent"),
+          mediaPosition: formData.get("imagePosition"),
+        });
+      }
+
+      // Create the complete request body
       const jsonData = {
         data: {
           title,
           description,
-          layout,
-          // Add other fields as needed based on layout
+          layouts,
         },
       };
 
-      // Send to API
+      console.log("Sending to Strapi:", JSON.stringify(jsonData));
+
+      // Send to Strapi
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/projects`,
         {
@@ -35,14 +60,16 @@ export default function CreateProjectPage() {
         }
       );
 
+      // Handle response
       if (!response.ok) {
-        throw new Error("Failed to create project");
+        const errorData = await response.json();
+        console.error("Strapi error response:", errorData);
+        throw new Error(`Failed to create project: ${response.status}`);
       }
 
-      // Redirect on success
-      redirect("/dashboard/projects");
+      return await response.json();
     } catch (error) {
-      console.error("Error creating project:", error);
+      console.error("Error in createProject action:", error);
       throw error;
     }
   }
@@ -51,7 +78,10 @@ export default function CreateProjectPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Create New Project</h1>
 
-      <ProjectForm action={createProject} cancelHref="/dashboard/projects" />
+      <ProjectForm
+        action={createProject}
+        cancelHref="/dashboard/admin/projects"
+      />
     </div>
   );
 }
