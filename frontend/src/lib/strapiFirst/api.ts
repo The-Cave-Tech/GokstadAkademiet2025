@@ -1,212 +1,157 @@
-// Helper function to build the full image URL
-export function getImageUrl(imagePath: string): string {
-  // Check if the image URL already starts with http/https
-  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
-    return imagePath;
+import axios from "axios";
+
+// Create Strapi client
+const strapiClient = axios.create({
+  baseURL:
+    process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Add response interceptor for error handling
+strapiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("Strapi API error:", error.response?.data || error);
+    return Promise.reject(error);
   }
-
-  // Otherwise, prepend the base URL
-  const baseUrl =
-    process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
-  return `${baseUrl}${imagePath}`;
-}
-import { strapiClient } from "./strapi";
-
-// Define TypeScript interfaces for the project data structure based on your actual API response
-export interface ProjectData {
-  id: number;
-  documentId: string;
-  Title: string;
-  Slug: number;
-  Description: string;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
-  Image?: {
-    id: number;
-    documentId: string;
-    name: string;
-    alternativeText: string | null;
-    caption: string | null;
-    width: number;
-    height: number;
-    formats: {
-      large?: ImageFormat;
-      medium?: ImageFormat;
-      small?: ImageFormat;
-      thumbnail?: ImageFormat;
-    };
-    hash: string;
-    ext: string;
-    mime: string;
-    size: number;
-    url: string;
-    previewUrl: string | null;
-    provider: string;
-    provider_metadata: any;
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
-  };
-  dynamicZone: any[];
-  [key: string]: any; // For any additional fields
-}
-
-interface ImageFormat {
-  ext: string;
-  url: string;
-  hash: string;
-  mime: string;
-  name: string;
-  path: string | null;
-  size: number;
-  width: number;
-  height: number;
-  sizeInBytes: number;
-}
-
-export interface StrapiResponse<T> {
-  data: T[];
-  meta: {
-    pagination: {
-      page: number;
-      pageSize: number;
-      pageCount: number;
-      total: number;
-    };
-  };
-}
-
-export interface QueryParams {
-  sort?: string | string[];
-  filters?: Record<string, any>;
-  pagination?: {
-    page?: number;
-    pageSize?: number;
-    withCount?: boolean;
-  };
-  fields?: string[];
-  populate?: string | string[] | Record<string, any>;
-  [key: string]: any;
-}
+);
 
 /**
- * Fetch all projects from the Strapi collection
- * @param {QueryParams} params - Optional query parameters
- * @returns {Promise<StrapiResponse<ProjectData>>} - Projects data
+ * Fetch a list of content items
+ * @param contentType The type of content to fetch (projects, blogs, etc.)
+ * @param params Optional query parameters
+ * @returns Promise with content data
  */
-export async function getProjects(
-  params: QueryParams = {}
-): Promise<StrapiResponse<ProjectData>> {
+export async function getContentItems(contentType: string, params = {}) {
   try {
-    const response = await strapiClient.get<StrapiResponse<ProjectData>>(
-      "/api/projects",
-      {
-        params: {
-          populate: "*", // Use "*" for first-level relations
-          sort: "publishedAt:desc",
-          ...params,
-        },
-      }
-    );
+    const response = await strapiClient.get(`/${contentType}`, {
+      params: {
+        populate: "*", // Populate all first-level relations
+        sort: "createdAt:desc", // Sort by creation date (newest first)
+        ...params,
+      },
+    });
 
-    console.log("Raw API response:", response.data);
     return response.data;
   } catch (error) {
-    console.error("Error fetching projects:", error);
+    console.error(`Error fetching ${contentType}:`, error);
     return {
       data: [],
-      meta: {
-        pagination: {
-          page: 1,
-          pageSize: 25,
-          pageCount: 0,
-          total: 0,
-        },
-      },
+      meta: { pagination: { page: 1, pageSize: 25, pageCount: 0, total: 0 } },
     };
   }
 }
 
 /**
- * Fetch a single project by ID
- * @param {number} id - The project ID
- * @returns {Promise<ProjectData|null>} - Project data or null if not found
+ * Fetch a specific content item by ID
+ * @param contentType The type of content
+ * @param id The item ID
+ * @returns Promise with content item data
  */
-export async function getProject(id: number): Promise<ProjectData | null> {
+export async function getContentItem(contentType: string, id: string | number) {
   try {
-    const response = await strapiClient.get<{ data: ProjectData }>(
-      `/api/projects/${id}`,
-      {
-        params: {
-          populate: "*",
-        },
-      }
-    );
+    const response = await strapiClient.get(`/${contentType}/${id}`, {
+      params: {
+        populate: "*", // Populate all first-level relations
+      },
+    });
 
-    return response.data.data;
+    return response.data;
   } catch (error) {
-    console.error(`Error fetching project with ID ${id}:`, error);
-    return null;
-  }
-}
-
-/**
- * Fetch a project by slug
- * @param {number} slug - The project slug (as number in your schema)
- * @returns {Promise<ProjectData|null>} - Project data or null if not found
- */
-export async function getProjectBySlug(
-  slug: number
-): Promise<ProjectData | null> {
-  try {
-    const response = await strapiClient.get<StrapiResponse<ProjectData>>(
-      "/api/projects",
-      {
-        params: {
-          filters: {
-            Slug: {
-              $eq: slug,
-            },
-          },
-          populate: "*",
-        },
-      }
-    );
-
-    // If no projects match the slug, return null
-    if (!response.data.data || response.data.data.length === 0) {
-      return null;
-    }
-
-    // Return the first matching project
-    return response.data.data[0];
-  } catch (error) {
-    console.error(`Error fetching project with slug ${slug}:`, error);
-    return null;
-  }
-}
-
-/**
- * Create a new project
- * @param formData - FormData containing project data and optional image
- * @returns {Promise<ProjectData>} - Created project data
- */
-export async function createProject(formData: FormData): Promise<ProjectData> {
-  try {
-    const response = await strapiClient.post<{ data: ProjectData }>(
-      "/api/projects",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-
-    return response.data.data;
-  } catch (error: any) {
-    console.error("Error creating project:", error);
+    console.error(`Error fetching ${contentType} item:`, error);
     throw error;
   }
+}
+
+/**
+ * Create a new content item
+ * @param contentType The type of content to create
+ * @param data The content data (can be JSON or FormData)
+ * @returns Promise with created content data
+ */
+export async function createContent(contentType: string, data: any) {
+  try {
+    // Handle both FormData and regular JSON
+    const isFormData = data instanceof FormData;
+
+    const response = await strapiClient.post(`/${contentType}`, data, {
+      headers: isFormData
+        ? {
+            "Content-Type": "multipart/form-data",
+          }
+        : undefined,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error(`Error creating ${contentType}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Update an existing content item
+ * @param contentType The type of content to update
+ * @param id The item ID to update
+ * @param data The updated content data (can be JSON or FormData)
+ * @returns Promise with updated content data
+ */
+export async function updateContent(
+  contentType: string,
+  id: string | number,
+  data: any
+) {
+  try {
+    // Handle both FormData and regular JSON
+    const isFormData = data instanceof FormData;
+
+    const response = await strapiClient.put(`/${contentType}/${id}`, data, {
+      headers: isFormData
+        ? {
+            "Content-Type": "multipart/form-data",
+          }
+        : undefined,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating ${contentType}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Delete a content item
+ * @param contentType The type of content to delete
+ * @param id The item ID to delete
+ * @returns Promise with deletion result
+ */
+export async function deleteContent(contentType: string, id: string | number) {
+  try {
+    const response = await strapiClient.delete(`/${contentType}/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error deleting ${contentType}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Get full URL for a Strapi image
+ * @param imageUrl Relative URL from Strapi
+ * @returns Complete image URL
+ */
+export function getStrapiMediaUrl(imageUrl: string) {
+  if (!imageUrl) return "";
+
+  // Return full URL for external images
+  if (imageUrl.startsWith("http")) {
+    return imageUrl;
+  }
+
+  // Combine with base URL for relative paths
+  const baseUrl = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+  return `${baseUrl}${imageUrl}`;
 }
