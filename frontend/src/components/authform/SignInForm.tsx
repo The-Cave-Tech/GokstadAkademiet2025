@@ -1,5 +1,3 @@
-"use client";
-
 import { useActionState, useState, useEffect } from "react";
 import { useRouter } from "next/navigation"; // Import useRouter
 import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
@@ -32,7 +30,7 @@ export function SignInForm() {
 
   const { validationErrors, validateField } = useSignInValidation();
   const [formState, formAction] = useActionState(login, initialState);
-  const { setIsAuthenticated } = useAuth();
+  const { setIsAuthenticated, refreshAuthStatus } = useAuth();  // Use the refreshAuthStatus here
   const router = useRouter(); // Initialize router
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,15 +46,21 @@ export function SignInForm() {
       Object.keys(formState.values || {}).length > 0 &&
       !formState.zodErrors &&
       !formState.strapiErrors &&
-      formState.success // Check the success flag
+      formState.success
     ) {
       setIsAuthenticated(true);
-      console.log("[Client] SignInForm - Login successful, redirecting...");
-      router.push("/loggettest"); 
+      
+      // Refresh auth status to get user role
+      refreshAuthStatus().then(() => {
+        router.push('/dashboard');
+      }).catch(() => {
+        // If refresh fails, redirect anyway
+        router.push('/dashboard');
+      });
     }
     
     setIsSubmitting(false);
-  }, [formState, setIsAuthenticated, router]);
+  }, [formState, setIsAuthenticated, refreshAuthStatus, router]);  // Ensure refreshAuthStatus is included here
 
   const inputClass = "w-full p-2 mt-1 border border-gray-300 rounded-md";
   const labelClass = "text-base font-roboto font-normal text-gray-700";
@@ -172,26 +176,25 @@ export function SignInForm() {
             </section>
 
             <ul className="mt-4 flex flex-col gap-2">
-              {[
-                { src: "/authlogo/facebook.svg", text: "Facebook" },
+              {[{ src: "/authlogo/facebook.svg", text: "Facebook" },
                 { src: "/authlogo/microsoft.svg", text: "Microsoft" },
-                { src: "/authlogo/google.svg", text: "Google" },
-              ].map(({ src, text }) => (
-                <li key={text}>
-                  <button type="button" className="flex justify-center border w-full gap-2 rounded-lg p-2 hover:bg-gray-300">
-                    <Image
-                      src={src}
-                      alt={`${text} logo`}
-                      width={24}
-                      height={24}
-                      className="w-6 h-6"
-                    />
-                    <span className="text-gray-900 dark:text-white">
-                      Logg inn med {text}
-                    </span>
-                  </button>
-                </li>
-              ))}
+                { src: "/authlogo/google.svg", text: "Google" }]
+                .map(({ src, text }) => (
+                  <li key={text}>
+                    <button type="button" className="flex justify-center border w-full gap-2 rounded-lg p-2 hover:bg-gray-300">
+                      <Image
+                        src={src}
+                        alt={`${text} logo`}
+                        width={24}
+                        height={24}
+                        className="w-6 h-6"
+                      />
+                      <span className="text-gray-900 dark:text-white">
+                        Logg inn med {text}
+                      </span>
+                    </button>
+                  </li>
+                ))}
             </ul>
           </div>
         </CardFooter>
