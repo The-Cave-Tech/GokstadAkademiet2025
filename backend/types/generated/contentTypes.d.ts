@@ -403,6 +403,7 @@ export interface ApiAuthSettingAuthSetting extends Struct.SingleTypeSchema {
 export interface ApiEventEvent extends Struct.CollectionTypeSchema {
   collectionName: 'events';
   info: {
+    description: '';
     displayName: 'Event';
     pluralName: 'events';
     singularName: 'event';
@@ -411,19 +412,25 @@ export interface ApiEventEvent extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    Content: Schema.Attribute.Blocks;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    Description: Schema.Attribute.Text;
-    dynamicZone: Schema.Attribute.DynamicZone<
-      ['layout.two-columns', 'layout.full-width']
+    EventDate: Schema.Attribute.Date;
+    eventStatus: Schema.Attribute.Enumeration<
+      ['draft,', 'published,', 'canceled,', 'archived']
     >;
-    Image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    EventTime: Schema.Attribute.String;
+    FeaturedImage: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::event.event'> &
       Schema.Attribute.Private;
+    Location: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     Slug: Schema.Attribute.Integer;
+    Summary: Schema.Attribute.Text;
     Title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

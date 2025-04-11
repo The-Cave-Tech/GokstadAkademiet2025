@@ -4,7 +4,8 @@
   "info": {
     "singularName": "event",
     "pluralName": "events",
-    "displayName": "Event"
+    "displayName": "Event",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -16,10 +17,31 @@
     "Slug": {
       "type": "integer"
     },
-    "Description": {
+    "Summary": {
       "type": "text"
     },
-    "Image": {
+    "Content": {
+      "type": "blocks"
+    },
+    "eventStatus": {
+      "type": "enumeration",
+      "enum": [
+        "draft,",
+        "published,",
+        "canceled,",
+        "archived"
+      ]
+    },
+    "EventDate": {
+      "type": "date"
+    },
+    "EventTime": {
+      "type": "string"
+    },
+    "Location": {
+      "type": "string"
+    },
+    "FeaturedImage": {
       "allowedTypes": [
         "images",
         "files",
@@ -28,13 +50,6 @@
       ],
       "type": "media",
       "multiple": false
-    },
-    "dynamicZone": {
-      "type": "dynamiczone",
-      "components": [
-        "layout.two-columns",
-        "layout.full-width"
-      ]
     }
   }
 }
