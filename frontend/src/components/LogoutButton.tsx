@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { logout } from "@/lib/data/actions/auth-actions";
+import { logout } from "@/lib/data/actions/auth";
 import { useAuth } from "@/lib/context/AuthContext";
 
 export function LogoutButton({ className = "" }: { className?: string }) {
