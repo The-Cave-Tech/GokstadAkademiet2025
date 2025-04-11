@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import SignInRoute from '@/app/(auth)/signin/page';
-import SignUpRoute from '@/app/(auth)/signup/page';
+import SignInRoute from '@/app/(public)/(auth)/signin/page';
+import SignUpRoute from '@/app/(public)/(auth)/signup/page';
 
 vi.mock('@/components/authform/SignInForm', () => ({
   SignInForm: () => <div data-testid="mock-signin-form">Sign In Form</div>,

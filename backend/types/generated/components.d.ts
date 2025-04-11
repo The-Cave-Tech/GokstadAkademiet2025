@@ -1,5 +1,21 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface UserProfile extends Struct.ComponentSchema {
+  collectionName: 'components_user_profiles';
+  info: {
+    displayName: 'Profile';
+  };
+  attributes: {};
+}
+
+declare module '@strapi/strapi' {
+  export module Public {
+    export interface ComponentSchemas {
+      'user.profile': UserProfile;
+    }
+  }
+}
+
 export interface LandingPageHeroSection extends Struct.ComponentSchema {
   collectionName: 'components_landing_page_hero_sections';
   info: {
@@ -15,8 +31,8 @@ export interface LandingPageHeroSection extends Struct.ComponentSchema {
   };
 }
 
-export interface UserInformationUserInformation extends Struct.ComponentSchema {
-  collectionName: 'components_user_information_user_informations';
+export interface UserProfile extends Struct.ComponentSchema {
+  collectionName: 'components_user_profiles';
   info: {
     displayName: 'User Information';
   };
@@ -28,6 +44,7 @@ declare module '@strapi/strapi' {
     export interface ComponentSchemas {
       'landing-page.hero-section': LandingPageHeroSection;
       'user-information.user-information': UserInformationUserInformation;
+      'user.profile': UserProfile;
     }
   }
 }

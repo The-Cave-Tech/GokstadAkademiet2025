@@ -4,7 +4,7 @@ import { useState, useEffect, startTransition } from "react";
 import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
 import Link from "next/link";
 import { SiteLogo } from "@/components/ui/SiteLogo";
-import { register } from "@/lib/data/actions/auth-actions";
+import { register } from "@/lib/data/actions/auth";
 import { useActionState } from "react";
 import { ZodErrors } from "@/components/ZodErrors";
 import { PasswordToggle } from "@/components/ui/custom/PasswordToggle";
