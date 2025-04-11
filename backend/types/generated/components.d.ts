@@ -1,5 +1,20 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface LandingPageHeroSection extends Struct.ComponentSchema {
+  collectionName: 'components_landing_page_hero_sections';
+  info: {
+    description: '';
+    displayName: 'HeroSection';
+  };
+  attributes: {
+    landingImage: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    Subtitle: Schema.Attribute.String;
+    Title: Schema.Attribute.String;
+  };
+}
+
 export interface UserProfile extends Struct.ComponentSchema {
   collectionName: 'components_user_profiles';
   info: {
@@ -11,6 +26,7 @@ export interface UserProfile extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'landing-page.hero-section': LandingPageHeroSection;
       'user.profile': UserProfile;
     }
   }

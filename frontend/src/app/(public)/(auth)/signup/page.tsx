@@ -2,6 +2,8 @@
 import { SignUpForm } from "@/components/authform/SignUpForm"; 
 import { AuthBackgroundImage } from "@/components/ui/AuthBackgroundImage";
 
+
+
 export default function SignUpRoute() {
   return (
     <section className="relative flex flex-col custom-lg:flex-row items-center justify-center w-full h-full"
