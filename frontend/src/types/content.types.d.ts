@@ -1,28 +1,11 @@
-// types/content-types.ts (forenklet)
-
-// Base interface for Strapi's API response
+// Minimal interface for Strapi's API response
 export interface StrapiResponse<T> {
   id: number;
   attributes: T;
 }
 
-// Base attributes shared across multiple types
-export interface BaseAttributes {
-  createdAt?: string;
-  updatedAt?: string;
-  publishedAt?: string;
-}
-
-// Media type for featured images or other media
-export interface Media {
-  id: number;
-  url: string;
-  alternativeText?: string;
-  caption?: string;
-}
-
-// Event-specific attributes
-export interface EventAttributes extends BaseAttributes {
+// Simplified event attributes
+export interface EventAttributes {
   title: string;
   shortDescription?: string;
   content?: string;
@@ -30,10 +13,6 @@ export interface EventAttributes extends BaseAttributes {
   endDate?: string;
   location?: string;
   time?: string;
-  featuredImage?: Media;
-  detailsEnabled?: boolean;
-  displayOrder?: number;
-  slug: string;
 }
 
 // Strapi response for events
