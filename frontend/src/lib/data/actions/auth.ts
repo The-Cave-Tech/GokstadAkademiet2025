@@ -14,7 +14,6 @@ import { loginUserService, registerUserService} from "@/lib/data/services/userAu
 import { removeAuthCookie, setAuthCookie } from "@/lib/utils/cookie";
 import { handleStrapiError, handleValidationErrors } from "@/lib/utils/serverAction-errorHandler";
 
-
 /**
  * Registrerer en ny bruker.
  */
@@ -101,20 +100,26 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
   }
 
   try {
-    const { identifier, password } = fields;
-    const rememberMe = fields.remember === "on";
-    
+    const { identifier, password } = fields;    
     const response = await loginUserService({ identifier, password });
     console.log("[Server] Login - Success. JWT:", response.jwt);
     
     if (!response || !response.jwt) {
-      throw new Error("Ingen token mottatt fra serveren")
+      throw new Error("Ingen token mottatt fra serveren");
     }
 
     console.log("[Server] Jwt mottatt");
     
-
-    await setAuthCookie(response.jwt, rememberMe);
+    await setAuthCookie(response.jwt);
+    
+    // Return success state
+    return {
+      ...prevState,
+      zodErrors: null,
+      strapiErrors: null,
+      values: fields,
+      success: true, // Indicate success
+    };
     
   } catch (error) {
     const errorMessage = handleStrapiError(error);
@@ -127,7 +132,6 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
       values: fields,
     };
   }
-  redirect("/loggettest");
 }
 
 /**
