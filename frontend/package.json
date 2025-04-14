@@ -10,6 +10,13 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@tiptap/extension-image": "^2.11.7",
+    "@tiptap/extension-link": "^2.11.7",
+    "@tiptap/extension-table": "^2.11.7",
+    "@tiptap/extension-text-align": "^2.11.7",
+    "@tiptap/pm": "^2.11.7",
+    "@tiptap/react": "^2.11.7",
+    "@tiptap/starter-kit": "^2.11.7",
     "next": "^15.2.4",
     "next-auth": "^4.24.11",
     "node": "^23.11.0",
