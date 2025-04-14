@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_user_profile_account_administrations",
+  "info": {
+    "displayName": "Account Administration"
+  },
+  "options": {},
+  "attributes": {
+    "accountActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "accountCreationDate": {
+      "type": "datetime"
+    },
+    "lastLoginDate": {
+      "type": "datetime"
+    },
+    "deletionReason": {
+      "type": "text",
+      "minLength": 256
+    }
+  }
+}
