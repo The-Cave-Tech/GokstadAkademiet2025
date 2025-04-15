@@ -83,9 +83,7 @@ export interface UserProfilePublicProfile extends Struct.ComponentSchema {
         maxLength: 256;
       }>;
     displayName: Schema.Attribute.String & Schema.Attribute.Required;
-    profileimage: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios'
-    >;
+    profileimage: Schema.Attribute.Media<'images' | 'files'>;
     showAddress: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     showEmail: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     showPhone: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
