@@ -1,11 +1,11 @@
+// app/home/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { fetchStrapiData } from "@/lib/data/services/strapiApiData";
+import { strapiService } from "@/lib/data/services/strapiClient";
+import { mediaService } from "@/lib/data/services/mediaService";
 import ClientMessage from "@/components/ClientMessage";
-
-
 
 interface LandingPageData {
   hero: {
@@ -27,7 +27,10 @@ export default function LandingPageContent() {
   useEffect(() => {
     async function getLandingPageData() {
       try {
-        const response = await fetchStrapiData("/api/landing-page?populate=*");
+        const landingPage = strapiService.single('landing-page');
+        const response = await landingPage.find({
+          populate: '*'
+        });
 
         if (!response.data) {
           throw new Error("Ingen 'data' funnet i Strapi-respons");
@@ -40,12 +43,10 @@ export default function LandingPageContent() {
         };
 
         const introImage = response.data.IntroductionImage;
-        let imageUrl: string | null = null;
-        if (introImage?.url) {
-          imageUrl = introImage.url.startsWith("http")
-            ? introImage.url
-            : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${introImage.url}`;
-        }
+        // Bruk mediaService for å håndtere bildet
+        const imageUrl = mediaService.isValidMedia(introImage) 
+          ? mediaService.getMediaUrl(introImage) 
+          : null;
 
         const introduction = {
           title: response.data.intoductionTitle || "Mangler tittel",
