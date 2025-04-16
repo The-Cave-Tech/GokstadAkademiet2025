@@ -5,12 +5,11 @@ import Image from "next/image";
 import { fetchStrapiData } from "@/lib/data/services/strapiApiData";
 import ClientMessage from "@/components/ClientMessage";
 
-
-
 interface LandingPageData {
   hero: {
     title: string;
     subtitle: string;
+    imageUrl: string | null;
   };
   introduction: {
     title: string;
@@ -34,23 +33,33 @@ export default function LandingPageContent() {
         }
 
         const heroComponent = response.data.Hero;
-        const hero = {
-          title: heroComponent?.Title || "Mangler tittel",
-          subtitle: heroComponent?.Subtitle || "Mangler undertittel",
-        };
-
+        const heroImage = response.data.HeroImage;
         const introImage = response.data.IntroductionImage;
-        let imageUrl: string | null = null;
+
+        let heroImageUrl: string | null = null;
+        if (heroImage?.url) {
+          heroImageUrl = heroImage.url.startsWith("http")
+            ? heroImage.url
+            : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${heroImage.url}`;
+        }
+
+        let introImageUrl: string | null = null;
         if (introImage?.url) {
-          imageUrl = introImage.url.startsWith("http")
+          introImageUrl = introImage.url.startsWith("http")
             ? introImage.url
             : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${introImage.url}`;
         }
 
+        const hero = {
+          title: heroComponent?.Title || "Mangler tittel",
+          subtitle: heroComponent?.Subtitle || "Mangler undertittel",
+          imageUrl: heroImageUrl,
+        };
+
         const introduction = {
           title: response.data.intoductionTitle || "Mangler tittel",
           text: response.data.introductionText || "Mangler tekst",
-          imageUrl,
+          imageUrl: introImageUrl,
         };
 
         setContent({ hero, introduction });
@@ -83,12 +92,12 @@ export default function LandingPageContent() {
     <>
       {/* Hero Section */}
       <section className="relative text-center py-20 px-4 bg-gray-900 text-white">
-      <ClientMessage />
+        <ClientMessage />
         <div className="absolute inset-0 z-0">
-          {content.introduction.imageUrl ? (
+          {content.hero.imageUrl ? (
             <Image
-              src={content.introduction.imageUrl}
-              alt="Landing Image"
+              src={content.hero.imageUrl}
+              alt="Hero Image"
               fill
               className="object-cover opacity-50"
               priority
@@ -110,14 +119,7 @@ export default function LandingPageContent() {
 
       {/* Introduction Section */}
       <section className="py-16 px-4 max-w-6xl mx-auto grid gap-10 md:grid-cols-2 items-center">
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-            {content.introduction.title}
-          </h2>
-          <p className="text-base sm:text-lg leading-relaxed">
-            {content.introduction.text}
-          </p>
-        </div>
+        {/* Bildet til venstre */}
         <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[500px] rounded-xl overflow-hidden shadow-lg">
           {content.introduction.imageUrl ? (
             <Image
@@ -133,6 +135,16 @@ export default function LandingPageContent() {
               <p className="text-gray-600">Bilde mangler</p>
             </div>
           )}
+        </div>
+
+        {/* Tekst til høyre */}
+        <div>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4">
+            {content.introduction.title}
+          </h2>
+          <p className="text-base sm:text-lg leading-relaxed">
+            {content.introduction.text}
+          </p>
         </div>
       </section>
     </>
