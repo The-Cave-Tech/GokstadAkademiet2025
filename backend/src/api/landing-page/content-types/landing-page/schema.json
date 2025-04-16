@@ -16,7 +16,7 @@
       "repeatable": false,
       "component": "landing-page.hero-section"
     },
-    "intoductionTitle": {
+    "introductionTitle": {
       "type": "string"
     },
     "introductionText": {

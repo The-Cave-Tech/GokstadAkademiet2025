@@ -444,11 +444,11 @@ export interface ApiLandingPageLandingPage extends Struct.SingleTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     Hero: Schema.Attribute.Component<'landing-page.hero-section', false>;
-    intoductionTitle: Schema.Attribute.String;
     IntroductionImage: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios'
     >;
     introductionText: Schema.Attribute.Text;
+    introductionTitle: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',

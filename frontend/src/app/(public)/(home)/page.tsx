@@ -27,7 +27,7 @@ export default function LandingPageContent() {
     async function getLandingPageData() {
       try {
         const response = await fetchStrapiData("/api/landing-page?populate=*");
-
+           
         if (!response.data) {
           throw new Error("Ingen 'data' funnet i Strapi-respons");
         }
@@ -36,30 +36,24 @@ export default function LandingPageContent() {
         const heroImage = response.data.HeroImage;
         const introImage = response.data.IntroductionImage;
 
-        let heroImageUrl: string | null = null;
-        if (heroImage?.url) {
-          heroImageUrl = heroImage.url.startsWith("http")
-            ? heroImage.url
-            : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${heroImage.url}`;
-        }
-
-        let introImageUrl: string | null = null;
-        if (introImage?.url) {
-          introImageUrl = introImage.url.startsWith("http")
-            ? introImage.url
-            : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${introImage.url}`;
-        }
+        const getImageUrl = (img: any) => {
+          if (!img?.url) return null;
+          const baseUrl = img.url.startsWith("http")
+            ? img.url
+            : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${img.url}`;
+          return `${baseUrl}?t=${Date.now()}`; 
+        };
 
         const hero = {
           title: heroComponent?.Title || "Mangler tittel",
           subtitle: heroComponent?.Subtitle || "Mangler undertittel",
-          imageUrl: heroImageUrl,
+          imageUrl: getImageUrl(heroImage),
         };
 
         const introduction = {
-          title: response.data.intoductionTitle || "Mangler tittel",
+          title: response.data.introductionTitle || "Mangler tittel",
           text: response.data.introductionText || "Mangler tekst",
-          imageUrl: introImageUrl,
+          imageUrl: getImageUrl(introImage),
         };
 
         setContent({ hero, introduction });
@@ -91,9 +85,9 @@ export default function LandingPageContent() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative text-center py-20 px-4 bg-gray-900 text-white">
+      <section className="relative text-center bg-gray-900 text-white">
         <ClientMessage />
-        <div className="absolute inset-0 z-0">
+        <div className="relative aspect-[1404/547] w-full">
           {content.hero.imageUrl ? (
             <Image
               src={content.hero.imageUrl}
@@ -101,26 +95,25 @@ export default function LandingPageContent() {
               fill
               className="object-cover opacity-50"
               priority
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 100vw"
+              sizes="100vw"
             />
           ) : (
             <div className="w-full h-full bg-gray-700" />
           )}
-        </div>
-        <div className="relative z-10 max-w-4xl mx-auto px-4">
-          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4">
-            {content.hero.title}
-          </h1>
-          <p className="text-base sm:text-lg md:text-2xl">
-            {content.hero.subtitle}
-          </p>
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-4">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4">
+              {content.hero.title}
+            </h1>
+            <p className="text-base sm:text-lg md:text-2xl">
+              {content.hero.subtitle}
+            </p>
+          </div>
         </div>
       </section>
 
       {/* Introduction Section */}
       <section className="py-16 px-4 max-w-6xl mx-auto grid gap-10 md:grid-cols-2 items-center">
-        {/* Bildet til venstre */}
-        <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[500px] rounded-xl overflow-hidden shadow-lg">
+        <div className="relative w-full aspect-[595/418] rounded-xl overflow-hidden shadow-lg">
           {content.introduction.imageUrl ? (
             <Image
               src={content.introduction.imageUrl}
@@ -137,7 +130,7 @@ export default function LandingPageContent() {
           )}
         </div>
 
-        {/* Tekst til høyre */}
+        
         <div>
           <h2 className="text-2xl sm:text-3xl font-bold mb-4">
             {content.introduction.title}
