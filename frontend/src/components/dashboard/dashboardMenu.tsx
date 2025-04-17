@@ -3,9 +3,22 @@
 import Link from "next/link";
 import { useAuth } from "@/lib/context/AuthContext";
 import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function DashboardMenu() {
-  const { userRole } = useAuth();
+  const { isAuthenticated, isAdmin, refreshAuthStatus } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    // Refresh auth status when component mounts
+    refreshAuthStatus();
+    
+    // Redirect if not authenticated
+    if (!isAuthenticated) {
+      router.push("/signin");
+    }
+  }, [isAuthenticated, refreshAuthStatus, router]);
 
   const baseMenuItems = [
     {
@@ -31,7 +44,7 @@ export default function DashboardMenu() {
     {
       href: "/dashboard/favorite",
       title: "Mine favoritter",
-      desc: "Se dine tidligere donasjoner og doner",
+      desc: "Se dine favoritter",
     },
     {
       href: "/dashboard/blogg",
@@ -55,8 +68,7 @@ export default function DashboardMenu() {
       href: "/dashboard/admin/events",
       title: "Administrer Eventer",
       desc: "Se, legg til, endre eventer",
-    },
-    {
+    },{
       href: "/dashboard/admin/prosjekts",
       title: "Administrer Prosjekter",
       desc: "Se, legg til, endre prosjekter",
@@ -73,9 +85,10 @@ export default function DashboardMenu() {
     },
   ];
 
-  const isAdmin = userRole === "Admin/moderator/superadmin";
-  // Ingen filtrering nødvendig siden /dashboard/user/blogg er fjernet fra baseMenuItems
-  const filteredBaseMenuItems = baseMenuItems;
+  // If not authenticated yet, show loading or nothing
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <section className="mx-auto p-4 w-full flex flex-col items-center gap-5">
@@ -85,7 +98,7 @@ export default function DashboardMenu() {
         <div className="flex-grow border-t-4 border-green-400"></div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {filteredBaseMenuItems.map((item) => (
+        {baseMenuItems.map((item) => (
           <Link key={item.href} href={item.href} className="no-underline">
             <Card className="relative flex flex-col bg-cyan-200 shadow-lg shadow-cyan-500/50 p-4 max-w-[350px] h-full">
               <CardHeader>

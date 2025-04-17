@@ -1,4 +1,3 @@
-// lib/data/services/userAuth.ts
 import { SignInFormData, SignUpFormData } from "@/lib/validation/validationSchemas";
 import { strapiService } from "@/lib/data/services/strapiClient";
 
@@ -8,6 +7,10 @@ export interface StrapiAuthResponse {
     id: number;
     username: string;
     email: string;
+    role: {
+      id: number;
+      name: string;
+    };
   };
 }
 
@@ -27,6 +30,14 @@ export async function loginUserService(credentials: LoginUserProps): Promise<Str
     body: {
       identifier: credentials.identifier,
       password: credentials.password
+    }
+  });
+}
+
+export async function getUserWithRole(token: string): Promise<StrapiAuthResponse['user']> {
+  return strapiService.fetch<StrapiAuthResponse['user']>('users/me?populate[role][fields][0]=name', {
+    headers: {
+      Authorization: `Bearer ${token}`
     }
   });
 }
