@@ -24,14 +24,40 @@ export const strapiService = {
   // Add the fetch method
   async fetch<T>(endpoint: string, options: StrapiRequestOptions = {}): Promise<T> {
     try {
-      // Convert options to what Strapi Client expects
+      // For auth endpoints, use native fetch which gives better error handling
+      if (endpoint.startsWith('auth/')) {
+        const url = `${process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337/api'}/${endpoint}`;
+        
+        const response = await fetch(url, {
+          method: options.method || 'get',
+          headers: {
+            "Content-Type": "application/json",
+            ...options.headers
+          },
+          body: options.body ? JSON.stringify(options.body) : undefined
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          // Format error to match what handleStrapiError expects
+          if (data.error && data.error.message) {
+            throw new Error(data.error.message);
+          } else {
+            throw new Error(`Request failed with status ${response.status}`);
+          }
+        }
+        
+        return data as T;
+      }
+      
+      // For non-auth endpoints, use the Strapi client
       const fetchOptions: RequestInit & { params?: Record<string, string | number | boolean> } = {
-        method: options.method,
+        method: options.method || 'get',
         headers: options.headers,
         params: options.params,
       };
       
-      // If body is provided, stringify it and set proper content type
       if (options.body) {
         fetchOptions.body = JSON.stringify(options.body);
         fetchOptions.headers = {
@@ -41,6 +67,17 @@ export const strapiService = {
       }
       
       const response = await client.fetch(endpoint, fetchOptions);
+      
+      // Check if response is ok
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (errorData.error && errorData.error.message) {
+          throw new Error(errorData.error.message);
+        } else {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+      }
+      
       return await response.json() as T;
     } catch (error) {
       console.error("Strapi Client Error:", error);

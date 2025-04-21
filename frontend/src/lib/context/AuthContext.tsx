@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { getAuthCookie } from "@/lib/utils/cookie";
 import { getUserWithRole } from "@/lib/data/services/userAuth";
+import { useRouter } from "next/navigation";
 
 type AuthContextType = {
   isAuthenticated: boolean;
@@ -10,14 +11,23 @@ type AuthContextType = {
   refreshAuthStatus: () => Promise<void>;
   userRole: string | null;
   isAdmin: boolean;
+  handleSuccessfulAuth: () => void; // Ny metode for å håndtere vellykket innlogging
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+
+  // Sentralisert metode for å håndtere vellykket autentisering
+  const handleSuccessfulAuth = () => {
+    console.log("[AuthContext] Håndterer vellykket autentisering");
+    // Her kan du legge til annen logikk som trengs ved vellykket innlogging
+    router.push("/dashboard");
+  };
 
   const refreshAuthStatus = async () => {
     try {
@@ -61,7 +71,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsAuthenticated, 
       refreshAuthStatus, 
       userRole,
-      isAdmin 
+      isAdmin,
+      handleSuccessfulAuth
     }}>
       {children}
     </AuthContext.Provider>

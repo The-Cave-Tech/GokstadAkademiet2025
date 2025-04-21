@@ -29,7 +29,7 @@ export function SignInForm() {
 
   const { validationErrors, validateField } = useSignInValidation();
   const [formState, formAction] = useActionState(login, initialState);
-  const { setIsAuthenticated, refreshAuthStatus } = useAuth(); 
+  const { setIsAuthenticated, refreshAuthStatus, handleSuccessfulAuth } = useAuth(); 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -47,12 +47,14 @@ export function SignInForm() {
       formState.success
     ) {
       setIsAuthenticated(true);
-      
       refreshAuthStatus();
+      
+      // Bruk den sentraliserte handleSuccessfulAuth-metoden
+      handleSuccessfulAuth();
     }
     
     setIsSubmitting(false);
-  }, [formState, setIsAuthenticated, refreshAuthStatus]);
+  }, [formState, setIsAuthenticated, refreshAuthStatus, handleSuccessfulAuth]);
 
   const inputClass = "w-full p-2 mt-1 border border-gray-300 rounded-md";
   const labelClass = "text-base font-roboto font-normal text-gray-700";
