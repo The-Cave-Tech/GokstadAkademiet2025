@@ -1,5 +1,3 @@
-// src/api/user-profile/routes/user-profile-custom.ts
-
 export default {
     routes: [
       // Get current user's profile
