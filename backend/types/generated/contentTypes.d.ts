@@ -487,6 +487,10 @@ export interface ApiUserProfileUserProfile extends Struct.CollectionTypeSchema {
       'api::user-profile.user-profile'
     > &
       Schema.Attribute.Private;
+    notificationSettings: Schema.Attribute.Component<
+      'user-profile.notification-settings',
+      false
+    >;
     personalInformation: Schema.Attribute.Component<
       'user-profile.personal-information',
       false

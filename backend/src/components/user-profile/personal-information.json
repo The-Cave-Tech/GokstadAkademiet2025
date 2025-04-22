@@ -36,11 +36,6 @@
     },
     "city": {
       "type": "string"
-    },
-    "notificationSettings": {
-      "type": "component",
-      "repeatable": false,
-      "component": "user-profile.notification-settings"
     }
   }
 }

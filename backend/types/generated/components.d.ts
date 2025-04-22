@@ -56,10 +56,6 @@ export interface UserProfilePersonalInformation extends Struct.ComponentSchema {
     city: Schema.Attribute.String;
     fullName: Schema.Attribute.String & Schema.Attribute.Required;
     gender: Schema.Attribute.Enumeration<['Mann', 'Kvinne', 'Annet']>;
-    notificationSettings: Schema.Attribute.Component<
-      'user-profile.notification-settings',
-      false
-    >;
     phoneNumber: Schema.Attribute.String;
     postalCode: Schema.Attribute.String &
       Schema.Attribute.SetMinMaxLength<{

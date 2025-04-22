@@ -27,6 +27,11 @@
       "repeatable": false,
       "component": "user-profile.personal-information"
     },
+    "notificationSettings": {
+      "type": "component",
+      "repeatable": false,
+      "component": "user-profile.notification-settings"
+    },
     "accountAdministration": {
       "type": "component",
       "repeatable": false,
