@@ -60,31 +60,6 @@ $RECYCLE.BIN/
 *.out
 *.pid
 
-
-############################
-# Logs and databases
-############################
-
-.tmp
-*.log
-*.sql
-*.sqlite
-*.sqlite3
-
-
-############################
-# Misc.
-############################
-
-*#
-ssl
-.idea
-nbproject
-public/uploads/*
-!public/uploads/.gitkeep
-.tsbuildinfo
-.eslintcache
-
 ############################
 # Node.js
 ############################
