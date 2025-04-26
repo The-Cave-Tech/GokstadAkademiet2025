@@ -1,5 +1,5 @@
 // services/contentService.ts
-import strapiService from "@/lib/data/strapiService";
+import { strapiService } from "./strapiClient";
 import {
   StrapiResponse,
   EventAttributes,
