@@ -2,9 +2,12 @@
 
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { useState } from "react";
+import { Button } from "@/components/ui/custom/button";
+import { PageIcons } from "@/components/ui/custom/PageIcons";
 
 export function PersonalInfo() {
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "Mitt Fullenavn",
     birthDate: "01.01.2000",
@@ -15,8 +18,20 @@ export function PersonalInfo() {
     city: "By",
   });
 
-  const handleEditToggle = () => {
-    setIsEditing(!isEditing);
+  const handleSave = async () => {
+    if (isEditing) {
+      setIsLoading(true);
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        setIsEditing(false);
+      } catch (error) {
+        console.error("Feil ved lagring av profil:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setIsEditing(true);
+    }
   };
 
   const handleInputChange = (e) => {
@@ -27,11 +42,13 @@ export function PersonalInfo() {
     }));
   };
 
+  const buttonState = isLoading ? "loading" : isEditing ? "save" : "edit";
+
   return (
     <Card className="w-full bg-[rgb(245,238,231)]">
       <CardHeader className="flex items-center gap-3 rounded-md">
         <figure className="w-10 h-10 rounded-full bg-[#d1d1d1] flex items-center justify-center">
-          <span className="text-black text-xl" aria-hidden="true">🔒</span>
+          <PageIcons name="lock" directory="profileIcons" size={24} alt="Private opplysninger" />
           <figcaption className="sr-only">Ikon for private opplysninger</figcaption>
         </figure>
         <div>
@@ -227,22 +244,14 @@ export function PersonalInfo() {
 
           {/* Fjerde div: Endre/Lagre-knapp nederst */}
           <div className="pt-4 flex justify-end">
-            <button
-              type="button"
-              onClick={handleEditToggle}
-              className="group relative flex items-center px-1 py-1 rounded-full transition-all duration-200 focus:outline-none bg-blue-600"
-              aria-label={isEditing ? "Lagre personlig informasjon" : "Endre personlig informasjon"}
-            >
-              {/* Hvit sirkel med ikon */}
-              <span className="w-10 h-10 flex items-center justify-center bg-white rounded-full border border-gray-300 shadow-sm group-hover:bg-white z-10">
-                {isEditing ? "💾" : "✏️"}
-              </span>
-
-              {/* "Endre" eller "Lagre"-tekst som dukker opp på hover */}
-              <span className="overflow-hidden max-w-0 group-hover:max-w-[70px] transition-all duration-300 text-white font-bold whitespace-nowrap group-hover:px-2 rounded-full group-hover:ml-0">
-                {isEditing ? "Lagre" : "Endre"}
-              </span>
-            </button>
+          <Button
+                  variant="change"
+                  changeState={buttonState}
+                  onClick={handleSave}
+                  disabled={isLoading}
+                  ariaLabel={isEditing ? "Lagre offentlig profil" : "Endre offentlig profil"}
+                  type="button"
+                />
           </div>
         </form>
       </CardBody>

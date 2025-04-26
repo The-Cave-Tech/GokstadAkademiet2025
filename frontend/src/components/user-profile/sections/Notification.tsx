@@ -3,28 +3,54 @@
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { useState } from "react";
 import ToggleSwitch from "@/components/ui/custom/ToogleSwith";
+import PageIcons from "@/components/ui/custom/PageIcons";
 
 export function Notification() {
   const [formData, setFormData] = useState({
     importantUpdates: true,
     newsletter: true
   });
+  
+  const [toggleLoadingStates, setToggleLoadingStates] = useState({
+    importantUpdates: false,
+    newsletter: false
+  });
 
-  const handleToggleChange = (settingName, enabled) => {
-    setFormData(prev => ({
+  const handleToggleChange = (settingName) => async (enabled) => {
+    // Start loading
+    setToggleLoadingStates(prev => ({
       ...prev,
-      [settingName]: enabled
+      [settingName]: true
     }));
     
-    // Her kunne vi hatt et API-kall for å lagre endringen direkte
-    console.log(`Endret ${settingName} til ${enabled}`);
+    try {
+      // Simulerer API-kall
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Oppdater tilstand etter vellykket API-kall
+      setFormData(prev => ({
+        ...prev,
+        [settingName]: enabled
+      }));
+      
+      console.log(`Endret ${settingName} til ${enabled}`);
+    } catch (error) {
+      console.error(`Feil ved oppdatering av ${settingName}:`, error);
+      // Ikke oppdater tilstand ved feil
+    } finally {
+      // Avslutt loading uansett
+      setToggleLoadingStates(prev => ({
+        ...prev,
+        [settingName]: false
+      }));
+    }
   };
 
   return (
     <Card className="w-full bg-[rgb(245,238,231)]">
       <CardHeader className="flex items-center gap-3 rounded-md">
         <figure className="w-10 h-10 rounded-full bg-[#d1d1d1] flex items-center justify-center">
-          <span className="text-black text-xl" aria-hidden="true">🔔</span>
+          <PageIcons name="notification" directory="profileIcons" size={24} alt="Varslingsinnstillinger" />
           <figcaption className="sr-only">Ikon for varslingsinnstillinger</figcaption>
         </figure>
         <div>
@@ -47,7 +73,8 @@ export function Notification() {
             </div>
             <ToggleSwitch
               enabled={formData.importantUpdates}
-              onChange={(enabled) => handleToggleChange('importantUpdates', enabled)}
+              onChange={handleToggleChange('importantUpdates')}
+              isLoading={toggleLoadingStates.importantUpdates}
             />
           </div>
           
@@ -61,7 +88,8 @@ export function Notification() {
             </div>
             <ToggleSwitch
               enabled={formData.newsletter}
-              onChange={(enabled) => handleToggleChange('newsletter', enabled)}
+              onChange={handleToggleChange('newsletter')}
+              isLoading={toggleLoadingStates.newsletter}
             />
           </div>
         </div>

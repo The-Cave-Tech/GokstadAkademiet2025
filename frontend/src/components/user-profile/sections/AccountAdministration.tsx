@@ -2,6 +2,7 @@
 
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { useState } from "react";
+import PageIcons from "@/components/ui/custom/PageIcons";
 
 export function AccountAdministration() {
   const [isConfirming, setIsConfirming] = useState(false);
@@ -24,10 +25,10 @@ export function AccountAdministration() {
   };
 
   return (
-    <Card className="w-full bg-[rgb(255,235,235)]">
+    <Card className="w-full bg-[#d1c0c0]">
       <CardHeader className="flex items-center gap-3 rounded-md">
         <figure className="w-10 h-10 rounded-full bg-[#ff6b6b] flex items-center justify-center">
-          <span className="text-white text-xl" aria-hidden="true">⚠️</span>
+          <PageIcons name="warning" directory="profileIcons" size={24} alt="Advarsel" color="white" />
           <figcaption className="sr-only">Ikon for kontoadministrasjon</figcaption>
         </figure>
         <div>
