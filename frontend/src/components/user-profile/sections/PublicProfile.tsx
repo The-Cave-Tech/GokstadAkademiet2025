@@ -1,108 +1,166 @@
-"use client";
+"use client"
+import React, { useState, useEffect } from 'react';
+import { Card, CardBody, CardFooter, CardHeader } from '@/components/ui/Card';
 
-import { Card, CardBody, CardFooter, CardHeader } from "@/components/ui/Card";
-import { useState } from "react";
-import { ProfileImageUploader } from "@/components/ui/userProfile/ProfileImageUploader";
-import ToggleSwitch from "@/components/ui/custom/ToogleSwith";
-import { Button } from "@/components/ui/custom/button";
-import PageIcons from "@/components/ui/custom/PageIcons";
+import ToggleSwitch from '@/components/ui/custom/ToogleSwith';
+import { Button } from '@/components/ui/custom/button';
+import PageIcons from '@/components/ui/custom/PageIcons';
+import { 
+  getUserProfile,
+  updateDisplayName, 
+  updateBiography,
+  updateShowEmail,
+  updateShowPhone,
+  updateShowAddress,
+  UserProfile 
+} from '@/lib/data/services/publicProfileService';
+import { ProfileImageUploader } from '@/components/ui/userProfile/ProfileImageUploader';
 
-export function PublicProfile() {
+interface PublicProfileProps {
+  profile: UserProfile;
+  onProfileUpdate: (updatedProfile: UserProfile) => void;
+}
+
+export function PublicProfile({ profile, onProfileUpdate }: PublicProfileProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    displayName: "Mitt visningsnavn",
-    biography: "Kort om meg",
-    profileImage: "https://images.desenio.com/zoom/pre0082_2.jpg",
-  });
+  const [isSaving, setIsSaving] = useState(false);
   
-  // Håndterer kontaktinformasjon separat for uavhengig oppdatering
+  // Separate state for each field
+  const [displayName, setDisplayName] = useState(profile.publicProfile?.displayName || "");
+  const [biography, setBiography] = useState(profile.publicProfile?.biography || "");
+  const [originalDisplayName, setOriginalDisplayName] = useState(profile.publicProfile?.displayName || "");
+  const [originalBiography, setOriginalBiography] = useState(profile.publicProfile?.biography || "");
+  
+  // Contact information toggles
   const [contactInfo, setContactInfo] = useState({
-    showEmail: true,
-    showPhone: false,
-    showAddress: false
+    showEmail: profile.publicProfile?.showEmail || false,
+    showPhone: profile.publicProfile?.showPhone || false,
+    showAddress: profile.publicProfile?.showAddress || false
   });
 
-  // Loading states for toggles
-  const [toggleLoadingStates, setToggleLoadingStates] = useState({
+  // Loading states for individual fields and actions
+  const [fieldLoadingStates, setFieldLoadingStates] = useState({
+    displayName: false,
+    biography: false,
     showEmail: false,
     showPhone: false,
     showAddress: false
   });
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  // Update states when the profile changes
+  useEffect(() => {
+    if (profile && profile.publicProfile) {
+      const displayNameValue = profile.publicProfile.displayName || "";
+      const biographyValue = profile.publicProfile.biography || "";
+      
+      setDisplayName(displayNameValue);
+      setBiography(biographyValue);
+      setOriginalDisplayName(displayNameValue);
+      setOriginalBiography(biographyValue);
+      
+      setContactInfo({
+        showEmail: profile.publicProfile.showEmail || false,
+        showPhone: profile.publicProfile.showPhone || false,
+        showAddress: profile.publicProfile.showAddress || false
+      });
+    }
+  }, [profile]);
+
+  // Handle input changes
+  const handleDisplayNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDisplayName(e.target.value);
+  };
+  
+  const handleBiographyChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setBiography(e.target.value);
   };
 
-  const handleToggleChange = (key) => async (enabled) => {
-    // Start loading
-    setToggleLoadingStates(prev => ({
-      ...prev,
-      [key]: true
-    }));
+  // Handle toggle changes for contact information
+  const handleToggleChange = (key: 'showEmail' | 'showPhone' | 'showAddress') => async (enabled: boolean) => {
+    setFieldLoadingStates(prev => ({ ...prev, [key]: true }));
     
     try {
-      // Simulerer API-kall
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Oppdater tilstand etter vellykket API-kall
       setContactInfo(prev => ({
         ...prev,
         [key]: enabled
       }));
       
-      console.log(`Endret ${key} til ${enabled}`);
+      let updatedProfile;
+      
+      if (key === 'showEmail') {
+        updatedProfile = await updateShowEmail(enabled);
+      } else if (key === 'showPhone') {
+        updatedProfile = await updateShowPhone(enabled);
+      } else if (key === 'showAddress') {
+        updatedProfile = await updateShowAddress(enabled);
+      }
+      
+      if (updatedProfile) {
+        onProfileUpdate(updatedProfile);
+      }
     } catch (error) {
       console.error(`Feil ved oppdatering av ${key}:`, error);
-      // Ikke oppdater tilstand ved feil
+      // Revert on error
+      setContactInfo(prev => ({
+        ...prev,
+        [key]: !enabled
+      }));
     } finally {
-      // Avslutt loading uansett
-      setToggleLoadingStates(prev => ({
-        ...prev,
-        [key]: false
-      }));
+      setFieldLoadingStates(prev => ({ ...prev, [key]: false }));
     }
   };
 
+  // Save text fields sequentially
   const handleSave = async () => {
-    if (isEditing) {
-      setIsLoading(true);
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setIsEditing(false);
-      } catch (error) {
-        console.error("Feil ved lagring av profil:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    } else {
+    if (!isEditing) {
       setIsEditing(true);
+      return;
+    }
+    
+    try {
+      setIsSaving(true);
+      
+      // Track if any updates were made
+      let updatesPerformed = false;
+      
+      // Update display name if changed
+      if (displayName !== originalDisplayName) {
+        await updateDisplayName(displayName);
+        updatesPerformed = true;
+      }
+      
+      // Update biography if changed
+      if (biography !== originalBiography) {
+        await updateBiography(biography);
+        updatesPerformed = true;
+      }
+      
+      // If any updates were performed, refresh the profile
+      if (updatesPerformed) {
+        const updatedProfile = await getUserProfile();
+        onProfileUpdate(updatedProfile);
+      }
+      
+      // Update original values
+      setOriginalDisplayName(displayName);
+      setOriginalBiography(biography);
+      
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Feil ved lagring av profil:", error);
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setFormData((prev) => ({
-        ...prev,
-        profileImage: imageUrl,
-      }));
-    }
+  // Cancel editing and revert changes
+  const handleCancel = () => {
+    setDisplayName(originalDisplayName);
+    setBiography(originalBiography);
+    setIsEditing(false);
   };
 
-  const handleImageDelete = () => {
-    setFormData((prev) => ({
-      ...prev,
-      profileImage: "/images/default-profile.png", 
-    }));
-  };
-
-  const buttonState = isLoading ? "loading" : isEditing ? "save" : "edit";
+  const buttonState = isSaving ? "loading" : isEditing ? "save" : "edit";
 
   return (
     <Card className="w-full bg-profile-background p-2">
@@ -116,23 +174,20 @@ export function PublicProfile() {
         </div>
       </CardHeader>
 
-      <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
-        <CardBody className="py-5 px-4 rounded-md">
-          <div className="grid grid-cols-1 md:grid-cols-[auto,1fr] gap-6 md:gap-10 items-baseline">
-            {/* Profilbilde */}
-            <div className="justify-self-center md:justify-self-start">
-              <ProfileImageUploader
-                imageUrl={formData.profileImage}
-                isEditing={isEditing}
-                onImageChange={handleImageChange}
-                onImageDelete={handleImageDelete}
-              />
-            </div>
+      <CardBody className="py-5 px-4 rounded-md">
+        <div className="grid grid-cols-1 md:grid-cols-[auto,1fr] gap-6 md:gap-10 items-start">
+          <div className="justify-self-center md:justify-self-start">
+            <ProfileImageUploader
+              profile={profile}
+              onImageUpdate={onProfileUpdate}
+            />
+          </div>
 
-            {/* Visningsnavn, biografi og knapp */}
-            <div className="flex flex-col space-y-4 min-h-full">
-              {/* Visningsnavn */}
-              <div>
+          {/* Form for display name and biography */}
+          <div className="flex flex-col space-y-4">
+            <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+              {/* Display name */}
+              <div className="mb-4">
                 <label htmlFor="displayName" className="block p-1 font-medium text-gray-700 leading-6">
                   Visningsnavn
                 </label>
@@ -141,21 +196,18 @@ export function PublicProfile() {
                   name="displayName"
                   type="text"
                   readOnly={!isEditing}
-                  value={formData.displayName}
-                  onChange={handleInputChange}
+                  value={displayName}
+                  onChange={handleDisplayNameChange}
                   placeholder="Skriv inn visningsnavn"
                   aria-describedby="displayName-description"
                   className={`w-full px-4 py-2 rounded-md shadow-sm border border-gray-300 focus:outline-none ${
                     isEditing ? "bg-white" : "bg-gray-100"
                   }`}
                 />
-                <p id="displayName-description" className="sr-only">
-                  Ditt visningsnavn som er synlig for alle
-                </p>
               </div>
 
-              {/* Biografi */}
-              <div>
+              {/* Biography */}
+              <div className="mb-4">
                 <label htmlFor="biography" className="block mb-1 font-medium text-gray-700 leading-6">
                   Biografi
                 </label>
@@ -165,35 +217,44 @@ export function PublicProfile() {
                   readOnly={!isEditing}
                   rows={4}
                   placeholder="Skriv om deg selv"
-                  value={formData.biography}
-                  onChange={handleInputChange}
+                  value={biography}
+                  onChange={handleBiographyChange}
                   aria-describedby="biography-description"
                   maxLength={256}
                   className={`w-full px-4 py-2 rounded-md shadow-sm border border-gray-300 focus:outline-none ${
                     isEditing ? "bg-white" : "bg-gray-100"
                   }`}
                 />
-                <p id="biography-description" className="sr-only">
-                  En kort beskrivelse om deg selv som er synlig for alle
-                </p>
               </div>
 
-              {/* Endre/Lagre-knapp */}
-              <div className="flex justify-end mt-auto">
+              {/* Edit/Save button */}
+              <div className="flex justify-end space-x-2">
+                {isEditing && (
+                  <Button
+                    variant="secondary"
+                    onClick={handleCancel}
+                    disabled={isSaving}
+                    ariaLabel="Avbryt redigering"
+                    type="button"
+                  >
+                    Avbryt
+                  </Button>
+                )}
                 <Button
                   variant="change"
                   changeState={buttonState}
                   onClick={handleSave}
-                  disabled={isLoading}
+                  disabled={isSaving}
                   ariaLabel={isEditing ? "Lagre offentlig profil" : "Endre offentlig profil"}
                   type="button"
                 />
               </div>
-            </div>
+            </form>
           </div>
-        </CardBody>
-      </form>
+        </div>
+      </CardBody>
 
+      {/* Contact info section */}
       <CardFooter className="flex justify-center border-t border-gray-350 px-3 sm:p-6">
         <div className="space-y-1 w-full max-w-3xl">
           <h3 className="text-lg font-medium text-gray-600">Kontaktinformasjon</h3>
@@ -206,7 +267,7 @@ export function PublicProfile() {
               <ToggleSwitch
                 enabled={contactInfo.showEmail}
                 onChange={handleToggleChange("showEmail")}
-                isLoading={toggleLoadingStates.showEmail}
+                isLoading={fieldLoadingStates.showEmail}
               />
             </div>
             <div className="flex items-center justify-between sm:justify-start sm:space-x-2">
@@ -216,7 +277,7 @@ export function PublicProfile() {
               <ToggleSwitch
                 enabled={contactInfo.showPhone}
                 onChange={handleToggleChange("showPhone")}
-                isLoading={toggleLoadingStates.showPhone}
+                isLoading={fieldLoadingStates.showPhone}
               />
             </div>
             <div className="flex items-center justify-between sm:justify-start sm:space-x-2">
@@ -226,7 +287,7 @@ export function PublicProfile() {
               <ToggleSwitch
                 enabled={contactInfo.showAddress}
                 onChange={handleToggleChange("showAddress")}
-                isLoading={toggleLoadingStates.showAddress}
+                isLoading={fieldLoadingStates.showAddress}
               />
             </div>
           </div>

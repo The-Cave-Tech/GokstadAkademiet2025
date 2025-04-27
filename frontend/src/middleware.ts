@@ -30,7 +30,7 @@ export default async function middleware(request: NextRequest) {
     if (!authCookie) return NextResponse.redirect(new URL("/signin", request.url));
 
     try {
-      const userData = await getUserWithRole(authCookie);
+      const userData = await getUserWithRole();
       const role = userData.role?.name || "Authenticated users";
 
       if (role !== "Admin/moderator/superadmin") {

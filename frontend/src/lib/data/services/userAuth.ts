@@ -34,10 +34,6 @@ export async function loginUserService(credentials: LoginUserProps): Promise<Str
   });
 }
 
-export async function getUserWithRole(token: string): Promise<StrapiAuthResponse['user']> {
-  return strapiService.fetch<StrapiAuthResponse['user']>('users/me?populate[role][fields][0]=name', {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
+export async function getUserWithRole(): Promise<StrapiAuthResponse['user']> {
+  return strapiService.fetch<StrapiAuthResponse['user']>('users/me?populate[role][fields][0]=name');
 }
