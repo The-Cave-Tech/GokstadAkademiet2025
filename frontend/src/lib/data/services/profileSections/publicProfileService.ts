@@ -1,82 +1,11 @@
-import { strapiService } from "./strapiClient";
+// src/lib/data/services/profileSections/publicProfileService.tsx
 
-export interface UserProfile {
-  id: number;
-  documentId?: string;
-  users_permissions_user: number;
-  publicProfile?: {
-    displayName?: string;
-    biography?: string;
-    showEmail?: boolean;
-    showPhone?: boolean;
-    showAddress?: boolean;
-    profileimage?: {
-      id: number;
-      url: string;
-      formats?: {
-        thumbnail?: { url: string };
-        small?: { url: string };
-        medium?: { url: string };
-        large?: { url: string };
-      };
-    };
-  };
-}
 
-// Interface for uploaded file response
-interface UploadedFile {
-  id: number;
-  name: string;
-  url: string;
-  size: number;
-  mime: string;
-  provider: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
+import { strapiService } from "../strapiClient";
+import { getUserProfile, UploadedFile, UserProfile } from "../userProfile";
 
 // Type for valid profile field values
 type ProfileFieldValue = string | number | boolean | null | { id: number } | undefined;
-
-/**
- * Henter brukerens profil med valgfrie populerte relasjoner
- */
-export async function getUserProfile(populate: string = 'publicProfile,personalInformation,notificationSettings,accountAdministration'): Promise<UserProfile> {
-  try {
-    return await strapiService.fetch<UserProfile>(`user-profiles/me?populate=${populate}`);
-  } catch (error) {
-    console.error("Feil ved henting av brukerprofil:", error);
-    throw new Error("Kunne ikke hente brukerprofil");
-  }
-}
-
-
-export async function getProfileImage(): Promise<UserProfile> {
-  return getUserProfile('publicProfile.profileimage');
-}
-
-/**
- * Intern hjelpefunksjon for å sende oppdateringer til API
- * OBS: Denne brukes bare internt av de spesialiserte funksjonene
- */
-async function sendProfileUpdate(field: string, value: ProfileFieldValue): Promise<UserProfile> {
-  try {
-    const currentProfile = await getUserProfile('publicProfile.profileimage');
-    const mergedData = {
-      ...(currentProfile.publicProfile || {}),
-      [field]: value
-    };
-    
-    // Send den fullstendige oppdaterte publicProfile tilbake til API-et
-    return await strapiService.fetch<UserProfile>("user-profiles/me/public-profile", {
-      method: "PUT",
-      body: { data: mergedData }
-    });
-  } catch (error) {
-    console.error(`Feil ved oppdatering av ${field}:`, error);
-    throw error;
-  }
-}
 
 /**
  * Oppdaterer visningsnavnet
@@ -111,6 +40,29 @@ export async function updateShowPhone(showPhone: boolean): Promise<UserProfile> 
  */
 export async function updateShowAddress(showAddress: boolean): Promise<UserProfile> {
   return sendProfileUpdate('showAddress', showAddress);
+}
+
+export async function getProfileImage(): Promise<UserProfile> {
+  return getUserProfile('publicProfile.profileimage');
+}
+
+
+export async function sendProfileUpdate(field: string, value: ProfileFieldValue): Promise<UserProfile> {
+  try {
+    const currentProfile = await getUserProfile('publicProfile.profileimage');
+    const mergedData = {
+      ...(currentProfile.publicProfile || {}),
+      [field]: value
+    };
+    
+    return await strapiService.fetch<UserProfile>("user-profiles/me/public-profile", {
+      method: "PUT",
+      body: { data: mergedData }
+    });
+  } catch (error) {
+    console.error(`Feil ved oppdatering av ${field}:`, error);
+    throw error;
+  }
 }
 
 /**
@@ -154,7 +106,7 @@ export async function deleteProfileImage(): Promise<UserProfile> {
 
 export function getProfileImageUrl(profile: UserProfile | null): string {
   if (!profile?.publicProfile?.profileimage) {
-    return "/profileIcons/avatar-default.svg"; // Standardbilde
+    return "/profileIcons/avatar-default.svg"; 
   }
   
   return strapiService.media.getMediaUrl(profile.publicProfile.profileimage);

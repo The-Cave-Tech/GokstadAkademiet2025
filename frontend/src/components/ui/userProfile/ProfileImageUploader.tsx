@@ -1,7 +1,8 @@
 "use client";
 import Image from "next/image";
 import { useState } from "react";
-import { UserProfile, uploadProfileImage, deleteProfileImage, getProfileImageUrl } from '@/lib/data/services/publicProfileService';
+import { uploadProfileImage, deleteProfileImage, getProfileImageUrl } from '@/lib/data/services/profileSections/publicProfileService';
+import { UserProfile } from "@/lib/data/services/userProfile";
 
 interface ProfileImageUploaderProps {
   profile: UserProfile;

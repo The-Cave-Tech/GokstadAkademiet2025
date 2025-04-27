@@ -1,12 +1,12 @@
 // src/components/user-profile/ProfilePageContainer.tsx
 "use client"
 import React, { useState, useEffect } from 'react';
-import { getUserProfile, UserProfile } from '@/lib/data/services/publicProfileService';
 import { PublicProfile } from './sections/PublicProfile';
 import { PersonalInfo } from './sections/PersonalInfo';
 import { Notification } from './sections/Notification';
 import { LoginInfoManage } from './sections/LoginInfoManage';
 import { AccountAdministration } from './sections/AccountAdministration';
+import { getUserProfile, UserProfile } from '@/lib/data/services/userProfile';
 
 export function ProfilePageContainer() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -46,7 +46,10 @@ export function ProfilePageContainer() {
   return (
     <section className="space-y-6">
       <PublicProfile profile={profile} onProfileUpdate={handleProfileUpdate} />
-          <PersonalInfo />
+      <PersonalInfo 
+        profile={profile} 
+        onProfileUpdate={handleProfileUpdate} 
+      />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <LoginInfoManage />
             <Notification />

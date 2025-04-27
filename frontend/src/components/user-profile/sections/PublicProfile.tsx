@@ -1,3 +1,5 @@
+// src/components/user-profile/sections/PublicPorfile.tsx
+
 "use client"
 import React, { useState, useEffect } from 'react';
 import { Card, CardBody, CardFooter, CardHeader } from '@/components/ui/Card';
@@ -6,15 +8,14 @@ import ToggleSwitch from '@/components/ui/custom/ToogleSwith';
 import { Button } from '@/components/ui/custom/button';
 import PageIcons from '@/components/ui/custom/PageIcons';
 import { 
-  getUserProfile,
   updateDisplayName, 
   updateBiography,
   updateShowEmail,
   updateShowPhone,
   updateShowAddress,
-  UserProfile 
-} from '@/lib/data/services/publicProfileService';
+} from '@/lib/data/services/profileSections/publicProfileService';
 import { ProfileImageUploader } from '@/components/ui/userProfile/ProfileImageUploader';
+import { getUserProfile, UserProfile } from '@/lib/data/services/userProfile';
 
 interface PublicProfileProps {
   profile: UserProfile;
