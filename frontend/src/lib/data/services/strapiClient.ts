@@ -1,104 +1,102 @@
-// lib/data/services/strapiClient.ts
+// src/lib/data/services/strapiClient.ts
 import { strapi } from "@strapi/client";
+import { getAuthCookie } from "@/lib/utils/cookie";
 
-// Define types for fetch options
-type StrapiRequestOptions = {
-  method?: "get" | "post" | "put" | "delete";
-  body?: Record<string, unknown>;
-  params?: Record<string, string | number | boolean>;
-  headers?: Record<string, string>;
-};
+// Basisurl for Strapi API
+const BASE_URL =
+  process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337/api";
 
-// Get the base URL without the /api suffix for media URLs
-const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL
-  ? process.env.NEXT_PUBLIC_STRAPI_API_URL.replace("/api", "")
-  : "http://localhost:1337";
-
-// Create the Strapi client with the full API URL
-export const client = strapi({
-  baseURL:
-    process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337/api",
+// Opprett Strapi-klienten
+export const strapiClient = strapi({
+  baseURL: BASE_URL,
 });
 
-// Export helper functions
+// Definere typer for fetch-opsjoner som ikke utvider RequestInit
+export interface StrapiRequestOptions {
+  method?: string;
+  headers?: Record<string, string>;
+  body?: Record<string, unknown> | FormData;
+  params?: Record<string, string | number | boolean>;
+}
+
+// Hjelpefunksjon for å hente autentisert Strapi-klient
+export async function getAuthenticatedClient() {
+  const token = await getAuthCookie();
+
+  return strapi({
+    baseURL: BASE_URL,
+    auth: token || undefined,
+  });
+}
+
+// Grunnleggende hjelpefunksjoner for enklere bruk
 export const strapiService = {
-  // Add the fetch method
+  // Fetch-metode med automatisk autentisering
   async fetch<T>(
     endpoint: string,
     options: StrapiRequestOptions = {}
   ): Promise<T> {
     try {
-      // For auth endpoints, use native fetch which gives better error handling
-      if (endpoint.startsWith("auth/")) {
-        const url = `${process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337/api"}/${endpoint}`;
+      const token = await getAuthCookie();
 
-        const response = await fetch(url, {
-          method: options.method || "get",
-          headers: {
-            "Content-Type": "application/json",
-            ...options.headers,
-          },
-          body: options.body ? JSON.stringify(options.body) : undefined,
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          // Format error to match what handleStrapiError expects
-          if (data.error && data.error.message) {
-            throw new Error(data.error.message);
-          } else {
-            throw new Error(`Request failed with status ${response.status}`);
-          }
-        }
-
-        return data as T;
-      }
-
-      // For non-auth endpoints, use the Strapi client
-      const fetchOptions: RequestInit & {
-        params?: Record<string, string | number | boolean>;
-      } = {
-        method: options.method || "get",
-        headers: options.headers,
-        params: options.params,
+      // Sett opp headers på riktig måte
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
       };
 
-      if (options.body) {
-        fetchOptions.body = JSON.stringify(options.body);
-        fetchOptions.headers = {
-          "Content-Type": "application/json",
-          ...fetchOptions.headers,
-        };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
       }
 
-      const response = await client.fetch(endpoint, fetchOptions);
+      // Kopier over alle egendefinerte headers
+      if (options.headers) {
+        Object.entries(options.headers).forEach(([key, value]) => {
+          headers[key] = value;
+        });
+      }
 
-      // Check if response is ok
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (errorData.error && errorData.error.message) {
-          throw new Error(errorData.error.message);
+      // Konverter body basert på type
+      let bodyToSend: BodyInit | null = null;
+      if (options.body) {
+        if (options.body instanceof FormData) {
+          bodyToSend = options.body;
+          delete headers["Content-Type"];
         } else {
-          throw new Error(`Request failed with status ${response.status}`);
+          bodyToSend = JSON.stringify(options.body);
         }
       }
 
-      return (await response.json()) as T;
+      // Lag en standard RequestInit
+      const fetchOptions: RequestInit = {
+        method: options.method || "GET",
+        headers,
+        body: bodyToSend,
+      };
+
+      const response = await fetch(`${BASE_URL}/${endpoint}`, fetchOptions);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.error?.message || response.statusText || "Ukjent feil"
+        );
+      }
+
+      return response.json();
     } catch (error) {
-      console.error("Strapi Client Error:", error);
+      console.error("strapiService fetch error:", error);
       throw error;
     }
   },
 
   // Hjelpefunksjoner for collection types
   collection(name: string) {
-    return client.collection(name);
+    return strapiClient.collection(name);
   },
 
   // Hjelpefunksjoner for single types
   single(name: string) {
-    return client.single(name);
+    return strapiClient.single(name);
   },
 
   // Mediahåndtering
@@ -106,12 +104,15 @@ export const strapiService = {
     getMediaUrl(media: unknown): string {
       if (!media) return "";
 
-      // Handle string
+      const baseMediaUrl =
+        process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+
+      // Håndter string
       if (typeof media === "string") {
-        return media.startsWith("http") ? media : `${baseUrl}${media}`;
+        return media.startsWith("http") ? media : `${baseMediaUrl}${media}`;
       }
 
-      // Handle object with url property
+      // Håndter objekt med url property
       if (
         media &&
         typeof media === "object" &&
@@ -119,10 +120,81 @@ export const strapiService = {
         typeof media.url === "string"
       ) {
         const url = media.url;
-        return url.startsWith("http") ? url : `${baseUrl}${url}`;
+        return url.startsWith("http") ? url : `${baseMediaUrl}${url}`;
+      }
+
+      // Håndter data.attributes.url struktur (vanlig i Strapi v4)
+      if (media && typeof media === "object" && "data" in media && media.data) {
+        const data = media.data;
+        if (data && typeof data === "object" && "attributes" in data) {
+          const attributes = data.attributes;
+          if (
+            attributes &&
+            typeof attributes === "object" &&
+            "url" in attributes
+          ) {
+            const url = attributes.url;
+            return typeof url === "string"
+              ? url.startsWith("http")
+                ? url
+                : `${baseMediaUrl}${url}`
+              : "";
+          }
+        }
       }
 
       return "";
+    },
+
+    getAltText(media: unknown): string {
+      if (!media || typeof media !== "object") return "";
+
+      if (
+        "alternativeText" in media &&
+        typeof media.alternativeText === "string"
+      ) {
+        return media.alternativeText;
+      }
+
+      if ("alt" in media && typeof media.alt === "string") {
+        return media.alt;
+      }
+
+      // Håndter data.attributes struktur
+      if (
+        "data" in media &&
+        media.data &&
+        typeof media.data === "object" &&
+        "attributes" in media.data
+      ) {
+        const attributes = media.data.attributes;
+        if (attributes && typeof attributes === "object") {
+          if (
+            "alternativeText" in attributes &&
+            typeof attributes.alternativeText === "string"
+          ) {
+            return attributes.alternativeText;
+          }
+        }
+      }
+
+      return "";
+    },
+
+    isValidMedia(media: unknown): boolean {
+      if (!media) return false;
+
+      if (typeof media === "string") return true;
+
+      if (typeof media === "object" && media !== null) {
+        return (
+          "url" in media ||
+          ("data" in media && media.data !== null) ||
+          "formats" in media
+        );
+      }
+
+      return false;
     },
   },
 };

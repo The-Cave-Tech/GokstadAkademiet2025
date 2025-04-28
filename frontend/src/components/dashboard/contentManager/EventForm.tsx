@@ -1,23 +1,28 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { EventResponse, EventAttributes } from "@/types/content.types";
-import TipTapEditor from "@/components/ui/TipTapEditor";
 import Image from "next/image";
+import TipTapEditor from "@/components/ui/TipTapEditor";
+import { EventResponse, EventAttributes } from "@/types/content.types";
+import { eventsService } from "@/lib/data/services/eventService";
 
 interface EventFormProps {
-  item: EventResponse | null;
-  onSave: (data: Partial<EventAttributes>) => Promise<void>;
+  event: EventResponse | null;
+  onSave: (
+    data: Partial<EventAttributes>,
+    eventCardImage?: File | null
+  ) => Promise<void>;
   onCancel: () => void;
   isLoading: boolean;
 }
 
 const EventForm: React.FC<EventFormProps> = ({
-  item,
+  event,
   onSave,
   onCancel,
   isLoading,
 }) => {
+  // Initialize form data with empty values or event data
   const [formData, setFormData] = useState<Partial<EventAttributes>>({
     title: "",
     Description: "",
@@ -30,23 +35,22 @@ const EventForm: React.FC<EventFormProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [eventCardImage, setEventCardImage] = useState<File | null>(null);
-  const [eventImages, setEventImages] = useState<File[]>([]);
 
   // Populate form with existing data if editing
   useEffect(() => {
-    if (item) {
+    if (event) {
       setFormData({
-        title: item.attributes.title || "",
-        Description: item.attributes.Description || "",
-        content: item.attributes.content || "",
+        title: event.attributes.title || "",
+        Description: event.attributes.Description || "",
+        content: event.attributes.content || "",
         startDate:
-          item.attributes.startDate || new Date().toISOString().split("T")[0],
-        endDate: item.attributes.endDate || "",
-        time: item.attributes.time || "",
-        location: item.attributes.location || "",
+          event.attributes.startDate || new Date().toISOString().split("T")[0],
+        endDate: event.attributes.endDate || "",
+        time: event.attributes.time || "",
+        location: event.attributes.location || "",
       });
     }
-  }, [item]);
+  }, [event]);
 
   // Handle input changes
   const handleChange = (
@@ -75,14 +79,8 @@ const EventForm: React.FC<EventFormProps> = ({
     const files = e.target.files;
     if (files && files.length > 0) {
       setEventCardImage(files[0]);
-    }
-  };
-
-  // Handle event images upload
-  const handleEventImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      setEventImages(Array.from(files));
+    } else {
+      setEventCardImage(null);
     }
   };
 
@@ -91,11 +89,11 @@ const EventForm: React.FC<EventFormProps> = ({
     const newErrors: Record<string, string> = {};
 
     if (!formData.title?.trim()) {
-      newErrors.title = "Tittel er påkrevd";
+      newErrors.title = "Title is required";
     }
 
     if (!formData.startDate) {
-      newErrors.startDate = "Dato er påkrevd";
+      newErrors.startDate = "Start date is required";
     }
 
     setErrors(newErrors);
@@ -106,11 +104,20 @@ const EventForm: React.FC<EventFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      return;
-    }
+    const formattedTime = formData.time?.includes(":")
+      ? `${formData.time}:00.000` // Add seconds and milliseconds if missing
+      : formData.time;
 
-    await onSave(formData);
+    const eventData = {
+      ...formData,
+      time: formattedTime,
+    };
+
+    try {
+      await onSave(eventData, eventCardImage);
+    } catch (err) {
+      console.error("Error submitting form:", err);
+    }
   };
 
   return (
@@ -118,7 +125,7 @@ const EventForm: React.FC<EventFormProps> = ({
       {/* Title */}
       <div>
         <label className="block text-sm font-medium mb-1" htmlFor="title">
-          Tittel <span className="text-red-500">*</span>
+          Title <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
@@ -139,7 +146,7 @@ const EventForm: React.FC<EventFormProps> = ({
       {/* Description */}
       <div>
         <label className="block text-sm font-medium mb-1" htmlFor="Description">
-          Beskrivelse
+          Description
         </label>
         <textarea
           id="Description"
@@ -155,7 +162,7 @@ const EventForm: React.FC<EventFormProps> = ({
       {/* Start Date */}
       <div>
         <label className="block text-sm font-medium mb-1" htmlFor="startDate">
-          Dato <span className="text-red-500">*</span>
+          Start Date <span className="text-red-500">*</span>
         </label>
         <input
           type="date"
@@ -176,7 +183,7 @@ const EventForm: React.FC<EventFormProps> = ({
       {/* End Date */}
       <div>
         <label className="block text-sm font-medium mb-1" htmlFor="endDate">
-          Sluttdato (valgfritt)
+          End Date (optional)
         </label>
         <input
           type="date"
@@ -192,7 +199,7 @@ const EventForm: React.FC<EventFormProps> = ({
       {/* Time */}
       <div>
         <label className="block text-sm font-medium mb-1" htmlFor="time">
-          Tidspunkt
+          Time
         </label>
         <input
           type="time"
@@ -208,7 +215,7 @@ const EventForm: React.FC<EventFormProps> = ({
       {/* Location */}
       <div>
         <label className="block text-sm font-medium mb-1" htmlFor="location">
-          Sted
+          Location
         </label>
         <input
           type="text"
@@ -227,7 +234,7 @@ const EventForm: React.FC<EventFormProps> = ({
           className="block text-sm font-medium mb-1"
           htmlFor="eventCardImage"
         >
-          Kortbilde
+          Card Image
         </label>
         <input
           type="file"
@@ -238,12 +245,14 @@ const EventForm: React.FC<EventFormProps> = ({
           className="w-full border border-gray-300 rounded-md px-3 py-2"
           disabled={isLoading}
         />
-        {item?.attributes.eventCardImage?.data && !eventCardImage && (
+        {event?.attributes.eventCardImage?.data && !eventCardImage && (
           <div className="mt-2">
-            <p className="text-sm text-gray-500 mb-1">Nåværende bilde:</p>
+            <p className="text-sm text-gray-500 mb-1">Current image:</p>
             <div className="relative h-32 w-48 rounded overflow-hidden">
               <Image
-                src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${item.attributes.eventCardImage.data.attributes.url}`}
+                src={eventsService.getMediaUrl(
+                  event.attributes.eventCardImage.data.attributes.url
+                )}
                 alt="Event card image"
                 fill
                 className="object-cover"
@@ -253,55 +262,16 @@ const EventForm: React.FC<EventFormProps> = ({
         )}
       </div>
 
-      {/* Event Images */}
-      <div>
-        <label className="block text-sm font-medium mb-1" htmlFor="eventImages">
-          Bilder
-        </label>
-        <input
-          type="file"
-          id="eventImages"
-          name="eventImages"
-          onChange={handleEventImagesChange}
-          accept="image/*"
-          multiple
-          className="w-full border border-gray-300 rounded-md px-3 py-2"
-          disabled={isLoading}
-        />
-        {item?.attributes.eventImages?.data &&
-          item.attributes.eventImages.data.length > 0 &&
-          !eventImages.length && (
-            <div className="mt-2">
-              <p className="text-sm text-gray-500 mb-1">Nåværende bilder:</p>
-              <div className="flex flex-wrap gap-2">
-                {item.attributes.eventImages.data.map((image) => (
-                  <div
-                    key={image.id}
-                    className="relative h-24 w-24 rounded overflow-hidden"
-                  >
-                    <Image
-                      src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${image.attributes.url}`}
-                      alt="Event image"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-      </div>
-
       {/* Content (WYSIWYG) */}
       <div>
         <label className="block text-sm font-medium mb-1" htmlFor="content">
-          Innhold
+          Content
         </label>
         <TipTapEditor
           value={formData.content || ""}
           onChange={handleEditorChange}
           disabled={isLoading}
-          placeholder="Skriv detaljert innhold om eventet her..."
+          placeholder="Write detailed content about the event here..."
         />
       </div>
 
@@ -313,7 +283,7 @@ const EventForm: React.FC<EventFormProps> = ({
           className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded"
           disabled={isLoading}
         >
-          Avbryt
+          Cancel
         </button>
         <button
           type="submit"
@@ -342,10 +312,10 @@ const EventForm: React.FC<EventFormProps> = ({
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 ></path>
               </svg>
-              Lagrer...
+              Saving...
             </>
           ) : (
-            "Lagre"
+            "Save"
           )}
         </button>
       </div>

@@ -12,6 +12,7 @@ interface TipTapEditorProps {
   onChange: (value: string) => void;
   placeholder?: string;
   disabled?: boolean;
+  onImageUpload?: (file: File) => Promise<string>; // Function to handle image upload
 }
 
 const TipTapEditor: React.FC<TipTapEditorProps> = ({
@@ -19,6 +20,7 @@ const TipTapEditor: React.FC<TipTapEditorProps> = ({
   onChange,
   placeholder = "Skriv innhold her...",
   disabled = false,
+  onImageUpload,
 }) => {
   const [mounted, setMounted] = useState(false);
 
@@ -29,13 +31,27 @@ const TipTapEditor: React.FC<TipTapEditorProps> = ({
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Image,
-      Link.configure({
-        openOnClick: false,
+      Image.extend({
+        addAttributes() {
+          return {
+            src: { default: null },
+            alt: { default: null },
+            width: { default: "100px" }, // Default width for images
+            height: { default: "auto" },
+          };
+        },
+        renderHTML({ HTMLAttributes }) {
+          return [
+            "img",
+            {
+              ...HTMLAttributes,
+              style: `width: ${HTMLAttributes.width}; height: ${HTMLAttributes.height};`,
+            },
+          ];
+        },
       }),
-      TextAlign.configure({
-        types: ["heading", "paragraph"],
-      }),
+      Link.configure({ openOnClick: false }),
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
     ],
     content: value,
     editable: !disabled,
@@ -44,14 +60,47 @@ const TipTapEditor: React.FC<TipTapEditorProps> = ({
     },
   });
 
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (file && onImageUpload) {
+      try {
+        const imageUrl = await onImageUpload(file); // Upload the image and get the URL
+
+        // Determine the current text alignment
+        const currentAlignment =
+          editor?.getAttributes("paragraph").textAlign || "left";
+
+        // Map alignment to styles
+        const alignmentStyle =
+          currentAlignment === "center"
+            ? "display: block; margin: 0 auto;"
+            : currentAlignment === "right"
+              ? "float: right;"
+              : "float: left;";
+
+        // Insert the image with the alignment style
+        editor
+          ?.chain()
+          .focus()
+          .setImage({ src: imageUrl, width: "100px", style: alignmentStyle })
+          .run();
+      } catch (error) {
+        console.error("Image upload failed:", error);
+      }
+    }
+  };
+
   if (!mounted) {
     return <div className="border rounded min-h-[300px] bg-gray-50" />;
   }
 
   return (
     <div className="border rounded-md overflow-hidden">
+      {/* Toolbar */}
       <div className="bg-gray-50 p-2 border-b flex flex-wrap gap-2">
-        {/* Text formatting */}
+        {/* Bold */}
         <button
           onClick={() => editor?.chain().focus().toggleBold().run()}
           disabled={
@@ -62,22 +111,10 @@ const TipTapEditor: React.FC<TipTapEditorProps> = ({
           }`}
           title="Fet"
         >
-          <svg viewBox="0 0 24 24" width="24" height="24" className="w-5 h-5">
-            <path
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"
-            ></path>
-            <path
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"
-            ></path>
-          </svg>
+          <b>B</b>
         </button>
 
+        {/* Italic */}
         <button
           onClick={() => editor?.chain().focus().toggleItalic().run()}
           disabled={
@@ -88,32 +125,57 @@ const TipTapEditor: React.FC<TipTapEditorProps> = ({
           }`}
           title="Kursiv"
         >
-          <svg viewBox="0 0 24 24" width="24" height="24" className="w-5 h-5">
-            <line
-              x1="19"
-              y1="4"
-              x2="10"
-              y2="4"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <line
-              x1="14"
-              y1="20"
-              x2="5"
-              y2="20"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <line
-              x1="15"
-              y1="4"
-              x2="9"
-              y2="20"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-          </svg>
+          <i>I</i>
+        </button>
+
+        <div className="w-px h-6 bg-gray-300 mx-1"></div>
+
+        {/* Image Alignment */}
+        <button
+          onClick={() =>
+            editor
+              ?.chain()
+              .focus()
+              .updateAttributes("image", { style: "float: left;" })
+              .run()
+          }
+          disabled={disabled}
+          className="p-1 rounded hover:bg-gray-200"
+          title="Venstrejuster bilde"
+        >
+          Left
+        </button>
+
+        <button
+          onClick={() =>
+            editor
+              ?.chain()
+              .focus()
+              .updateAttributes("image", {
+                style: "display: block; margin: 0 auto;",
+              })
+              .run()
+          }
+          disabled={disabled}
+          className="p-1 rounded hover:bg-gray-200"
+          title="Midtstill bilde"
+        >
+          Center
+        </button>
+
+        <button
+          onClick={() =>
+            editor
+              ?.chain()
+              .focus()
+              .updateAttributes("image", { style: "float: right;" })
+              .run()
+          }
+          disabled={disabled}
+          className="p-1 rounded hover:bg-gray-200"
+          title="Høyrejuster bilde"
+        >
+          Right
         </button>
 
         <div className="w-px h-6 bg-gray-300 mx-1"></div>
@@ -129,7 +191,7 @@ const TipTapEditor: React.FC<TipTapEditorProps> = ({
           }`}
           title="Overskrift 2"
         >
-          <span className="px-1 font-bold">H2</span>
+          H2
         </button>
 
         <button
@@ -142,7 +204,7 @@ const TipTapEditor: React.FC<TipTapEditorProps> = ({
           }`}
           title="Overskrift 3"
         >
-          <span className="px-1 font-bold">H3</span>
+          H3
         </button>
 
         <div className="w-px h-6 bg-gray-300 mx-1"></div>
@@ -156,56 +218,7 @@ const TipTapEditor: React.FC<TipTapEditorProps> = ({
           }`}
           title="Punktliste"
         >
-          <svg viewBox="0 0 24 24" width="24" height="24" className="w-5 h-5">
-            <line
-              x1="8"
-              y1="6"
-              x2="21"
-              y2="6"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <line
-              x1="8"
-              y1="12"
-              x2="21"
-              y2="12"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <line
-              x1="8"
-              y1="18"
-              x2="21"
-              y2="18"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <line
-              x1="3"
-              y1="6"
-              x2="3.01"
-              y2="6"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <line
-              x1="3"
-              y1="12"
-              x2="3.01"
-              y2="12"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <line
-              x1="3"
-              y1="18"
-              x2="3.01"
-              y2="18"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-          </svg>
+          •
         </button>
 
         <button
@@ -216,45 +229,7 @@ const TipTapEditor: React.FC<TipTapEditorProps> = ({
           }`}
           title="Nummerert liste"
         >
-          <svg viewBox="0 0 24 24" width="24" height="24" className="w-5 h-5">
-            <line
-              x1="10"
-              y1="6"
-              x2="21"
-              y2="6"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <line
-              x1="10"
-              y1="12"
-              x2="21"
-              y2="12"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <line
-              x1="10"
-              y1="18"
-              x2="21"
-              y2="18"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <path
-              d="M4 6h1v4"
-              stroke="currentColor"
-              strokeWidth="2"
-              fill="none"
-            />
-            <path d="M4 10h2" stroke="currentColor" strokeWidth="2" />
-            <path
-              d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"
-              stroke="currentColor"
-              strokeWidth="2"
-              fill="none"
-            />
-          </svg>
+          1.
         </button>
 
         <div className="w-px h-6 bg-gray-300 mx-1"></div>
@@ -273,62 +248,25 @@ const TipTapEditor: React.FC<TipTapEditorProps> = ({
           }`}
           title="Legg til lenke"
         >
-          <svg viewBox="0 0 24 24" width="24" height="24" className="w-5 h-5">
-            <path
-              d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
-              stroke="currentColor"
-              fill="none"
-              strokeWidth="2"
-            />
-            <path
-              d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
-              stroke="currentColor"
-              fill="none"
-              strokeWidth="2"
-            />
-          </svg>
+          🔗
         </button>
 
-        {/* Image */}
-        <button
-          onClick={() => {
-            const url = prompt("Enter image URL");
-            if (url) {
-              editor?.chain().focus().setImage({ src: url }).run();
-            }
-          }}
-          disabled={disabled}
-          className="p-1 rounded hover:bg-gray-200"
-          title="Legg til bilde"
+        {/* Image Upload */}
+        <label
+          htmlFor="image-upload"
+          className="p-1 rounded hover:bg-gray-200 cursor-pointer"
+          title="Last opp bilde"
         >
-          <svg viewBox="0 0 24 24" width="24" height="24" className="w-5 h-5">
-            <rect
-              x="3"
-              y="3"
-              width="18"
-              height="18"
-              rx="2"
-              ry="2"
-              stroke="currentColor"
-              fill="none"
-              strokeWidth="2"
-            />
-            <circle
-              cx="8.5"
-              cy="8.5"
-              r="1.5"
-              stroke="currentColor"
-              fill="none"
-              strokeWidth="2"
-            />
-            <polyline
-              points="21 15 16 10 5 21"
-              stroke="currentColor"
-              fill="none"
-              strokeWidth="2"
-            />
-          </svg>
-        </button>
+          🖼️
+          <input
+            id="image-upload"
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleImageUpload}
+            disabled={disabled}
+          />
+        </label>
 
         <div className="w-px h-6 bg-gray-300 mx-1"></div>
 
@@ -466,6 +404,7 @@ const TipTapEditor: React.FC<TipTapEditorProps> = ({
         </button>
       </div>
 
+      {/* Editor Content */}
       <EditorContent
         editor={editor}
         className="prose max-w-none p-4 min-h-[300px]"

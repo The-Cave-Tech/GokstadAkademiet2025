@@ -1,39 +1,16 @@
-// Minimal interface for Strapi's API response
-export interface StrapiResponse<T> {
-  id: number;
-  attributes: T;
-}
-
 // Media type
 export interface Media {
-  data: {
-    id: number;
-    attributes: {
-      url: string;
-      alternativeText?: string;
-      width?: number;
-      height?: number;
-      formats?: Record<string, any>;
-    };
-  } | null;
+  id: number;
+  url: string;
+  alternativeText?: string;
+  width?: number;
+  height?: number;
+  formats?: Record<string, any>;
 }
 
-// Multiple media
-export interface MediaCollection {
-  data: Array<{
-    id: number;
-    attributes: {
-      url: string;
-      alternativeText?: string;
-      width?: number;
-      height?: number;
-      formats?: Record<string, any>;
-    };
-  }>;
-}
-
-// Event attributes matching our Strapi structure
+// Event attributes matching the updated structure
 export interface EventAttributes {
+  id: number; // Include the ID directly in the attributes
   title: string;
   Description?: string;
   content?: string;
@@ -42,11 +19,10 @@ export interface EventAttributes {
   time?: string;
   location?: string;
   eventCardImage?: Media;
-  eventImages?: MediaCollection;
   createdAt?: string;
   updatedAt?: string;
   publishedAt?: string;
 }
 
-// Strapi response for events
-export type EventResponse = StrapiResponse<EventAttributes>;
+// Event response type (directly represents the event structure)
+export type EventResponse = EventAttributes;
