@@ -22,8 +22,7 @@
       ]
     },
     "phoneNumber": {
-      "type": "string",
-      "regex": "^[2-9]\\d{7}$"
+      "type": "string"
     },
     "streetAddress": {
       "type": "string"
