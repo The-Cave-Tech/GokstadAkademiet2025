@@ -71,8 +71,8 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
       id: "phoneNumber",
       label: "Telefonnummer",
       type: "tel",
-      placeholder: "Skriv inn telefonnummer",
-      description: "Ditt telefonnummer som er privat",
+      placeholder: "+47 123 456 78",
+      description: "Ditt telefonnummer som er privat (landkode legges til automatisk)",
       updateFn: updatePhoneNumber
     },
     {
@@ -136,6 +136,41 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
 
   // Generic handler for input changes
   const handleInputChange = (fieldId: keyof PersonalInformation, value: string) => {
+    // Special handling for phone number
+    if (fieldId === "phoneNumber") {
+      // Remove all non-digit characters first
+      const digitsOnly = value.replace(/\D/g, "");
+      
+      // Format the phone number
+      let formattedNumber = "";
+      
+      if (digitsOnly.length > 0) {
+        // Add +47 prefix if not already starting with + and not empty
+        if (!value.trim().startsWith("+")) {
+          formattedNumber = "+47 ";
+        } else if (value.startsWith("+")) {
+          // Preserve existing country code if any
+          const countryCodeMatch = value.match(/^\+(\d+)/);
+          if (countryCodeMatch) {
+            formattedNumber = `+${countryCodeMatch[1]} `;
+          }
+        }
+        
+        // Format the remaining digits with spaces
+        const formatGroups = (num: string): string => {
+          if (num.length <= 3) return num;
+          if (num.length <= 6) return `${num.slice(0, 3)} ${num.slice(3)}`;
+          return `${num.slice(0, 3)} ${num.slice(3, 6)} ${num.slice(6, 8)}`;
+        };
+        
+        // Only format the local part (after country code)
+        const localPart = digitsOnly.slice(digitsOnly.startsWith("47") ? 2 : 0);
+        formattedNumber += formatGroups(localPart);
+      }
+      
+      value = formattedNumber || value;
+    }
+    
     setFormValues(prev => ({
       ...prev,
       [fieldId]: value
@@ -258,6 +293,12 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
             required={required}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
               handleInputChange(id, e.target.value)}
+            // Apply special handling for telephone input
+            onBlur={id === "phoneNumber" ? (e) => {
+              if (e.target.value && !e.target.value.startsWith("+")) {
+                handleInputChange(id, "+47 " + e.target.value.replace(/\D/g, ""));
+              }
+            } : undefined}
           />
         )}
         
