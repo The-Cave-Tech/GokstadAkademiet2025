@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import EventForm from "@/components/dashboard/contentManager/EventForm";
+import EventForm from "@/components/dashboard/contentManager/ContentForm";
 import { eventsService } from "@/lib/data/services/eventService";
-import { EventAttributes, EventResponse } from "@/types/content.types";
+import { EventAttributes } from "@/types/content.types";
 
 export default function EditEventPage() {
-  const [event, setEvent] = useState<EventResponse | null>(null);
+  const [event, setEvent] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);

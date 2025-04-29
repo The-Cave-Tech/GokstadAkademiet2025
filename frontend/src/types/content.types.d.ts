@@ -1,3 +1,4 @@
+// frontend/src/types/content.types.d.ts
 // Media type
 export interface Media {
   id: number;
@@ -26,3 +27,25 @@ export interface EventAttributes {
 
 // Event response type (directly represents the event structure)
 export type EventResponse = EventAttributes;
+
+// Project attributes
+export interface ProjectAttributes {
+  id: number;
+  title: string;
+  description?: string;
+  content?: string;
+  status?: "planning" | "in-progress" | "completed";
+  startDate?: string;
+  endDate?: string;
+  projectImage?: Media;
+  githubUrl?: string;
+  demoUrl?: string;
+  technologies?: string[];
+  category?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  publishedAt?: string;
+}
+
+// Project response type
+export type ProjectResponse = ProjectAttributes;

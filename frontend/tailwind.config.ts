@@ -10,14 +10,19 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        roboto: ['var(--font-roboto)', 'sans-serif'],
+        roboto: ["var(--font-roboto)", "sans-serif"],
       },
       screens: {
-        'custom-lg': '850px', 
+        "custom-lg": "850px",
       },
       colors: {
-        'zodValidation': '#b41400',
-        background: "var(--background)"
+        zodValidation: "#b41400",
+        background: "var(--background)",
+        primary: "#1D4ED8", // Example: Primary blue
+        secondary: "#9333EA", // Example: Secondary purple
+        accent: "#F59E0B", // Example: Accent yellow
+        danger: "#DC2626", // Example: Danger red
+        success: "#16A34A", // Example: Success green
       },
     },
   },

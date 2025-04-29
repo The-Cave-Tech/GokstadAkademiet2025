@@ -3,8 +3,7 @@ import { strapi } from "@strapi/client";
 import { getAuthCookie } from "@/lib/utils/cookie";
 
 // Basisurl for Strapi API
-const BASE_URL =
-  process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337/api";
+const BASE_URL = "http://localhost:1337/api";
 
 // Opprett Strapi-klienten
 export const strapiClient = strapi({
@@ -39,7 +38,7 @@ export const strapiService = {
     try {
       const token = await getAuthCookie();
 
-      // Sett opp headers på riktig måte
+      // Set up headers
       const headers: HeadersInit = {
         "Content-Type": "application/json",
       };
@@ -48,25 +47,25 @@ export const strapiService = {
         headers["Authorization"] = `Bearer ${token}`;
       }
 
-      // Kopier over alle egendefinerte headers
+      // Merge custom headers
       if (options.headers) {
         Object.entries(options.headers).forEach(([key, value]) => {
           headers[key] = value;
         });
       }
 
-      // Konverter body basert på type
+      // Prepare the request body
       let bodyToSend: BodyInit | null = null;
       if (options.body) {
         if (options.body instanceof FormData) {
           bodyToSend = options.body;
-          delete headers["Content-Type"];
+          delete headers["Content-Type"]; // Let the browser set the correct boundary
         } else {
           bodyToSend = JSON.stringify(options.body);
         }
       }
 
-      // Lag en standard RequestInit
+      // Create the fetch options
       const fetchOptions: RequestInit = {
         method: options.method || "GET",
         headers,
@@ -75,11 +74,17 @@ export const strapiService = {
 
       const response = await fetch(`${BASE_URL}/${endpoint}`, fetchOptions);
 
+      // Handle non-OK responses
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.error?.message || response.statusText || "Ukjent feil"
+          errorData.error?.message || response.statusText || "Unknown error"
         );
+      }
+
+      // Handle empty responses (e.g., 204 No Content)
+      if (response.status === 204) {
+        return {} as T; // Return an empty object for void responses
       }
 
       return response.json();

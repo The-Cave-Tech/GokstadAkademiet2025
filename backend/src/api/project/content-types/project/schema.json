@@ -1,10 +1,10 @@
 {
   "kind": "collectionType",
-  "collectionName": "events",
+  "collectionName": "projects",
   "info": {
-    "singularName": "event",
-    "pluralName": "events",
-    "displayName": "event",
+    "singularName": "project",
+    "pluralName": "projects",
+    "displayName": "Project",
     "description": ""
   },
   "options": {
@@ -14,25 +14,13 @@
     "title": {
       "type": "string"
     },
-    "Description": {
-      "type": "text"
-    },
     "content": {
-      "type": "blocks"
+      "type": "richtext"
     },
-    "startDate": {
-      "type": "date"
-    },
-    "endDate": {
-      "type": "date"
-    },
-    "time": {
-      "type": "time"
-    },
-    "location": {
+    "description": {
       "type": "string"
     },
-    "eventCardImage": {
+    "projectImage": {
       "type": "media",
       "multiple": false,
       "required": false,

@@ -57,7 +57,7 @@ export default function DashboardMenu() {
       desc: "Se, legg til, endre eventer",
     },
     {
-      href: "/dashboard/admin/prosjekts",
+      href: "/dashboard/admin/projects",
       title: "Administrer Prosjekter",
       desc: "Se, legg til, endre prosjekter",
     },

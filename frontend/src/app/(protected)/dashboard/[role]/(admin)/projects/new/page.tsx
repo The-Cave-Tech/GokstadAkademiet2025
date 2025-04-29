@@ -2,7 +2,7 @@
 
 import React from "react";
 import ContentForm from "@/components/dashboard/contentManager/ContentForm";
-import { eventsService } from "@/lib/data/services/eventService";
+import { projectService } from "@/lib/data/services/projectService";
 
 const colors = {
   primary: "rgb(121, 85, 72)", // Brown
@@ -14,9 +14,9 @@ const colors = {
   },
 };
 
-const NewEventPage = () => {
+const NewProjectPage = () => {
   const handleSave = async (data: any, image?: File | null) => {
-    await eventsService.create(data, image);
+    await projectService.create(data, image);
   };
 
   return (
@@ -33,7 +33,7 @@ const NewEventPage = () => {
           className="px-6 py-5 sm:px-8 sm:py-6"
           style={{ backgroundColor: colors.primary, color: "white" }}
         >
-          <h1 className="text-2xl sm:text-3xl font-bold">Create New Event</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">Create New Project</h1>
         </div>
 
         {/* Form */}
@@ -43,23 +43,14 @@ const NewEventPage = () => {
             onCancel={() => console.log("Cancelled")}
             isLoading={false}
             config={{
-              type: "event",
+              type: "project",
               fields: [
                 { name: "title", label: "Title", type: "text", required: true },
                 { name: "description", label: "Description", type: "textarea" },
-                {
-                  name: "startDate",
-                  label: "Start Date",
-                  type: "date",
-                  required: true,
-                },
-                { name: "endDate", label: "End Date", type: "date" },
-                { name: "time", label: "Time", type: "time" },
-                { name: "location", label: "Location", type: "text" },
                 { name: "content", label: "Content", type: "editor" },
               ],
-              getImageUrl: eventsService.getMediaUrl,
-              imageName: "Event Card Image",
+              getImageUrl: projectService.getMediaUrl,
+              imageName: "Project Image",
             }}
           />
         </div>
@@ -68,4 +59,4 @@ const NewEventPage = () => {
   );
 };
 
-export default NewEventPage;
+export default NewProjectPage;

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { eventsService } from "@/lib/data/services/eventService";
+import { projectService } from "@/lib/data/services/projectService";
 import { formatDate } from "@/lib/utils/eventUtils";
 
 // Earthy color palette variables for easy customization
@@ -32,27 +32,27 @@ const colors = {
   infoHover: "rgb(75, 99, 110)",
 };
 
-export default function EventsAdminPage() {
-  const [events, setEvents] = useState<any[]>([]);
+export default function ProjectsAdminPage() {
+  const [projects, setProjects] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    loadEvents();
+    loadProjects();
   }, []);
 
-  const loadEvents = async () => {
+  const loadProjects = async () => {
     setIsLoading(true);
     try {
-      const data = await eventsService.getAll({
-        sort: ["startDate:desc"],
-        populate: ["eventCardImage"],
+      const data = await projectService.getAll({
+        sort: ["createdAt:desc"],
+        populate: ["projectImage"], // Ensure projectImage is populated
       });
-      setEvents(data);
+      setProjects(data);
+      console.log("Projects loaded:", data); // Log the projects to verify
       setError(null);
     } catch (err) {
-      setError("An error occurred while loading events");
+      setError("An error occurred while loading projects");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -60,20 +60,24 @@ export default function EventsAdminPage() {
   };
 
   const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this project?")) return;
+
+    setIsLoading(true);
     try {
-      const success = await eventsService.delete(id);
+      const success = await projectService.delete(id);
       if (success) {
-        setSuccessMessage("Event deleted successfully!");
-        setEvents((prevEvents) =>
-          prevEvents.filter((event) => event.documentId !== id)
+        setProjects((prevProjects) =>
+          prevProjects.filter((project) => project.documentId !== id)
         );
+        setError(null);
+      } else {
+        setError("Could not delete the project");
       }
-    } catch (error) {
-      console.error("Failed to delete event:", error);
-      setError("Failed to delete event. Please try again.");
+    } catch (err) {
+      setError("An error occurred while deleting the project");
+      console.error(err);
     } finally {
-      // Clear the success message after 3 seconds
-      setTimeout(() => setSuccessMessage(null), 3000);
+      setIsLoading(false);
     }
   };
 
@@ -82,62 +86,6 @@ export default function EventsAdminPage() {
       className="min-h-screen p-6 sm:p-8 md:p-10"
       style={{ backgroundColor: colors.background }}
     >
-      {/* Success Message */}
-      {successMessage && (
-        <div
-          className="px-4 py-3 mb-6 rounded-md"
-          style={{
-            backgroundColor: "rgba(96, 125, 83, 0.1)", // Light green background
-            color: colors.success, // Green text
-            border: `1px solid ${colors.success}`,
-          }}
-        >
-          <div className="flex items-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 mr-2"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span>{successMessage}</span>
-          </div>
-        </div>
-      )}
-
-      {/* Error Message */}
-      {error && (
-        <div
-          className="px-4 py-3 mb-6 rounded-md"
-          style={{
-            backgroundColor: "rgba(168, 77, 70, 0.1)",
-            color: colors.error,
-            border: `1px solid ${colors.error}`,
-          }}
-        >
-          <div className="flex items-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 mr-2"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span>{error}</span>
-          </div>
-        </div>
-      )}
-
       {/* Card Container */}
       <div
         className="max-w-7xl mx-auto rounded-xl shadow-lg overflow-hidden"
@@ -149,9 +97,9 @@ export default function EventsAdminPage() {
           style={{ backgroundColor: colors.primary, color: "white" }}
         >
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <h1 className="text-2xl sm:text-3xl font-bold">Manage Events</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">Manage Projects</h1>
             <Link
-              href="/dashboard/admin/events/new"
+              href="/dashboard/admin/projects/new"
               className="px-4 py-2 rounded-md text-sm font-medium shadow transition duration-150 ease-in-out"
               style={{
                 backgroundColor: "rgba(255, 255, 255, 0.15)",
@@ -166,13 +114,41 @@ export default function EventsAdminPage() {
                   "rgba(255, 255, 255, 0.15)")
               }
             >
-              + New Event
+              + New Project
             </Link>
           </div>
         </div>
 
         {/* Content Area */}
         <div className="p-6 sm:p-8">
+          {/* Error Message */}
+          {error && (
+            <div
+              className="px-4 py-3 mb-6 rounded-md"
+              style={{
+                backgroundColor: "rgba(168, 77, 70, 0.1)",
+                color: colors.error,
+                border: `1px solid ${colors.error}`,
+              }}
+            >
+              <div className="flex items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 mr-2"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span>{error}</span>
+              </div>
+            </div>
+          )}
+
           {/* Loading Spinner */}
           {isLoading ? (
             <div className="flex justify-center my-16">
@@ -186,8 +162,8 @@ export default function EventsAdminPage() {
                 }}
               ></div>
             </div>
-          ) : events.length === 0 ? (
-            // No Events Found
+          ) : projects.length === 0 ? (
+            // No Projects Found
             <div
               className="text-center my-16 p-8 rounded-lg"
               style={{ backgroundColor: "rgba(188, 170, 164, 0.2)" }}
@@ -204,21 +180,21 @@ export default function EventsAdminPage() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={1.5}
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
                 />
               </svg>
               <p
                 className="text-lg font-medium"
                 style={{ color: colors.text.primary }}
               >
-                No events found
+                No projects found
               </p>
               <p className="mt-2" style={{ color: colors.text.secondary }}>
-                Create a new event to get started.
+                Create a new project to get started.
               </p>
             </div>
           ) : (
-            // Events Table
+            // Projects Table
             <div className="overflow-x-auto">
               <table
                 className="min-w-full divide-y"
@@ -251,7 +227,7 @@ export default function EventsAdminPage() {
                         color: colors.text.primary,
                       }}
                     >
-                      Date
+                      Status
                     </th>
                     <th
                       className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider"
@@ -260,7 +236,7 @@ export default function EventsAdminPage() {
                         color: colors.text.primary,
                       }}
                     >
-                      Location
+                      Date
                     </th>
                     <th
                       className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tr-md"
@@ -280,9 +256,9 @@ export default function EventsAdminPage() {
                     borderColor: colors.divider,
                   }}
                 >
-                  {events.map((event, index) => (
+                  {projects.map((project, index) => (
                     <tr
-                      key={event.documentId}
+                      key={project.id}
                       className="transition-colors duration-150 ease-in-out"
                       style={{
                         backgroundColor:
@@ -303,13 +279,15 @@ export default function EventsAdminPage() {
                     >
                       {/* Image */}
                       <td className="px-4 py-4 whitespace-nowrap">
-                        {event.eventCardImage?.url ? (
+                        {project.projectImage?.url ? (
                           <div className="relative h-16 w-16 rounded-md overflow-hidden shadow">
                             <Image
-                              src={eventsService.getMediaUrl(
-                                event.eventCardImage
-                              )}
-                              alt={event.title || "Event Image"}
+                              src={
+                                project.projectImage.url.startsWith("http")
+                                  ? project.projectImage.url
+                                  : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${project.projectImage.url}`
+                              }
+                              alt={project.title || "Project Image"}
                               fill
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                               priority
@@ -342,15 +320,34 @@ export default function EventsAdminPage() {
 
                       {/* Title and Description */}
                       <td className="px-4 py-4">
-                        <div className="font-medium">{event.title}</div>
-                        {event.Description && (
+                        <div className="font-medium">{project.title}</div>
+                        {project.summary && (
                           <div
                             className="mt-1 truncate max-w-xs"
                             style={{ color: colors.text.secondary }}
                           >
-                            {event.Description}
+                            {project.summary}
                           </div>
                         )}
+                      </td>
+
+                      {/* Status */}
+                      <td className="px-4 py-4">
+                        <span
+                          className="px-2 py-1 rounded-md text-xs font-medium"
+                          style={{
+                            backgroundColor:
+                              project.status === "published"
+                                ? "rgba(96, 125, 83, 0.2)"
+                                : "rgba(190, 142, 79, 0.2)",
+                            color:
+                              project.status === "published"
+                                ? colors.success
+                                : colors.warning,
+                          }}
+                        >
+                          {project.status || "draft"}
+                        </span>
                       </td>
 
                       {/* Date */}
@@ -371,72 +368,7 @@ export default function EventsAdminPage() {
                               d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                             />
                           </svg>
-                          <span>{formatDate(event.startDate)}</span>
-                        </div>
-                        {event.endDate && event.endDate !== event.startDate && (
-                          <div
-                            className="mt-1 ml-5.5"
-                            style={{ color: colors.text.secondary }}
-                          >
-                            to {formatDate(event.endDate)}
-                          </div>
-                        )}
-                        {event.time && (
-                          <div
-                            className="mt-1 flex items-center"
-                            style={{ color: colors.text.secondary }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4 mr-1.5"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              style={{ color: colors.accent }}
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                            <span>{event.time}</span>
-                          </div>
-                        )}
-                      </td>
-
-                      {/* Location */}
-                      <td className="px-4 py-4">
-                        <div className="flex items-center">
-                          {event.location ? (
-                            <>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-4 w-4 mr-1.5"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                style={{ color: colors.accent }}
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                />
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                />
-                              </svg>
-                              <span>{event.location}</span>
-                            </>
-                          ) : (
-                            <span style={{ color: colors.text.light }}>-</span>
-                          )}
+                          <span>{formatDate(project.createdAt)}</span>
                         </div>
                       </td>
 
@@ -444,7 +376,7 @@ export default function EventsAdminPage() {
                       <td className="px-4 py-4 whitespace-nowrap">
                         <div className="flex space-x-2">
                           <button
-                            onClick={() => handleDelete(event.documentId)}
+                            onClick={() => handleDelete(project.documentId)}
                             className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-150 ease-in-out"
                             style={{
                               backgroundColor: colors.error,
@@ -462,7 +394,7 @@ export default function EventsAdminPage() {
                             Delete
                           </button>
                           <Link
-                            href={`/admin/events/${event.documentId}`}
+                            href={`/admin/projects/${project.documentId}`}
                             className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-150 ease-in-out"
                             style={{
                               backgroundColor: colors.info,
@@ -480,7 +412,7 @@ export default function EventsAdminPage() {
                             Edit
                           </Link>
                           <Link
-                            href={`/events/${event.documentId}`}
+                            href={`/projects/${project.id}`}
                             target="_blank"
                             className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-150 ease-in-out"
                             style={{

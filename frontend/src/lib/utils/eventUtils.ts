@@ -92,3 +92,34 @@ export function truncateText(text: string, length: number): string {
 
   return text.substring(0, length).trim() + "...";
 }
+
+/**
+ * Get the full media URL based on the provided media object or string
+ *
+ * @param media Media object or string
+ * @returns Full media URL
+ */
+export const getMediaUrl = (media: any): string => {
+  const BASE_URL =
+    process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
+
+  if (!media) return "";
+
+  // Handle string URLs
+  if (typeof media === "string") {
+    return media.startsWith("http") ? media : `${BASE_URL}${media}`;
+  }
+
+  // Handle object with `url` property
+  if (media.url) {
+    return media.url.startsWith("http") ? media.url : `${BASE_URL}${media.url}`;
+  }
+
+  // Handle nested `data.attributes.url` structure (Strapi v4)
+  if (media.data?.attributes?.url) {
+    const url = media.data.attributes.url;
+    return url.startsWith("http") ? url : `${BASE_URL}${url}`;
+  }
+
+  return "";
+};
