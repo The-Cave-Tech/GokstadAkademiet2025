@@ -2,7 +2,7 @@
 
 // påminnelse til oss: fjerne alle konsoll logger når vi er ferdige, de eksponerer sensitiv informasjon
 
-import { signInSchema, signUpSchema } from "@/lib/validation/validationSchemas";
+import { signInSchema, signUpSchema } from "@/lib/validation/userAuthValidation";
 import { redirect } from "next/navigation";
 import {
   RegisterFormState,

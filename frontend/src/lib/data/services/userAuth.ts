@@ -1,4 +1,4 @@
-import { SignInFormData, SignUpFormData } from "@/lib/validation/validationSchemas";
+import { SignInFormData, SignUpFormData } from "@/lib/validation/userAuthValidation";
 import { strapiService } from "@/lib/data/services/strapiClient";
 
 export interface StrapiAuthResponse {

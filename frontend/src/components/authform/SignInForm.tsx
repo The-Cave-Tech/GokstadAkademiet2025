@@ -6,7 +6,7 @@ import { SiteLogo } from "@/components/ui/SiteLogo";
 import { useSignInValidation } from "@/hooks/useValidation";
 import { login } from "@/lib/data/actions/auth";
 import { LoginFormState, SignInValidationErrorKeys } from "@/types/auth.types";
-import { SignInFormData } from "@/lib/validation/validationSchemas";
+import { SignInFormData } from "@/lib/validation/userAuthValidation";
 import { authFieldError } from "@/lib/utils/serverAction-errorHandler";
 import { ZodErrors } from "../ZodErrors";
 import { PasswordToggle } from "../ui/custom/PasswordToggle";

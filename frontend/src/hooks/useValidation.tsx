@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { signInSchema, signUpSchema } from "@/lib/validation/validationSchemas";
+import { signInSchema, signUpSchema } from "@/lib/validation/userAuthValidation";
 import { SignUpValidationErrors, SignInValidationErrors, SignUpValidationErrorKeys, SignInValidationErrorKeys } from "@/types/auth.types";
 
 export function useSignUpValidation() {
