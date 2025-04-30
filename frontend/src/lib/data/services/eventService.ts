@@ -25,21 +25,24 @@ export const eventsService = {
         console.warn("No events found or data is not an array");
         return [];
       }
-      const info = response.data.map((item: any) => ({
-        id: item.id,
-        ...item,
-        eventCardImage: strapiService.media.getMediaUrl(item.eventCardImage), // Use media utility
-      }));
-      console.log("Fetched events:", info); // Log the fetched events
 
-      return info;
+      const test = response.data.map((item: any) => ({
+        id: item.id,
+        ...item, // This includes all fields directly
+        eventCardImage: strapiService.media.getMediaUrl(item.eventCardImage),
+      }));
+      console.log("Fetched events:", test);
+      return test;
     } catch (error) {
       console.error("Error fetching events:", error);
       return [];
     }
   },
 
-  getMediaUrl: (imagePath: string) => `/media/${imagePath}`, // Add this method
+  // Get media URL helper
+  getMediaUrl: (media: any) => {
+    return strapiService.media.getMediaUrl(media);
+  },
 
   // Get a single event by ID
   getOne: async (
@@ -58,12 +61,13 @@ export const eventsService = {
 
       if (!response.data) return null;
 
+      // Handle flat structure (no attributes)
       return {
         id: response.data.id,
-        ...response.data.attributes,
+        ...response.data, // Include all fields directly
         eventCardImage: strapiService.media.getMediaUrl(
-          response.data.attributes.eventCardImage
-        ), // Use media utility
+          response.data.eventCardImage
+        ),
       };
     } catch (error) {
       console.error("Error fetching event:", error);
@@ -80,7 +84,7 @@ export const eventsService = {
       // Ensure the payload matches the expected structure
       const payload = {
         title: data.title,
-        description: data.Description, // Ensure this matches the Strapi field name
+        description: data.Description || data.Description, // Handle both variations
         startDate: data.startDate,
         endDate: data.endDate,
         time: data.time,
@@ -88,12 +92,12 @@ export const eventsService = {
         content: data.content,
       };
 
+      console.log("Creating event with payload:", payload);
+
       const response = await strapiService.fetch<any>("events", {
         method: "POST",
         body: { data: payload },
       });
-
-      console.log("Payload:", payload);
 
       const eventId = response.data.id;
 
@@ -121,10 +125,15 @@ export const eventsService = {
     eventCardImage?: File | null
   ): Promise<EventResponse> => {
     try {
-      await strapiService.fetch<any>(`events/${id}`, {
+      // Log the update payload for debugging
+      console.log(`Updating event ${id} with data:`, data);
+
+      const response = await strapiService.fetch<any>(`events/${id}`, {
         method: "PUT",
         body: { data },
       });
+
+      console.log("Update response:", response);
 
       // Upload event image if provided
       if (eventCardImage) {
@@ -144,8 +153,9 @@ export const eventsService = {
   },
 
   // Delete an event
-  delete: async (id: string): Promise<boolean> => {
+  delete: async (id: string | number): Promise<boolean> => {
     try {
+      console.log(`Deleting event with ID: ${id}`);
       await strapiService.fetch<any>(`events/${id}`, {
         method: "DELETE",
       });
@@ -162,16 +172,20 @@ export const eventsService = {
     image: File
   ): Promise<void> => {
     try {
+      console.log(`Uploading image for event ${eventId}`);
+
       const formData = new FormData();
       formData.append("ref", "api::event.event");
       formData.append("refId", eventId.toString());
       formData.append("field", "eventCardImage");
       formData.append("files", image);
 
-      await strapiService.fetch<any>("upload", {
+      const response = await strapiService.fetch<any>("upload", {
         method: "POST",
-        body: formData as any, // Type cast needed here
+        body: formData,
       });
+
+      console.log("Image upload response:", response);
     } catch (error) {
       console.error("Error uploading event image:", error);
       throw error;
