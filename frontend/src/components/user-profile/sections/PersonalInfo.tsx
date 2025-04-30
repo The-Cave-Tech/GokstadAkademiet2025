@@ -2,7 +2,7 @@
 
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/custom/button";
+import { Button } from "@/components/ui/custom/Button";
 import { PageIcons } from "@/components/ui/custom/PageIcons";
 import { DatePicker } from "@/components/ui/custom/DatePciker";
 

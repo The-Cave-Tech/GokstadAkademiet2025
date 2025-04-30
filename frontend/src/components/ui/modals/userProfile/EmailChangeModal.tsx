@@ -1,0 +1,233 @@
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import { Card, CardBody, CardFooter, CardHeader } from "@/components/ui/Card";
+import { EmailModalProps } from "@/types/loginInfoManage.types";
+import { Button } from "@/components/ui/custom/Button";
+
+export function EmailChangeModal({
+  isOpen,
+  currentEmail,
+  onClose,
+  onUpdate,
+  isLoading,
+  setIsLoading,
+}: EmailModalProps) {
+  const [newEmail, setNewEmail] = useState(currentEmail);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const modalRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  const showError = (message: string) => {
+    setError(message);
+    setSuccessMessage("");
+    setTimeout(() => setError(""), 5000);
+  };
+
+  const showSuccess = (message: string) => {
+    setSuccessMessage(message);
+    setError("");
+    setTimeout(() => setSuccessMessage(""), 5000);
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentPassword(e.target.value);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (newEmail === currentEmail) {
+      showError("Den nye e-postadressen er den samme som den eksisterende");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(newEmail)) {
+      showError("Vennligst oppgi en gyldig e-postadresse");
+      return;
+    }
+
+    if (!currentPassword) {
+      showError("Vennligst oppgi ditt nåværende passord");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await onUpdate(newEmail);
+      showSuccess("Verifiseringskode sendt til din nye e-post");
+    } catch (error) {
+      console.error("Feil ved forespørsel om e-postendring:", error);
+      showError("Kunne ikke sende forespørsel om e-postendring");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center overflow-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="email-modal-title"
+    >
+      <div ref={modalRef} className="max-w-md w-full mx-4 my-8">
+        <Card className="w-full shadow-xl">
+          <CardHeader className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h3 id="email-modal-title" className="text-lg font-medium text-gray-900">
+              Endre e-postadresse
+            </h3>
+          </CardHeader>
+
+          <CardBody className="px-6 py-4">
+            {error && (
+              <div
+                className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start"
+                role="alert"
+                aria-live="assertive"
+              >
+                <svg
+                  className="h-5 w-5 text-red-400 mt-0.5 mr-2 flex-shrink-0"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span>{error}</span>
+              </div>
+            )}
+
+            {successMessage && (
+              <div
+                className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-md flex items-start"
+                role="status"
+                aria-live="polite"
+              >
+                <svg
+                  className="h-5 w-5 text-green-400 mt-0.5 mr-2 flex-shrink-0"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span>{successMessage}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="new-email" className="block text-sm font-medium text-gray-700 mb-1">
+                  Ny e-postadresse
+                </label>
+                <input
+                  ref={inputRef}
+                  id="new-email"
+                  type="email"
+                  className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newEmail}
+                  onChange={handleEmailChange}
+                  placeholder="din.nye@epost.no"
+                  required
+                  disabled={isLoading}
+                  aria-describedby="email-description"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="current-password-for-email"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Nåværende passord
+                </label>
+                <input
+                  id="current-password-for-email"
+                  type="password"
+                  className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={currentPassword}
+                  onChange={handlePasswordChange}
+                  placeholder="Skriv ditt nåværende passord"
+                  required
+                  disabled={isLoading}
+                  aria-describedby="password-description"
+                />
+              </div>
+
+              <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded-md">
+                <p id="email-description">
+                  Når du endrer e-post, vil du motta en verifiseringskode på din nye e-postadresse. Dette er for å bekrefte at du har tilgang til e-postadressen.
+                </p>
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="secondary"
+                  onClick={onClose}
+                  disabled={isLoading}
+                  ariaLabel="Avbryt"
+                  type="button"
+                >
+                  Avbryt
+                </Button>
+                <Button
+                  variant="primary"
+                  disabled={isLoading}
+                  ariaLabel={isLoading ? "Sender..." : "Send verifiseringskode"}
+                  type="submit"
+                >
+                  {isLoading ? "Sender..." : "Send verifiseringskode"}
+                </Button>
+              </div>
+            </form>
+          </CardBody>
+
+          <CardFooter className="px-6 py-3 bg-gray-50 border-t border-gray-200 rounded-b-lg">
+            <p className="text-xs text-gray-500">
+              Din e-postadresse brukes for viktige varsler og for å logge inn på kontoen din.
+            </p>
+          </CardFooter>
+        </Card>
+      </div>
+    </div>
+  );
+}

@@ -3,24 +3,106 @@
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { useState } from "react";
 import { PageIcons } from "@/components/ui/custom/PageIcons";
-import { Button } from "@/components/ui/custom/button";
+import { Button } from "@/components/ui/custom/Button";
+import { ModalType, UserCredentials } from "@/types/loginInfoManage.types";
+import { UsernameChangeModal } from "@/components/ui/modals/userProfile/UsernameChangeModal";
+import { EmailChangeModal } from "@/components/ui/modals/userProfile/EmailChangeModal";
+import { PasswordChangeModal } from "@/components/ui/modals/userProfile/PasswordChangeModal";
+import { EmailVerificationModal } from "@/components/ui/modals/userProfile/EmailVerificationModal";
 
 export function LoginInfoManage() {
-  const [userData, setUserData] = useState({
+  const [userData, setUserData] = useState<UserCredentials>({
     username: "TheCaveTech25",
     email: "cave@tech.no",
-    password: "•••••••"
+    password: "•••••••",
   });
 
-  // For å holde styr på hvilket felt som skal redigeres i modalen
-  const [modalField, setModalField] = useState(null);
+  const [modalField, setModalField] = useState<ModalType>(null);
   const [isModalLoading, setIsModalLoading] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [pendingData, setPendingData] = useState<{
+    type: "username" | "email" | null;
+    value: string;
+  }>({ type: null, value: "" });
 
-  // Håndter klikk på modalChange-knappen
-  const handleOpenModal = (fieldName) => {
-    console.log(`Åpner modal for ${fieldName}`);
+  const handleOpenModal = (fieldName: ModalType) => {
     setModalField(fieldName);
-    // Her ville den faktiske modal-logikken komme
+  };
+
+  const handleCloseModal = () => {
+    setModalField(null);
+    setShowVerificationModal(false);
+    setPendingData({ type: null, value: "" });
+  };
+
+  const handleUsernameUpdate = async (newUsername: string) => {
+    try {
+      setIsModalLoading(true);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setPendingData({ type: "username", value: newUsername });
+      setModalField(null);
+      setShowVerificationModal(true);
+    } catch (error) {
+      console.error("Feil ved initiering av brukernavnendring:", error);
+    } finally {
+      setIsModalLoading(false);
+    }
+  };
+
+  const handleInitiateEmailUpdate = async (newEmail: string) => {
+    try {
+      setIsModalLoading(true);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setPendingData({ type: "email", value: newEmail });
+      setModalField(null);
+      setShowVerificationModal(true);
+    } catch (error) {
+      console.error("Feil ved initiering av e-postendring:", error);
+    } finally {
+      setIsModalLoading(false);
+    }
+  };
+
+  const handleVerification = async () => {
+    try {
+      setIsModalLoading(true);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      if (pendingData.type === "username") {
+        setUserData(prev => ({
+          ...prev,
+          username: pendingData.value,
+        }));
+      } else if (pendingData.type === "email") {
+        setUserData(prev => ({
+          ...prev,
+          email: pendingData.value,
+        }));
+      }
+
+      handleCloseModal();
+    } catch (error) {
+      console.error("Feil ved verifisering:", error);
+      throw error; // La EmailVerificationModal håndtere feilen
+    } finally {
+      setIsModalLoading(false);
+    }
+  };
+
+  const handlePasswordUpdate = async () => {
+    try {
+      setIsModalLoading(true);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setUserData(prev => ({
+        ...prev,
+        password: "•••••••",
+      }));
+      handleCloseModal();
+    } catch (error) {
+      console.error("Feil ved oppdatering av passord:", error);
+    } finally {
+      setIsModalLoading(false);
+    }
   };
 
   return (
@@ -42,22 +124,21 @@ export function LoginInfoManage() {
 
         <CardBody className="pt-5 px-4 pb-8 rounded-md">
           <dl className="space-y-8">
-            {/* Brukernavn */}
             <div className="flex flex-col">
               <dt className="text-gray-600 mb-2">Brukernavn</dt>
               <dd className="flex items-center">
-
-                <span 
-                  id="username-value" 
+                <span
+                  id="username-value"
                   className="flex-grow bg-white p-3 rounded-md border border-gray-200 shadow-sm h-12 flex items-center"
+                  aria-live="polite"
                 >
                   {userData.username}
                 </span>
                 <div className="ml-3">
-                  <Button 
+                  <Button
                     variant="modalChange"
-                    modalState={isModalLoading && modalField === 'username' ? "loading" : "edit"}
-                    onClick={() => handleOpenModal('username')}
+                    modalState={isModalLoading && modalField === "username" ? "loading" : "edit"}
+                    onClick={() => handleOpenModal("username")}
                     ariaLabel="Endre brukernavn"
                     disabled={isModalLoading}
                     size="sm"
@@ -66,22 +147,21 @@ export function LoginInfoManage() {
               </dd>
             </div>
 
-            {/* E-post */}
             <div className="flex flex-col">
               <dt className="text-gray-600 mb-2">E-post</dt>
               <dd className="flex items-center">
-
-                <span 
-                  id="email-value" 
+                <span
+                  id="email-value"
                   className="flex-grow bg-white p-3 rounded-md border border-gray-200 shadow-sm h-12 flex items-center"
+                  aria-live="polite"
                 >
                   {userData.email}
                 </span>
                 <div className="ml-3">
-                  <Button 
+                  <Button
                     variant="modalChange"
-                    modalState={isModalLoading && modalField === 'email' ? "loading" : "edit"}
-                    onClick={() => handleOpenModal('email')}
+                    modalState={isModalLoading && modalField === "email" ? "loading" : "edit"}
+                    onClick={() => handleOpenModal("email")}
                     ariaLabel="Endre e-post"
                     disabled={isModalLoading}
                     size="sm"
@@ -90,22 +170,21 @@ export function LoginInfoManage() {
               </dd>
             </div>
 
-            {/* Passord */}
             <div className="flex flex-col">
               <dt className="text-gray-600 mb-2">Passord</dt>
               <dd className="flex items-center">
-
-                <span 
-                  id="password-value" 
+                <span
+                  id="password-value"
                   className="flex-grow bg-white p-3 rounded-md border border-gray-200 shadow-sm font-mono h-12 flex items-center"
+                  aria-live="polite"
                 >
                   {userData.password}
                 </span>
                 <div className="ml-3">
-                  <Button 
+                  <Button
                     variant="modalChange"
-                    modalState={isModalLoading && modalField === 'password' ? "loading" : "edit"}
-                    onClick={() => handleOpenModal('password')}
+                    modalState={isModalLoading && modalField === "password" ? "loading" : "edit"}
+                    onClick={() => handleOpenModal("password")}
                     ariaLabel="Endre passord"
                     disabled={isModalLoading}
                     size="sm"
@@ -115,12 +194,47 @@ export function LoginInfoManage() {
             </div>
           </dl>
 
-          {/* Her ville modalene bli rendret */}
-          {modalField && (
-            <div className="hidden" aria-hidden="true">
-              {/* Dette er en placeholder for framtidige modaler */}
-              {/* Vil bli erstattet med faktiske modale komponenter */}
-            </div>
+          {modalField === "username" && (
+            <UsernameChangeModal
+              isOpen={true}
+              currentUsername={userData.username}
+              onClose={handleCloseModal}
+              onUpdate={handleUsernameUpdate}
+              isLoading={isModalLoading}
+              setIsLoading={setIsModalLoading}
+            />
+          )}
+
+          {modalField === "email" && (
+            <EmailChangeModal
+              isOpen={true}
+              currentEmail={userData.email}
+              onClose={handleCloseModal}
+              onUpdate={handleInitiateEmailUpdate}
+              isLoading={isModalLoading}
+              setIsLoading={setIsModalLoading}
+            />
+          )}
+
+          {modalField === "password" && (
+            <PasswordChangeModal
+              isOpen={true}
+              onClose={handleCloseModal}
+              onUpdate={handlePasswordUpdate}
+              isLoading={isModalLoading}
+              setIsLoading={setIsModalLoading}
+            />
+          )}
+
+          {showVerificationModal && (
+            <EmailVerificationModal
+              isOpen={true}
+              onClose={handleCloseModal}
+              onVerify={handleVerification}
+              email={pendingData.type === "email" ? pendingData.value : userData.email}
+              isLoading={isModalLoading}
+              setIsLoading={setIsModalLoading}
+            />
           )}
         </CardBody>
       </Card>

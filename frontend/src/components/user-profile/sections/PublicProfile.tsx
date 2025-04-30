@@ -5,14 +5,9 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardBody, CardFooter, CardHeader } from '@/components/ui/Card';
 
 import ToggleSwitch from '@/components/ui/custom/ToogleSwith';
-import { Button } from '@/components/ui/custom/button';
+import { Button } from '@/components/ui/custom/Button';
 import PageIcons from '@/components/ui/custom/PageIcons';
-import { 
-  updateDisplayName, 
-  updateBiography,
-  updateShowEmail,
-  updateShowPhone,
-  updateShowAddress,
+import { updateDisplayName, updateBiography, updateShowEmail, updateShowPhone, updateShowAddress,
 } from '@/lib/data/services/profileSections/publicProfileService';
 import { ProfileImageUploader } from '@/components/ui/userProfile/ProfileImageUploader';
 import { getUserProfile, UserProfile } from '@/lib/data/services/userProfile';
