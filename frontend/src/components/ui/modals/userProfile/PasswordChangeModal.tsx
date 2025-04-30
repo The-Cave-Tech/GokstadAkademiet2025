@@ -16,7 +16,6 @@ export function PasswordChangeModal({
   isLoading,
   setIsLoading
 }: PasswordModalProps) {
-  // State
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -26,11 +25,9 @@ export function PasswordChangeModal({
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
-  // Refs
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   
-  // Focus on input when modal opens
   useEffect(() => {
     if (isOpen && inputRef.current) {
       setTimeout(() => {
@@ -39,7 +36,6 @@ export function PasswordChangeModal({
     }
   }, [isOpen]);
   
-  // Handle escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -54,36 +50,30 @@ export function PasswordChangeModal({
     };
   }, [onClose]);
   
-  // Show error message with auto-dismiss
   const showError = (message: string) => {
     setError(message);
     setSuccessMessage("");
     setTimeout(() => setError(""), 5000);
   };
   
-  // Show success message with auto-dismiss
   const showSuccess = (message: string) => {
     setSuccessMessage(message);
     setError("");
     setTimeout(() => setSuccessMessage(""), 5000);
   };
   
-  // Handle change of current password
   const handleCurrentPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentPassword(e.target.value);
   };
   
-  // Handle change of new password
   const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewPassword(e.target.value);
   };
   
-  // Handle change of confirm password
   const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setConfirmPassword(e.target.value);
   };
   
-  // Validate new password
   const validatePassword = () => {
     if (!currentPassword) {
       showError("Vennligst oppgi ditt nåværende passord");
@@ -108,14 +98,12 @@ export function PasswordChangeModal({
     return true;
   };
   
-  // Handle password change submission
   const handlePasswordChange = async () => {
     if (!validatePassword()) return;
     
     try {
       setIsLoading(true);
       
-      // Call parent component's update function
       await onUpdate();
       
       showSuccess("Passord oppdatert");
@@ -149,7 +137,6 @@ export function PasswordChangeModal({
           </CardHeader>
           
           <CardBody className="px-6 py-4">
-            {/* Status messages - important for screen readers */}
             {error && (
               <div 
                 className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start"

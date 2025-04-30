@@ -14,16 +14,13 @@ export function EmailVerificationModal({
   isLoading,
   setIsLoading
 }: VerificationModalProps) {
-  // State
   const [verificationCode, setVerificationCode] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   
-  // Refs
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   
-  // Focus on input when modal opens
   useEffect(() => {
     if (isOpen && inputRef.current) {
       setTimeout(() => {
@@ -32,7 +29,7 @@ export function EmailVerificationModal({
     }
   }, [isOpen]);
   
-  // Handle escape key
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -47,14 +44,13 @@ export function EmailVerificationModal({
     };
   }, [onClose]);
   
-  // Show error message with auto-dismiss
+
   const showError = (message: string) => {
     setError(message);
     setSuccessMessage("");
     setTimeout(() => setError(""), 5000);
   };
   
-  // Show success message with auto-dismiss
   const showSuccess = (message: string) => {
     setSuccessMessage(message);
     setError("");
@@ -63,13 +59,10 @@ export function EmailVerificationModal({
   
   // Handle verification code input change
   const handleVerificationCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Only allow digits and limit to 6 characters
     setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6));
   };
   
-  // Handle form submission
   const handleSubmit = async () => {
-    // Basic validation
     if (verificationCode.length !== 6) {
       showError("Verifiseringskoden må være 6 siffer");
       return;
@@ -88,11 +81,10 @@ export function EmailVerificationModal({
     }
   };
   
-  // Handle sending code again
+
   const handleResendCode = async () => {
     try {
       setIsLoading(true);
-      // This would typically call an API to resend the code
       await new Promise(resolve => setTimeout(resolve, 1000));
       showSuccess("Ny kode sendt");
     } catch (error) {

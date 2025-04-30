@@ -14,17 +14,14 @@ export function UsernameChangeModal({
   isLoading,
   setIsLoading,
 }: UsernameModalProps) {
-  // State
   const [newUsername, setNewUsername] = useState(currentUsername);
   const [currentPassword, setCurrentPassword] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  // Refs
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Focus on input when modal opens
   useEffect(() => {
     if (isOpen && inputRef.current) {
       setTimeout(() => {
@@ -33,7 +30,6 @@ export function UsernameChangeModal({
     }
   }, [isOpen]);
 
-  // Handle escape key and clicks outside modal
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -50,33 +46,28 @@ export function UsernameChangeModal({
     };
   }, [isOpen, onClose]);
 
-  // Handle username input change
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewUsername(e.target.value);
   };
 
-  // Handle password input change
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentPassword(e.target.value);
   };
 
-  // Show error message with auto-dismiss
   const showError = (message: string) => {
     setError(message);
     setSuccessMessage("");
     setTimeout(() => setError(""), 5000);
   };
 
-  // Show success message with auto-dismiss
   const showSuccess = (message: string) => {
     setSuccessMessage(message);
     setError("");
     setTimeout(() => setSuccessMessage(""), 5000);
   };
 
-  // Handle form submission
+  
   const handleSubmit = async () => {
-    // Validation
     if (newUsername === currentUsername) {
       showError("Det nye brukernavnet er det samme som det eksisterende");
       return;
@@ -94,7 +85,6 @@ export function UsernameChangeModal({
 
     try {
       setIsLoading(true);
-      // Call the update function passed from parent
       await onUpdate(newUsername);
       showSuccess("Verifiseringskode sendt til din e-post");
     } catch (error) {
