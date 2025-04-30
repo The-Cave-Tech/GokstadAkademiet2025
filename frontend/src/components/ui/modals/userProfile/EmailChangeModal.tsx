@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Card, CardBody, CardFooter, CardHeader } from "@/components/ui/Card";
+import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { EmailModalProps } from "@/types/loginInfoManage.types";
 import { Button } from "@/components/ui/custom/Button";
 import PageIcons from "@/components/ui/custom/PageIcons";
@@ -17,8 +17,7 @@ export function EmailChangeModal({
   const [newEmail, setNewEmail] = useState(currentEmail);
   const [currentPassword, setCurrentPassword] = useState("");
   const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-
+  
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -37,26 +36,12 @@ export function EmailChangeModal({
       }
     };
 
-    if (isOpen) {
-      window.addEventListener("keydown", handleKeyDown);
-    }
-
+    window.addEventListener("keydown", handleKeyDown);
+    
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen, onClose]);
-
-  const showError = (message: string) => {
-    setError(message);
-    setSuccessMessage("");
-    setTimeout(() => setError(""), 5000);
-  };
-
-  const showSuccess = (message: string) => {
-    setSuccessMessage(message);
-    setError("");
-    setTimeout(() => setSuccessMessage(""), 5000);
-  };
+  }, [onClose]);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewEmail(e.target.value);
@@ -68,28 +53,16 @@ export function EmailChangeModal({
 
   const handleSubmit = async () => {
     if (newEmail === currentEmail) {
-      showError("Den nye e-postadressen er den samme som den eksisterende");
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(newEmail)) {
-      showError("Vennligst oppgi en gyldig e-postadresse");
-      return;
-    }
-
-    if (!currentPassword) {
-      showError("Vennligst oppgi ditt nåværende passord");
+      setError("Den nye e-postadressen er den samme som den eksisterende");
       return;
     }
 
     try {
       setIsLoading(true);
       await onUpdate(newEmail);
-      showSuccess("Verifiseringskode sendt til din nye e-post");
     } catch (error) {
       console.error("Feil ved forespørsel om e-postendring:", error);
-      showError("Kunne ikke sende forespørsel om e-postendring");
+      setError(error instanceof Error ? error.message : "Kunne ikke sende forespørsel om e-postendring");
     } finally {
       setIsLoading(false);
     }
@@ -124,32 +97,8 @@ export function EmailChangeModal({
               </div>
             )}
 
-            {successMessage && (
-              <div
-                className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-md flex items-start"
-                role="status"
-                aria-live="polite"
-              >
-                <svg
-                  className="h-5 w-5 text-green-400 mt-0.5 mr-2 flex-shrink-0"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span>{successMessage}</span>
-              </div>
-            )}
-
             <div className="space-y-4">
-
-            <div>
+              <div>
                 <label htmlFor="current-password-for-email" className="block text-sm font-medium text-gray-700 mb-1">
                   Nåværende passord
                 </label>
@@ -216,12 +165,6 @@ export function EmailChangeModal({
               </div>
             </div>
           </CardBody>
-
-          <CardFooter className="px-6 py-3 bg-gray-50 border-t border-gray-200 rounded-b-lg">
-            <p className="text-xs text-gray-500">
-              Din e-postadresse brukes for viktige varsler og for å logge inn på kontoen din.
-            </p>
-          </CardFooter>
         </Card>
       </div>
     </div>

@@ -1,22 +1,32 @@
 "use client";
 
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import { Button } from "@/components/ui/custom/Button";
-import { ModalType, UserCredentials, UpdatePayload } from "@/types/loginInfoManage.types";
+import { ModalType, UserCredentials } from "@/types/loginInfoManage.types";
 import { UsernameChangeModal } from "@/components/ui/modals/userProfile/UsernameChangeModal";
 import { EmailChangeModal } from "@/components/ui/modals/userProfile/EmailChangeModal";
 import { PasswordChangeModal } from "@/components/ui/modals/userProfile/PasswordChangeModal";
 import { EmailVerificationModal } from "@/components/ui/modals/userProfile/EmailVerificationModal";
+import { getUserCredentials } from "@/lib/data/services/userProfile";
+import { 
+  requestUsernameChange, 
+  changeUsername, 
+  requestEmailChange, 
+  verifyEmailChange,
+  changePassword 
+} from "@/lib/data/services/profileSections/credentialsService";
 
 export function LoginInfoManage() {
   const [userData, setUserData] = useState<UserCredentials>({
-    username: "TheCaveTech25",
-    email: "cave@tech.no",
+    username: "",
+    email: "",
     password: "•••••••",
   });
 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [modalType, setModalType] = useState<ModalType>(null);
   const [isModalLoading, setIsModalLoading] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
@@ -24,6 +34,29 @@ export function LoginInfoManage() {
     type: "username" | "email" | null;
     value: string;
   }>({ type: null, value: "" });
+
+  
+  useEffect(() => {
+    async function fetchUserCredentials() {
+      try {
+        setLoading(true);
+        const credentials = await getUserCredentials();
+        setUserData({
+          username: credentials.username,
+          email: credentials.email,
+          password: "•••••••", 
+        });
+        setError(null);
+      } catch (err) {
+        console.error("Feil ved henting av brukerdata:", err);
+        setError("Kunne ikke hente brukerinformasjon. Vennligst prøv igjen senere.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchUserCredentials();
+  }, []);
 
   const handleOpenModal = (fieldName: ModalType) => {
     setModalType(fieldName);
@@ -35,51 +68,103 @@ export function LoginInfoManage() {
     setPendingData({ type: null, value: "" });
   };
 
-  const handleUpdate = async (payload: UpdatePayload) => {
+  const handleUsernameUpdate = async (newUsername: string) => {
     try {
       setIsModalLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      if (payload.type === "username") {
-        setPendingData({ type: "username", value: payload.value });
+      // Request username change, this will send verification code to email
+      const response = await requestUsernameChange(newUsername);
+      
+      if (response.success) {
+        setPendingData({ type: "username", value: newUsername });
         setModalType(null);
         setShowVerificationModal(true);
-      } else if (payload.type === "email") {
-        setPendingData({ type: "email", value: payload.value });
-        setModalType(null);
-        setShowVerificationModal(true);
-      } else if (payload.type === "password") {
-        setUserData(prev => ({
-          ...prev,
-          password: "•••••••",
-        }));
-        handleCloseModal();
+      } else {
+        throw new Error(response.message || "Kunne ikke sende forespørsel om brukernavn-endring");
       }
     } catch (error) {
-      console.error(`Feil ved initiering av ${payload.type}-endring:`, error);
+      console.error("Feil ved forespørsel om brukernavn-endring:", error);
       throw error;
     } finally {
       setIsModalLoading(false);
     }
   };
 
-  const handleVerification = async () => {
+  const handleEmailUpdate = async (newEmail: string) => {
     try {
       setIsModalLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      if (pendingData.type === "username") {
-        setUserData(prev => ({
-          ...prev,
-          username: pendingData.value,
-        }));
-      } else if (pendingData.type === "email") {
-        setUserData(prev => ({
-          ...prev,
-          email: pendingData.value,
-        }));
+      
+      // Request email change, this will send verification code to new email
+      const response = await requestEmailChange(newEmail);
+      
+      if (response.success) {
+        setPendingData({ type: "email", value: newEmail });
+        setModalType(null);
+        setShowVerificationModal(true);
+      } else {
+        throw new Error(response.message || "Kunne ikke sende forespørsel om e-post-endring");
       }
+    } catch (error) {
+      console.error("Feil ved forespørsel om e-post-endring:", error);
+      throw error;
+    } finally {
+      setIsModalLoading(false);
+    }
+  };
 
+  const handlePasswordUpdate = async (currentPassword: string, newPassword: string) => {
+    try {
+      setIsModalLoading(true);
+      
+      // Change password
+      const response = await changePassword(currentPassword, newPassword);
+      
+      if (response.success) {
+        setUserData(prev => ({
+          ...prev,
+          password: "•••••••",
+        }));
+        
+        handleCloseModal();
+      } else {
+        throw new Error(response.message || "Kunne ikke endre passord");
+      }
+    } catch (error) {
+      console.error("Feil ved passord-endring:", error);
+      throw error;
+    } finally {
+      setIsModalLoading(false);
+    }
+  };
+
+  const handleVerification = async (verificationCode: string) => {
+    try {
+      setIsModalLoading(true);
+      
+      if (pendingData.type === "username" && pendingData.value) {
+        const response = await changeUsername(pendingData.value, verificationCode);
+        
+        if (response.success) {
+          setUserData(prev => ({
+            ...prev,
+            username: response.username,
+          }));
+        } else {
+          throw new Error(response.message || "Kunne ikke verifisere brukernavn-endring");
+        }
+      } else if (pendingData.type === "email") {
+        const response = await verifyEmailChange(verificationCode);
+        
+        if (response.success) {
+          setUserData(prev => ({
+            ...prev,
+            email: response.email,
+          }));
+        } else {
+          throw new Error(response.message || "Kunne ikke verifisere e-post-endring");
+        }
+      }
+      
       handleCloseModal();
     } catch (error) {
       console.error("Feil ved verifisering:", error);
@@ -89,25 +174,29 @@ export function LoginInfoManage() {
     }
   };
 
-  const handleUsernameUpdate = async (newUsername: string) => {
-    return handleUpdate({ type: "username", value: newUsername });
-  };
+  if (loading) {
+    return (
+      <Card className="w-full bg-[rgb(245,238,231)]">
+        <CardBody>
+          <div className="flex justify-center items-center p-8">
+            <span className="text-gray-600">Laster påloggingsinformasjon...</span>
+          </div>
+        </CardBody>
+      </Card>
+    );
+  }
 
-  const handleEmailUpdate = async (newEmail: string) => {
-    return handleUpdate({ 
-      type: "email", 
-      value: newEmail, 
-      password: "" // This would be filled in the real implementation
-    });
-  };
-
-  const handlePasswordUpdate = async () => {
-    return handleUpdate({ 
-      type: "password", 
-      currentPassword: "",
-      newPassword: "" 
-    });
-  };
+  if (error) {
+    return (
+      <Card className="w-full bg-[rgb(245,238,231)]">
+        <CardBody>
+          <div className="flex justify-center items-center p-8">
+            <span className="text-red-600">{error}</span>
+          </div>
+        </CardBody>
+      </Card>
+    );
+  }
 
   return (
     <section aria-labelledby="login-info-heading" className="w-full max-w-[600px] mx-auto">
@@ -198,6 +287,7 @@ export function LoginInfoManage() {
             </div>
           </dl>
 
+          {/* Username Change Modal */}
           {modalType === "username" && (
             <UsernameChangeModal
               isOpen={true}
@@ -209,6 +299,7 @@ export function LoginInfoManage() {
             />
           )}
 
+          {/* Email Change Modal */}
           {modalType === "email" && (
             <EmailChangeModal
               isOpen={true}
@@ -220,16 +311,18 @@ export function LoginInfoManage() {
             />
           )}
 
+          {/* Password Change Modal */}
           {modalType === "password" && (
             <PasswordChangeModal
               isOpen={true}
               onClose={handleCloseModal}
-              onUpdate={handlePasswordUpdate}
+              onUpdate={(currentPassword, newPassword) => handlePasswordUpdate(currentPassword, newPassword)}
               isLoading={isModalLoading}
               setIsLoading={setIsModalLoading}
             />
           )}
 
+          {/* Verification Modal */}
           {showVerificationModal && (
             <EmailVerificationModal
               isOpen={true}

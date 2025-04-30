@@ -1,10 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Card, CardBody, CardFooter, CardHeader } from "@/components/ui/Card";
+import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { PasswordModalProps } from "@/types/loginInfoManage.types";
-import PasswordStrengthMeter from "@/components/ui/custom/PasswordStrengthMeter";
-import { calculatePasswordStrength } from "@/lib/validation/universalValidation";
 import { Button } from "@/components/ui/custom/Button";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import { PasswordToggle } from "@/components/ui/custom/PasswordToggle";
@@ -20,7 +18,6 @@ export function PasswordChangeModal({
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -50,18 +47,6 @@ export function PasswordChangeModal({
     };
   }, [onClose]);
   
-  const showError = (message: string) => {
-    setError(message);
-    setSuccessMessage("");
-    setTimeout(() => setError(""), 5000);
-  };
-  
-  const showSuccess = (message: string) => {
-    setSuccessMessage(message);
-    setError("");
-    setTimeout(() => setSuccessMessage(""), 5000);
-  };
-  
   const handleCurrentPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentPassword(e.target.value);
   };
@@ -74,43 +59,19 @@ export function PasswordChangeModal({
     setConfirmPassword(e.target.value);
   };
   
-  const validatePassword = () => {
-    if (!currentPassword) {
-      showError("Vennligst oppgi ditt nåværende passord");
-      return false;
-    }
-    
-    if (newPassword.length < 8) {
-      showError("Passordet må være minst 8 tegn");
-      return false;
-    }
-    
-    if (calculatePasswordStrength(newPassword) < 50) {
-      showError("Passordet er for svakt. Bruk en kombinasjon av store og små bokstaver, tall og spesialtegn.");
-      return false;
-    }
-    
-    if (newPassword !== confirmPassword) {
-      showError("Passordene samsvarer ikke");
-      return false;
-    }
-    
-    return true;
-  };
-  
   const handlePasswordChange = async () => {
-    if (!validatePassword()) return;
+    if (newPassword !== confirmPassword) {
+      setError("Passordene samsvarer ikke");
+      return;
+    }
     
     try {
       setIsLoading(true);
-      
-      await onUpdate();
-      
-      showSuccess("Passord oppdatert");
+      await onUpdate(currentPassword, newPassword);
       setTimeout(onClose, 1500);
     } catch (error) {
       console.error("Feil ved oppdatering av passord:", error);
-      showError("Kunne ikke oppdatere passord");
+      setError(error instanceof Error ? error.message : "Kunne ikke oppdatere passord");
     } finally {
       setIsLoading(false);
     }
@@ -145,19 +106,6 @@ export function PasswordChangeModal({
               >
                 <PageIcons name="warning" directory="profileIcons" size={20} alt="" className="mt-0.5 mr-2 flex-shrink-0" />
                 <span>{error}</span>
-              </div>
-            )}
-            
-            {successMessage && (
-              <div 
-                className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-md flex items-start"
-                role="status"
-                aria-live="polite"
-              >
-                <svg className="h-5 w-5 text-green-400 mt-0.5 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                <span>{successMessage}</span>
               </div>
             )}
             
@@ -200,21 +148,13 @@ export function PasswordChangeModal({
                     placeholder="Skriv nytt passord (minst 8 tegn)"
                     required
                     disabled={isLoading}
-                    aria-describedby="password-strength-meter new-password-description"
+                    aria-describedby="new-password-description"
                   />
                   <PasswordToggle
                     showPassword={showNewPassword}
                     togglePassword={() => setShowNewPassword(prev => !prev)}
                   />
                 </div>
-                
-                {newPassword && (
-                  <PasswordStrengthMeter 
-                    password={newPassword} 
-                    className="mt-1"
-                    showLabel={true}
-                  />
-                )}
               </div>
 
               <div>
@@ -269,12 +209,6 @@ export function PasswordChangeModal({
               </div>
             </div>
           </CardBody>
-          
-          <CardFooter className="px-6 py-3 bg-gray-50 border-t border-gray-200 rounded-b-lg">
-            <p className="text-xs text-gray-500">
-              Ditt passord beskyttes med kryptering og brukes for å logge inn på kontoen din.
-            </p>
-          </CardFooter>
         </Card>
       </div>
     </div>

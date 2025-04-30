@@ -47,4 +47,21 @@ export async function getUserProfile(populate: string = 'publicProfile,personalI
   }
 }
 
+export async function getUserCredentials(): Promise<{
+  id: number;
+  username: string;
+  email: string;
+}> {
+  try {
+    return await strapiService.fetch<{
+      id: number;
+      username: string;
+      email: string;
+    }>('users/me');
+  } catch (error) {
+    console.error("Error fetching user credentials:", error);
+    throw new Error("Could not fetch user credentials");
+  }
+}
+
 

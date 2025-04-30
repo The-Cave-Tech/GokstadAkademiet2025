@@ -38,7 +38,7 @@ export interface EmailModalProps extends BaseModalProps {
 }
 
 export interface PasswordModalProps extends BaseModalProps {
-  onUpdate: () => Promise<void>;
+  onUpdate: (currentPassword: string, newPassword: string) => Promise<void>;
 }
 
 export interface VerificationModalProps extends BaseModalProps {
@@ -46,14 +46,12 @@ export interface VerificationModalProps extends BaseModalProps {
   email?: string;
 }
 
-// User credentials data structure
 export interface UserCredentials {
   username: string;
   email: string;
   password: string;
 }
 
-// Update payload structures
 export interface UsernameUpdatePayload {
   type: "username";
   value: string;
@@ -72,7 +70,6 @@ export interface PasswordUpdatePayload {
 }
 
 export type UpdatePayload = UsernameUpdatePayload | EmailUpdatePayload | PasswordUpdatePayload;
-
 
 export interface LoginInfoModalController {
   modalType: ModalType;

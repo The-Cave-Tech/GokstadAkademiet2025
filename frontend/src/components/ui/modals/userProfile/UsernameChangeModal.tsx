@@ -17,8 +17,7 @@ export function UsernameChangeModal({
   const [newUsername, setNewUsername] = useState(currentUsername);
   const [currentPassword, setCurrentPassword] = useState("");
   const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-
+  
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -37,14 +36,12 @@ export function UsernameChangeModal({
       }
     };
 
-    if (isOpen) {
-      window.addEventListener("keydown", handleKeyDown);
-    }
-
+    window.addEventListener("keydown", handleKeyDown);
+    
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen, onClose]);
+  }, [onClose]);
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewUsername(e.target.value);
@@ -53,43 +50,19 @@ export function UsernameChangeModal({
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentPassword(e.target.value);
   };
-
-  const showError = (message: string) => {
-    setError(message);
-    setSuccessMessage("");
-    setTimeout(() => setError(""), 5000);
-  };
-
-  const showSuccess = (message: string) => {
-    setSuccessMessage(message);
-    setError("");
-    setTimeout(() => setSuccessMessage(""), 5000);
-  };
-
   
   const handleSubmit = async () => {
     if (newUsername === currentUsername) {
-      showError("Det nye brukernavnet er det samme som det eksisterende");
-      return;
-    }
-
-    if (newUsername.length < 3) {
-      showError("Brukernavnet må være minst 3 tegn langt");
-      return;
-    }
-
-    if (!currentPassword) {
-      showError("Vennligst oppgi ditt nåværende passord");
+      setError("Det nye brukernavnet er det samme som det eksisterende");
       return;
     }
 
     try {
       setIsLoading(true);
       await onUpdate(newUsername);
-      showSuccess("Verifiseringskode sendt til din e-post");
     } catch (error) {
       console.error("Feil ved forespørsel om brukernavnendring:", error);
-      showError("Kunne ikke sende forespørsel om brukernavnendring");
+      setError(error instanceof Error ? error.message : "Kunne ikke sende forespørsel om brukernavnendring");
     } finally {
       setIsLoading(false);
     }
@@ -113,7 +86,7 @@ export function UsernameChangeModal({
           </CardHeader>
 
           <CardBody className="px-6 py-4">
-            {/* Error and success messages */}
+            {/* Error message */}
             {error && (
               <div
                 className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start"
@@ -125,32 +98,8 @@ export function UsernameChangeModal({
               </div>
             )}
 
-            {successMessage && (
-              <div
-                className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-md flex items-start"
-                role="status"
-                aria-live="polite"
-              >
-                <svg
-                  className="h-5 w-5 text-green-400 mt-0.5 mr-2 flex-shrink-0"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span>{successMessage}</span>
-              </div>
-            )}
-
             <div className="space-y-4">
-
-            <div>
+              <div>
                 <label htmlFor="current-password-for-username" className="block text-sm font-medium text-gray-700 mb-1">
                   Nåværende passord
                 </label>
