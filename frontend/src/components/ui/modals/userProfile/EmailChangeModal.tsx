@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/ui/Card";
 import { EmailModalProps } from "@/types/loginInfoManage.types";
 import { Button } from "@/components/ui/custom/Button";
+import PageIcons from "@/components/ui/custom/PageIcons";
 
 export function EmailChangeModal({
   isOpen,
@@ -35,9 +36,15 @@ export function EmailChangeModal({
         onClose();
       }
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
+
+    if (isOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   const showError = (message: string) => {
     setError(message);
@@ -59,9 +66,7 @@ export function EmailChangeModal({
     setCurrentPassword(e.target.value);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     if (newEmail === currentEmail) {
       showError("Den nye e-postadressen er den samme som den eksisterende");
       return;
@@ -99,7 +104,7 @@ export function EmailChangeModal({
       aria-modal="true"
       aria-labelledby="email-modal-title"
     >
-      <div ref={modalRef} className="max-w-md w-full mx-4 my-8">
+      <div ref={modalRef} className="w-full max-w-[600px] mx-4 my-8">
         <Card className="w-full shadow-xl">
           <CardHeader className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
             <h3 id="email-modal-title" className="text-lg font-medium text-gray-900">
@@ -114,19 +119,7 @@ export function EmailChangeModal({
                 role="alert"
                 aria-live="assertive"
               >
-                <svg
-                  className="h-5 w-5 text-red-400 mt-0.5 mr-2 flex-shrink-0"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <PageIcons name="warning" directory="profileIcons" size={20} alt="" className="mt-0.5 mr-2 flex-shrink-0" />
                 <span>{error}</span>
               </div>
             )}
@@ -154,34 +147,15 @@ export function EmailChangeModal({
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label htmlFor="new-email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Ny e-postadresse
-                </label>
-                <input
-                  ref={inputRef}
-                  id="new-email"
-                  type="email"
-                  className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newEmail}
-                  onChange={handleEmailChange}
-                  placeholder="din.nye@epost.no"
-                  required
-                  disabled={isLoading}
-                  aria-describedby="email-description"
-                />
-              </div>
+            <div className="space-y-4">
 
-              <div>
-                <label
-                  htmlFor="current-password-for-email"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
+            <div>
+                <label htmlFor="current-password-for-email" className="block text-sm font-medium text-gray-700 mb-1">
                   Nåværende passord
                 </label>
                 <input
                   id="current-password-for-email"
+                  name="current-password-for-email"
                   type="password"
                   className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={currentPassword}
@@ -190,6 +164,25 @@ export function EmailChangeModal({
                   required
                   disabled={isLoading}
                   aria-describedby="password-description"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="new-email" className="block text-sm font-medium text-gray-700 mb-1">
+                  Ny e-postadresse
+                </label>
+                <input
+                  ref={inputRef}
+                  id="new-email"
+                  name="new-email"
+                  type="email"
+                  className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newEmail}
+                  onChange={handleEmailChange}
+                  placeholder="din.nye@epost.no"
+                  required
+                  disabled={isLoading}
+                  aria-describedby="email-description"
                 />
               </div>
 
@@ -206,19 +199,22 @@ export function EmailChangeModal({
                   disabled={isLoading}
                   ariaLabel="Avbryt"
                   type="button"
+                  className="rounded-3xl"
                 >
                   Avbryt
                 </Button>
                 <Button
                   variant="primary"
+                  onClick={handleSubmit}
                   disabled={isLoading}
                   ariaLabel={isLoading ? "Sender..." : "Send verifiseringskode"}
-                  type="submit"
+                  type="button"
+                  className="rounded-3xl"
                 >
                   {isLoading ? "Sender..." : "Send verifiseringskode"}
                 </Button>
               </div>
-            </form>
+            </div>
           </CardBody>
 
           <CardFooter className="px-6 py-3 bg-gray-50 border-t border-gray-200 rounded-b-lg">

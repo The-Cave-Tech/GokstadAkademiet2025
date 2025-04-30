@@ -2,9 +2,9 @@
 
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { useState } from "react";
-import { PageIcons } from "@/components/ui/custom/PageIcons";
+import PageIcons from "@/components/ui/custom/PageIcons";
 import { Button } from "@/components/ui/custom/Button";
-import { ModalType, UserCredentials } from "@/types/loginInfoManage.types";
+import { ModalType, UserCredentials, UpdatePayload } from "@/types/loginInfoManage.types";
 import { UsernameChangeModal } from "@/components/ui/modals/userProfile/UsernameChangeModal";
 import { EmailChangeModal } from "@/components/ui/modals/userProfile/EmailChangeModal";
 import { PasswordChangeModal } from "@/components/ui/modals/userProfile/PasswordChangeModal";
@@ -17,7 +17,7 @@ export function LoginInfoManage() {
     password: "•••••••",
   });
 
-  const [modalField, setModalField] = useState<ModalType>(null);
+  const [modalType, setModalType] = useState<ModalType>(null);
   const [isModalLoading, setIsModalLoading] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [pendingData, setPendingData] = useState<{
@@ -26,38 +26,38 @@ export function LoginInfoManage() {
   }>({ type: null, value: "" });
 
   const handleOpenModal = (fieldName: ModalType) => {
-    setModalField(fieldName);
+    setModalType(fieldName);
   };
 
   const handleCloseModal = () => {
-    setModalField(null);
+    setModalType(null);
     setShowVerificationModal(false);
     setPendingData({ type: null, value: "" });
   };
 
-  const handleUsernameUpdate = async (newUsername: string) => {
+  const handleUpdate = async (payload: UpdatePayload) => {
     try {
       setIsModalLoading(true);
       await new Promise(resolve => setTimeout(resolve, 1000));
-      setPendingData({ type: "username", value: newUsername });
-      setModalField(null);
-      setShowVerificationModal(true);
+      
+      if (payload.type === "username") {
+        setPendingData({ type: "username", value: payload.value });
+        setModalType(null);
+        setShowVerificationModal(true);
+      } else if (payload.type === "email") {
+        setPendingData({ type: "email", value: payload.value });
+        setModalType(null);
+        setShowVerificationModal(true);
+      } else if (payload.type === "password") {
+        setUserData(prev => ({
+          ...prev,
+          password: "•••••••",
+        }));
+        handleCloseModal();
+      }
     } catch (error) {
-      console.error("Feil ved initiering av brukernavnendring:", error);
-    } finally {
-      setIsModalLoading(false);
-    }
-  };
-
-  const handleInitiateEmailUpdate = async (newEmail: string) => {
-    try {
-      setIsModalLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setPendingData({ type: "email", value: newEmail });
-      setModalField(null);
-      setShowVerificationModal(true);
-    } catch (error) {
-      console.error("Feil ved initiering av e-postendring:", error);
+      console.error(`Feil ved initiering av ${payload.type}-endring:`, error);
+      throw error;
     } finally {
       setIsModalLoading(false);
     }
@@ -83,30 +83,34 @@ export function LoginInfoManage() {
       handleCloseModal();
     } catch (error) {
       console.error("Feil ved verifisering:", error);
-      throw error; // La EmailVerificationModal håndtere feilen
+      throw error;
     } finally {
       setIsModalLoading(false);
     }
+  };
+
+  const handleUsernameUpdate = async (newUsername: string) => {
+    return handleUpdate({ type: "username", value: newUsername });
+  };
+
+  const handleEmailUpdate = async (newEmail: string) => {
+    return handleUpdate({ 
+      type: "email", 
+      value: newEmail, 
+      password: "" // This would be filled in the real implementation
+    });
   };
 
   const handlePasswordUpdate = async () => {
-    try {
-      setIsModalLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setUserData(prev => ({
-        ...prev,
-        password: "•••••••",
-      }));
-      handleCloseModal();
-    } catch (error) {
-      console.error("Feil ved oppdatering av passord:", error);
-    } finally {
-      setIsModalLoading(false);
-    }
+    return handleUpdate({ 
+      type: "password", 
+      currentPassword: "",
+      newPassword: "" 
+    });
   };
 
   return (
-    <section aria-labelledby="login-info-heading">
+    <section aria-labelledby="login-info-heading" className="w-full max-w-[600px] mx-auto">
       <Card className="w-full bg-[rgb(245,238,231)]">
         <CardHeader className="flex items-center gap-3 rounded-md">
           <figure className="w-10 h-10 rounded-full bg-[#d1d1d1] flex items-center justify-center" aria-hidden="true">
@@ -137,7 +141,7 @@ export function LoginInfoManage() {
                 <div className="ml-3">
                   <Button
                     variant="modalChange"
-                    modalState={isModalLoading && modalField === "username" ? "loading" : "edit"}
+                    modalState={isModalLoading && modalType === "username" ? "loading" : "edit"}
                     onClick={() => handleOpenModal("username")}
                     ariaLabel="Endre brukernavn"
                     disabled={isModalLoading}
@@ -160,7 +164,7 @@ export function LoginInfoManage() {
                 <div className="ml-3">
                   <Button
                     variant="modalChange"
-                    modalState={isModalLoading && modalField === "email" ? "loading" : "edit"}
+                    modalState={isModalLoading && modalType === "email" ? "loading" : "edit"}
                     onClick={() => handleOpenModal("email")}
                     ariaLabel="Endre e-post"
                     disabled={isModalLoading}
@@ -183,7 +187,7 @@ export function LoginInfoManage() {
                 <div className="ml-3">
                   <Button
                     variant="modalChange"
-                    modalState={isModalLoading && modalField === "password" ? "loading" : "edit"}
+                    modalState={isModalLoading && modalType === "password" ? "loading" : "edit"}
                     onClick={() => handleOpenModal("password")}
                     ariaLabel="Endre passord"
                     disabled={isModalLoading}
@@ -194,7 +198,7 @@ export function LoginInfoManage() {
             </div>
           </dl>
 
-          {modalField === "username" && (
+          {modalType === "username" && (
             <UsernameChangeModal
               isOpen={true}
               currentUsername={userData.username}
@@ -205,18 +209,18 @@ export function LoginInfoManage() {
             />
           )}
 
-          {modalField === "email" && (
+          {modalType === "email" && (
             <EmailChangeModal
               isOpen={true}
               currentEmail={userData.email}
               onClose={handleCloseModal}
-              onUpdate={handleInitiateEmailUpdate}
+              onUpdate={handleEmailUpdate}
               isLoading={isModalLoading}
               setIsLoading={setIsModalLoading}
             />
           )}
 
-          {modalField === "password" && (
+          {modalType === "password" && (
             <PasswordChangeModal
               isOpen={true}
               onClose={handleCloseModal}

@@ -3,31 +3,27 @@
 import { useState, useRef, useEffect } from "react";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/custom/Button";
-
-interface EmailVerificationModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onVerify: (code: string) => Promise<void>;
-  email?: string;
-  isLoading: boolean;
-  setIsLoading: (isLoading: boolean) => void;
-}
+import { VerificationModalProps } from "@/types/loginInfoManage.types";
+import PageIcons from "@/components/ui/custom/PageIcons";
 
 export function EmailVerificationModal({
   isOpen,
   onClose,
   onVerify,
+  email,
   isLoading,
   setIsLoading
-}: EmailVerificationModalProps) {
+}: VerificationModalProps) {
   // State
   const [verificationCode, setVerificationCode] = useState("");
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   
   // Refs
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   
-  // Fokus på input når modal åpnes
+  // Focus on input when modal opens
   useEffect(() => {
     if (isOpen && inputRef.current) {
       setTimeout(() => {
@@ -36,7 +32,7 @@ export function EmailVerificationModal({
     }
   }, [isOpen]);
   
-  // Håndter escape-tast
+  // Handle escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -45,36 +41,63 @@ export function EmailVerificationModal({
     };
     
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [onClose]);
   
-  // Håndtere endring av verifiseringskode
+  // Show error message with auto-dismiss
+  const showError = (message: string) => {
+    setError(message);
+    setSuccessMessage("");
+    setTimeout(() => setError(""), 5000);
+  };
+  
+  // Show success message with auto-dismiss
+  const showSuccess = (message: string) => {
+    setSuccessMessage(message);
+    setError("");
+    setTimeout(() => setSuccessMessage(""), 5000);
+  };
+  
+  // Handle verification code input change
   const handleVerificationCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Only allow digits and limit to 6 characters
     setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6));
   };
   
-  // Håndter sending av skjema
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Handle form submission
+  const handleSubmit = async () => {
+    // Basic validation
+    if (verificationCode.length !== 6) {
+      showError("Verifiseringskoden må være 6 siffer");
+      return;
+    }
     
     try {
       setIsLoading(true);
       await onVerify(verificationCode);
+      showSuccess("Verifisering fullført");
+      setTimeout(onClose, 1500);
     } catch (error) {
       console.error("Feil ved verifisering:", error);
+      showError("Ugyldig verifiseringskode");
     } finally {
       setIsLoading(false);
     }
   };
   
-  // Håndter sending på nytt
+  // Handle sending code again
   const handleResendCode = async () => {
     try {
       setIsLoading(true);
-      // Simuler API-kall for å sende ny kode
+      // This would typically call an API to resend the code
       await new Promise(resolve => setTimeout(resolve, 1000));
+      showSuccess("Ny kode sendt");
     } catch (error) {
       console.error("Feil ved sending av ny kode:", error);
+      showError("Kunne ikke sende ny kode");
     } finally {
       setIsLoading(false);
     }
@@ -91,7 +114,7 @@ export function EmailVerificationModal({
     >
       <div 
         ref={modalRef}
-        className="max-w-md w-full mx-4 my-8"
+        className="w-full max-w-[600px] mx-4 my-8"
       >
         <Card className="w-full shadow-xl rounded-lg border">
           <CardHeader className="px-6 py-4 border-b border-gray-200">
@@ -101,17 +124,41 @@ export function EmailVerificationModal({
           </CardHeader>
           
           <CardBody className="px-6 py-6">
+            {error && (
+              <div 
+                className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start"
+                role="alert"
+                aria-live="assertive"
+              >
+                <PageIcons name="warning" directory="profileIcons" size={20} alt="" className="mt-0.5 mr-2 flex-shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+            
+            {successMessage && (
+              <div 
+                className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-md flex items-start"
+                role="status"
+                aria-live="polite"
+              >
+                <svg className="h-5 w-5 text-green-400 mt-0.5 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span>{successMessage}</span>
+              </div>
+            )}
+            
             <div className="space-y-6">
               <div className="text-gray-700">
-                <p>
+                <p className="text-base">
                   Vi har sendt deg en kode på e-post for å verifisere at dette er deg.
                 </p>
-                <p>
-                  Vennligst sjekk innboksen din (og eventuelt søppelpost)
+                <p className="mt-2 text-base">
+                  Vennligst sjekk innboksen din {email ? `(${email})` : ""} og eventuelt søppelpost-mappen.
                 </p>
               </div>
               
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-4">
                 <div className="space-y-2">
                   <label htmlFor="verification-code" className="block text-gray-700 font-medium">
                     Verifiseringskode
@@ -143,7 +190,7 @@ export function EmailVerificationModal({
                     className="ml-2 text-blue-600 hover:text-blue-800 font-medium focus:outline-none"
                     disabled={isLoading}
                   >
-                    Klikk her for å sende på nytt...
+                    Klikk her for å sende på nytt
                   </button>
                 </div>
                 
@@ -154,21 +201,22 @@ export function EmailVerificationModal({
                     disabled={isLoading}
                     ariaLabel="Avbryt"
                     type="button"
-                    className="px-6 py-2"
+                    className="px-6 py-2 rounded-3xl"
                   >
                     Avbryt
                   </Button>
                   <Button
                     variant="primary"
-                    disabled={isLoading}
+                    onClick={handleSubmit}
+                    disabled={isLoading || verificationCode.length !== 6}
                     ariaLabel={isLoading ? "Verifiserer..." : "Gå videre"}
-                    type="submit"
-                    className="px-6 py-2"
+                    type="button"
+                    className="px-6 py-2 rounded-3xl"
                   >
                     {isLoading ? "Verifiserer..." : "Gå videre"}
                   </Button>
                 </div>
-              </form>
+              </div>
             </div>
           </CardBody>
         </Card>
