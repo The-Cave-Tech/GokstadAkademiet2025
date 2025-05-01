@@ -57,9 +57,14 @@ export function UsernameChangeModal({
       return;
     }
 
+    if (!currentPassword) {
+      setError("Vennligst skriv inn ditt passord");
+      return;
+    }
+
     try {
       setIsLoading(true);
-      await onUpdate(newUsername);
+      await onUpdate(newUsername, currentPassword);
     } catch (error) {
       console.error("Feil ved forespørsel om brukernavnendring:", error);
       setError(error instanceof Error ? error.message : "Kunne ikke sende forespørsel om brukernavnendring");
@@ -156,7 +161,7 @@ export function UsernameChangeModal({
                 <Button
                   variant="primary"
                   onClick={handleSubmit}
-                  disabled={isLoading}
+                  disabled={isLoading || !currentPassword}
                   ariaLabel={isLoading ? "Sender..." : "Send verifiseringskode"}
                   type="button"
                   className="rounded-3xl"

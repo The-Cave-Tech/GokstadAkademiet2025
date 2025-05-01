@@ -5,14 +5,29 @@ import { sendAccountDeletionVerification, sendAccountDeletionConfirmation, sendD
 import { createTokenData, storeTokenInUser, validateToken } from '../../../services/shared/tokenService';
 
 export default factories.createCoreController('plugin::users-permissions.user', ({ strapi }) => ({
-  /**
-   * Forespørsel om kontosletting
-   */
+  //KontoSletting
   async requestAccountDeletion(ctx) {
     const userId = ctx.state.user.id;
+    const { password } = ctx.request.body;
+    
+    if (!password) {
+      return ctx.badRequest('Password is required');
+    }
     
     try {
-      const user = await strapi.db.query('plugin::users-permissions.user').findOne({ where: { id: userId } });
+      const user = await strapi.db.query('plugin::users-permissions.user').findOne({ 
+        where: { id: userId } 
+      });
+      
+      // Validate the user's password
+      const validPassword = await strapi.plugin('users-permissions').service('user').validatePassword(
+        password,
+        user.password
+      );
+      
+      if (!validPassword) {
+        return ctx.badRequest('Invalid password');
+      }
       
       // Generer verifiseringskode og send e-post
       const verificationCode = await sendAccountDeletionVerification(user.email, user.username);
@@ -27,7 +42,10 @@ export default factories.createCoreController('plugin::users-permissions.user', 
       };
     } catch (error) {
       console.error('Error requesting account deletion:', error);
-      return ctx.badRequest(`Could not send verification code: ${error.message}`);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Could not send verification code";
+      return ctx.badRequest(`Could not send verification code: ${errorMessage}`);
     }
   },
   
@@ -99,7 +117,10 @@ export default factories.createCoreController('plugin::users-permissions.user', 
       };
     } catch (error) {
       console.error('Error deleting account:', error);
-      return ctx.badRequest(`Could not delete account: ${error.message}`);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Could not delete account";
+      return ctx.badRequest(`Could not delete account: ${errorMessage}`);
     }
   }
 }));

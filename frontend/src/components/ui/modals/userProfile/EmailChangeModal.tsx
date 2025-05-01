@@ -57,9 +57,14 @@ export function EmailChangeModal({
       return;
     }
 
+    if (!currentPassword) {
+      setError("Vennligst skriv inn ditt passord");
+      return;
+    }
+
     try {
       setIsLoading(true);
-      await onUpdate(newEmail);
+      await onUpdate(newEmail, currentPassword);
     } catch (error) {
       console.error("Feil ved forespørsel om e-postendring:", error);
       setError(error instanceof Error ? error.message : "Kunne ikke sende forespørsel om e-postendring");
@@ -155,7 +160,7 @@ export function EmailChangeModal({
                 <Button
                   variant="primary"
                   onClick={handleSubmit}
-                  disabled={isLoading}
+                  disabled={isLoading || !currentPassword}
                   ariaLabel={isLoading ? "Sender..." : "Send verifiseringskode"}
                   type="button"
                   className="rounded-3xl"

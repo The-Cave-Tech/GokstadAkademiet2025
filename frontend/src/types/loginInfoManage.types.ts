@@ -2,6 +2,7 @@
 
 export interface UsernameFormData {
   newUsername: string;
+  currentPassword: string;
   verificationCode?: string;
 }
 
@@ -29,12 +30,12 @@ export interface BaseModalProps {
 
 export interface UsernameModalProps extends BaseModalProps {
   currentUsername: string;
-  onUpdate: (newUsername: string) => Promise<void>;
+  onUpdate: (newUsername: string, password: string) => Promise<void>;
 }
 
 export interface EmailModalProps extends BaseModalProps {
   currentEmail: string;
-  onUpdate: (newEmail: string) => Promise<void>;
+  onUpdate: (newEmail: string, password: string) => Promise<void>;
 }
 
 export interface PasswordModalProps extends BaseModalProps {
@@ -55,6 +56,7 @@ export interface UserCredentials {
 export interface UsernameUpdatePayload {
   type: "username";
   value: string;
+  password: string;
 }
 
 export interface EmailUpdatePayload {

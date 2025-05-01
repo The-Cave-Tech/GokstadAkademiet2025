@@ -15,7 +15,10 @@ export async function requestAccountDeletion(password: string): Promise<AccountD
       );
     } catch (error) {
       console.error("Feil ved forespørsel om kontosletting:", error);
-      throw new Error(error instanceof Error ? error.message : "Kunne ikke sende forespørsel om kontosletting");
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Kunne ikke sende forespørsel om kontosletting";
+      throw new Error(errorMessage);
     }
   }
 
@@ -37,6 +40,9 @@ export async function verifyAndDeleteAccount(
     return result;
   } catch (error) {
     console.error("Feil ved sletting av konto:", error);
-    throw new Error(error instanceof Error ? error.message : "Kunne ikke slette konto");
+    const errorMessage = error instanceof Error 
+      ? error.message 
+      : "Kunne ikke slette konto";
+    throw new Error(errorMessage);
   }
 }

@@ -68,12 +68,12 @@ export function LoginInfoManage() {
     setPendingData({ type: null, value: "" });
   };
 
-  const handleUsernameUpdate = async (newUsername: string) => {
+  const handleUsernameUpdate = async (newUsername: string, password: string) => {
     try {
       setIsModalLoading(true);
       
       // Request username change, this will send verification code to email
-      const response = await requestUsernameChange(newUsername);
+      const response = await requestUsernameChange(newUsername, password);
       
       if (response.success) {
         setPendingData({ type: "username", value: newUsername });
@@ -90,12 +90,12 @@ export function LoginInfoManage() {
     }
   };
 
-  const handleEmailUpdate = async (newEmail: string) => {
+  const handleEmailUpdate = async (newEmail: string, password: string) => {
     try {
       setIsModalLoading(true);
       
       // Request email change, this will send verification code to new email
-      const response = await requestEmailChange(newEmail);
+      const response = await requestEmailChange(newEmail, password);
       
       if (response.success) {
         setPendingData({ type: "email", value: newEmail });

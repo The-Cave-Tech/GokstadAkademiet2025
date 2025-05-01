@@ -51,14 +51,30 @@ export default factories.createCoreController('plugin::users-permissions.user', 
   // Request username change verification
   async requestUsernameChange(ctx) {
     const userId = ctx.state.user.id;
-    const { username } = ctx.request.body;
+    const { username, password } = ctx.request.body;
 
     if (!username) {
       return ctx.badRequest('Username is required');
     }
+    
+    if (!password) {
+      return ctx.badRequest('Password is required');
+    }
 
     try {
-      const user = await strapi.db.query('plugin::users-permissions.user').findOne({ where: { id: userId } });
+      const user = await strapi.db.query('plugin::users-permissions.user').findOne({ 
+        where: { id: userId } 
+      });
+      
+      // Validate the user's password
+      const validPassword = await strapi.plugin('users-permissions').service('user').validatePassword(
+        password,
+        user.password
+      );
+      
+      if (!validPassword) {
+        return ctx.badRequest('Invalid password');
+      }
       
       // Sjekk om brukernavn er opptatt
       const existingUser = await strapi.db.query('plugin::users-permissions.user').findOne({
@@ -91,20 +107,24 @@ export default factories.createCoreController('plugin::users-permissions.user', 
     if (!newEmail) {
       return ctx.badRequest('New email is required');
     }
+    
+    if (!password) {
+      return ctx.badRequest('Password is required');
+    }
 
     try {
-      const user = await strapi.db.query('plugin::users-permissions.user').findOne({ where: { id: userId } });
+      const user = await strapi.db.query('plugin::users-permissions.user').findOne({ 
+        where: { id: userId } 
+      });
       
-      // Verifiser passord hvis oppgitt
-      if (password) {
-        const validPassword = await strapi.plugin('users-permissions').service('user').validatePassword(
-          password,
-          user.password
-        );
-        
-        if (!validPassword) {
-          return ctx.badRequest('Invalid password');
-        }
+      // Validate the user's password
+      const validPassword = await strapi.plugin('users-permissions').service('user').validatePassword(
+        password,
+        user.password
+      );
+      
+      if (!validPassword) {
+        return ctx.badRequest('Invalid password');
       }
       
       // Sjekk om e-post er opptatt
