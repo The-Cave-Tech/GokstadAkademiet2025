@@ -1,3 +1,4 @@
+// backend/src/api/user-profile/routes/custom-routes.ts
 export default {
   routes: [
     // User Profile Routes
@@ -56,6 +57,20 @@ export default {
       path: '/user-credentials/change-password',
       handler: 'credentials.changePassword',
       config: { policies: [], middlewares: [] }
+    },
+    
+    // Account Deletion Routes
+    {
+      method: 'POST',
+      path: '/user-profiles/request-account-deletion',
+      handler: 'account-deletion.requestAccountDeletion',
+      config: { policies: [] }
+    },
+    {
+      method: 'POST',
+      path: '/user-profiles/delete-account',
+      handler: 'account-deletion.verifyAndDeleteAccount',
+      config: { policies: [] }
     }
   ]
 };

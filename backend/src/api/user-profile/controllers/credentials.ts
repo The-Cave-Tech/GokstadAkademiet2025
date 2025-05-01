@@ -1,5 +1,6 @@
 import { factories } from '@strapi/strapi';
-import { generateVerificationCode, sendVerificationEmail } from '../../../services/email';
+import { sendUsernameChangeVerification, sendEmailChangeVerification } from '../../../services/mailServices/credentialsMail';
+import { createTokenData, storeTokenInUser, validateToken, clearToken } from '../../../services/shared/tokenService';
 
 export default factories.createCoreController('plugin::users-permissions.user', ({ strapi }) => ({
   // Handle username change
@@ -12,38 +13,14 @@ export default factories.createCoreController('plugin::users-permissions.user', 
     }
 
     try {
-      const user = await strapi.entityService.findOne('plugin::users-permissions.user', userId);
-      
-      if (!user.resetPasswordToken) {
-        return ctx.badRequest('Invalid verification code - no token found');
+      // Valider token
+      const validation = await validateToken(userId, verificationCode, 'username');
+      if (!validation.valid) {
+        return ctx.badRequest(validation.error);
       }
 
-      // Parse token data with error handling
-      let tokenData;
-      try {
-        tokenData = JSON.parse(user.resetPasswordToken);
-      } catch (e) {
-        console.error('Error parsing token data:', e);
-        return ctx.badRequest('Invalid token format');
-      }
-
-      // Validate verification code and action type
-      if (tokenData.code !== verificationCode || tokenData.action !== 'username') {
-        console.log('Token validation failed:', { 
-          expected: tokenData.code,
-          received: verificationCode,
-          action: tokenData.action
-        });
-        return ctx.badRequest('Invalid verification code');
-      }
-
-      // Check if token has expired
-      if (tokenData.expiresAt && new Date() > new Date(tokenData.expiresAt)) {
-        return ctx.badRequest('Verification code has expired');
-      }
-
-      // Check if username is already taken
-      const existingUser = await strapi.query('plugin::users-permissions.user').findOne({
+      // Sjekk om brukernavn er opptatt
+      const existingUser = await strapi.db.query('plugin::users-permissions.user').findOne({
         where: { username, id: { $ne: userId } }
       });
 
@@ -51,8 +28,9 @@ export default factories.createCoreController('plugin::users-permissions.user', 
         return ctx.badRequest('Username already in use');
       }
 
-      // Update username and clear token
-      await strapi.entityService.update('plugin::users-permissions.user', userId, {
+      // Oppdater brukernavn og nullstill token
+      await strapi.db.query('plugin::users-permissions.user').update({
+        where: { id: userId },
         data: { 
           username,
           resetPasswordToken: null 
@@ -80,10 +58,10 @@ export default factories.createCoreController('plugin::users-permissions.user', 
     }
 
     try {
-      const user = await strapi.entityService.findOne('plugin::users-permissions.user', userId);
+      const user = await strapi.db.query('plugin::users-permissions.user').findOne({ where: { id: userId } });
       
-      // Check if username is already taken
-      const existingUser = await strapi.query('plugin::users-permissions.user').findOne({
+      // Sjekk om brukernavn er opptatt
+      const existingUser = await strapi.db.query('plugin::users-permissions.user').findOne({
         where: { username, id: { $ne: userId } }
       });
 
@@ -91,39 +69,12 @@ export default factories.createCoreController('plugin::users-permissions.user', 
         return ctx.badRequest('Username already in use');
       }
 
-      // Generate verification code
-      const verificationCode = generateVerificationCode();
+      // Generer verifiseringskode og send e-post
+      const verificationCode = await sendUsernameChangeVerification(user.email, user.username);
       
-      // Create token data with 15 minutes expiration
-      const tokenData = {
-        code: verificationCode,
-        action: 'username',
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
-        requestedAt: new Date().toISOString()
-      };
-      
-      // Log token for debugging
-      console.log('Creating username change token:', {
-        userId,
-        code: verificationCode,
-        expiresAt: tokenData.expiresAt
-      });
-      
-      // Store token in user record
-      await strapi.entityService.update('plugin::users-permissions.user', userId, {
-        data: {
-          resetPasswordToken: JSON.stringify(tokenData)
-        }
-      });
-
-      // Send verification email
-      await sendVerificationEmail({
-        to: user.email,
-        subject: 'Verifiser endring av brukernavn',
-        username: user.username,
-        verificationCode,
-        action: 'endring av brukernavn'
-      });
+      // Lag token-data og lagre
+      const tokenData = createTokenData(verificationCode, 'username');
+      await storeTokenInUser(userId, tokenData);
 
       return { success: true, message: 'Verification code sent to your email' };
     } catch (error) {
@@ -142,11 +93,11 @@ export default factories.createCoreController('plugin::users-permissions.user', 
     }
 
     try {
-      const user = await strapi.entityService.findOne('plugin::users-permissions.user', userId);
+      const user = await strapi.db.query('plugin::users-permissions.user').findOne({ where: { id: userId } });
       
-      // Verify password if provided
+      // Verifiser passord hvis oppgitt
       if (password) {
-        const validPassword = await strapi.plugins['users-permissions'].services.user.validatePassword(
+        const validPassword = await strapi.plugin('users-permissions').service('user').validatePassword(
           password,
           user.password
         );
@@ -156,8 +107,8 @@ export default factories.createCoreController('plugin::users-permissions.user', 
         }
       }
       
-      // Check if email is already in use
-      const existingUser = await strapi.query('plugin::users-permissions.user').findOne({
+      // Sjekk om e-post er opptatt
+      const existingUser = await strapi.db.query('plugin::users-permissions.user').findOne({
         where: { email: newEmail, id: { $ne: userId } }
       });
 
@@ -165,41 +116,12 @@ export default factories.createCoreController('plugin::users-permissions.user', 
         return ctx.badRequest('Email address already in use');
       }
 
-      // Generate verification code
-      const verificationCode = generateVerificationCode();
+      // Generer og send verifiseringskode
+      const verificationCode = await sendEmailChangeVerification(newEmail, user.username);
       
-      // Create token data with 15 minutes expiration
-      const tokenData = {
-        code: verificationCode,
-        newEmail,
-        action: 'email',
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
-        requestedAt: new Date().toISOString()
-      };
-      
-      // Log token for debugging
-      console.log('Creating email change token:', {
-        userId,
-        newEmail,
-        code: verificationCode,
-        expiresAt: tokenData.expiresAt
-      });
-      
-      // Store token in user record
-      await strapi.entityService.update('plugin::users-permissions.user', userId, {
-        data: {
-          resetPasswordToken: JSON.stringify(tokenData)
-        }
-      });
-
-      // Send verification email to the NEW email address
-      await sendVerificationEmail({
-        to: newEmail,
-        subject: 'Verifiser endring av e-post',
-        username: user.username,
-        verificationCode,
-        action: 'endring av e-post'
-      });
+      // Lag token-data med ny e-post
+      const tokenData = createTokenData(verificationCode, 'email', { newEmail });
+      await storeTokenInUser(userId, tokenData);
 
       return { success: true, message: 'Verification code sent to your new email' };
     } catch (error) {
@@ -218,44 +140,22 @@ export default factories.createCoreController('plugin::users-permissions.user', 
     }
 
     try {
-      const user = await strapi.entityService.findOne('plugin::users-permissions.user', userId);
-
-      if (!user.resetPasswordToken) {
-        return ctx.badRequest('Invalid verification code - no token found');
+      // Valider token
+      const validation = await validateToken(userId, verificationCode, 'email');
+      if (!validation.valid) {
+        return ctx.badRequest(validation.error);
       }
 
-      // Parse token data with error handling
-      let tokenData;
-      try {
-        tokenData = JSON.parse(user.resetPasswordToken);
-      } catch (e) {
-        console.error('Error parsing token data:', e);
-        return ctx.badRequest('Invalid token format');
-      }
-
-      // Validate verification code and action type
-      if (tokenData.code !== verificationCode || tokenData.action !== 'email') {
-        console.log('Token validation failed:', { 
-          expected: tokenData.code,
-          received: verificationCode,
-          action: tokenData.action
-        });
-        return ctx.badRequest('Invalid verification code');
-      }
-
-      // Check if token has expired
-      if (tokenData.expiresAt && new Date() > new Date(tokenData.expiresAt)) {
-        return ctx.badRequest('Verification code has expired');
-      }
-
-      if (!tokenData.newEmail) {
+      const newEmail = validation.tokenData.newEmail;
+      if (!newEmail) {
         return ctx.badRequest('Email change information not found');
       }
 
-      // Update email and clear token
-      await strapi.entityService.update('plugin::users-permissions.user', userId, {
+      // Oppdater e-post og nullstill token
+      await strapi.db.query('plugin::users-permissions.user').update({
+        where: { id: userId },
         data: {
-          email: tokenData.newEmail,
+          email: newEmail,
           resetPasswordToken: null
         }
       });
@@ -263,7 +163,7 @@ export default factories.createCoreController('plugin::users-permissions.user', 
       return { 
         success: true, 
         message: 'Email updated successfully', 
-        email: tokenData.newEmail 
+        email: newEmail 
       };
     } catch (error) {
       console.error('Error verifying email:', error);
@@ -271,7 +171,7 @@ export default factories.createCoreController('plugin::users-permissions.user', 
     }
   },
 
-  // Legg til denne nye metoden for passordendring
+  // Change password
   async changePassword(ctx) {
     const userId = ctx.state.user.id;
     const { currentPassword, newPassword, passwordConfirmation } = ctx.request.body;
@@ -285,10 +185,10 @@ export default factories.createCoreController('plugin::users-permissions.user', 
     }
 
     try {
-      const user = await strapi.entityService.findOne('plugin::users-permissions.user', userId);
+      const user = await strapi.db.query('plugin::users-permissions.user').findOne({ where: { id: userId } });
       
       // Verifiser nåværende passord
-      const validPassword = await strapi.plugins['users-permissions'].services.user.validatePassword(
+      const validPassword = await strapi.plugin('users-permissions').service('user').validatePassword(
         currentPassword,
         user.password
       );
@@ -303,7 +203,8 @@ export default factories.createCoreController('plugin::users-permissions.user', 
       }
       
       // Oppdater passord (Strapi håndterer hashing automatisk)
-      await strapi.entityService.update('plugin::users-permissions.user', userId, {
+      await strapi.db.query('plugin::users-permissions.user').update({
+        where: { id: userId },
         data: { 
           password: newPassword
         }
