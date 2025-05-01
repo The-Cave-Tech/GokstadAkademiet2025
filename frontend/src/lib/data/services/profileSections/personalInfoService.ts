@@ -1,6 +1,7 @@
+// src/lib/data/services/profileSections/personalInfoService.ts
 import { strapiService } from "../strapiClient";
 import { getUserProfile } from "../userProfile";
-import { PersonalInformation, ExtendedUserProfile } from "@/types/personalInfo.types";
+import { UserProfile } from "../userProfile";
 
 type ProfileFieldValue = string | number | boolean | null | { id: number } | undefined;
 
@@ -41,12 +42,14 @@ export async function updateCity(city: string): Promise<unknown> {
   return sendProfileUpdate('city', city);
 }
 
-async function sendProfileUpdate(field: keyof PersonalInformation, value: ProfileFieldValue): Promise<unknown> {
+async function sendProfileUpdate(
+  field: keyof NonNullable<UserProfile['personalInformation']>, 
+  value: ProfileFieldValue
+): Promise<unknown> {
   try {
     const profile = await getUserProfile('personalInformation');
 
-    const extendedProfile = profile as unknown as ExtendedUserProfile;
-    const personalInfo = extendedProfile.personalInformation || {};
+    const personalInfo = profile.personalInformation || {};
     
     const mergedData = {
       ...personalInfo,

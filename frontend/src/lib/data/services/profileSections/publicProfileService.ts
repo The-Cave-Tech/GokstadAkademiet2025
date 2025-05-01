@@ -1,15 +1,9 @@
-// src/lib/data/services/profileSections/publicProfileService.tsx
-
-
 import { strapiService } from "../strapiClient";
 import { getUserProfile, UploadedFile, UserProfile } from "../userProfile";
 
-// Type for valid profile field values
+
 type ProfileFieldValue = string | number | boolean | null | { id: number } | undefined;
 
-/**
- * Oppdaterer visningsnavnet
- */
 export async function updateDisplayName(displayName: string): Promise<UserProfile> {
   return sendProfileUpdate('displayName', displayName);
 }

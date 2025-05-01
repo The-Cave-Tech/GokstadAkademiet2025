@@ -16,10 +16,10 @@ import {
   updateCity
 } from "@/lib/data/services/profileSections/personalInfoService";
 import { getUserProfile } from "@/lib/data/services/userProfile";
+import { UserProfile } from "@/lib/data/services/userProfile";
 
 import {
   PersonalInfoProps,
-  PersonalInformation,
   FormValues,
   FieldConfig,
   ExtendedUserProfile
@@ -38,7 +38,6 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
     city: ""
   });
   const [originalValues, setOriginalValues] = useState<FormValues>({...formValues});
-
 
   const fieldConfigs: FieldConfig[] = [
     {
@@ -103,7 +102,7 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
 
   useEffect(() => {
     if (profile) {
-      const extendedProfile = profile as unknown as ExtendedUserProfile;
+      const extendedProfile = profile as ExtendedUserProfile;
       const personalInfo = extendedProfile.personalInformation || {};
       
       let birthDateFormatted = personalInfo.birthDate || '';
@@ -135,7 +134,10 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
   }, [profile]);
 
   // Generic handler for input changes
-  const handleInputChange = (fieldId: keyof PersonalInformation, value: string) => {
+  const handleInputChange = (
+    fieldId: keyof NonNullable<UserProfile['personalInformation']>, 
+    value: string
+  ) => {
     // Special handling for phone number
     if (fieldId === "phoneNumber") {
       // Remove all non-digit characters first

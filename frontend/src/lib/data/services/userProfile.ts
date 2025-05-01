@@ -23,6 +23,19 @@ export interface UserProfile {
       };
     };
   };
+  personalInformation?: {
+    fullName?: string;
+    birthDate?: string;
+    gender?: string;
+    phoneNumber?: string;
+    streetAddress?: string;
+    postalCode?: string;
+    city?: string;
+  }
+  notificationSettings?: {
+    importantUpdates?: boolean;
+    newsletter?: boolean;
+  };
 }
 
 

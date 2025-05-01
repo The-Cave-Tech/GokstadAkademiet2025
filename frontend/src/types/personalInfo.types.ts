@@ -1,30 +1,15 @@
 // src/types/personalInfo.types.ts
-import { UserProfile as BaseUserProfile } from "@/lib/data/services/userProfile";
-
-
-export interface PersonalInformation {
-  fullName?: string;
-  birthDate?: string;
-  gender?: string;
-  phoneNumber?: string;
-  streetAddress?: string;
-  postalCode?: string;
-  city?: string;
-}
-
-export interface ExtendedUserProfile extends BaseUserProfile {
-  personalInformation: PersonalInformation;
-}
+import { UserProfile } from "@/lib/data/services/userProfile";
 
 export interface PersonalInfoProps {
-  profile?: BaseUserProfile | null;
-  onProfileUpdate?: (updatedProfile: BaseUserProfile) => void;
+  profile?: UserProfile | null;
+  onProfileUpdate?: (updatedProfile: UserProfile) => void;
 }
 
 export type FieldType = 'text' | 'select' | 'tel' | 'date';
 
 export interface FieldConfig {
-  id: keyof PersonalInformation;  // Ensure IDs match PersonalInformation keys
+  id: keyof NonNullable<UserProfile['personalInformation']>;
   label: string;
   type: FieldType;
   placeholder: string;
@@ -34,8 +19,11 @@ export interface FieldConfig {
   updateFn: (value: string) => Promise<unknown>;
 }
 
-export type FormValues = Record<keyof PersonalInformation, string>;
-export type LoadingStates = Record<keyof PersonalInformation, boolean>;
+export type FormValues = Record<keyof NonNullable<UserProfile['personalInformation']>, string>;
+
+export interface ExtendedUserProfile extends UserProfile {
+  personalInformation: NonNullable<UserProfile['personalInformation']>;
+}
 
 export interface DatePickerProps {
   id: string;
