@@ -1,5 +1,7 @@
+// backend/src/api/user-profile/controllers/account-deletion.ts
+
 import { factories } from '@strapi/strapi';
-import { sendAccountDeletionVerification, sendAccountDeletionConfirmation } from '../../../services/mailServices/accountAdministrationMail';
+import { sendAccountDeletionVerification, sendAccountDeletionConfirmation, sendDeletionFeedback } from '../../../services/mailServices/accountAdministrationMail';
 import { createTokenData, storeTokenInUser, validateToken } from '../../../services/shared/tokenService';
 
 export default factories.createCoreController('plugin::users-permissions.user', ({ strapi }) => ({
@@ -50,26 +52,13 @@ export default factories.createCoreController('plugin::users-permissions.user', 
         return ctx.badRequest(validation.error);
       }
       
-      // Finn brukerprofil
-      const userProfiles = await strapi.db.query('api::user-profile.user-profile').findMany({
-        where: { users_permissions_user: userId }
-      });
-      
-      // Lagre slettingsgrunn hvis gitt
-      if (userProfiles && userProfiles.length > 0 && deletionReason) {
-        const profileId = userProfiles[0].id;
+      // Hvis brukeren har oppgitt en slettingsgrunn, send den på e-post til adminstratorene
+      if (deletionReason) {
         try {
-          await strapi.db.query('api::user-profile.user-profile').update({
-            where: { id: profileId },
-            data: {
-              accountAdministration: {
-                deletionReason,
-                accountActive: false
-              }
-            }
-          });
+          await sendDeletionFeedback(user.email, user.username, deletionReason);
         } catch (err) {
-          console.error('Error updating profile before deletion:', err);
+          console.error('Error sending deletion feedback:', err);
+          // Vi fortsetter slettingsprosessen selv om sending av tilbakemelding feiler
         }
       }
       
@@ -79,6 +68,11 @@ export default factories.createCoreController('plugin::users-permissions.user', 
       } catch (err) {
         console.error('Error sending deletion confirmation:', err);
       }
+      
+      // Finn brukerprofil
+      const userProfiles = await strapi.db.query('api::user-profile.user-profile').findMany({
+        where: { users_permissions_user: userId }
+      });
       
       // Slett brukerprofil først
       if (userProfiles && userProfiles.length > 0) {

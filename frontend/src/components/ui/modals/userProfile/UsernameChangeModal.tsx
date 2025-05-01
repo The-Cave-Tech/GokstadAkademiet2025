@@ -101,7 +101,7 @@ export function UsernameChangeModal({
             <div className="space-y-4">
               <div>
                 <label htmlFor="current-password-for-username" className="block text-sm font-medium text-gray-700 mb-1">
-                  Nåværende passord
+                 Passord
                 </label>
                 <input
                   id="current-password-for-username"
@@ -110,7 +110,7 @@ export function UsernameChangeModal({
                   className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={currentPassword}
                   onChange={handlePasswordChange}
-                  placeholder="Skriv ditt nåværende passord"
+                  placeholder="Skriv ditt passord"
                   required
                   disabled={isLoading}
                   aria-describedby="password-description"

@@ -4,15 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/custom/Button";
 import PageIcons from "@/components/ui/custom/PageIcons";
-
-interface DeleteAccountModalProps {
-  isOpen: boolean;
-  currentEmail: string;
-  onClose: () => void;
-  onVerify: (password: string) => Promise<void>;
-  isLoading: boolean;
-  setIsLoading: (loading: boolean) => void;
-}
+import { AccountDeletionModalProps } from "@/types/accountAdministration.types";
 
 export function DeleteAccountModal({
   isOpen,
@@ -21,7 +13,7 @@ export function DeleteAccountModal({
   onVerify,
   isLoading,
   setIsLoading,
-}: DeleteAccountModalProps) {
+}: AccountDeletionModalProps) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [error, setError] = useState("");
   
@@ -62,6 +54,7 @@ export function DeleteAccountModal({
 
     try {
       setIsLoading(true);
+      // Her sender vi passordet til API-et for validering før verifiseringskoden sendes
       await onVerify(currentPassword);
       setCurrentPassword(""); // Nullstill passordfelt
     } catch (error) {
@@ -127,6 +120,16 @@ export function DeleteAccountModal({
                   />
                 </div>
 
+                <div className="bg-amber-50 border border-amber-200 rounded-md p-4 mt-2">
+                  <div className="flex gap-2">
+                    <PageIcons name="warning" directory="profileIcons" size={20} alt="" className="flex-shrink-0" />
+                    <p className="text-amber-800">
+                      Når du bekrefter, vil du motta en e-post med en verifiseringskode som du må skrive inn for å fullføre slettingen.
+                      <strong className="block mt-2">Dette er en permanent handling som ikke kan angres. All din data vil bli slettet.</strong>
+                    </p>
+                  </div>
+                </div>
+
                 <div className="flex justify-end gap-2 pt-4">
                   <Button
                     variant="secondary"
@@ -139,7 +142,7 @@ export function DeleteAccountModal({
                     Avbryt
                   </Button>
                   <Button
-                    variant="primary"
+                    variant="danger"
                     onClick={handleSubmit}
                     disabled={isLoading || !currentPassword}
                     ariaLabel={isLoading ? "Sender..." : "Send verifiseringskode"}
