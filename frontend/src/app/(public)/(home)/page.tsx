@@ -6,7 +6,9 @@ import { fetchStrapiData } from "@/lib/data/services/strapiApiData";
 import { eventsService } from "@/lib/data/services/eventService";
 import { projectService } from "@/lib/data/services/projectService";
 import ClientMessage from "@/components/ClientMessage";
-import { EventAttributes } from "@/types/content.types";
+import { EventAttributes, ProjectAttributes } from "@/types/content.types";
+import { ProjectCard } from "@/components/dashboard/contentManager/ProjectCard";
+import { EventCard } from "@/components/dashboard/contentManager/EventCard";
 
 interface LandingPageData {
   hero: {
@@ -20,18 +22,10 @@ interface LandingPageData {
   };
 }
 
-interface Project {
-  id: number;
-  title: string;
-  description: string;
-  projectImage?: string | null;
-  link?: string | null;
-}
-
 export default function LandingPageContent() {
   const [content, setContent] = useState<LandingPageData | null>(null);
   const [events, setEvents] = useState<EventAttributes[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<ProjectAttributes[]>([]);
   const [loadingContent, setLoadingContent] = useState(true);
   const [loadingEvents, setLoadingEvents] = useState(true);
   const [loadingProjects, setLoadingProjects] = useState(true);
@@ -198,55 +192,6 @@ export default function LandingPageContent() {
         </div>
       </section>
 
-      <section className="py-20 bg-white px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-12 text-center">
-            Kommende Eventer
-          </h2>
-          <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
-            {events.length > 0 ? (
-              events.map((event) => (
-                <div
-                  key={event.id}
-                  className="bg-white rounded-xl shadow-md overflow-hidden p-6 hover:shadow-lg transition"
-                >
-                  {event.eventCardImage ? (
-                    <div className="relative h-40 w-full rounded-md overflow-hidden mb-4">
-                      <Image
-                        src={
-                          event.eventCardImage.url.startsWith("http")
-                            ? event.eventCardImage.url
-                            : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${event.eventCardImage.url}`
-                        }
-                        alt={event.title || "Event Image"}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      />
-                    </div>
-                  ) : (
-                    <div className="h-40 w-full bg-gray-200 rounded-md flex items-center justify-center mb-4">
-                      <span className="text-gray-400 text-sm">Ingen bilde</span>
-                    </div>
-                  )}
-                  <h3 className="text-xl font-semibold mb-2">{event.title}</h3>
-                  <p className="text-gray-600 text-sm mb-2">
-                    {event.Description || "Ingen beskrivelse tilgjengelig"}
-                  </p>
-                  <span className="text-gray-500 text-sm">
-                    Startdato: {event.startDate || "Ukjent startdato"}
-                  </span>
-                </div>
-              ))
-            ) : (
-              <p className="text-center text-gray-500">
-                Ingen kommende eventer
-              </p>
-            )}
-          </div>
-        </div>
-      </section>
-
       <section className="py-20 px-4 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold mb-12 text-center">
@@ -255,46 +200,28 @@ export default function LandingPageContent() {
           <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
             {projects.length > 0 ? (
               projects.map((project) => (
-                <div
-                  key={project.id}
-                  className="bg-white rounded-xl shadow-md overflow-hidden p-6 hover:shadow-lg transition"
-                >
-                  {project.projectImage ? (
-                    <div className="relative h-40 w-full rounded-md overflow-hidden mb-4">
-                      <Image
-                        src={project.projectImage}
-                        alt={project.title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      />
-                    </div>
-                  ) : (
-                    <div className="h-40 w-full bg-gray-200 rounded-md flex items-center justify-center mb-4">
-                      <span className="text-gray-400 text-sm">Ingen bilde</span>
-                    </div>
-                  )}
-                  <h3 className="text-xl font-semibold mb-2">
-                    {project.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-4">
-                    {project.description || "Ingen beskrivelse tilgjengelig"}
-                  </p>
-                  {project.link && (
-                    <a
-                      href={project.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 text-sm hover:underline"
-                    >
-                      Besøk prosjekt
-                    </a>
-                  )}
-                </div>
+                <ProjectCard key={project.id} project={project} />
               ))
             ) : (
               <p className="text-center text-gray-500">
-                Ingen prosjekter tilgjengelig
+                Ingen prosjekter funnet
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className="flex py-20 px-4 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-12 text-center">
+            Arrangementer
+          </h2>
+          <div className="flex flex-col items-center">
+            {events.length > 0 ? (
+              events.map((event) => <EventCard key={event.id} event={event} />)
+            ) : (
+              <p className="text-center text-gray-500">
+                Ingen arrangementer funnet
               </p>
             )}
           </div>

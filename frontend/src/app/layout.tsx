@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Roboto } from "next/font/google";
-import "@/styles/globals.css";
+import "@/styles/global.css";
 import { Header } from "@/components/ui/Header";
 import { AuthProvider } from "@/lib/context/AuthContext";
 import React from "react";
 import { ActivitiesProvider } from "@/lib/context/ActivityContext";
+import Footer from "@/components/Footer";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -51,6 +52,7 @@ export default function RootLayout({
           <ActivitiesProvider>
             <Header />
             {children}
+            <Footer />
           </ActivitiesProvider>
         </AuthProvider>
       </body>

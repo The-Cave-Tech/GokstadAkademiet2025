@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 
-export default {
+const config = {
   darkMode: "class",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -17,14 +17,17 @@ export default {
       },
       colors: {
         zodValidation: "#b41400",
-        background: "var(--background)",
-        primary: "#1D4ED8", // Example: Primary blue
-        secondary: "#9333EA", // Example: Secondary purple
-        accent: "#F59E0B", // Example: Accent yellow
-        danger: "#DC2626", // Example: Danger red
-        success: "#16A34A", // Example: Success green
+        background: "var(--color-background)",
+        primary: "var(--color-primary)",
+        secondary: "var(--color-secondary)",
+        card: "var(--color-card)",
+        accent: "#F59E0B",
+        danger: "#DC2626",
+        success: "#16A34A",
       },
     },
   },
   plugins: [],
 } satisfies Config;
+
+export default config;

@@ -97,19 +97,13 @@ const ActivitiesPage = () => {
   }, [projects, filter, searchQuery, activeTab]);
 
   return (
-    <div
-      className="min-h-screen p-6 sm:p-8 md:p-10"
-      style={{ backgroundColor: Theme.colors.background }}
-    >
+    <div className="bg-background min-h-screen p-6 sm:p-8 md:p-10">
       <div
         className="max-w-7xl mx-auto rounded-xl shadow-lg overflow-hidden"
         style={{ backgroundColor: Theme.colors.surface }}
       >
         {/* Header */}
-        <div
-          className="px-6 py-5 sm:px-8 sm:py-6"
-          style={{ backgroundColor: Theme.colors.primary, color: "white" }}
-        >
+        <div className="bg-primary px-6 py-5 sm:px-8 sm:py-6">
           <div className="flex flex-col sm:flex-row justify-between items-center">
             {/* Navigation Tabs */}
             <TabSelector activeTab={activeTab} setActiveTab={setActiveTab} />

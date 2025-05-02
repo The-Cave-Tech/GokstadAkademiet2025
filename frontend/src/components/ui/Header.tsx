@@ -16,7 +16,7 @@ export const Header = () => {
 
   return (
     <>
-      <header className="fixed top-0 w-full z-50 bg-white shadow">
+      <header className="fixed bg-primary top-0 w-full z-50 bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -24,7 +24,7 @@ export const Header = () => {
               <Link href="/">
                 <SiteLogo
                   className="/* Dark mode støtte */"
-                  style={{ width: "90px", height: "45px" }}
+                  style={{ width: "auto", height: "45px" }}
                 />
               </Link>
             </div>
@@ -75,7 +75,7 @@ export const Header = () => {
             <nav className="hidden md:flex space-x-8">
               <Link
                 className="text-gray-700 hover:text-gray-900"
-                href="/activities"
+                href="/aktiviteter"
               >
                 Aktiviteter
               </Link>
