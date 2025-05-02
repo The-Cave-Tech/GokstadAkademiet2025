@@ -9,14 +9,14 @@ interface FilterDropdownProps {
 
 // Filter options based on the active tab
 const PROJECT_FILTERS = [
-  { value: "all", label: "All Projects" },
-  { value: "planning", label: "Planning" },
-  { value: "in-progress", label: "In Progress" },
-  { value: "completed", label: "Completed" },
+  { value: "all", label: "Alle prosjekter" },
+  { value: "planning", label: "Planlegger" },
+  { value: "in-progress", label: "Pågående" },
+  { value: "complete", label: "Fullført" },
 ];
 
 const EVENT_FILTERS = [
-  { value: "all", label: "All Events" },
+  { value: "all", label: "Alle arrangementer" },
   { value: "upcoming", label: "Upcoming" },
   { value: "past", label: "Past" },
 ];
