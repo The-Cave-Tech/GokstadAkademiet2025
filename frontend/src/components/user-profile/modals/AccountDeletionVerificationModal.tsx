@@ -61,8 +61,6 @@ export function AccountDeletionVerificationModal({
     
     try {
       setIsLoading(true);
-      // Sender slettingsårsaken sammen med verifiseringskoden
-      // Dette vil resultere i at en e-post sendes til administratorene med tilbakemeldingen
       await onVerify(verificationCode, deletionReason);
     } catch (error) {
       console.error("Feil ved verifisering:", error);
@@ -75,8 +73,6 @@ export function AccountDeletionVerificationModal({
   const handleResendCode = async () => {
     try {
       setIsLoading(true);
-      // Her skulle vi kalt API-et for å få en ny kode
-      // For nå viser vi bare en melding om at funksjonen ikke er implementert
       setError("Funksjonen for å sende ny kode er ikke implementert ennå");
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulert forsinkelse
     } catch (error) {

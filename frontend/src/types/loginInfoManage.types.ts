@@ -52,36 +52,3 @@ export interface UserCredentials {
   email: string;
   password: string;
 }
-
-export interface UsernameUpdatePayload {
-  type: "username";
-  value: string;
-  password: string;
-}
-
-export interface EmailUpdatePayload {
-  type: "email";
-  value: string;
-  password: string;
-}
-
-export interface PasswordUpdatePayload {
-  type: "password";
-  currentPassword: string;
-  newPassword: string;
-}
-
-export type UpdatePayload = UsernameUpdatePayload | EmailUpdatePayload | PasswordUpdatePayload;
-
-export interface LoginInfoModalController {
-  modalType: ModalType;
-  showVerificationModal: boolean;
-  setModalType: (type: ModalType) => void;
-  setShowVerificationModal: (show: boolean) => void;
-  handleUpdate: (payload: UpdatePayload) => Promise<void>;
-  handleVerification: (code: string) => Promise<void>;
-  pendingData: {
-    type: "username" | "email" | null;
-    value: string;
-  };
-}

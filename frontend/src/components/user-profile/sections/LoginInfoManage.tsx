@@ -1,3 +1,4 @@
+//frontend/src/components/user-profile/sections/LoginInfoManage.tsx
 "use client";
 
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
@@ -5,10 +6,8 @@ import { useState, useEffect } from "react";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import { Button } from "@/components/ui/custom/Button";
 import { ModalType, UserCredentials } from "@/types/loginInfoManage.types";
-import { UsernameChangeModal } from "@/components/ui/modals/userProfile/UsernameChangeModal";
-import { EmailChangeModal } from "@/components/ui/modals/userProfile/EmailChangeModal";
-import { PasswordChangeModal } from "@/components/ui/modals/userProfile/PasswordChangeModal";
-import { EmailVerificationModal } from "@/components/ui/modals/userProfile/EmailVerificationModal";
+import { EmailChangeModal } from "@/components/user-profile/modals/EmailChangeModal";
+import { EmailVerificationModal } from "@/components/user-profile/modals/EmailVerificationModal";
 import { getUserCredentials } from "@/lib/data/services/userProfile";
 import { 
   requestUsernameChange, 
@@ -17,6 +16,8 @@ import {
   verifyEmailChange,
   changePassword 
 } from "@/lib/data/services/profileSections/credentialsService";
+import { UsernameChangeModal } from "../modals/UsernameChangeModal";
+import { PasswordChangeModal } from "../modals/PasswordChangeModal";
 
 export function LoginInfoManage() {
   const [userData, setUserData] = useState<UserCredentials>({

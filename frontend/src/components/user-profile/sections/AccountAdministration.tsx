@@ -1,11 +1,10 @@
+//frontend/src/components/user-profile/sections/AccountAdministration
 "use client";
 
 import { useState, useEffect } from "react";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import { useRouter } from "next/navigation";
-import { DeleteAccountModal } from "@/components/ui/modals/userProfile/DeleteAccountModal";
-import { AccountDeletionVerificationModal } from "@/components/ui/modals/userProfile/AccountDeletionVerificationModal";
 import {
   requestAccountDeletion,
   verifyAndDeleteAccount,
@@ -13,6 +12,8 @@ import {
 import { useAuth } from "@/lib/context/AuthContext";
 import { getUserCredentials } from "@/lib/data/services/userProfile";
 import { Button } from "@/components/ui/custom/Button";
+import { DeleteAccountModal } from "../modals/DeleteAccountModal";
+import { AccountDeletionVerificationModal } from "../modals/AccountDeletionVerificationModal";
 
 export function AccountAdministration() {
   const [deletionReason, setDeletionReason] = useState("");
