@@ -15,7 +15,6 @@ export const formatDate = (dateString: string): string => {
     return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
-      year: "numeric",
     });
   } catch (error) {
     console.error("Error formatting date:", error);
@@ -41,6 +40,13 @@ export const getRelativeTimeString = (dateString: string): string => {
     const diffInMs = date.getTime() - now.getTime();
     const diffInDays = Math.round(diffInMs / (1000 * 60 * 60 * 24));
 
+    // Format the time in 00.00 format
+    const formatTime = (d: Date): string => {
+      const hours = d.getHours().toString().padStart(2, "0");
+      const minutes = d.getMinutes().toString().padStart(2, "0");
+      return `${hours}.${minutes}`;
+    };
+
     if (diffInDays < -365) {
       return `${Math.floor(-diffInDays / 365)} years ago`;
     } else if (diffInDays < -30) {
@@ -48,11 +54,11 @@ export const getRelativeTimeString = (dateString: string): string => {
     } else if (diffInDays < -1) {
       return `${-diffInDays} days ago`;
     } else if (diffInDays === -1) {
-      return "Yesterday";
+      return `Yesterday at ${formatTime(date)}`;
     } else if (diffInDays === 0) {
-      return "Today";
+      return `Today at ${formatTime(date)}`;
     } else if (diffInDays === 1) {
-      return "Tomorrow";
+      return `Tomorrow at ${formatTime(date)}`;
     } else if (diffInDays < 30) {
       return `In ${diffInDays} days`;
     } else if (diffInDays < 365) {

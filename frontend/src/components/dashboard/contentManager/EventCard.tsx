@@ -9,6 +9,21 @@ interface EventCardProps {
   event: Event;
 }
 
+// Helper function to format time in 00.00 format
+const formatTime = (timeString: string): string => {
+  // Check if the timeString is in a valid format
+  if (!timeString) return "";
+
+  // Assuming timeString is in format "HH:MM" or similar
+  const parts = timeString.split(":");
+  if (parts.length < 2) return timeString; // Return original if not in expected format
+
+  const hours = parts[0].padStart(2, "0");
+  const minutes = parts[1].padStart(2, "0");
+
+  return `${hours}.${minutes}`;
+};
+
 export const EventCard: React.FC<EventCardProps> = ({ event }) => {
   const router = useRouter();
 
@@ -19,20 +34,20 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
 
   return (
     <article
-      className="flex items-center justify-center rounded-lg shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer bg-white overflow-hidden w-[500px] md:w-[600px] lg:w-[700px]"
+      className="relative flex flex-col sm:flex-row w-full rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer bg-white overflow-hidden"
       style={{ border: `1px solid ${Theme.colors.divider}` }}
+      onClick={handleClick}
       tabIndex={0}
       role="button"
       aria-label={`Vis detaljer om arrangementet ${event.title}`}
     >
-      {/* Image Section */}
+      {/* Image Section - Full width on mobile, left side on larger screens */}
       {event.eventCardImage && (
-        <div className="relative w-32 md:w-48 flex-shrink-0">
+        <div className="relative w-full sm:w-48 md:w-64 lg:w-72">
           <img
             src={event.eventCardImage.url}
             alt={event.eventCardImage.alternativeText || event.title}
-            className="w-full h-full object-cover"
-            style={{ minHeight: "100%" }}
+            className="w-full h-48 sm:h-full object-cover"
           />
           <div
             className="absolute bottom-0 right-0 p-1 bg-black bg-opacity-60 text-white text-xs rounded-tl-md"
@@ -43,21 +58,21 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
         </div>
       )}
 
-      {/* Content Section */}
-      <div className="flex flex-col p-3 md:p-4 flex-grow justify-between min-w-0">
+      {/* Content Section - Takes remaining width */}
+      <div className="flex flex-col p-4 flex-grow justify-between min-w-0">
         <div>
           {/* Title */}
           <h3
-            className="text-base md:text-lg font-semibold truncate"
+            className="text-lg md:text-xl font-semibold"
             style={{ color: Theme.colors.text.primary }}
           >
             {event.title}
           </h3>
 
-          {/* Description - hidden on small screens */}
+          {/* Description - visible on all screens */}
           {event.Description && (
             <p
-              className="hidden md:block text-sm line-clamp-1 mt-1"
+              className="text-sm md:text-base mt-2 line-clamp-2 md:line-clamp-3"
               style={{ color: Theme.colors.text.secondary }}
             >
               {event.Description}
@@ -66,11 +81,11 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
         </div>
 
         {/* Event Details */}
-        <div className="flex flex-col md:flex-row md:items-center md:gap-4 text-xs md:text-sm mt-2">
+        <div className="flex flex-wrap gap-y-2 gap-x-4 text-sm mt-4">
           {/* Date and Time */}
           <div className="flex items-center">
             <svg
-              className="w-3 h-3 mr-1"
+              className="w-4 h-4 mr-2"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -89,15 +104,15 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
               style={{ color: Theme.colors.text.secondary }}
             >
               {formatEventDate(event)}
-              {event.time && ` • ${event.time}`}
+              {event.time ? ` • kl:${formatTime(event.time)}` : ""}
             </span>
           </div>
 
           {/* Location */}
           {event.location && (
-            <div className="flex items-center mt-1 md:mt-0">
+            <div className="flex items-center">
               <svg
-                className="w-3 h-3 mr-1"
+                className="w-4 h-4 mr-2"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -118,30 +133,27 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
                 ></path>
               </svg>
               <span
-                className="truncate"
+                className="truncate max-w-xs"
                 style={{ color: Theme.colors.text.secondary }}
               >
                 {event.location}
               </span>
             </div>
           )}
-        </div>
-      </div>
 
-      {/* Action button - visible only on larger screens */}
-      <div
-        className="hidden md:flex items-center px-4 border-l"
-        style={{ borderColor: Theme.colors.divider }}
-      >
-        <span
-          className="whitespace-nowrap text-xs py-1 px-2 rounded-full"
-          style={{
-            backgroundColor: `${Theme.colors.primary}20`,
-            color: Theme.colors.primary,
-          }}
-        >
-          Klikk for detaljer
-        </span>
+          {/* Action button - visible on all screens */}
+          <div className="ml-auto flex items-center">
+            <span
+              className="whitespace-nowrap text-xs py-1.5 px-3 rounded-full"
+              style={{
+                backgroundColor: `${Theme.colors.primary}20`,
+                color: Theme.colors.primary,
+              }}
+            >
+              Klikk for detaljer
+            </span>
+          </div>
+        </div>
       </div>
     </article>
   );

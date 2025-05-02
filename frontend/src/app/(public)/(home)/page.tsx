@@ -192,7 +192,7 @@ export default function LandingPageContent() {
         </div>
       </section>
 
-      <section className="py-20 px-4 bg-gray-50">
+      <section className="flex py-20 px-4 bg-secondary gap-5">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold mb-12 text-center">
             Prosjekter
@@ -211,12 +211,12 @@ export default function LandingPageContent() {
         </div>
       </section>
 
-      <section className="flex py-20 px-4 bg-gray-50">
+      <section className="py-20 px-4 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold mb-12 text-center">
             Arrangementer
           </h2>
-          <div className="flex flex-col items-center">
+          <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
             {events.length > 0 ? (
               events.map((event) => <EventCard key={event.id} event={event} />)
             ) : (
