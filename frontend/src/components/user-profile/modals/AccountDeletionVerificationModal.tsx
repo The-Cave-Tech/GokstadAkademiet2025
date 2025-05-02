@@ -5,6 +5,9 @@ import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/custom/Button";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import { AccountEmailVerificationModalProps } from "@/types/accountAdministration.types";
+import { useAccountDeletionVerificationValidation } from "@/hooks/useProfileValidation";
+import { ZodErrors } from "@/components/ZodErrors";
+import { profileFieldError } from "@/lib/utils/serverAction-errorHandler";
 
 export function AccountDeletionVerificationModal({
   isOpen,
@@ -21,6 +24,9 @@ export function AccountDeletionVerificationModal({
   
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  
+  // Get validation hook
+  const { validationErrors, validateField, validateForm } = useAccountDeletionVerificationValidation();
   
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -43,19 +49,37 @@ export function AccountDeletionVerificationModal({
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [onClose]);
+
+  const resetForm = () => {
+    setVerificationCode("");
+    setError("");
+  };
   
   // Handle verification code input change
   const handleVerificationCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6));
+    const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+    setVerificationCode(value);
+    validateField("verificationCode", value);
   };
 
   const handleDeletionReasonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setDeletionReason(e.target.value);
+    const value = e.target.value;
+    setDeletionReason(value);
+    validateField("deletionReason", value);
   };
   
   const handleSubmit = async () => {
-    if (verificationCode.length !== 6) {
-      setError("Verifiseringskoden må være 6 siffer");
+    setError("");
+    
+    // Validate the entire form
+    const formData = {
+      verificationCode,
+      deletionReason
+    };
+    
+    const isValid = validateForm(formData);
+    
+    if (!isValid) {
       return;
     }
     
@@ -144,6 +168,13 @@ export function AccountDeletionVerificationModal({
                     disabled={isLoading}
                     aria-describedby="code-description"
                   />
+                  <ZodErrors
+                    error={profileFieldError(
+                      validationErrors,
+                      null,
+                      "verificationCode"
+                    )}
+                  />
                   <p id="code-description" className="text-sm text-gray-500">
                     Koden er 6 siffer
                   </p>
@@ -161,7 +192,18 @@ export function AccountDeletionVerificationModal({
                     placeholder="Din tilbakemelding er viktig for oss..."
                     disabled={isLoading}
                     rows={3}
+                    maxLength={256}
                   />
+                  <ZodErrors
+                    error={profileFieldError(
+                      validationErrors,
+                      null,
+                      "deletionReason"
+                    )}
+                  />
+                  <div className="text-xs text-gray-500 text-right">
+                  {deletionReason.length}/256 tegn
+                </div>
                   <p className="text-sm text-gray-500">
                     Din tilbakemelding blir sendt til vårt team på e-post (maad1006@gmail.com), 
                     men vil ikke bli lagret i systemet ettersom kontoen din slettes umiddelbart.
@@ -183,7 +225,10 @@ export function AccountDeletionVerificationModal({
                 <div className="flex justify-end gap-2 pt-4">
                   <Button
                     variant="secondary"
-                    onClick={onClose}
+                    onClick={() => {
+                      resetForm();
+                      onClose();
+                    }}
                     disabled={isLoading}
                     ariaLabel="Avbryt"
                     type="button"
@@ -194,7 +239,7 @@ export function AccountDeletionVerificationModal({
                   <Button
                     variant="danger"
                     onClick={handleSubmit}
-                    disabled={isLoading || verificationCode.length !== 6}
+                    disabled={isLoading || validationErrors.verificationCode?.length > 0 || verificationCode.length !== 6}
                     ariaLabel={isLoading ? "Verifiserer..." : "Bekreft sletting"}
                     type="button"
                     className="px-6 py-2 rounded-3xl"

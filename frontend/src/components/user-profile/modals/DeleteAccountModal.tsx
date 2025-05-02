@@ -5,6 +5,9 @@ import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/custom/Button";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import { AccountDeletionModalProps } from "@/types/accountAdministration.types";
+import { useAccountDeletionValidation } from "@/hooks/useProfileValidation";
+import { ZodErrors } from "@/components/ZodErrors";
+import { profileFieldError } from "@/lib/utils/serverAction-errorHandler";
 
 export function DeleteAccountModal({
   isOpen,
@@ -19,6 +22,9 @@ export function DeleteAccountModal({
   
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Get validation hook
+  const { validationErrors, validateField, validateForm } = useAccountDeletionValidation();
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -41,22 +47,36 @@ export function DeleteAccountModal({
     };
   }, [onClose]);
 
+  const resetForm = () => {
+    setCurrentPassword("");
+    setError("");
+  };
+
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentPassword(e.target.value);
-    setError(""); // Nullstill feilmelding ved endring
+    const value = e.target.value;
+    setCurrentPassword(value);
+    validateField("password", value);
   };
 
   const handleSubmit = async () => {
-    if (!currentPassword) {
-      setError("Vennligst skriv inn passordet ditt");
+    setError("");
+    
+    // Validate the entire form
+    const formData = {
+      password: currentPassword
+    };
+    
+    const isValid = validateForm(formData);
+    
+    if (!isValid) {
       return;
     }
 
     try {
       setIsLoading(true);
-      // Her sender vi passordet til API-et for validering før verifiseringskoden sendes
+      // Here we send the password to the API for verification before sending the verification code
       await onVerify(currentPassword);
-      setCurrentPassword(""); // Nullstill passordfelt
+      resetForm(); // Reset form after successful verification
     } catch (error) {
       console.error("Feil ved passordvalidering:", error);
       setError(error instanceof Error ? error.message : "Ugyldig passord");
@@ -118,6 +138,13 @@ export function DeleteAccountModal({
                     disabled={isLoading}
                     aria-describedby="password-description"
                   />
+                  <ZodErrors
+                    error={profileFieldError(
+                      validationErrors,
+                      null,
+                      "password"
+                    )}
+                  />
                 </div>
 
                 <div className="bg-amber-50 border border-amber-200 rounded-md p-4 mt-2">
@@ -133,7 +160,10 @@ export function DeleteAccountModal({
                 <div className="flex justify-end gap-2 pt-4">
                   <Button
                     variant="secondary"
-                    onClick={onClose}
+                    onClick={() => {
+                      resetForm();
+                      onClose();
+                    }}
                     disabled={isLoading}
                     ariaLabel="Avbryt"
                     type="button"
@@ -144,7 +174,7 @@ export function DeleteAccountModal({
                   <Button
                     variant="danger"
                     onClick={handleSubmit}
-                    disabled={isLoading || !currentPassword}
+                    disabled={isLoading || !currentPassword || validationErrors.password?.length > 0}
                     ariaLabel={isLoading ? "Sender..." : "Send verifiseringskode"}
                     type="button"
                     className="px-6 py-2 rounded-3xl"

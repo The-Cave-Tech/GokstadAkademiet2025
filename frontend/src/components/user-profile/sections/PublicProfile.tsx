@@ -7,7 +7,16 @@ import { Card, CardBody, CardFooter, CardHeader } from '@/components/ui/Card';
 import ToggleSwitch from '@/components/ui/custom/ToogleSwith';
 import { Button } from '@/components/ui/custom/Button';
 import PageIcons from '@/components/ui/custom/PageIcons';
-import { updateDisplayName, updateBiography, updateShowEmail, updateShowPhone, updateShowAddress,
+import { ZodErrors } from "@/components/ZodErrors";
+import { usePublicProfileValidation } from "@/hooks/useProfileValidation";
+import { profileFieldError } from "@/lib/utils/serverAction-errorHandler";
+
+import { 
+  updateDisplayName, 
+  updateBiography, 
+  updateShowEmail, 
+  updateShowPhone, 
+  updateShowAddress,
 } from '@/lib/data/services/profileSections/publicProfileService';
 import { ProfileImageUploader } from '@/components/ui/userProfile/ProfileImageUploader';
 import { getUserProfile, UserProfile } from '@/lib/data/services/userProfile';
@@ -43,6 +52,12 @@ export function PublicProfile({ profile, onProfileUpdate }: PublicProfileProps) 
     showAddress: false
   });
 
+  // Error state
+  const [error, setError] = useState<string | null>(null);
+
+  // Get validation hook
+  const { validationErrors, validateField, validateForm } = usePublicProfileValidation();
+
   // Update states when the profile changes
   useEffect(() => {
     if (profile && profile.publicProfile) {
@@ -64,11 +79,15 @@ export function PublicProfile({ profile, onProfileUpdate }: PublicProfileProps) 
 
   // Handle input changes
   const handleDisplayNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDisplayName(e.target.value);
+    const value = e.target.value;
+    setDisplayName(value);
+    validateField("displayName", value);
   };
   
   const handleBiographyChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setBiography(e.target.value);
+    const value = e.target.value;
+    setBiography(value);
+    validateField("biography", value);
   };
 
   // Handle toggle changes for contact information
@@ -101,6 +120,7 @@ export function PublicProfile({ profile, onProfileUpdate }: PublicProfileProps) 
         ...prev,
         [key]: !enabled
       }));
+      setError(`Kunne ikke oppdatere innstilling for ${key}`);
     } finally {
       setFieldLoadingStates(prev => ({ ...prev, [key]: false }));
     }
@@ -113,8 +133,25 @@ export function PublicProfile({ profile, onProfileUpdate }: PublicProfileProps) 
       return;
     }
     
+    // Validate all fields before saving
+    const formData = {
+      displayName,
+      biography,
+      showEmail: contactInfo.showEmail,
+      showPhone: contactInfo.showPhone,
+      showAddress: contactInfo.showAddress
+    };
+    
+    const isValid = validateForm(formData);
+    
+    if (!isValid) {
+      setError("Vennligst rett feilene før du lagrer");
+      return;
+    }
+    
     try {
       setIsSaving(true);
+      setError(null);
       
       // Track if any updates were made
       let updatesPerformed = false;
@@ -144,6 +181,7 @@ export function PublicProfile({ profile, onProfileUpdate }: PublicProfileProps) 
       setIsEditing(false);
     } catch (error) {
       console.error("Feil ved lagring av profil:", error);
+      setError("Det oppstod en feil ved lagring av profilen din");
     } finally {
       setIsSaving(false);
     }
@@ -154,6 +192,7 @@ export function PublicProfile({ profile, onProfileUpdate }: PublicProfileProps) 
     setDisplayName(originalDisplayName);
     setBiography(originalBiography);
     setIsEditing(false);
+    setError(null);
   };
 
   const buttonState = isSaving ? "loading" : isEditing ? "save" : "edit";
@@ -171,6 +210,13 @@ export function PublicProfile({ profile, onProfileUpdate }: PublicProfileProps) 
       </CardHeader>
 
       <CardBody className="py-5 px-4 rounded-md">
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start">
+            <PageIcons name="warning" directory="profileIcons" size={20} alt="" className="mt-0.5 mr-2 flex-shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+        
         <div className="grid grid-cols-1 md:grid-cols-[auto,1fr] gap-6 md:gap-10 items-start">
           <div className="justify-self-center md:justify-self-start">
             <ProfileImageUploader
@@ -200,6 +246,13 @@ export function PublicProfile({ profile, onProfileUpdate }: PublicProfileProps) 
                     isEditing ? "bg-white" : "bg-gray-100"
                   }`}
                 />
+                <ZodErrors
+                  error={profileFieldError(
+                    validationErrors,
+                    null,
+                    "displayName"
+                  )}
+                />
               </div>
 
               {/* Biography */}
@@ -221,6 +274,16 @@ export function PublicProfile({ profile, onProfileUpdate }: PublicProfileProps) 
                     isEditing ? "bg-white" : "bg-gray-100"
                   }`}
                 />
+                <ZodErrors
+                  error={profileFieldError(
+                    validationErrors,
+                    null,
+                    "biography"
+                  )}
+                />
+                <div className="text-xs text-gray-500 text-right">
+                  {biography.length}/256 tegn
+                </div>
               </div>
 
               {/* Edit/Save button */}

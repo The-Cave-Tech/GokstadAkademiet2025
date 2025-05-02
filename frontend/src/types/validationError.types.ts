@@ -46,6 +46,11 @@ export interface AccountDeletionVerificationValidationErrors extends ValidationE
   deletionReason: string[];
 }
 
+export interface NotificationSettingsValidationErrors extends ValidationErrorRecord {
+  importantUpdates: string[];
+  newsletter: string[];
+}
+
 // Type alias for alle profil-relaterte valideringsfeiltyper for enklere bruk
 export type ProfileValidationErrorTypes = 
   | PublicProfileValidationErrors
@@ -54,4 +59,5 @@ export type ProfileValidationErrorTypes =
   | EmailChangeValidationErrors
   | PasswordChangeValidationErrors
   | AccountDeletionValidationErrors
-  | AccountDeletionVerificationValidationErrors;
+  | AccountDeletionVerificationValidationErrors
+  | NotificationSettingsValidationErrors;

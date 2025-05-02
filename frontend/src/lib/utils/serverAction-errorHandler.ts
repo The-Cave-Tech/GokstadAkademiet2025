@@ -1,10 +1,21 @@
+// src/lib/utils/serverAction-errorHandler.ts
 import { 
   SignUpValidationErrors, 
   SignInValidationErrors 
 } from "@/types/auth.types";
 
+import { 
+  ProfileValidationErrorTypes 
+} from "@/types/validationError.types";
+
 import { ZodError } from "zod";
 
+/**
+ * Standardisert håndtering av Zod-valideringsfeil for server actions
+ * @param error Zod-feilen fra validering
+ * @param errorTemplate Tom feilmal med riktig struktur
+ * @returns Feilmalen fylt med valideringsfeil
+ */
 export function handleValidationErrors<T extends Record<string, string[]>>(
   error: ZodError,
   errorTemplate: T
@@ -22,6 +33,11 @@ export function handleValidationErrors<T extends Record<string, string[]>>(
   } as T;
 }
 
+/**
+ * Standardisert håndtering av API-feil fra Strapi
+ * @param error Feilen fra Strapi
+ * @returns Brukervennlig feilmelding
+ */
 export function handleStrapiError(error: unknown): string {
   const errorMessage = error instanceof Error ? error.message : "Ukjent feil oppstod";
   
@@ -50,10 +66,22 @@ export function handleStrapiError(error: unknown): string {
   if (errorMessage.includes("Email is already taken")) {
     return "E-postadressen er allerede i bruk";
   }
+
+  // Generiske feilmeldinger
+  if (errorMessage.includes("Network Error")) {
+    return "Tilkoblingsproblem. Sjekk internettforbindelsen din.";
+  }
+  
+  if (errorMessage.includes("timeout")) {
+    return "Forespørselen tok for lang tid. Prøv igjen senere.";
+  }
   
   return errorMessage;
 }
 
+/**
+ * Hjelper for å hente feilmeldinger for autentisering
+ */
 export function authFieldError(
   validationErrors: SignUpValidationErrors | SignInValidationErrors,
   formStateErrors: SignUpValidationErrors | SignInValidationErrors | null,
@@ -64,6 +92,9 @@ export function authFieldError(
     : (formStateErrors?.[fieldName as keyof typeof formStateErrors] || []);
 }
 
+/**
+ * Generisk hjelper for å hente feilmeldinger for profilseksjoner
+ */
 export function profileFieldError<T extends Record<string, string[]>>(
   validationErrors: T,
   formStateErrors: T | null,
@@ -74,3 +105,37 @@ export function profileFieldError<T extends Record<string, string[]>>(
     : formStateErrors?.[fieldName] || [];
 }
 
+/**
+ * Samler alle valideringsfeil fra alle seksjoner
+ * @param errors Objektet med feilmeldinger
+ * @returns true hvis det finnes feil, false hvis ingen feil
+ */
+export function hasValidationErrors(errors: ProfileValidationErrorTypes | null): boolean {
+  if (!errors) return false;
+  
+  return Object.values(errors).some(errorArray => 
+    Array.isArray(errorArray) && errorArray.length > 0
+  );
+}
+
+/**
+ * Logger valideringsfeil til konsoll for debugging
+ * @param errors Objektet med feilmeldinger
+ * @param context Kontekst for loggingen (f.eks. 'personalInfo')
+ */
+export function logValidationErrors(
+  errors: ProfileValidationErrorTypes, 
+  context: string
+): void {
+  const hasErrors = hasValidationErrors(errors);
+  
+  if (hasErrors) {
+    console.group(`Validation errors in ${context}:`);
+    Object.entries(errors).forEach(([field, messages]) => {
+      if (messages.length > 0) {
+        console.log(`${field}:`, messages);
+      }
+    });
+    console.groupEnd();
+  }
+}

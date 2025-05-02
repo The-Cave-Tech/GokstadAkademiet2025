@@ -5,6 +5,9 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/custom/Button";
 import { PageIcons } from "@/components/ui/custom/PageIcons";
 import { DatePicker } from "@/components/ui/custom/DatePciker";
+import { ZodErrors } from "@/components/ZodErrors";
+import { usePersonalInfoValidation } from "@/hooks/useProfileValidation";
+import { profileFieldError } from "@/lib/utils/serverAction-errorHandler";
 
 import {
   updateFullName,
@@ -38,6 +41,10 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
     city: ""
   });
   const [originalValues, setOriginalValues] = useState<FormValues>({...formValues});
+  const [error, setError] = useState<string | null>(null);
+
+  // Get validation hook
+  const { validationErrors, validateField, validateForm } = usePersonalInfoValidation();
 
   const fieldConfigs: FieldConfig[] = [
     {
@@ -177,6 +184,9 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
       ...prev,
       [fieldId]: value
     }));
+    
+    // Validate the field
+    validateField(fieldId, value);
   };
 
   const handleSave = async () => {
@@ -185,8 +195,17 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
       return;
     }
     
+    // Validate the entire form before saving
+    const isValid = validateForm(formValues);
+    
+    if (!isValid) {
+      setError("Vennligst rett feilene før du lagrer");
+      return;
+    }
+    
     try {
       setIsSaving(true);
+      setError(null);
       
       let updatesPerformed = false;
       const updatedFields = [];
@@ -222,6 +241,7 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
           updatesPerformed = true;
         } catch (error) {
           console.error(`Feil ved oppdatering av ${fieldId}:`, error);
+          setError(`Det oppstod en feil ved lagring av ${fieldConfig.label.toLowerCase()}`);
         }
       }
       
@@ -235,6 +255,7 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
       setIsEditing(false);
     } catch (error) {
       console.error("Feil ved lagring av profil:", error);
+      setError("Det oppstod en feil ved lagring av profilen din");
     } finally {
       setIsSaving(false);
     }
@@ -243,6 +264,7 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
   const handleCancel = () => {
     setFormValues({...originalValues});
     setIsEditing(false);
+    setError(null);
   };
 
   const buttonState = isSaving ? "loading" : isEditing ? "save" : "edit";
@@ -269,39 +291,66 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
         </label>
         
         {type === 'select' ? (
-          <select
-            {...commonProps}
-            disabled={!isEditing}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => 
-              handleInputChange(id, e.target.value)}
-          >
-            <option value="">Velg {label.toLowerCase()}</option>
-            {options?.map(option => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </select>
+          <div>
+            <select
+              {...commonProps}
+              disabled={!isEditing}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => 
+                handleInputChange(id, e.target.value)}
+            >
+              <option value="">Velg {label.toLowerCase()}</option>
+              {options?.map(option => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+            <ZodErrors
+              error={profileFieldError(
+                validationErrors,
+                null,
+                id
+              )}
+            />
+          </div>
         ) : type === 'date' ? (
-          <DatePicker
-            {...commonProps}
-            placeholder={placeholder}
-            required={required}
-            onChange={(value: string) => handleInputChange(id, value)}
-          />
+          <div>
+            <DatePicker
+              {...commonProps}
+              placeholder={placeholder}
+              required={required}
+              onChange={(value: string) => handleInputChange(id, value)}
+            />
+            <ZodErrors
+              error={profileFieldError(
+                validationErrors,
+                null,
+                id
+              )}
+            />
+          </div>
         ) : (
-          <input
-            {...commonProps}
-            type={type}
-            placeholder={placeholder}
-            required={required}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
-              handleInputChange(id, e.target.value)}
-            // Apply special handling for telephone input
-            onBlur={id === "phoneNumber" ? (e) => {
-              if (e.target.value && !e.target.value.startsWith("+")) {
-                handleInputChange(id, "+47 " + e.target.value.replace(/\D/g, ""));
-              }
-            } : undefined}
-          />
+          <div>
+            <input
+              {...commonProps}
+              type={type}
+              placeholder={placeholder}
+              required={required}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                handleInputChange(id, e.target.value)}
+              // Apply special handling for telephone input
+              onBlur={id === "phoneNumber" ? (e) => {
+                if (e.target.value && !e.target.value.startsWith("+")) {
+                  handleInputChange(id, "+47 " + e.target.value.replace(/\D/g, ""));
+                }
+              } : undefined}
+            />
+            <ZodErrors
+              error={profileFieldError(
+                validationErrors,
+                null,
+                id
+              )}
+            />
+          </div>
         )}
         
         <p id={`${id}-description`} className="sr-only">
@@ -329,6 +378,13 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
       </CardHeader>
 
       <CardBody className="pt-5 px-4 rounded-md">
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start">
+            <PageIcons name="warning" directory="profileIcons" size={20} alt="" className="mt-0.5 mr-2 flex-shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+        
         <form className="flex flex-col space-y-6" onSubmit={(e) => e.preventDefault()}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="space-y-4">

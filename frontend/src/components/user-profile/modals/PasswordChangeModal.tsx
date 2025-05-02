@@ -6,6 +6,10 @@ import { PasswordModalProps } from "@/types/loginInfoManage.types";
 import { Button } from "@/components/ui/custom/Button";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import { PasswordToggle } from "@/components/ui/custom/PasswordToggle";
+import { usePasswordChangeValidation } from "@/hooks/useProfileValidation";
+import { ZodErrors } from "@/components/ZodErrors";
+import { profileFieldError } from "@/lib/utils/serverAction-errorHandler";
+import PasswordStrengthMeter from "@/components/ui/custom/PasswordStrengthMeter";
 
 export function PasswordChangeModal({ 
   isOpen, 
@@ -24,6 +28,9 @@ export function PasswordChangeModal({
   
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  
+  // Get validation hook
+  const { validationErrors, validateField, validateForm } = usePasswordChangeValidation();
   
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -46,28 +53,57 @@ export function PasswordChangeModal({
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [onClose]);
+
+  const resetForm = () => {
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setError("");
+  };
   
   const handleCurrentPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentPassword(e.target.value);
+    const value = e.target.value;
+    setCurrentPassword(value);
+    validateField("currentPassword", value);
   };
   
   const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewPassword(e.target.value);
+    const value = e.target.value;
+    setNewPassword(value);
+    validateField("newPassword", value);
+    
+    // Also validate confirmPassword if it's not empty
+    if (confirmPassword) {
+      validateField("confirmPassword", confirmPassword, { newPassword: value });
+    }
   };
   
   const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setConfirmPassword(e.target.value);
+    const value = e.target.value;
+    setConfirmPassword(value);
+    validateField("confirmPassword", value, { newPassword });
   };
   
   const handlePasswordChange = async () => {
-    if (newPassword !== confirmPassword) {
-      setError("Passordene samsvarer ikke");
+    setError("");
+    
+    // Validate the entire form
+    const formData = {
+      currentPassword,
+      newPassword,
+      confirmPassword
+    };
+    
+    const isValid = validateForm(formData);
+    
+    if (!isValid) {
       return;
     }
     
     try {
       setIsLoading(true);
       await onUpdate(currentPassword, newPassword);
+      resetForm();
       setTimeout(onClose, 1500);
     } catch (error) {
       console.error("Feil ved oppdatering av passord:", error);
@@ -132,6 +168,13 @@ export function PasswordChangeModal({
                     togglePassword={() => setShowCurrentPassword(prev => !prev)}
                   />
                 </div>
+                <ZodErrors
+                  error={profileFieldError(
+                    validationErrors,
+                    null,
+                    "currentPassword"
+                  )}
+                />
               </div>
 
               <div>
@@ -155,6 +198,19 @@ export function PasswordChangeModal({
                     togglePassword={() => setShowNewPassword(prev => !prev)}
                   />
                 </div>
+                <ZodErrors
+                  error={profileFieldError(
+                    validationErrors,
+                    null,
+                    "newPassword"
+                  )}
+                />
+                {newPassword && (
+                  <PasswordStrengthMeter 
+                    password={newPassword} 
+                    className="mt-1"
+                  />
+                )}
               </div>
 
               <div>
@@ -178,6 +234,13 @@ export function PasswordChangeModal({
                     togglePassword={() => setShowConfirmPassword(prev => !prev)}
                   />
                 </div>
+                <ZodErrors
+                  error={profileFieldError(
+                    validationErrors,
+                    null,
+                    "confirmPassword"
+                  )}
+                />
               </div>
               
               <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded-md">
@@ -188,7 +251,10 @@ export function PasswordChangeModal({
               <div className="flex justify-end gap-2">
                 <Button
                   variant="secondary"
-                  onClick={onClose}
+                  onClick={() => {
+                    resetForm();
+                    onClose();
+                  }}
                   disabled={isLoading}
                   ariaLabel="Avbryt"
                   type="button"
@@ -199,7 +265,7 @@ export function PasswordChangeModal({
                 <Button
                   variant="primary"
                   onClick={handlePasswordChange}
-                  disabled={isLoading}
+                  disabled={isLoading || !currentPassword || !newPassword || !confirmPassword}
                   ariaLabel={isLoading ? "Oppdaterer..." : "Oppdater passord"}
                   type="button"
                   className="rounded-3xl"

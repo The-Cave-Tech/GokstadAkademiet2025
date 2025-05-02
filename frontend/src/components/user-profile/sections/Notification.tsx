@@ -6,6 +6,9 @@ import ToggleSwitch from "@/components/ui/custom/ToogleSwith";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import { UserProfile } from "@/lib/data/services/userProfile";
 import { updateImportantUpdates, updateNewsletter } from "@/lib/data/services/profileSections/notificationService";
+import { useNotificationSettingsValidation } from "@/hooks/useProfileValidation";
+import { ZodErrors } from "@/components/ZodErrors";
+import { profileFieldError } from "@/lib/utils/serverAction-errorHandler";
 import { 
   NotificationProps, 
   NotificationFormData, 
@@ -26,16 +29,24 @@ export function Notification({ profile, onProfileUpdate = () => {} }: Notificati
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Get validation hook
+  const { validationErrors, validateField } = useNotificationSettingsValidation();
+
   // Hent innstillinger når komponenten lastes
   useEffect(() => {
     const initializeNotificationSettings = async () => {
       try {
         setLoading(true);
         if (profile && profile.notificationSettings) {
-          setFormData({
+          const settings = {
             importantUpdates: profile.notificationSettings.importantUpdates || false,
             newsletter: profile.notificationSettings.newsletter || false
-          });
+          };
+          setFormData(settings);
+          
+          // Validate initial values
+          validateField("importantUpdates", settings.importantUpdates);
+          validateField("newsletter", settings.newsletter);
         }
         setError(null);
       } catch (err) {
@@ -47,7 +58,7 @@ export function Notification({ profile, onProfileUpdate = () => {} }: Notificati
     };
 
     initializeNotificationSettings();
-  }, [profile]);
+  }, [profile, validateField]);
 
   const handleToggleChange = (settingName: keyof NotificationFormData) => async (enabled: boolean) => {
     setToggleLoadingStates(prev => ({
@@ -56,6 +67,14 @@ export function Notification({ profile, onProfileUpdate = () => {} }: Notificati
     }));
     
     try {
+      // Validate the new value
+      validateField(settingName, enabled);
+      
+      // If there are validation errors, don't update
+      if (validationErrors[settingName]?.length > 0) {
+        return;
+      }
+      
       let response;
       if (settingName === 'importantUpdates') {
         response = await updateImportantUpdates(enabled);
@@ -126,8 +145,9 @@ export function Notification({ profile, onProfileUpdate = () => {} }: Notificati
 
       <CardBody className="pt-5 px-4 rounded-md">
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md">
-            {error}
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start">
+            <PageIcons name="warning" directory="profileIcons" size={20} alt="" className="mt-0.5 mr-2 flex-shrink-0" />
+            <span>{error}</span>
           </div>
         )}
         
@@ -136,6 +156,13 @@ export function Notification({ profile, onProfileUpdate = () => {} }: Notificati
             <div>
               <h3 className="text-base font-medium text-gray-700">E-postvarsler</h3>
               <p className="text-sm text-gray-600">Motta viktige oppdateringer på e-post</p>
+              <ZodErrors
+                error={profileFieldError(
+                  validationErrors,
+                  null,
+                  "importantUpdates"
+                )}
+              />
             </div>
             <ToggleSwitch
               enabled={formData.importantUpdates}
@@ -151,6 +178,13 @@ export function Notification({ profile, onProfileUpdate = () => {} }: Notificati
             <div>
               <h3 className="text-base font-medium text-gray-700">Markedsføring</h3>
               <p className="text-sm text-gray-600">Motta nyheter og tilbud fra oss</p>
+              <ZodErrors
+                error={profileFieldError(
+                  validationErrors,
+                  null,
+                  "newsletter"
+                )}
+              />
             </div>
             <ToggleSwitch
               enabled={formData.newsletter}

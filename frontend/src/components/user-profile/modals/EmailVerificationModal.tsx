@@ -5,6 +5,8 @@ import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/custom/Button";
 import { VerificationModalProps } from "@/types/loginInfoManage.types";
 import PageIcons from "@/components/ui/custom/PageIcons";
+import { ZodErrors } from "@/components/ZodErrors";
+import { universalVerificationCodeValidation } from "@/lib/validation/universalValidation";
 
 export function EmailVerificationModal({
   isOpen,
@@ -16,6 +18,7 @@ export function EmailVerificationModal({
 }: VerificationModalProps) {
   const [verificationCode, setVerificationCode] = useState("");
   const [error, setError] = useState("");
+  const [validationError, setValidationError] = useState<string[]>([]);
   
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -44,12 +47,30 @@ export function EmailVerificationModal({
   
   // Handle verification code input change
   const handleVerificationCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6));
+    const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+    setVerificationCode(value);
+    
+    // Validate the verification code
+    try {
+      universalVerificationCodeValidation.parse(value);
+      setValidationError([]);
+    } catch (err) {
+      if (err instanceof Error) {
+        setValidationError([err.message]);
+      }
+    }
   };
   
   const handleSubmit = async () => {
-    if (verificationCode.length !== 6) {
-      setError("Verifiseringskoden må være 6 siffer");
+    setError("");
+    
+    // Validate the verification code before submitting
+    try {
+      universalVerificationCodeValidation.parse(verificationCode);
+    } catch (err) {
+      if (err instanceof Error) {
+        setValidationError([err.message]);
+      }
       return;
     }
     
@@ -68,9 +89,8 @@ export function EmailVerificationModal({
   const handleResendCode = async () => {
     try {
       setIsLoading(true);
-      // Dette skulle kalt en service-funksjon for å be om ny kode
-      // For nå simulerer vi bare en forsinkelse
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      setError("Funksjonen for å sende ny kode er ikke implementert ennå");
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulert forsinkelse
     } catch (error) {
       console.error("Feil ved sending av ny kode:", error);
       setError(error instanceof Error ? error.message : "Kunne ikke sende ny kode");
@@ -140,6 +160,7 @@ export function EmailVerificationModal({
                     disabled={isLoading}
                     aria-describedby="code-description"
                   />
+                  <ZodErrors error={validationError} />
                   <p id="code-description" className="text-sm text-gray-500">
                     Koden er 6 siffer
                   </p>
@@ -171,7 +192,7 @@ export function EmailVerificationModal({
                   <Button
                     variant="primary"
                     onClick={handleSubmit}
-                    disabled={isLoading || verificationCode.length !== 6}
+                    disabled={isLoading || validationError.length > 0 || verificationCode.length !== 6}
                     ariaLabel={isLoading ? "Verifiserer..." : "Gå videre"}
                     type="button"
                     className="px-6 py-2 rounded-3xl"

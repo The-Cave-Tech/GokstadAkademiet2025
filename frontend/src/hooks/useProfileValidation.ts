@@ -1,4 +1,5 @@
-import { useState } from "react";
+// src/hooks/useProfileValidation.ts
+import { useState, useCallback } from "react";
 import { 
   publicProfileSchema, 
   personalInfoSchema,
@@ -7,13 +8,15 @@ import {
   passwordChangeSchema,
   accountDeletionSchema,
   accountDeletionVerificationSchema,
+  notificationSettingsSchema,
   PublicProfileFormData,
   PersonalInfoFormData,
   UsernameChangeFormData,
   EmailChangeFormData,
   PasswordChangeFormData,
   AccountDeletionFormData,
-  AccountDeletionVerificationFormData
+  AccountDeletionVerificationFormData,
+  NotificationSettingsFormData
 } from "@/lib/validation/profileSectionValidation";
 import { z } from "zod";
 import { 
@@ -23,10 +26,11 @@ import {
   PasswordChangeValidationErrors, 
   PersonalInfoValidationErrors, 
   PublicProfileValidationErrors, 
-  UsernameChangeValidationErrors 
+  UsernameChangeValidationErrors,
+  NotificationSettingsValidationErrors
 } from "@/types/validationError.types";
 
-// Generic validation hook
+// Generic validation hook with improved typings and logging
 function useValidation<
   T extends Record<string, unknown>,
   E extends Record<string, string[]>
@@ -36,7 +40,7 @@ function useValidation<
 ) {
   const [validationErrors, setValidationErrors] = useState<E>(initialErrors);
 
-  const validateField = (name: keyof T & string, value: string, formValues: Partial<T> = {}) => {
+  const validateField = useCallback((name: keyof T & string, value: string | boolean, formValues: Partial<T> = {}) => {
     // Type safe way to update errors
     const updateErrors = (fieldName: string, fieldErrors: string[]) => {
       setValidationErrors(prev => {
@@ -48,7 +52,8 @@ function useValidation<
       });
     };
 
-    if (!value && name !== 'fullName' && name !== 'displayName') {
+    // Skip validation for empty non-required fields
+    if (value === "" && name !== 'fullName' && name !== 'displayName') {
       updateErrors(name, []);
       return;
     }
@@ -64,9 +69,15 @@ function useValidation<
       }
     }
 
+    // Special handling for boolean values
+    let valueToValidate = value;
+    if (typeof value === 'boolean') {
+      valueToValidate = value;
+    }
+
     // Normal field validation
     try {
-      const dataToValidate = { ...formValues, [name]: value } as Record<string, unknown>;
+      const dataToValidate = { ...formValues, [name]: valueToValidate } as Record<string, unknown>;
       const validation = schema.safeParse(dataToValidate);
 
       if (!validation.success) {
@@ -79,10 +90,44 @@ function useValidation<
       }
     } catch (error) {
       console.error(`Validation error for field ${String(name)}:`, error);
+      updateErrors(name, ["Det oppstod en valideringsfeil"]);
     }
-  };
+  }, [schema]);
 
-  return { validationErrors, validateField };
+  const validateForm = useCallback((formData: Partial<T>): boolean => {
+    try {
+      const result = schema.safeParse(formData);
+      
+      if (!result.success) {
+        // Update all errors
+        const allErrors = result.error.flatten().fieldErrors;
+        
+        setValidationErrors(prev => {
+          const newErrors = { ...prev } as E;
+          
+          // For each field in our error template
+          Object.keys(initialErrors).forEach(field => {
+            const fieldName = field as keyof E;
+            const fieldErrors = allErrors[field] || [];
+            (newErrors as Record<string, string[]>)[field] = fieldErrors.slice(0, 1);
+          });
+          
+          return newErrors;
+        });
+        
+        return false;
+      }
+      
+      // Clear all errors if validation passes
+      setValidationErrors(initialErrors);
+      return true;
+    } catch (error) {
+      console.error("Form validation error:", error);
+      return false;
+    }
+  }, [schema, initialErrors]);
+
+  return { validationErrors, validateField, validateForm };
 }
 
 // Public Profile Validation Hook
@@ -169,6 +214,20 @@ export function useAccountDeletionVerificationValidation() {
     {
       verificationCode: [],
       deletionReason: [],
+    }
+  );
+}
+
+// Notification Settings Validation Hook
+export function useNotificationSettingsValidation() {
+  return useValidation<
+    NotificationSettingsFormData,
+    NotificationSettingsValidationErrors
+  >(
+    notificationSettingsSchema,
+    {
+      importantUpdates: [],
+      newsletter: [],
     }
   );
 }

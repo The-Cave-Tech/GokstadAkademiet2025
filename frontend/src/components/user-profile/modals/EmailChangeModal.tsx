@@ -5,6 +5,9 @@ import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { EmailModalProps } from "@/types/loginInfoManage.types";
 import { Button } from "@/components/ui/custom/Button";
 import PageIcons from "@/components/ui/custom/PageIcons";
+import { useEmailChangeValidation } from "@/hooks/useProfileValidation";
+import { ZodErrors } from "@/components/ZodErrors";
+import { profileFieldError } from "@/lib/utils/serverAction-errorHandler";
 
 export function EmailChangeModal({
   isOpen,
@@ -20,6 +23,9 @@ export function EmailChangeModal({
   
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Get validation hook
+  const { validationErrors, validateField, validateForm } = useEmailChangeValidation();
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -43,28 +49,48 @@ export function EmailChangeModal({
     };
   }, [onClose]);
 
+  const resetForm = () => {
+    setNewEmail(currentEmail);
+    setCurrentPassword("");
+    setError("");
+  };
+
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewEmail(e.target.value);
+    const value = e.target.value;
+    setNewEmail(value);
+    validateField("email", value);
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentPassword(e.target.value);
+    const value = e.target.value;
+    setCurrentPassword(value);
+    validateField("currentPassword", value);
   };
 
   const handleSubmit = async () => {
+    setError("");
+    
     if (newEmail === currentEmail) {
       setError("Den nye e-postadressen er den samme som den eksisterende");
       return;
     }
 
-    if (!currentPassword) {
-      setError("Vennligst skriv inn ditt passord");
+    // Validate the entire form
+    const formData = {
+      email: newEmail,
+      currentPassword
+    };
+    
+    const isValid = validateForm(formData);
+    
+    if (!isValid) {
       return;
     }
 
     try {
       setIsLoading(true);
       await onUpdate(newEmail, currentPassword);
+      resetForm();
     } catch (error) {
       console.error("Feil ved forespørsel om e-postendring:", error);
       setError(error instanceof Error ? error.message : "Kunne ikke sende forespørsel om e-postendring");
@@ -119,6 +145,13 @@ export function EmailChangeModal({
                   disabled={isLoading}
                   aria-describedby="password-description"
                 />
+                <ZodErrors
+                  error={profileFieldError(
+                    validationErrors,
+                    null,
+                    "currentPassword"
+                  )}
+                />
               </div>
 
               <div>
@@ -138,6 +171,13 @@ export function EmailChangeModal({
                   disabled={isLoading}
                   aria-describedby="email-description"
                 />
+                <ZodErrors
+                  error={profileFieldError(
+                    validationErrors,
+                    null,
+                    "email"
+                  )}
+                />
               </div>
 
               <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded-md">
@@ -149,7 +189,10 @@ export function EmailChangeModal({
               <div className="flex justify-end gap-2">
                 <Button
                   variant="secondary"
-                  onClick={onClose}
+                  onClick={() => {
+                    resetForm();
+                    onClose();
+                  }}
                   disabled={isLoading}
                   ariaLabel="Avbryt"
                   type="button"
@@ -160,7 +203,7 @@ export function EmailChangeModal({
                 <Button
                   variant="primary"
                   onClick={handleSubmit}
-                  disabled={isLoading || !currentPassword}
+                  disabled={isLoading || !currentPassword || !newEmail || newEmail === currentEmail}
                   ariaLabel={isLoading ? "Sender..." : "Send verifiseringskode"}
                   type="button"
                   className="rounded-3xl"

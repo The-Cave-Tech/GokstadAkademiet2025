@@ -5,6 +5,9 @@ import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { UsernameModalProps } from "@/types/loginInfoManage.types";
 import { Button } from "@/components/ui/custom/Button";
 import PageIcons from "@/components/ui/custom/PageIcons";
+import { useUsernameChangeValidation } from "@/hooks/useProfileValidation";
+import { ZodErrors } from "@/components/ZodErrors";
+import { profileFieldError } from "@/lib/utils/serverAction-errorHandler";
 
 export function UsernameChangeModal({
   isOpen,
@@ -20,6 +23,9 @@ export function UsernameChangeModal({
   
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Get validation hook
+  const { validationErrors, validateField, validateForm } = useUsernameChangeValidation();
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -43,28 +49,48 @@ export function UsernameChangeModal({
     };
   }, [onClose]);
 
+  const resetForm = () => {
+    setNewUsername(currentUsername);
+    setCurrentPassword("");
+    setError("");
+  };
+
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewUsername(e.target.value);
+    const value = e.target.value;
+    setNewUsername(value);
+    validateField("username", value);
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentPassword(e.target.value);
+    const value = e.target.value;
+    setCurrentPassword(value);
+    validateField("currentPassword", value);
   };
   
   const handleSubmit = async () => {
+    setError("");
+    
     if (newUsername === currentUsername) {
       setError("Det nye brukernavnet er det samme som det eksisterende");
       return;
     }
 
-    if (!currentPassword) {
-      setError("Vennligst skriv inn ditt passord");
+    // Validate the entire form
+    const formData = {
+      username: newUsername,
+      currentPassword
+    };
+    
+    const isValid = validateForm(formData);
+    
+    if (!isValid) {
       return;
     }
 
     try {
       setIsLoading(true);
       await onUpdate(newUsername, currentPassword);
+      resetForm();
     } catch (error) {
       console.error("Feil ved forespørsel om brukernavnendring:", error);
       setError(error instanceof Error ? error.message : "Kunne ikke sende forespørsel om brukernavnendring");
@@ -120,6 +146,13 @@ export function UsernameChangeModal({
                   disabled={isLoading}
                   aria-describedby="password-description"
                 />
+                <ZodErrors
+                  error={profileFieldError(
+                    validationErrors,
+                    null,
+                    "currentPassword"
+                  )}
+                />
               </div>
 
               <div>
@@ -139,18 +172,31 @@ export function UsernameChangeModal({
                   disabled={isLoading}
                   aria-describedby="username-description"
                 />
+                <ZodErrors
+                  error={profileFieldError(
+                    validationErrors,
+                    null,
+                    "username"
+                  )}
+                />
               </div>
 
               <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded-md">
                 <p id="username-description">
                   Når du endrer brukernavn, vil du motta en verifiseringskode på e-post. Dette er for å bekrefte at det er deg som gjør endringen.
                 </p>
+                <p className="mt-1">
+                  Et gyldig brukernavn må være 6-20 tegn, inneholde minst ett tall, og kan kun inneholde bokstaver, tall, understrek og bindestrek.
+                </p>
               </div>
 
               <div className="flex justify-end gap-2">
                 <Button
                   variant="secondary"
-                  onClick={onClose}
+                  onClick={() => {
+                    resetForm();
+                    onClose();
+                  }}
                   disabled={isLoading}
                   ariaLabel="Avbryt"
                   type="button"
@@ -161,7 +207,7 @@ export function UsernameChangeModal({
                 <Button
                   variant="primary"
                   onClick={handleSubmit}
-                  disabled={isLoading || !currentPassword}
+                  disabled={isLoading || !currentPassword || !newUsername || newUsername === currentUsername}
                   ariaLabel={isLoading ? "Sender..." : "Send verifiseringskode"}
                   type="button"
                   className="rounded-3xl"
