@@ -25,7 +25,7 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
             activeTab === "projects" ? Theme.colors.surface : "transparent",
         }}
       >
-        Projects
+        Prosjekter
       </button>
       <button
         onClick={() => setActiveTab("events")}
@@ -40,7 +40,7 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
             activeTab === "events" ? Theme.colors.surface : "transparent",
         }}
       >
-        Events
+        Arrangementer
       </button>
     </div>
   );

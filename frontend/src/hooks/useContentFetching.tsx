@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { projectService } from "@/lib/data/services/projectService";
 import { eventsService } from "@/lib/data/services/eventService";
+import { Project, Event } from "@/types/activity.types";
 
 export const useDataFetching = (activeTab: "projects" | "events") => {
-  const [projects, setProjects] = useState<any[]>([]);
-  const [events, setEvents] = useState<any[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,7 +18,7 @@ export const useDataFetching = (activeTab: "projects" | "events") => {
         if (activeTab === "projects") {
           const data = await projectService.getAll({
             sort: ["createdAt:desc"],
-            populate: ["projectImage"],
+            populate: ["projectImage", "technologies"],
           });
           setProjects(data);
         } else if (activeTab === "events") {

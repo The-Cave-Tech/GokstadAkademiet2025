@@ -4,6 +4,7 @@ import "@/styles/globals.css";
 import { Header } from "@/components/ui/Header";
 import { AuthProvider } from "@/lib/context/AuthContext";
 import React from "react";
+import { ActivitiesProvider } from "@/lib/context/ActivityContext";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -47,8 +48,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${roboto.variable} antialiased`}
       >
         <AuthProvider>
-          <Header />
-          {children}
+          <ActivitiesProvider>
+            <Header />
+            {children}
+          </ActivitiesProvider>
         </AuthProvider>
       </body>
     </html>

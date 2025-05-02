@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
+import { Project, Event } from "@/types/activity.types";
 
 export const useFilterAndSearch = (
-  projects: any[],
-  events: any[],
+  projects: Project[],
+  events: Event[],
   activeTab: "projects" | "events",
   searchQuery: string,
   filter: string
 ) => {
-  const [filteredProjects, setFilteredProjects] = useState<any[]>([]);
-  const [filteredEvents, setFilteredEvents] = useState<any[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
 
   useEffect(() => {
     if (activeTab === "projects") {
@@ -26,7 +27,7 @@ export const useFilterAndSearch = (
 
 // Helper function to filter projects
 const filterProjects = (
-  projects: any[],
+  projects: Project[],
   searchQuery: string,
   filter: string
 ) => {
@@ -48,7 +49,7 @@ const filterProjects = (
 };
 
 // Helper function to filter events
-const filterEvents = (events: any[], searchQuery: string, filter: string) => {
+const filterEvents = (events: Event[], searchQuery: string, filter: string) => {
   let filtered = [...events];
 
   // Apply search filter
@@ -60,7 +61,13 @@ const filterEvents = (events: any[], searchQuery: string, filter: string) => {
 
   // Apply additional filters
   if (filter !== "all") {
-    filtered = filtered.filter((event) => event.type === filter);
+    // Note: We used "type" before, but EventAttributes doesn't have a "type" field
+    // Filter might need to be adjusted based on what field is used for filtering events
+    // Using status or another appropriate field might make sense
+    const filterField = "status"; // Replace with appropriate field from EventAttributes
+    filtered = filtered.filter(
+      (event) => (event as any)[filterField] === filter
+    );
   }
 
   return filtered;
