@@ -13,13 +13,13 @@ interface EventCardProps {
 export const EventCard: React.FC<EventCardProps> = ({ event }) => {
   const router = useRouter();
 
-  // Funksjon for å navigere til detaljsiden
+  // Function to navigate to the event details page
   const handleClick = () => {
     router.push(`/events/${event.id}`);
   };
 
   return (
-    <div
+    <article
       className="p-4 rounded-md shadow hover:shadow-lg transition-shadow cursor-pointer"
       style={{
         backgroundColor: Theme.colors.surface,
@@ -32,37 +32,41 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
       role="button"
       aria-label={`Vis detaljer om arrangementet ${event.title}`}
     >
-      {event.eventCardImage && (
-        <div className="relative w-full h-48 overflow-hidden rounded-md mb-3">
-          <img
-            src={strapiService.media.getMediaUrl(event.eventCardImage)}
-            alt={event.eventCardImage.alternativeText || event.title}
-            className="w-full h-full object-cover transition-transform hover:scale-105"
-          />
-          <div
-            className="absolute bottom-0 right-0 p-2 bg-black bg-opacity-60 text-white text-xs rounded-tl-md"
-            style={{ fontSize: "0.7rem" }}
-          >
-            {formatEventDate(event)}
-          </div>
-        </div>
-      )}
+      {/* Header Section */}
+      <header>
+        {event.eventCardImage && (
+          <figure className="relative w-full h-48 overflow-hidden rounded-md mb-3">
+            <img
+              src={strapiService.media.getMediaUrl(event.eventCardImage)}
+              alt={event.eventCardImage.alternativeText || event.title}
+              className="w-full h-full object-cover transition-transform hover:scale-105"
+            />
+            <figcaption
+              className="absolute bottom-0 right-0 p-2 bg-black bg-opacity-60 text-white text-xs rounded-tl-md"
+              style={{ fontSize: "0.7rem" }}
+            >
+              {formatEventDate(event)}
+            </figcaption>
+          </figure>
+        )}
+        <h3
+          className="text-lg font-semibold"
+          style={{ color: Theme.colors.text.primary }}
+        >
+          {event.title}
+        </h3>
+      </header>
 
-      <h3
-        className="text-lg font-semibold"
-        style={{ color: Theme.colors.text.primary }}
-      >
-        {event.title}
-      </h3>
-
-      <div className="mt-2" style={{ color: Theme.colors.text.secondary }}>
+      {/* Description Section */}
+      <section className="mt-2" style={{ color: Theme.colors.text.secondary }}>
         {event.Description && (
           <p className="line-clamp-2 text-sm">{event.Description}</p>
         )}
-      </div>
+      </section>
 
-      <div className="mt-3 flex flex-col gap-1 text-sm">
-        {/* Dato og tid informasjon */}
+      {/* Event Details Section */}
+      <section className="mt-3 flex flex-col gap-1 text-sm">
+        {/* Date and Time Information */}
         <div className="flex items-center">
           <svg
             className="w-4 h-4 mr-2"
@@ -70,6 +74,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
             stroke="currentColor"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -84,7 +89,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
           </span>
         </div>
 
-        {/* Stedsinformasjon */}
+        {/* Location Information */}
         {event.location && (
           <div className="flex items-center">
             <svg
@@ -93,6 +98,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
               stroke="currentColor"
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -112,10 +118,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
             </span>
           </div>
         )}
-      </div>
+      </section>
 
-      {/* Visuell indikator for å vise at kortet er klikkbart */}
-      <div className="mt-3 flex justify-end">
+      {/* Footer Section */}
+      <footer className="mt-3 flex justify-end">
         <span
           className="text-xs py-1 px-2 rounded-full bg-opacity-10"
           style={{
@@ -125,12 +131,12 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
         >
           Klikk for detaljer
         </span>
-      </div>
-    </div>
+      </footer>
+    </article>
   );
 };
 
-// Hjelpefunksjon for å formatere event-dato
+// Helper function to format event date
 const formatEventDate = (event: Event): string => {
   if (!event.startDate) return "Dato kommer";
 

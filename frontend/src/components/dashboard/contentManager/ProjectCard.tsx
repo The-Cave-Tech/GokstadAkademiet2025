@@ -20,8 +20,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   };
 
   return (
-    <div
-      className="p-4 rounded-md shadow hover:shadow-lg transition-all cursor-pointer"
+    <article
+      className="relative p-4 rounded-md shadow hover:shadow-lg transition-all cursor-pointer"
       style={{
         backgroundColor: Theme.colors.surface,
         border: `1px solid ${Theme.colors.divider}`,
@@ -42,142 +42,132 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         e.currentTarget.style.boxShadow = "";
       }}
     >
+      {/* Header Section */}
+      <header className="flex items-center justify-between mb-7">
+        {/* Category Badge */}
+        {project.category && (
+          <span
+            className="absolute top-2 left-2 flex items-center gap-1 px-2 py-1 rounded-md text-xs"
+            style={{
+              backgroundColor: `${Theme.colors.primary}15`,
+              color: Theme.colors.primary,
+            }}
+          >
+            <MdCategory className="w-4 h-4" />
+            {project.category}
+          </span>
+        )}
+
+        {/* Technologies Badges */}
+        {project.technologies && project.technologies.length > 0 && (
+          <div className="absolute top-2 right-2 flex flex-wrap gap-1">
+            {project.technologies.slice(0, 2).map((tech, index) => (
+              <span
+                key={index}
+                className="flex items-center gap-1 px-2 py-1 rounded-full text-xs"
+                style={{
+                  backgroundColor: Theme.colors.divider,
+                  color: Theme.colors.text.primary,
+                }}
+              >
+                <AiOutlineTool className="w-4 h-4" />
+                {tech}
+              </span>
+            ))}
+            {project.technologies.length > 2 && (
+              <span
+                className="px-2 py-1 rounded-full text-xs"
+                style={{
+                  backgroundColor: Theme.colors.divider,
+                  color: Theme.colors.text.primary,
+                }}
+              >
+                +{project.technologies.length - 2}
+              </span>
+            )}
+          </div>
+        )}
+      </header>
+
+      {/* Project Image */}
       {project.projectImage && (
-        <div className="relative w-full h-48 overflow-hidden rounded-md mb-3">
+        <figure className="relative w-full h-48 overflow-hidden rounded-md mb-3">
           <img
             src={project.projectImage.url}
             alt={project.projectImage.alternativeText || project.title}
             className="w-full h-full object-cover transition-transform hover:scale-105"
           />
           {project.state && (
-            <span
+            <figcaption
               className="absolute top-2 right-2 px-2 py-1 text-xs rounded-md shadow-sm flex items-center gap-1"
               style={{
                 backgroundColor: getStateColor(project.state),
                 color: "white",
               }}
             >
-              <AiOutlineTool className="w-4 h-4" /> {/* Basic icon for state */}
               {getStateText(project.state)}
-            </span>
+            </figcaption>
           )}
-        </div>
+        </figure>
       )}
 
-      <h3
-        className="text-lg font-semibold"
-        style={{ color: Theme.colors.text.primary }}
-      >
-        {project.title}
-      </h3>
-
-      {project.description && (
-        <p
-          className="mt-2 text-sm line-clamp-2"
-          style={{ color: Theme.colors.text.secondary }}
+      {/* Title and Description */}
+      <section>
+        <h3
+          className="text-lg font-semibold"
+          style={{ color: Theme.colors.text.primary }}
         >
-          {project.description}
-        </p>
-      )}
+          {project.title}
+        </h3>
 
-      {/* Category */}
-      {project.category && (
-        <div className="mt-3 flex items-center gap-2">
-          <MdCategory className="w-4 h-4 text-gray-500" /> {/* Category icon */}
-          <span
-            className="text-xs px-2 py-1 rounded-md"
-            style={{
-              backgroundColor: `${Theme.colors.primary}15`,
-              color: Theme.colors.primary,
-            }}
+        {project.description && (
+          <p
+            className="mt-2 text-sm line-clamp-2"
+            style={{ color: Theme.colors.text.secondary }}
           >
-            {project.category}
-          </span>
-        </div>
-      )}
+            {project.description}
+          </p>
+        )}
+      </section>
 
-      {/* Technologies */}
-      {project.technologies && project.technologies.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-2">
-          {project.technologies.slice(0, 3).map((tech, index) => (
-            <div
-              key={index}
-              className="flex items-center gap-1 text-xs px-2 py-1 rounded-full"
-              style={{
-                backgroundColor: Theme.colors.divider,
-                color: Theme.colors.text.primary,
-              }}
-            >
-              <AiOutlineTool className="w-4 h-4 text-gray-500" />{" "}
-              {/* Tech icon */}
-              {tech}
-            </div>
-          ))}
-          {project.technologies.length > 3 && (
-            <span
-              className="text-xs px-2 py-1 rounded-full"
-              style={{
-                backgroundColor: Theme.colors.divider,
-                color: Theme.colors.text.primary,
-              }}
-            >
-              +{project.technologies.length - 3}
-            </span>
-          )}
-        </div>
-      )}
-
-      {/* External Links */}
-      {(project.demoUrl || project.githubUrl) && (
-        <div className="mt-3 flex gap-2">
-          {project.demoUrl && (
-            <a
-              href={project.demoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs px-2 py-1 rounded inline-flex items-center gap-1"
-              style={{
-                backgroundColor: Theme.colors.primary,
-                color: "white",
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <FaExternalLinkAlt className="w-4 h-4" /> {/* Demo icon */}
-              Demo
-            </a>
-          )}
-          {project.githubUrl && (
-            <a
-              href={project.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs px-2 py-1 rounded inline-flex items-center gap-1"
-              style={{
-                backgroundColor: "#333",
-                color: "white",
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <FaGithub className="w-4 h-4" /> {/* GitHub icon */}
-              GitHub
-            </a>
-          )}
-        </div>
-      )}
-
-      {/* Visual indicator for clickable card */}
-      <div className="mt-3 flex justify-end">
-        <span
-          className="text-xs py-1 px-2 rounded-full bg-opacity-10"
-          style={{
-            backgroundColor: `${Theme.colors.primary}20`,
-            color: Theme.colors.primary,
-          }}
-        >
-          Klikk for detaljer
-        </span>
-      </div>
-    </div>
+      {/* Footer Section */}
+      <footer className="mt-3 flex gap-2">
+        {project.demoUrl && (
+          <a
+            href={project.demoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs px-2 py-1 rounded inline-flex items-center gap-1"
+            style={{
+              backgroundColor: Theme.colors.primary,
+              color: "white",
+            }}
+            onClick={(e) => e.stopPropagation()}
+            aria-label="Demo link"
+          >
+            <FaExternalLinkAlt className="w-4 h-4" />
+            Demo
+          </a>
+        )}
+        {project.githubUrl && (
+          <a
+            href={project.githubUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs px-2 py-1 rounded inline-flex items-center gap-1"
+            style={{
+              backgroundColor: "#333",
+              color: "white",
+            }}
+            onClick={(e) => e.stopPropagation()}
+            aria-label="GitHub repository link"
+          >
+            <FaGithub className="w-4 h-4" />
+            GitHub
+          </a>
+        )}
+      </footer>
+    </article>
   );
 };
 

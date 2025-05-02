@@ -47,6 +47,9 @@
     },
     "githubUrl": {
       "type": "string"
+    },
+    "category": {
+      "type": "string"
     }
   }
 }
