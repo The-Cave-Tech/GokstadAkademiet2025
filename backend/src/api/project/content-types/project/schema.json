@@ -30,6 +30,23 @@
         "videos",
         "audios"
       ]
+    },
+    "state": {
+      "type": "enumeration",
+      "enum": [
+        "planning",
+        "in-progress",
+        "complete"
+      ]
+    },
+    "technologies": {
+      "type": "json"
+    },
+    "demoUrl": {
+      "type": "string"
+    },
+    "githubUrl": {
+      "type": "string"
     }
   }
 }

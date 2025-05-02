@@ -86,7 +86,7 @@ const ActivitiesPage = () => {
     if (activeTab === "projects" && filter !== "all") {
       if (["planning", "in-progress", "completed"].includes(filter)) {
         // Filter by status
-        filtered = filtered.filter((project) => project.status === filter);
+        filtered = filtered.filter((project) => project.state === filter);
       } else {
         // Filter by category
         filtered = filtered.filter((project) => project.category === filter);

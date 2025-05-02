@@ -513,7 +513,9 @@ export interface ApiProjectProject extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    demoUrl: Schema.Attribute.String;
     description: Schema.Attribute.String;
+    githubUrl: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -524,6 +526,10 @@ export interface ApiProjectProject extends Struct.CollectionTypeSchema {
       'images' | 'files' | 'videos' | 'audios'
     >;
     publishedAt: Schema.Attribute.DateTime;
+    state: Schema.Attribute.Enumeration<
+      ['planning', 'in-progress', 'complete']
+    >;
+    technologies: Schema.Attribute.JSON;
     title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

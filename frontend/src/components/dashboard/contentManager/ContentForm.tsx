@@ -15,6 +15,7 @@ export interface ContentFormProps {
       label: string;
       type: string;
       required?: boolean;
+      options?: string[]; // For dropdowns like state
     }>;
     getImageUrl?: (item: any) => string; // Function to get the image URL
     imageName?: string; // Label for the image field
@@ -49,7 +50,9 @@ const ContentForm: React.FC<ContentFormProps> = ({
 
   // Handle input changes
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -103,11 +106,14 @@ const ContentForm: React.FC<ContentFormProps> = ({
       // Ensure the form data matches the expected structure
       const submissionData = {
         title: formData.title,
-        description: formData.description, // Ensure this matches the Strapi field name
-        startDate: formData.startDate,
-        endDate: formData.endDate,
-        time: formData.time,
-        location: formData.location,
+        description: formData.description,
+        state: formData.state,
+        category: formData.category,
+        technologies: formData.technologies
+          ?.split(",")
+          .map((tech: string) => tech.trim()), // Convert comma-separated string to array
+        demoUrl: formData.demoUrl,
+        githubUrl: formData.githubUrl,
         content: formData.content,
       };
 
@@ -147,6 +153,24 @@ const ContentForm: React.FC<ContentFormProps> = ({
               disabled={isLoading}
               placeholder={`Write detailed content about the ${config.type} here...`}
             />
+          ) : field.type === "select" ? (
+            <select
+              id={field.name}
+              name={field.name}
+              value={formData[field.name] || ""}
+              onChange={handleChange}
+              className={`w-full border rounded-md px-3 py-2 ${
+                errors[field.name] ? "border-red-500" : "border-gray-300"
+              }`}
+              disabled={isLoading}
+            >
+              <option value="">Select {field.label}</option>
+              {field.options?.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
           ) : (
             <input
               type={field.type}

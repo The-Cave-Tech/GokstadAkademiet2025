@@ -18,7 +18,7 @@ export const useDataFetching = (activeTab: "projects" | "events") => {
         if (activeTab === "projects") {
           const data = await projectService.getAll({
             sort: ["createdAt:desc"],
-            populate: ["projectImage", "technologies"],
+            populate: ["projectImage"],
           });
           setProjects(data);
         } else if (activeTab === "events") {

@@ -1,5 +1,5 @@
 // services/projectService.ts
-import { ProjectAttributes, Media } from "@/types/content.types";
+import { ProjectAttributes } from "@/types/content.types";
 import { strapiService } from "@/lib/data/services/strapiClient";
 
 // Define ProjectResponse type that includes id
@@ -14,7 +14,7 @@ export const projectService = {
     try {
       const queryParams = {
         ...params,
-        populate: params.populate || ["projectImage"], // Ensure projectImage is populated
+        populate: params.populate || ["projectImage"], // Ensure projectImage and state is populated
       };
 
       const response = await strapiService.fetch<any>("projects", {
@@ -25,6 +25,7 @@ export const projectService = {
         console.warn("No projects found or data is not an array");
         return [];
       }
+      console.log("Fetched projects:", response.data);
 
       return response.data.map((item: any) => ({
         id: item.id,

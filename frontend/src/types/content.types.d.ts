@@ -33,18 +33,12 @@ export interface ProjectAttributes {
   id: number;
   title: string;
   description?: string;
-  content?: string;
-  status?: "planning" | "in-progress" | "completed";
-  startDate?: string;
-  endDate?: string;
-  projectImage?: Media;
-  githubUrl?: string;
-  demoUrl?: string;
-  technologies?: string[];
+  projectImage?: Media; // Updated to use Media type
+  state?: string; // Ensure 'state' is defined
   category?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  publishedAt?: string;
+  technologies?: string[];
+  demoUrl?: string;
+  githubUrl?: string;
 }
 
 // Project response type
