@@ -5,7 +5,7 @@ import { Header } from "@/components/ui/Header";
 import { AuthProvider } from "@/lib/context/AuthContext";
 import React from "react";
 import { ActivitiesProvider } from "@/lib/context/ActivityContext";
-import Footer from "@/components/Footer";
+import Footer from "@/components/ui/Footer";
 
 const roboto = Roboto({
   variable: "--font-roboto",

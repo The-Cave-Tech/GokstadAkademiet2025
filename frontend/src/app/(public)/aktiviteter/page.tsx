@@ -98,6 +98,9 @@ const ActivitiesPage = () => {
 
   return (
     <div className="bg-background min-h-screen p-6 sm:p-8 md:p-10">
+      <h2 className="text-3xl sm:text-4xl font-bold mb-12 text-center">
+        Aktiviteter
+      </h2>
       <div
         className="max-w-7xl mx-auto rounded-xl shadow-lg overflow-hidden"
         style={{ backgroundColor: Theme.colors.surface }}

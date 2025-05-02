@@ -9,6 +9,24 @@ const config = {
   ],
   theme: {
     extend: {
+      fontSize: {
+        "main-title-big": "var(--main-title-big)",
+        "main-title-medium": "var(--main-title-medium)",
+        "main-title-small": "var(--main-title-small)",
+        "section-title-big": "var(--section-title-big)",
+        "section-title-medium": "var(--section-title-medium)",
+        "section-title-small": "var(--section-title-small)",
+        "sub-section-title-big": "var(--sub-section-title-big)",
+        "sub-section-title-small": "var(--sub-section-title-small)",
+        "body-big": "var(--body-text-big)",
+        "body-small": "var(--body-text-small)",
+        "captions-big": "var(--captions-big)",
+        "captions-small": "var(--captions-small)",
+        "btn-cta-big": "var(--btn-cta-big)",
+        "btn-cta-medium": "var(--btn-cta-medium)",
+        "btn-cta-small": "var(--btn-cta-small)",
+      },
+
       fontFamily: {
         roboto: ["var(--font-roboto)", "sans-serif"],
       },
