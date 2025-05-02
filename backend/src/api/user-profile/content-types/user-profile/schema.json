@@ -1,0 +1,41 @@
+{
+  "kind": "collectionType",
+  "collectionName": "user_profiles",
+  "info": {
+    "singularName": "user-profile",
+    "pluralName": "user-profiles",
+    "displayName": "User Profile",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "users_permissions_user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "user_profile"
+    },
+    "publicProfile": {
+      "type": "component",
+      "repeatable": false,
+      "component": "user-profile.public-profile"
+    },
+    "personalInformation": {
+      "type": "component",
+      "repeatable": false,
+      "component": "user-profile.personal-information"
+    },
+    "notificationSettings": {
+      "type": "component",
+      "repeatable": false,
+      "component": "user-profile.notification-settings"
+    },
+    "accountAdministration": {
+      "type": "component",
+      "repeatable": false,
+      "component": "user-profile.account-administration"
+    }
+  }
+}

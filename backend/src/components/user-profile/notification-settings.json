@@ -1,0 +1,17 @@
+{
+  "collectionName": "components_user_profile_notification_settings",
+  "info": {
+    "displayName": "Notification Settings"
+  },
+  "options": {},
+  "attributes": {
+    "importantUpdates": {
+      "type": "boolean",
+      "default": false
+    },
+    "newsletter": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

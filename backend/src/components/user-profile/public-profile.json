@@ -1,0 +1,40 @@
+{
+  "collectionName": "components_user_profile_public_profiles",
+  "info": {
+    "displayName": "Public Profile",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "profileimage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    },
+    "displayName": {
+      "type": "string",
+      "required": true
+    },
+    "biography": {
+      "type": "text",
+      "required": true,
+      "maxLength": 256
+    },
+    "showEmail": {
+      "type": "boolean",
+      "default": false
+    },
+    "showPhone": {
+      "type": "boolean",
+      "default": false
+    },
+    "showAddress": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}
