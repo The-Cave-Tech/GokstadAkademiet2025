@@ -7,7 +7,7 @@ import PageIcons from "@/components/ui/custom/PageIcons";
 import { AccountDeletionModalProps } from "@/types/accountAdministration.types";
 import { useAccountDeletionValidation } from "@/hooks/useProfileValidation";
 import { ZodErrors } from "@/components/ZodErrors";
-import { profileFieldError } from "@/lib/utils/serverAction-errorHandler";
+import { profileFieldError, handleStrapiError } from "@/lib/utils/serverAction-errorHandler";
 
 export function DeleteAccountModal({
   isOpen,
@@ -78,8 +78,8 @@ export function DeleteAccountModal({
       await onVerify(currentPassword);
       resetForm(); // Reset form after successful verification
     } catch (error) {
-      console.error("Feil ved passordvalidering:", error);
-      setError(error instanceof Error ? error.message : "Ugyldig passord");
+      // Use handleStrapiError to translate the error to a user-friendly message
+      setError(handleStrapiError(error));
     } finally {
       setIsLoading(false);
     }

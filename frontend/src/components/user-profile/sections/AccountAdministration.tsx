@@ -1,4 +1,3 @@
-//frontend/src/components/user-profile/sections/AccountAdministration
 "use client";
 
 import { useState, useEffect } from "react";
@@ -8,6 +7,7 @@ import { useRouter } from "next/navigation";
 import {
   requestAccountDeletion,
   verifyAndDeleteAccount,
+  resendDeletionVerification
 } from "@/lib/data/services/profileSections/accountAdministrationService";
 import { useAuth } from "@/lib/context/AuthContext";
 import { getUserCredentials } from "@/lib/data/services/userProfile";
@@ -94,6 +94,26 @@ export function AccountAdministration() {
     }
   };
 
+  // Handler for resending account deletion verification code
+  const handleResendDeletionVerificationCode = async () => {
+    try {
+      setIsLoading(true);
+      
+      const response = await resendDeletionVerification();
+      
+      if (!response.success) {
+        throw new Error(response.message || "Kunne ikke sende ny kode");
+      }
+      
+      return true;
+    } catch (error) {
+      console.error("Feil ved sending av ny kode:", error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Card className="w-full bg-[#d1c0c0]">
       <CardHeader className="flex items-center gap-3 rounded-md">
@@ -154,6 +174,7 @@ export function AccountAdministration() {
         isOpen={isEmailVerificationOpen}
         onClose={() => setIsEmailVerificationOpen(false)}
         onVerify={handleEmailVerification}
+        onResendCode={handleResendDeletionVerificationCode}
         email={userEmail}
         isLoading={isLoading}
         setIsLoading={setIsLoading}

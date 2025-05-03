@@ -1,6 +1,12 @@
 import { factories } from '@strapi/strapi';
 import { sendUsernameChangeVerification, sendEmailChangeVerification } from '../../../services/mailServices/credentialsMail';
-import { createTokenData, storeTokenInUser, validateToken, clearToken } from '../../../services/shared/tokenService';
+import { 
+  createTokenData, 
+  storeTokenInUser, 
+  validateToken, 
+  clearToken,
+  resendVerificationCode // Add this import
+} from '../../../services/shared/tokenService';
 
 export default factories.createCoreController('plugin::users-permissions.user', ({ strapi }) => ({
   // Handle username change
@@ -86,7 +92,7 @@ export default factories.createCoreController('plugin::users-permissions.user', 
       }
 
       // Generer verifiseringskode og send e-post
-      const verificationCode = await sendUsernameChangeVerification(user.email, user.username);
+      const verificationCode = await sendUsernameChangeVerification(user.email, user.username, undefined);
       
       // Lag token-data og lagre
       const tokenData = createTokenData(verificationCode, 'username');
@@ -106,10 +112,6 @@ export default factories.createCoreController('plugin::users-permissions.user', 
 
     if (!newEmail) {
       return ctx.badRequest('New email is required');
-    }
-    
-    if (!password) {
-      return ctx.badRequest('Password is required');
     }
 
     try {
@@ -137,7 +139,7 @@ export default factories.createCoreController('plugin::users-permissions.user', 
       }
 
       // Generer og send verifiseringskode
-      const verificationCode = await sendEmailChangeVerification(newEmail, user.username);
+      const verificationCode = await sendEmailChangeVerification(newEmail, user.username, undefined);
       
       // Lag token-data med ny e-post
       const tokenData = createTokenData(verificationCode, 'email', { newEmail });
@@ -237,6 +239,58 @@ export default factories.createCoreController('plugin::users-permissions.user', 
     } catch (error) {
       console.error('Error changing password:', error);
       return ctx.badRequest(`Could not update password: ${error.message}`);
+    }
+  },
+
+  /**
+   * Send verifiseringskode på nytt for endring av brukernavn
+   */
+  async resendUsernameVerification(ctx) {
+    const userId = ctx.state.user.id;
+    
+    try {
+      const result = await resendVerificationCode(userId, 'username');
+      
+      if (!result.success) {
+        return ctx.badRequest(result.message);
+      }
+      
+      return { 
+        success: true, 
+        message: 'Verifiseringskode sendt på nytt til din e-post' 
+      };
+    } catch (error) {
+      console.error('Error resending username verification:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Could not resend verification code";
+      return ctx.badRequest(`Could not resend verification code: ${errorMessage}`);
+    }
+  },
+
+  /**
+   * Send verifiseringskode på nytt for endring av e-post
+   */
+  async resendEmailVerification(ctx) {
+    const userId = ctx.state.user.id;
+    
+    try {
+      const result = await resendVerificationCode(userId, 'email');
+      
+      if (!result.success) {
+        return ctx.badRequest(result.message);
+      }
+      
+      return { 
+        success: true, 
+        message: 'Verifiseringskode sendt på nytt til din nye e-post' 
+      };
+    } catch (error) {
+      console.error('Error resending email verification:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Could not resend verification code";
+      return ctx.badRequest(`Could not resend verification code: ${errorMessage}`);
     }
   }
 }));

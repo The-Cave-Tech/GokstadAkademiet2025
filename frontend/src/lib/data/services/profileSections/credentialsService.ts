@@ -126,3 +126,37 @@ export async function changePassword(
       throw new Error(errorMessage);
     }
   }
+
+  export async function resendUsernameVerification(): Promise<{ success: boolean; message: string }> {
+    try {
+      return await strapiService.fetch<{ success: boolean; message: string }>(
+        "user-credentials/resend-username-verification",
+        {
+          method: "POST"
+        }
+      );
+    } catch (error) {
+      console.error("Feil ved sending av ny kode:", error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Kunne ikke sende ny kode";
+      throw new Error(errorMessage);
+    }
+  }
+
+  export async function resendEmailVerification(): Promise<{ success: boolean; message: string }> {
+    try {
+      return await strapiService.fetch<{ success: boolean; message: string }>(
+        "user-credentials/resend-email-verification",
+        {
+          method: "POST"
+        }
+      );
+    } catch (error) {
+      console.error("Feil ved sending av ny kode:", error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Kunne ikke sende ny kode";
+      throw new Error(errorMessage);
+    }
+  }

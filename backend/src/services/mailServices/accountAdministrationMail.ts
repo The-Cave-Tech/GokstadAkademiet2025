@@ -10,24 +10,29 @@ import {
 /**
  * Send verifiseringse-post for sletting av konto
  */
-export async function sendAccountDeletionVerification(email: string, username: string): Promise<string> {
-  const verificationCode = generateVerificationCode();
+export async function sendAccountDeletionVerification(
+  email: string, 
+  username: string,
+  existingCode?: string
+): Promise<string> {
+  // Use the existing code if provided, otherwise generate a new one
+  const code = existingCode || generateVerificationCode();
   
   const templateOptions: EmailTemplateOptions = {
     to: email,
     username,
-    verificationCode,
+    verificationCode: code,
     subject: 'Verifiser sletting av konto',
     actionText: 'Sletting av konto',
     additionalText: '<p><strong>ADVARSEL:</strong> Dette vil permanent slette kontoen din og all tilhørende data. Denne handlingen kan ikke angres.</p>'
   };
   
   const html = generateVerificationEmailHTML(templateOptions);
-  const text = `Din verifiseringskode for sletting av konto er: ${verificationCode}. Koden er gyldig i 15 minutter. ADVARSEL: Dette vil permanent slette kontoen din og all tilhørende data. Denne handlingen kan ikke angres.`;
+  const text = `Din verifiseringskode for sletting av konto er: ${code}. Koden er gyldig i 15 minutter. ADVARSEL: Dette vil permanent slette kontoen din og all tilhørende data. Denne handlingen kan ikke angres.`;
   
   await sendEmail(email, templateOptions.subject, text, html);
   
-  return verificationCode;
+  return code;
 }
 
 /**

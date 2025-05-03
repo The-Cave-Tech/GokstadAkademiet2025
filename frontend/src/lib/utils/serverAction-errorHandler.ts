@@ -51,19 +51,24 @@ export function handleStrapiError(error: unknown): string {
   }
   
   // Profil-relaterte feilmeldinger
-  if (errorMessage.includes("Invalid current password")) {
-    return "Ugyldig nåværende passord";
+  if (errorMessage.includes("Invalid password") || 
+      errorMessage.includes("Invalid current password")) {
+    return "Ugyldig passord";
   }
   
-  if (errorMessage.includes("Invalid verification code")) {
-    return "Ugyldig verifiseringskode";
+  if (errorMessage.includes("Invalid verification code") || 
+      errorMessage.includes("Verification code has expired")) {
+    return "Ugyldig eller utløpt verifiseringskode";
   }
   
-  if (errorMessage.includes("Username is already taken")) {
+  if (errorMessage.includes("Username is already taken") || 
+      errorMessage.toLowerCase().includes("username already taken")) {
     return "Brukernavnet er allerede tatt";
   }
   
-  if (errorMessage.includes("Email is already taken")) {
+  if (errorMessage.includes("Email is already taken") || 
+      errorMessage.toLowerCase().includes("email already taken") ||
+      errorMessage.toLowerCase().includes("email address already in use")) {
     return "E-postadressen er allerede i bruk";
   }
 

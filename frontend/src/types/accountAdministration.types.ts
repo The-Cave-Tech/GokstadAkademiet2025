@@ -28,3 +28,15 @@ export interface AccountDeletionModalProps {
     success: boolean;
     message: string;
   }
+
+  export interface AccountEmailVerificationModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onVerify: (verificationCode: string, deletionReason?: string) => Promise<void>;
+    email: string;
+    isLoading: boolean;
+    setIsLoading: (loading: boolean) => void;
+    deletionReason: string;
+    setDeletionReason: (reason: string) => void;
+    onResendCode?: () => Promise<boolean | void>
+  }

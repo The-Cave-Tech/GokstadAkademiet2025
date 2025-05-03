@@ -46,3 +46,20 @@ export async function verifyAndDeleteAccount(
     throw new Error(errorMessage);
   }
 }
+
+export async function resendDeletionVerification(): Promise<{ success: boolean; message: string }> {
+    try {
+      return await strapiService.fetch<{ success: boolean; message: string }>(
+        "user-profiles/resend-deletion-verification",
+        {
+          method: "POST"
+        }
+      );
+    } catch (error) {
+      console.error("Feil ved sending av ny kode:", error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Kunne ikke sende ny kode";
+      throw new Error(errorMessage);
+    }
+  }

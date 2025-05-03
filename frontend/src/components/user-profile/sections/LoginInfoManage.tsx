@@ -1,4 +1,3 @@
-//frontend/src/components/user-profile/sections/LoginInfoManage.tsx
 "use client";
 
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
@@ -14,7 +13,9 @@ import {
   changeUsername, 
   requestEmailChange, 
   verifyEmailChange,
-  changePassword 
+  changePassword,
+  resendUsernameVerification,
+  resendEmailVerification
 } from "@/lib/data/services/profileSections/credentialsService";
 import { UsernameChangeModal } from "../modals/UsernameChangeModal";
 import { PasswordChangeModal } from "../modals/PasswordChangeModal";
@@ -175,6 +176,35 @@ export function LoginInfoManage() {
     }
   };
 
+  // Handler for resending verification code
+  const handleResendVerificationCode = async () => {
+    try {
+      setIsModalLoading(true);
+      
+      let response;
+      if (pendingData.type === "username") {
+        // Resend username verification code
+        response = await resendUsernameVerification();
+      } else if (pendingData.type === "email") {
+        // Resend email verification code
+        response = await resendEmailVerification();
+      } else {
+        throw new Error("Ingen aktiv verifisering funnet");
+      }
+      
+      if (!response.success) {
+        throw new Error(response.message || "Kunne ikke sende ny kode");
+      }
+      
+      return true;
+    } catch (error) {
+      console.error("Feil ved sending av ny kode:", error);
+      throw error;
+    } finally {
+      setIsModalLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <Card className="w-full bg-[rgb(245,238,231)]">
@@ -329,6 +359,7 @@ export function LoginInfoManage() {
               isOpen={true}
               onClose={handleCloseModal}
               onVerify={handleVerification}
+              onResendCode={handleResendVerificationCode}
               email={pendingData.type === "email" ? pendingData.value : userData.email}
               isLoading={isModalLoading}
               setIsLoading={setIsModalLoading}

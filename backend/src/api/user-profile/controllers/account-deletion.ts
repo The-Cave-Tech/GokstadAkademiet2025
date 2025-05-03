@@ -1,8 +1,17 @@
 // backend/src/api/user-profile/controllers/account-deletion.ts
 
 import { factories } from '@strapi/strapi';
-import { sendAccountDeletionVerification, sendAccountDeletionConfirmation, sendDeletionFeedback } from '../../../services/mailServices/accountAdministrationMail';
-import { createTokenData, storeTokenInUser, validateToken } from '../../../services/shared/tokenService';
+import { 
+  sendAccountDeletionVerification, 
+  sendAccountDeletionConfirmation, 
+  sendDeletionFeedback 
+} from '../../../services/mailServices/accountAdministrationMail';
+import { 
+  createTokenData, 
+  storeTokenInUser, 
+  validateToken,
+  resendVerificationCode // Add this import
+} from '../../../services/shared/tokenService';
 
 export default factories.createCoreController('plugin::users-permissions.user', ({ strapi }) => ({
   //KontoSletting
@@ -121,6 +130,32 @@ export default factories.createCoreController('plugin::users-permissions.user', 
         ? error.message 
         : "Could not delete account";
       return ctx.badRequest(`Could not delete account: ${errorMessage}`);
+    }
+  },
+
+  /**
+   * Send verifiseringskode på nytt for sletting av konto
+   */
+  async resendDeletionVerification(ctx) {
+    const userId = ctx.state.user.id;
+    
+    try {
+      const result = await resendVerificationCode(userId, 'account-deletion');
+      
+      if (!result.success) {
+        return ctx.badRequest(result.message);
+      }
+      
+      return { 
+        success: true, 
+        message: 'Verifiseringskode sendt på nytt til din e-post' 
+      };
+    } catch (error) {
+      console.error('Error resending deletion verification:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Could not resend verification code";
+      return ctx.badRequest(`Could not resend verification code: ${errorMessage}`);
     }
   }
 }));

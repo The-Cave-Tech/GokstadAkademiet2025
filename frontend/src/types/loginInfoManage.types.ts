@@ -42,13 +42,16 @@ export interface PasswordModalProps extends BaseModalProps {
   onUpdate: (currentPassword: string, newPassword: string) => Promise<void>;
 }
 
-export interface VerificationModalProps extends BaseModalProps {
-  onVerify: (code: string) => Promise<void>;
-  email?: string;
-}
+
 
 export interface UserCredentials {
   username: string;
   email: string;
   password: string;
+}
+
+export interface VerificationModalProps extends BaseModalProps {
+  onVerify: (code: string) => Promise<void>;
+  email?: string;
+  onResendCode?: () => Promise<boolean | void>; 
 }

@@ -9,8 +9,13 @@ import {
   /**
    * Send verifiseringse-post for endring av brukernavn
    */
-  export async function sendUsernameChangeVerification(email: string, username: string): Promise<string> {
-    const verificationCode = generateVerificationCode();
+  export async function sendUsernameChangeVerification(
+    email: string, 
+    username: string, 
+    existingCode?: string
+  ): Promise<string> {
+    // Use the existing code if provided, otherwise generate a new one
+    const verificationCode = existingCode || generateVerificationCode();
     
     const templateOptions: EmailTemplateOptions = {
       to: email,
@@ -31,15 +36,20 @@ import {
   /**
    * Send verifiseringse-post for endring av e-post
    */
-  export async function sendEmailChangeVerification(newEmail: string, username: string): Promise<string> {
-    const verificationCode = generateVerificationCode();
+  export async function sendEmailChangeVerification(
+    newEmail: string, 
+    username: string, 
+    existingCode?: string
+  ): Promise<string> {
+    // Use the existing code if provided, otherwise generate a new one
+    const verificationCode = existingCode || generateVerificationCode();
     
     const templateOptions: EmailTemplateOptions = {
       to: newEmail,
       username,
       verificationCode,
       subject: 'Verifiser endring av e-post',
-      actionText: 'endring av e-post'
+      actionText: 'Endring av e-post'
     };
     
     const html = generateVerificationEmailHTML(templateOptions);

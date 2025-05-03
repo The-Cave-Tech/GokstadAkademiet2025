@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useRef, useEffect } from "react";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/custom/Button";
@@ -14,11 +13,15 @@ export function EmailVerificationModal({
   onVerify,
   email,
   isLoading,
-  setIsLoading
+  setIsLoading,
+  onResendCode // New prop to handle resending code
 }: VerificationModalProps) {
   const [verificationCode, setVerificationCode] = useState("");
   const [error, setError] = useState("");
   const [validationError, setValidationError] = useState<string[]>([]);
+  const [resendSuccess, setResendSuccess] = useState(false);
+  const [resendDisabled, setResendDisabled] = useState(false);
+  const [resendCountdown, setResendCountdown] = useState(0);
   
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -44,6 +47,18 @@ export function EmailVerificationModal({
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [onClose]);
+
+  // Countdown timer for resend button
+  useEffect(() => {
+    if (resendCountdown > 0) {
+      const timer = setTimeout(() => {
+        setResendCountdown(prev => prev - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (resendCountdown === 0 && resendDisabled) {
+      setResendDisabled(false);
+    }
+  }, [resendCountdown, resendDisabled]);
   
   // Handle verification code input change
   const handleVerificationCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,6 +78,7 @@ export function EmailVerificationModal({
   
   const handleSubmit = async () => {
     setError("");
+    setResendSuccess(false);
     
     // Validate the verification code before submitting
     try {
@@ -87,10 +103,27 @@ export function EmailVerificationModal({
   };
   
   const handleResendCode = async () => {
+    if (!onResendCode || resendDisabled) return;
+    
     try {
       setIsLoading(true);
-      setError("Funksjonen for å sende ny kode er ikke implementert ennå");
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulert forsinkelse
+      setError("");
+      setResendSuccess(false);
+      
+      await onResendCode();
+      
+      // Show success message
+      setResendSuccess(true);
+      
+      // Disable resend button for 60 seconds
+      setResendDisabled(true);
+      setResendCountdown(60);
+      
+      // Clear verification code field
+      setVerificationCode("");
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
     } catch (error) {
       console.error("Feil ved sending av ny kode:", error);
       setError(error instanceof Error ? error.message : "Kunne ikke sende ny kode");
@@ -128,6 +161,16 @@ export function EmailVerificationModal({
               >
                 <PageIcons name="warning" directory="profileIcons" size={20} alt="" className="mt-0.5 mr-2 flex-shrink-0" />
                 <span>{error}</span>
+              </div>
+            )}
+            
+            {resendSuccess && (
+              <div 
+                className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-md flex items-start"
+                role="alert"
+                aria-live="assertive"
+              >
+                <span>Ny verifiseringskode er sendt til din e-post</span>
               </div>
             )}
             
@@ -171,10 +214,14 @@ export function EmailVerificationModal({
                   <button
                     type="button"
                     onClick={handleResendCode}
-                    className="ml-2 text-blue-600 hover:text-blue-800 font-medium focus:outline-none"
-                    disabled={isLoading}
+                    className={`ml-2 text-blue-600 hover:text-blue-800 font-medium focus:outline-none ${
+                      resendDisabled ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                    disabled={isLoading || resendDisabled}
                   >
-                    Klikk her for å sende på nytt
+                    {resendDisabled 
+                      ? `Prøv igjen om ${resendCountdown} sekunder` 
+                      : 'Klikk her for å sende på nytt'}
                   </button>
                 </div>
                 

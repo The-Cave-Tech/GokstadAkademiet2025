@@ -8,7 +8,7 @@ import PageIcons from "@/components/ui/custom/PageIcons";
 import { PasswordToggle } from "@/components/ui/custom/PasswordToggle";
 import { usePasswordChangeValidation } from "@/hooks/useProfileValidation";
 import { ZodErrors } from "@/components/ZodErrors";
-import { profileFieldError } from "@/lib/utils/serverAction-errorHandler";
+import { profileFieldError, handleStrapiError } from "@/lib/utils/serverAction-errorHandler";
 import PasswordStrengthMeter from "@/components/ui/custom/PasswordStrengthMeter";
 
 export function PasswordChangeModal({ 
@@ -106,8 +106,8 @@ export function PasswordChangeModal({
       resetForm();
       setTimeout(onClose, 1500);
     } catch (error) {
-      console.error("Feil ved oppdatering av passord:", error);
-      setError(error instanceof Error ? error.message : "Kunne ikke oppdatere passord");
+      // Use handleStrapiError to translate the error to a user-friendly message
+      setError(handleStrapiError(error));
     } finally {
       setIsLoading(false);
     }

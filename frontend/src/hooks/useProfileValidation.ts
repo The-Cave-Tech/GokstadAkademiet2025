@@ -1,4 +1,5 @@
 // src/hooks/useProfileValidation.ts
+"use client";
 import { useState, useCallback } from "react";
 import { 
   publicProfileSchema, 
@@ -107,7 +108,6 @@ function useValidation<
           
           // For each field in our error template
           Object.keys(initialErrors).forEach(field => {
-            const fieldName = field as keyof E;
             const fieldErrors = allErrors[field] || [];
             (newErrors as Record<string, string[]>)[field] = fieldErrors.slice(0, 1);
           });

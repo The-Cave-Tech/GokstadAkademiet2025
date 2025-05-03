@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/custom/Button";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import { useUsernameChangeValidation } from "@/hooks/useProfileValidation";
 import { ZodErrors } from "@/components/ZodErrors";
-import { profileFieldError } from "@/lib/utils/serverAction-errorHandler";
+import { profileFieldError, handleStrapiError } from "@/lib/utils/serverAction-errorHandler";
 
 export function UsernameChangeModal({
   isOpen,
@@ -92,8 +92,8 @@ export function UsernameChangeModal({
       await onUpdate(newUsername, currentPassword);
       resetForm();
     } catch (error) {
-      console.error("Feil ved forespørsel om brukernavnendring:", error);
-      setError(error instanceof Error ? error.message : "Kunne ikke sende forespørsel om brukernavnendring");
+      // Use handleStrapiError to translate the error to a user-friendly message
+      setError(handleStrapiError(error));
     } finally {
       setIsLoading(false);
     }

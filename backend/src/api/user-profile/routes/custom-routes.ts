@@ -1,4 +1,4 @@
-// backend/src/api/user-profile/routes/custom-routes.ts
+// backend/src/api/user-profile/routes/custom-routes.ts 
 export default {
   routes: [
     // User Profile Routes
@@ -59,18 +59,40 @@ export default {
       config: { policies: [], middlewares: [] }
     },
     
+    // NEW ROUTES for resending verification codes
+    {
+      method: 'POST',
+      path: '/user-credentials/resend-username-verification',
+      handler: 'credentials.resendUsernameVerification',
+      config: { policies: [], middlewares: [] }
+    },
+    {
+      method: 'POST',
+      path: '/user-credentials/resend-email-verification',
+      handler: 'credentials.resendEmailVerification',
+      config: { policies: [], middlewares: [] }
+    },
+    
     // Account Deletion Routes
     {
       method: 'POST',
       path: '/user-profiles/request-account-deletion',
       handler: 'account-deletion.requestAccountDeletion',
-      config: { policies: [] }
+      config: { policies: [], middlewares: [] }
     },
     {
       method: 'POST',
       path: '/user-profiles/delete-account',
       handler: 'account-deletion.verifyAndDeleteAccount',
-      config: { policies: [] }
+      config: { policies: [],middlewares: [] }
+    },
+    
+    // NEW ROUTE for resending account deletion verification
+    {
+      method: 'POST',
+      path: '/user-profiles/resend-deletion-verification',
+      handler: 'account-deletion.resendDeletionVerification',
+      config: { policies: [],middlewares: [] }
     }
   ]
 };
