@@ -5,6 +5,7 @@ import Image from "next/image";
 import TipTapEditor from "@/components/ui/TipTapEditor";
 
 export interface ContentFormProps {
+  event: Event;
   onSave: (data: any, image?: File | null) => Promise<void>;
   onCancel: () => void;
   isLoading: boolean;
@@ -55,7 +56,7 @@ const ContentForm: React.FC<ContentFormProps> = ({
     >
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev: typeof formData) => ({ ...prev, [name]: value }));
 
     // Clear error when field is edited
     if (errors[name]) {
@@ -69,7 +70,7 @@ const ContentForm: React.FC<ContentFormProps> = ({
 
   // Handle rich text editor changes
   const handleEditorChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, content: value }));
+    setFormData((prev: typeof formData) => ({ ...prev, content: value }));
   };
 
   // Handle image upload

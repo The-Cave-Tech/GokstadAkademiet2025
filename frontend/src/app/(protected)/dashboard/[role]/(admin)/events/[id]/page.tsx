@@ -105,6 +105,12 @@ export default function EditEventPage() {
             onSave={handleSave}
             onCancel={handleCancel}
             isLoading={isSaving}
+            config={{
+              type: "event",
+              fields: [],
+              getImageUrl: undefined,
+              imageName: undefined,
+            }}
           />
         </div>
       ) : (
