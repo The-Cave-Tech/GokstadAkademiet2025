@@ -54,14 +54,6 @@ export const personalInfoSchema = z.object({
       message: "Kjønn inneholder forbudte tegn",
     })
     .optional(),
-  phoneNumber: z.string().trim()
-    .optional()
-    .refine(val => !val || /^(\+\d{1,3}\s?)?(\d{1,}\s?){5,}$/.test(val), {
-      message: "Ugyldig telefonnummer format"
-    })
-    .refine(val => !val || !dangerousCharsRegex.test(val), {
-      message: "Telefonnummer inneholder forbudte tegn",
-    }),
   streetAddress: z.string().trim()
     .refine(val => !val || !dangerousCharsRegex.test(val), {
       message: "Adresse inneholder forbudte tegn",

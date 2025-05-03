@@ -10,12 +10,6 @@ import {
 
 import { ZodError } from "zod";
 
-/**
- * Standardisert håndtering av Zod-valideringsfeil for server actions
- * @param error Zod-feilen fra validering
- * @param errorTemplate Tom feilmal med riktig struktur
- * @returns Feilmalen fylt med valideringsfeil
- */
 export function handleValidationErrors<T extends Record<string, string[]>>(
   error: ZodError,
   errorTemplate: T
@@ -52,6 +46,7 @@ export function handleStrapiError(error: unknown): string {
   
   // Profil-relaterte feilmeldinger
   if (errorMessage.includes("Invalid password") || 
+      errorMessage.includes("Current password is incorrect") ||
       errorMessage.includes("Invalid current password")) {
     return "Ugyldig passord";
   }
@@ -61,18 +56,33 @@ export function handleStrapiError(error: unknown): string {
     return "Ugyldig eller utløpt verifiseringskode";
   }
   
-  if (errorMessage.includes("Username is already taken") || 
+  if (errorMessage.includes("Username already in use") ||
+      errorMessage.includes("Username is already taken") || 
       errorMessage.toLowerCase().includes("username already taken")) {
     return "Brukernavnet er allerede tatt";
   }
   
-  if (errorMessage.includes("Email is already taken") || 
+  if (errorMessage.includes("Email already in use") ||
+      errorMessage.includes("Email is already taken") || 
       errorMessage.toLowerCase().includes("email already taken") ||
       errorMessage.toLowerCase().includes("email address already in use")) {
     return "E-postadressen er allerede i bruk";
   }
 
-  // Generiske feilmeldinger
+  // Nye spesifikke feilmeldinger for kontoendringer
+  if (errorMessage.includes("No verification in progress")) {
+    return "Ingen aktiv verifiseringsprosess funnet";
+  }
+
+  if (errorMessage.includes("Missing email information")) {
+    return "Manglende e-postinformasjon";
+  }
+
+  if (errorMessage.includes("No token found")) {
+    return "Ingen verifiseringskode funnet. Start prosessen på nytt.";
+  }
+
+  // Generic error handling
   if (errorMessage.includes("Network Error")) {
     return "Tilkoblingsproblem. Sjekk internettforbindelsen din.";
   }
@@ -84,9 +94,6 @@ export function handleStrapiError(error: unknown): string {
   return errorMessage;
 }
 
-/**
- * Hjelper for å hente feilmeldinger for autentisering
- */
 export function authFieldError(
   validationErrors: SignUpValidationErrors | SignInValidationErrors,
   formStateErrors: SignUpValidationErrors | SignInValidationErrors | null,
@@ -97,9 +104,6 @@ export function authFieldError(
     : (formStateErrors?.[fieldName as keyof typeof formStateErrors] || []);
 }
 
-/**
- * Generisk hjelper for å hente feilmeldinger for profilseksjoner
- */
 export function profileFieldError<T extends Record<string, string[]>>(
   validationErrors: T,
   formStateErrors: T | null,
@@ -110,11 +114,6 @@ export function profileFieldError<T extends Record<string, string[]>>(
     : formStateErrors?.[fieldName] || [];
 }
 
-/**
- * Samler alle valideringsfeil fra alle seksjoner
- * @param errors Objektet med feilmeldinger
- * @returns true hvis det finnes feil, false hvis ingen feil
- */
 export function hasValidationErrors(errors: ProfileValidationErrorTypes | null): boolean {
   if (!errors) return false;
   
@@ -123,11 +122,6 @@ export function hasValidationErrors(errors: ProfileValidationErrorTypes | null):
   );
 }
 
-/**
- * Logger valideringsfeil til konsoll for debugging
- * @param errors Objektet med feilmeldinger
- * @param context Kontekst for loggingen (f.eks. 'personalInfo')
- */
 export function logValidationErrors(
   errors: ProfileValidationErrorTypes, 
   context: string

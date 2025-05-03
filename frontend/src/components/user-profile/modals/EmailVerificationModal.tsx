@@ -6,6 +6,7 @@ import { VerificationModalProps } from "@/types/loginInfoManage.types";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import { ZodErrors } from "@/components/ZodErrors";
 import { universalVerificationCodeValidation } from "@/lib/validation/universalValidation";
+import { handleStrapiError } from "@/lib/utils/serverAction-errorHandler";
 
 export function EmailVerificationModal({
   isOpen,
@@ -96,7 +97,7 @@ export function EmailVerificationModal({
       setTimeout(onClose, 1500);
     } catch (error) {
       console.error("Feil ved verifisering:", error);
-      setError(error instanceof Error ? error.message : "Ugyldig verifiseringskode");
+      setError(handleStrapiError(error));
     } finally {
       setIsLoading(false);
     }
@@ -126,7 +127,7 @@ export function EmailVerificationModal({
       }
     } catch (error) {
       console.error("Feil ved sending av ny kode:", error);
-      setError(error instanceof Error ? error.message : "Kunne ikke sende ny kode");
+      setError(handleStrapiError(error));
     } finally {
       setIsLoading(false);
     }

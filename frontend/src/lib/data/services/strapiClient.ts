@@ -1,4 +1,5 @@
 // src/lib/data/services/strapiClient.ts
+
 import { strapi } from "@strapi/client";
 import { getAuthCookie } from "@/lib/utils/cookie";
 
@@ -72,8 +73,23 @@ export const strapiService = {
       const response = await fetch(`${BASE_URL}/${endpoint}`, fetchOptions);
       
       if (!response.ok) {
+        // Enhanced error handling - parse error properly
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error?.message || response.statusText || "Ukjent feil");
+        
+        let errorMessage = "Ukjent feil";
+        if (errorData.error) {
+          if (typeof errorData.error === 'string') {
+            errorMessage = errorData.error;
+          } else if (errorData.error.message) {
+            errorMessage = errorData.error.message;
+          } else if (errorData.error.details?.message) {
+            errorMessage = errorData.error.details.message;
+          }
+        } else if (response.statusText) {
+          errorMessage = response.statusText;
+        }
+        
+        throw new Error(errorMessage);
       }
       
       return response.json();

@@ -19,6 +19,7 @@ import {
 } from "@/lib/data/services/profileSections/credentialsService";
 import { UsernameChangeModal } from "../modals/UsernameChangeModal";
 import { PasswordChangeModal } from "../modals/PasswordChangeModal";
+import { handleStrapiError } from "@/lib/utils/serverAction-errorHandler";
 
 export function LoginInfoManage() {
   const [userData, setUserData] = useState<UserCredentials>({
@@ -51,7 +52,7 @@ export function LoginInfoManage() {
         setError(null);
       } catch (err) {
         console.error("Feil ved henting av brukerdata:", err);
-        setError("Kunne ikke hente brukerinformasjon. Vennligst prøv igjen senere.");
+        setError(handleStrapiError(err));
       } finally {
         setLoading(false);
       }
@@ -86,7 +87,9 @@ export function LoginInfoManage() {
       }
     } catch (error) {
       console.error("Feil ved forespørsel om brukernavn-endring:", error);
-      throw error;
+      // Use handleStrapiError here to transform the error before throwing
+      const errorMessage = handleStrapiError(error);
+      throw new Error(errorMessage);
     } finally {
       setIsModalLoading(false);
     }
@@ -108,7 +111,9 @@ export function LoginInfoManage() {
       }
     } catch (error) {
       console.error("Feil ved forespørsel om e-post-endring:", error);
-      throw error;
+      // Use handleStrapiError here to transform the error before throwing
+      const errorMessage = handleStrapiError(error);
+      throw new Error(errorMessage);
     } finally {
       setIsModalLoading(false);
     }
@@ -133,7 +138,9 @@ export function LoginInfoManage() {
       }
     } catch (error) {
       console.error("Feil ved passord-endring:", error);
-      throw error;
+      // Use handleStrapiError here to transform the error before throwing
+      const errorMessage = handleStrapiError(error);
+      throw new Error(errorMessage);
     } finally {
       setIsModalLoading(false);
     }
@@ -170,7 +177,9 @@ export function LoginInfoManage() {
       handleCloseModal();
     } catch (error) {
       console.error("Feil ved verifisering:", error);
-      throw error;
+      // Use handleStrapiError here to transform the error before throwing
+      const errorMessage = handleStrapiError(error);
+      throw new Error(errorMessage);
     } finally {
       setIsModalLoading(false);
     }
@@ -199,7 +208,9 @@ export function LoginInfoManage() {
       return true;
     } catch (error) {
       console.error("Feil ved sending av ny kode:", error);
-      throw error;
+      // Use handleStrapiError here to transform the error before throwing
+      const errorMessage = handleStrapiError(error);
+      throw new Error(errorMessage);
     } finally {
       setIsModalLoading(false);
     }

@@ -1,5 +1,4 @@
 // src/lib/data/services/userProfile.tsx
-
 import { strapiService } from "./strapiClient";
 
 export interface UserProfile {

@@ -6,7 +6,7 @@ import PageIcons from "@/components/ui/custom/PageIcons";
 import { AccountEmailVerificationModalProps } from "@/types/accountAdministration.types";
 import { useAccountDeletionVerificationValidation } from "@/hooks/useProfileValidation";
 import { ZodErrors } from "@/components/ZodErrors";
-import { profileFieldError } from "@/lib/utils/serverAction-errorHandler";
+import { profileFieldError, handleStrapiError } from "@/lib/utils/serverAction-errorHandler";
 
 export function AccountDeletionVerificationModal({
   isOpen,
@@ -104,7 +104,7 @@ export function AccountDeletionVerificationModal({
       await onVerify(verificationCode, deletionReason);
     } catch (error) {
       console.error("Feil ved verifisering:", error);
-      setError(error instanceof Error ? error.message : "Ugyldig verifiseringskode");
+      setError(handleStrapiError(error));
     } finally {
       setIsLoading(false);
     }
@@ -134,7 +134,7 @@ export function AccountDeletionVerificationModal({
       }
     } catch (error) {
       console.error("Feil ved sending av ny kode:", error);
-      setError(error instanceof Error ? error.message : "Kunne ikke sende ny kode");
+      setError(handleStrapiError(error));
     } finally {
       setIsLoading(false);
     }
