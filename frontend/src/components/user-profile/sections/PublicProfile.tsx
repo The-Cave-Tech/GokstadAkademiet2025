@@ -18,7 +18,7 @@ import {
   updateShowPhone, 
   updateShowAddress,
 } from '@/lib/data/services/profileSections/publicProfileService';
-import { ProfileImageUploader } from '@/components/ui/userProfile/ProfileImageUploader';
+import { ProfileImageUploader } from '@/components/user-profile/profileImage/ProfileImageUploader';
 import { getUserProfile, UserProfile } from '@/lib/data/services/userProfile';
 
 interface PublicProfileProps {
