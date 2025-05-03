@@ -38,8 +38,6 @@ export const projectService = {
     }
   },
 
-  getMediaUrl: (imagePath: string) => `/media/${imagePath}`, // Add this method
-
   // Get a single project by ID
   getOne: async (
     id: number | string,
