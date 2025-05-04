@@ -51,6 +51,10 @@ export interface NotificationSettingsValidationErrors extends ValidationErrorRec
   newsletter: string[];
 }
 
+export interface ProfileImageValidationErrors extends ValidationErrorRecord {
+  file: string[];
+}
+
 // Type alias for alle profil-relaterte valideringsfeiltyper for enklere bruk
 export type ProfileValidationErrorTypes = 
   | PublicProfileValidationErrors
@@ -60,4 +64,5 @@ export type ProfileValidationErrorTypes =
   | PasswordChangeValidationErrors
   | AccountDeletionValidationErrors
   | AccountDeletionVerificationValidationErrors
-  | NotificationSettingsValidationErrors;
+  | NotificationSettingsValidationErrors
+  | ProfileImageValidationErrors;

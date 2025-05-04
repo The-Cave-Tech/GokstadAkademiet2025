@@ -17,7 +17,7 @@ import {
   PasswordChangeFormData,
   AccountDeletionFormData,
   AccountDeletionVerificationFormData,
-  NotificationSettingsFormData
+  NotificationSettingsFormData,
 } from "@/lib/validation/profileSectionValidation";
 import { z } from "zod";
 import { 
@@ -28,7 +28,7 @@ import {
   PersonalInfoValidationErrors, 
   PublicProfileValidationErrors, 
   UsernameChangeValidationErrors,
-  NotificationSettingsValidationErrors
+  NotificationSettingsValidationErrors,
 } from "@/types/validationError.types";
 
 // Generic validation hook with improved typings and logging
@@ -231,3 +231,4 @@ export function useNotificationSettingsValidation() {
     }
   );
 }
+

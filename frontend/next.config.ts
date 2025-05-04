@@ -1,3 +1,4 @@
+
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -16,10 +17,12 @@ const nextConfig: NextConfig = {
         }, */
     ],
   },
-  /*  i18n: {
-    locales: ['en', 'no'],  // Støtter engelsk og norsk
-    defaultLocale: 'no',    // Standard språk er norsk
-  }, */ /* config options here */
+ 
+  experimental: {
+    serverActions: {
+      bodySizeLimit: 50 * 1024 * 1024
+    }
+  }
 };
 
 export default nextConfig;
