@@ -30,6 +30,7 @@ export interface DatePickerProps {
   name: string;
   value: string;
   onChange: (value: string) => void;
+  onBlur?: (value: string) => void;
   placeholder?: string;
   required?: boolean;
   readOnly?: boolean;

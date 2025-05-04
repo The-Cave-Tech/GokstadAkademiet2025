@@ -8,6 +8,7 @@ export function DatePicker({
   name,
   value,
   onChange,
+  onBlur,
   placeholder = "DD.MM.ÅÅÅÅ",
   required = false,
   readOnly = false,
@@ -24,7 +25,6 @@ export function DatePicker({
   useEffect(() => {
     setInputValue(value);
     
-
     if (value) {
       const parsedDate = parseDate(value);
       if (parsedDate && !isNaN(parsedDate.getTime())) {
@@ -74,26 +74,33 @@ export function DatePicker({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     
+    // Allow empty input
     if (!newValue) {
       setInputValue('');
       onChange('');
       return;
     }
     
+    // Restrict to digits and dots only
     if (!/^[\d.]*$/.test(newValue)) {
       return;
     }
     
     setInputValue(newValue);
+    onChange(newValue); // Pass all inputs to parent for validation
     
+    // Update calendar view if input is a valid date
     if (/^\d{2}\.\d{2}\.\d{4}$/.test(newValue)) {
       const parsedDate = parseDate(newValue);
       if (parsedDate && !isNaN(parsedDate.getTime())) {
-        onChange(newValue);
-        
-        // Update the calendar view
         setCurrentMonth(parsedDate);
       }
+    }
+  };
+  
+  const handleBlur = () => {
+    if (onBlur) {
+      onBlur(inputValue);
     }
   };
   
@@ -331,6 +338,7 @@ export function DatePicker({
           type="text"
           value={inputValue}
           onChange={handleInputChange}
+          onBlur={handleBlur}
           onFocus={() => !readOnly && setShowCalendar(true)}
           placeholder={placeholder}
           required={required}

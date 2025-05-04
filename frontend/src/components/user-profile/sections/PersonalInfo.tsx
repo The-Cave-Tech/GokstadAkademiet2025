@@ -22,6 +22,12 @@ import { getUserProfile } from "@/lib/data/services/userProfile";
 import { UserProfile } from "@/lib/data/services/userProfile";
 
 import {
+  formatDateForDisplay,
+  formatDateForStorage,
+  formatPhoneNumber
+} from "@/lib/validation/profileSectionValidation";
+
+import {
   PersonalInfoProps,
   FormValues,
   FieldConfig,
@@ -43,9 +49,10 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
   const [originalValues, setOriginalValues] = useState<FormValues>({...formValues});
   const [error, setError] = useState<string | null>(null);
 
-  // Get validation hook
+  // Hent valideringshooken som håndterer Zod-skjemaene
   const { validationErrors, validateField, validateForm } = usePersonalInfoValidation();
 
+  // Feltdefinisjoner for å gjøre koden mer DRY
   const fieldConfigs: FieldConfig[] = [
     {
       id: "fullName",
@@ -107,22 +114,14 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
     }
   ];
 
+  // Last inn profilen når den endres
   useEffect(() => {
     if (profile) {
       const extendedProfile = profile as ExtendedUserProfile;
       const personalInfo = extendedProfile.personalInformation || {};
       
-      let birthDateFormatted = personalInfo.birthDate || '';
-      if (birthDateFormatted) {
-        try {
-          const [year, month, day] = birthDateFormatted.split('-');
-          if (year && month && day) {
-            birthDateFormatted = `${day}.${month}.${year}`;
-          }
-        } catch (error) {
-          console.error("Error formatting date:", error);
-        }
-      }
+      // Bruk formatDateForDisplay for å konvertere ISO-dato til norsk format
+      const birthDateFormatted = personalInfo.birthDate ? formatDateForDisplay(personalInfo.birthDate) : '';
       
       const newValues: FormValues = {
         fullName: personalInfo.fullName || "",
@@ -140,62 +139,47 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
     }
   }, [profile]);
 
-  // Generic handler for input changes
+  // Håndter input-endringer for alle felt
   const handleInputChange = (
     fieldId: keyof NonNullable<UserProfile['personalInformation']>, 
     value: string
   ) => {
-    // Special handling for phone number
-    if (fieldId === "phoneNumber") {
-      // Remove all non-digit characters first
-      const digitsOnly = value.replace(/\D/g, "");
-      
-      // Format the phone number
-      let formattedNumber = "";
-      
-      if (digitsOnly.length > 0) {
-        // Add +47 prefix if not already starting with + and not empty
-        if (!value.trim().startsWith("+")) {
-          formattedNumber = "+47 ";
-        } else if (value.startsWith("+")) {
-          // Preserve existing country code if any
-          const countryCodeMatch = value.match(/^\+(\d+)/);
-          if (countryCodeMatch) {
-            formattedNumber = `+${countryCodeMatch[1]} `;
-          }
-        }
-        
-        // Format the remaining digits with spaces
-        const formatGroups = (num: string): string => {
-          if (num.length <= 3) return num;
-          if (num.length <= 6) return `${num.slice(0, 3)} ${num.slice(3)}`;
-          return `${num.slice(0, 3)} ${num.slice(3, 6)} ${num.slice(6, 8)}`;
-        };
-        
-        // Only format the local part (after country code)
-        const localPart = digitsOnly.slice(digitsOnly.startsWith("47") ? 2 : 0);
-        formattedNumber += formatGroups(localPart);
-      }
-      
-      value = formattedNumber || value;
-    }
-    
     setFormValues(prev => ({
       ...prev,
       [fieldId]: value
     }));
     
-    // Validate the field
+    // Valider feltet med Zod via usePersonalInfoValidation-hooken
     validateField(fieldId, value);
   };
 
+  // Håndter formatering av telefonnummer
+  const handlePhoneNumberChange = (
+    fieldId: keyof NonNullable<UserProfile['personalInformation']>,
+    value: string
+  ) => {
+    // Kun tillate tall og +-tegn som input
+    const filteredValue = value.replace(/[^\d+]/g, '');
+    
+    // Bruk formatPhoneNumber for å formatere nummeret riktig
+    const formattedValue = formatPhoneNumber(filteredValue);
+    
+    setFormValues(prev => ({
+      ...prev,
+      [fieldId]: formattedValue
+    }));
+    
+    validateField(fieldId, formattedValue);
+  };
+
+  // Håndter lagring av skjema
   const handleSave = async () => {
     if (!isEditing) {
       setIsEditing(true);
       return;
     }
     
-    // Validate the entire form before saving
+    // Valider hele skjemaet med Zod via usePersonalInfoValidation-hooken
     const isValid = validateForm(formValues);
     
     if (!isValid) {
@@ -207,33 +191,21 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
       setIsSaving(true);
       setError(null);
       
+      // Finn ut hvilke felt som har endret seg
+      const changedFieldConfigs = fieldConfigs.filter(config => 
+        formValues[config.id] !== originalValues[config.id]
+      );
+      
       let updatesPerformed = false;
-      const updatedFields = [];
       
-      for (const fieldConfig of fieldConfigs) {
-        const fieldId = fieldConfig.id;
-        if (formValues[fieldId] !== originalValues[fieldId]) {
-          updatedFields.push(fieldConfig);
-        }
-      }
-      
-      for (const fieldConfig of updatedFields) {
+      // Oppdatere hvert endrede felt
+      for (const fieldConfig of changedFieldConfigs) {
         const fieldId = fieldConfig.id;
         
         try {
           if (fieldId === 'birthDate' && formValues[fieldId]) {
-            if (!formValues[fieldId].match(/^\d{4}-\d{2}-\d{2}$/)) {
-              const [day, month, year] = formValues[fieldId].split('.');
-              if (day && month && year) {
-                const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-                console.log(`Converting date from ${formValues[fieldId]} to ${isoDate} for API`);
-                await fieldConfig.updateFn(isoDate);
-              } else {
-                await fieldConfig.updateFn(formValues[fieldId]);
-              }
-            } else {
-              await fieldConfig.updateFn(formValues[fieldId]);
-            }
+            // Konverterer datoen til ISO-format for lagring
+            await fieldConfig.updateFn(formatDateForStorage(formValues[fieldId]));
           } else {
             await fieldConfig.updateFn(formValues[fieldId]);
           }
@@ -261,6 +233,7 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
     }
   };
 
+  // Avbryt redigering
   const handleCancel = () => {
     setFormValues({...originalValues});
     setIsEditing(false);
@@ -269,7 +242,7 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
 
   const buttonState = isSaving ? "loading" : isEditing ? "save" : "edit";
 
-  // Helper function to render field based on type
+  // Rendrer felt basert på type
   const renderField = (config: FieldConfig) => {
     const { id, label, type, placeholder, required, options, description } = config;
     
@@ -318,6 +291,34 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
               placeholder={placeholder}
               required={required}
               onChange={(value: string) => handleInputChange(id, value)}
+              onBlur={(value: string) => {
+                if (value) {
+                  validateField(id, value);
+                }
+              }}
+            />
+            <ZodErrors
+              error={profileFieldError(
+                validationErrors,
+                null,
+                id
+              )}
+            />
+          </div>
+        ) : type === 'tel' ? (
+          <div>
+            <input
+              {...commonProps}
+              type={type}
+              placeholder={placeholder}
+              required={required}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                handlePhoneNumberChange(id, e.target.value)}
+              onBlur={(e) => {
+                if (e.target.value && !e.target.value.startsWith("+")) {
+                  handlePhoneNumberChange(id, "+47" + e.target.value);
+                }
+              }}
             />
             <ZodErrors
               error={profileFieldError(
@@ -336,12 +337,6 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
               required={required}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
                 handleInputChange(id, e.target.value)}
-              // Apply special handling for telephone input
-              onBlur={id === "phoneNumber" ? (e) => {
-                if (e.target.value && !e.target.value.startsWith("+")) {
-                  handleInputChange(id, "+47 " + e.target.value.replace(/\D/g, ""));
-                }
-              } : undefined}
             />
             <ZodErrors
               error={profileFieldError(
@@ -402,6 +397,7 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
             <div className="space-y-4 sm:col-span-1">
               {renderField(fieldConfigs[4])} 
               
+appen
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   {renderField(fieldConfigs[5])}

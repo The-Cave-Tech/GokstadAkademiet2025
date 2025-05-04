@@ -10,7 +10,7 @@ export async function requestAccountDeletion(password: string): Promise<AccountD
         "user-profiles/request-account-deletion",
         {
           method: "POST",
-          body: { password: password } // Use explicit property name and value 
+          body: { password: password }
         }
       );
     } catch (error) {
