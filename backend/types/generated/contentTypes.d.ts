@@ -438,6 +438,7 @@ export interface ApiEventEvent extends Struct.CollectionTypeSchema {
 export interface ApiGlobalSettingGlobalSetting extends Struct.SingleTypeSchema {
   collectionName: 'global_settings';
   info: {
+    description: '';
     displayName: 'GlobalSetting';
     pluralName: 'global-settings';
     singularName: 'global-setting';

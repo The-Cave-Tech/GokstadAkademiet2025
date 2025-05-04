@@ -11,10 +11,16 @@ type SocialLink = {
   url: string;
 };
 
+type OpeningHours = {
+  day: string;
+  hours: string;
+};
+
 export default function Footer() {
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
   const [footerText, setFooterText] = useState<string>("");
-  const [backgroundColor, setBackgroundColor] = useState<string>("#1F2937");
+  const [backgroundColor, setBackgroundColor] = useState<string>("#0f172a");
+  const [openingHours, setOpeningHours] = useState<OpeningHours[]>([]);
 
   useEffect(() => {
     const fetchFooterData = async () => {
@@ -29,10 +35,20 @@ export default function Footer() {
           setFooterText(
             attributes.footerText || "© TheCaveTech. All rights reserved."
           );
-          setBackgroundColor(attributes.footerBackgroundColor || "#1F2937");
+          setBackgroundColor(attributes.footerBackgroundColor || "#0f172a");
+
+          const hours = attributes.openingHours || {};
+          setOpeningHours([
+            {
+              day: "Mandag - Fredag",
+              hours: hours.mondayFriday || "08:00 - 16:00",
+            },
+            { day: "Lørdag", hours: hours.saturday || "10:00 - 14:00" },
+            { day: "Søndag", hours: hours.sunday || "Stengt" },
+          ]);
         }
       } catch (error) {
-        console.error("Failed to fetch footer data:", error);
+        console.error("Kunne ikke hente footer-data:", error);
       }
     };
 
@@ -41,82 +57,78 @@ export default function Footer() {
 
   return (
     <footer
-      className="py-8 px-4 text-white"
+      className="text-white pt-12 pb-8 px-6"
       style={{ backgroundColor }}
       role="contentinfo"
     >
-      <div className="container mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          {/* Logo & Company Info */}
-          <div className="mb-6 md:mb-0">
-            <SiteLogo className="w-36 mb-4" />
-            <p className="text-sm text-gray-300">
-              Innovative teknologiløsninger for fremtiden.
-            </p>
-          </div>
-
-          {/* Navigation */}
-          <nav aria-label="Footer navigation">
-            <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-6 md:mb-0">
-              <li>
-                <Link
-                  href="/shop"
-                  className="text-gray-300 hover:text-white hover:underline transition-colors"
-                >
-                  Nettbutikk
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/blog"
-                  className="text-gray-300 hover:text-white hover:underline transition-colors"
-                >
-                  Blogg
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/about-us"
-                  className="text-gray-300 hover:text-white hover:underline transition-colors"
-                >
-                  Om oss
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact-us"
-                  className="text-gray-300 hover:text-white hover:underline transition-colors"
-                >
-                  Kontakt oss
-                </Link>
-              </li>
-            </ul>
-          </nav>
-
-          {/* Social Links */}
-          <div>
-            <ul className="flex gap-4">
-              {socialLinks.map((link) => (
-                <li key={link.id}>
-                  <Link
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-300 hover:text-white hover:underline transition-colors"
-                    aria-label={`Besøk vår ${link.name} side`}
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+        {/* Logo & beskrivelse */}
+        <div>
+          <SiteLogo className="w-40 mb-4" />
+          <p className="text-sm text-gray-300 leading-relaxed">
+            
+          </p>
         </div>
 
-        {/* Copyright */}
-        <div className="mt-8 pt-6 border-t border-gray-700 text-center text-sm text-gray-400">
-          &copy; {new Date().getFullYear()} {footerText}
+        {/* Navigasjonslenker */}
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Navigasjon</h3>
+          <ul className="space-y-2">
+            {[
+              { name: "Nettbutikk", href: "/shop" },
+              { name: "Blogg", href: "/blog" },
+              { name: "Om oss", href: "/about-us" },
+              { name: "Kontakt oss", href: "/contact-us" },
+            ].map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  {link.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
+
+        {/* Sosiale medier */}
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Følg oss</h3>
+          <ul className="flex flex-wrap gap-4">
+            {socialLinks.map((link) => (
+              <li key={link.id}>
+                <Link
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-300 hover:text-white transition-colors"
+                  aria-label={`Gå til ${link.name}`}
+                >
+                  {link.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Åpningstider */}
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Åpningstider</h3>
+          <ul className="space-y-1 text-sm text-gray-300">
+            {openingHours.map((item, index) => (
+              <li key={index} className="flex justify-between">
+                <span>{item.day}</span>
+                <span>{item.hours}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* Bunntekst */}
+      <div className="mt-12 border-t border-gray-700 pt-6 text-center text-sm text-gray-400">
+        &copy; {new Date().getFullYear()} {footerText}
       </div>
     </footer>
   );
