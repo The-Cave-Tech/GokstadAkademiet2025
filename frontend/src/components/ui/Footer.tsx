@@ -20,7 +20,13 @@ export default function Footer() {
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
   const [footerText, setFooterText] = useState<string>("");
   const [backgroundColor, setBackgroundColor] = useState<string>("#0f172a");
-  const [openingHours, setOpeningHours] = useState<OpeningHours[]>([]);
+
+  // MOCK åpningstider (skal komme fra Strapi senere)
+  const [openingHours, setOpeningHours] = useState<OpeningHours[]>([
+    { day: "Mandag - Fredag", hours: "08:00 - 16:00" },
+    { day: "Lørdag", hours: "10:00 - 14:00" },
+    { day: "Søndag", hours: "Stengt" },
+  ]);
 
   useEffect(() => {
     const fetchFooterData = async () => {
@@ -37,15 +43,8 @@ export default function Footer() {
           );
           setBackgroundColor(attributes.footerBackgroundColor || "#0f172a");
 
-          const hours = attributes.openingHours || {};
-          setOpeningHours([
-            {
-              day: "Mandag - Fredag",
-              hours: hours.mondayFriday || "08:00 - 16:00",
-            },
-            { day: "Lørdag", hours: hours.saturday || "10:00 - 14:00" },
-            { day: "Søndag", hours: hours.sunday || "Stengt" },
-          ]);
+          // Når Strapi er klart:
+          // setOpeningHours(attributes.openingHours || []);
         }
       } catch (error) {
         console.error("Kunne ikke hente footer-data:", error);
@@ -66,7 +65,7 @@ export default function Footer() {
         <div>
           <SiteLogo className="w-40 mb-4" />
           <p className="text-sm text-gray-300 leading-relaxed">
-            
+            Innovative teknologiløsninger for fremtiden.
           </p>
         </div>
 
