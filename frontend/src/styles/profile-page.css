@@ -1,0 +1,89 @@
+/* src/styles/profile-page.css */
+:root {
+    /* Farger */
+     /* Kort: bakgrunsfarge */
+    --profile-background: #ebdfd2; /* Bakgrunn for kort */
+    --profile-warning-bg: rgb(255,235,235); /* Bakgrunn for advarselskort */
+
+      /* Kort ikoner */
+    --profile-icons-var1: #c9b4b4;
+    --profile-icons-var2: #c9b4b4;
+    --profile-icons-var3: #c9b4b4;
+    --profile-danger: #ff6b6b; /* Farge for faresoner/ikoner */
+
+    --profile-icon-container: 2.5rem; /* Ikoncontainer (w-10 h-10) */
+
+     /* Kort tittel*/
+    --profile-text: #1f2937; /* Primær tekstfarge (gray-900) */
+
+    /* Kort subtittel*/
+    --profile-text-secondary: #4b5563; /* Sekundær tekstfarge (gray-600) */
+    --profile-label: #374151; /* Label tekstfarge (gray-700) */
+    --profile-error: #ef4444; /* Feil/påkrevd indikator (red-500) */
+    --profile-input-bg: #ffffff; /* Inputfelt bakgrunn (white) */
+    --profile-input-disabled-bg: #f3f4f6; /* Inputfelt deaktivert (gray-100) */
+    --profile-button-danger: #ef4444; /* Slett-knapp bakgrunn (red-500) */
+    --profile-button-danger-text: #ffffff; /* Slett-knapp tekst (white) */
+    --profile-button-cancel: #d1d5db; /* Avbryt-knapp bakgrunn (gray-300) */
+    --profile-button-cancel-text: #374151; /* Avbryt-knapp tekst (gray-700) */
+    --profile-button-bg: #2563eb; /* Change/modalChange bakgrunn (blue-600) */
+    --profile-button-hover: #1d4ed8; /* Change/modalChange hover (blue-700) */
+    --profile-button-text: #ffffff; /* Change/modalChange tekst */
+    --profile-button-icon-bg: #ffffff; /* Ikonbakgrunn i change/modalChange */
+    --profile-button-border: #d1d1d1; /* Kantfarge for ikoner */
+  
+    /* Fonter */
+    --profile-font-primary: "Inter, sans-serif"; /* Standard font */
+    --profile-font-mono: "monospace"; /* Font for passordfelt */
+  
+    /* Avstander */
+    --profile-spacing-sm: 0.25rem; /* Liten avstand (space-y-1, mb-1) */
+    --profile-spacing-md: 1rem; /* Middels avstand (space-y-4, gap-4) */
+    --profile-spacing-lg: 1.5rem; /* Stor avstand (space-y-6, gap-6) */
+    --profile-spacing-xl: 2rem; /* Ekstra stor avstand (space-y-8) */
+    --profile-padding-sm: 0.5rem; /* Liten padding (p-2, px-3) */
+    --profile-padding-md: 1rem; /* Middels padding (px-4 py-2) */
+    --profile-padding-lg: 1.5rem; /* Stor padding (p-6) */
+    --profile-margin-sm: 0.25rem; /* Liten margin (mb-1) */
+    --profile-margin-md: 0.5rem; /* Middels margin (mb-2) */
+    --profile-margin-lg: 1rem; /* Stor margin (mb-4) */
+    --profile-margin-button: 0.75rem; /* Knapp margin (ml-3) */
+  
+    /* Størrelser */
+    --profile-icon-size: 24px; /* Ikonstørrelse */
+    
+    --profile-input-height: 3rem; /* Inputfelt høyde (h-12) */
+    --profile-button-sm: 2rem; /* Små knapper (h-8 w-8 for modalChange) */
+    --profile-button-md: 2.5rem; /* Standard knapper (implisitt) */
+  
+    /* Border */
+    --profile-border: #d1d5db; /* Standard border (gray-300) */
+    --profile-border-light: #e5e7eb; /* Lysere border (gray-200) */
+  }
+  
+  /* Scoped stiler for profilsiden */
+  .profile-page {
+    font-family: var(--profile-font-primary);
+  }
+  
+  /* Spesifikke stiler for Button-komponentens change/modalChange varianter */
+  .profile-button-change,
+  .profile-button-modalChange {
+    background-color: var(--profile-button-bg);
+    color: var(--profile-button-text);
+    border-radius: 9999px;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .profile-button-change:hover,
+  .profile-button-modalChange:hover {
+    background-color: var(--profile-button-hover);
+  }
+  
+  .profile-button-change .icon-container,
+  .profile-button-modalChange .icon-container {
+    background-color: var(--profile-button-icon-bg);
+    border: 1px solid var(--profile-button-border);
+    border-radius: 9999px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }

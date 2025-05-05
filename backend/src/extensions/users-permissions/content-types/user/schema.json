@@ -65,11 +65,11 @@
       "inversedBy": "users",
       "configurable": false
     },
-    "profile": {
-      "displayName": "Profile",
-      "type": "component",
-      "repeatable": false,
-      "component": "user.profile"
+    "user_profile": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::user-profile.user-profile",
+      "mappedBy": "users_permissions_user"
     }
   }
 }

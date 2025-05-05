@@ -1,15 +1,13 @@
 // middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getUserWithRole } from "@/lib/data/services/userAuth";
 
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  console.log("Middleware triggered for:", pathname);
-
   const authCookie = request.cookies.get("authToken")?.value;
   const isAuthenticated = !!authCookie;
-  console.log("Authenticated:", isAuthenticated, "Token:", authCookie);
 
   const protectedRoutes = ["/dashboard"];
   const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route));
@@ -17,40 +15,33 @@ export default async function middleware(request: NextRequest) {
   const authRoutes = ["/signin", "/signup"];
   const isAuthRoute = authRoutes.some((route) => pathname === route);
 
+  // Redirect unauthenticated users from protected routes to signin
   if (isProtectedRoute && !isAuthenticated) {
-    console.log("Not authenticated, redirecting to /signin");
     return NextResponse.redirect(new URL("/signin", request.url));
   }
 
+  // Redirect authenticated users from auth routes to dashboard
   if (isAuthRoute && isAuthenticated) {
-    console.log("Authenticated, redirecting from auth route to /dashboard");
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  // Beskytt admin-ruter
+  // Protect admin routes
   if (pathname.startsWith("/dashboard/admin")) {
     if (!authCookie) return NextResponse.redirect(new URL("/signin", request.url));
 
-    const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL;
-    const response = await fetch(`${baseUrl}/api/users/me?populate[role][fields][0]=name`, {
-      headers: { Authorization: `Bearer ${authCookie}` },
-    });
+    try {
+      const userData = await getUserWithRole();
+      const role = userData.role?.name || "Authenticated users";
 
-    if (!response.ok) {
-      console.log("Failed to fetch user role, redirecting to /dashboard");
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
-
-    const userData = await response.json();
-    const role = userData.role?.name || "Authenticated users";
-
-    if (role !== "Admin/moderator/superadmin") {
-      console.log("Non-admin attempted to access admin route, redirecting to /dashboard");
+      if (role !== "Admin/moderator/superadmin") {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    } catch (error) {
+      console.error("Error checking user role:", error);
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   }
 
-  console.log(`Proceeding to ${pathname}`);
   return NextResponse.next();
 }
 

@@ -15,19 +15,85 @@ export interface LandingPageHeroSection extends Struct.ComponentSchema {
   };
 }
 
-export interface UserProfile extends Struct.ComponentSchema {
-  collectionName: 'components_user_profiles';
+export interface UserProfileAccountAdministration
+  extends Struct.ComponentSchema {
+  collectionName: 'components_user_profile_account_administrations';
   info: {
-    displayName: 'Profile';
+    displayName: 'Account Administration';
   };
-  attributes: {};
+  attributes: {
+    accountActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    accountCreationDate: Schema.Attribute.DateTime;
+    deletionReason: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        minLength: 256;
+      }>;
+    lastLoginDate: Schema.Attribute.DateTime;
+  };
+}
+
+export interface UserProfileNotificationSettings
+  extends Struct.ComponentSchema {
+  collectionName: 'components_user_profile_notification_settings';
+  info: {
+    displayName: 'Notification Settings';
+  };
+  attributes: {
+    importantUpdates: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    newsletter: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+  };
+}
+
+export interface UserProfilePersonalInformation extends Struct.ComponentSchema {
+  collectionName: 'components_user_profile_personal_informations';
+  info: {
+    description: '';
+    displayName: 'Personal Information';
+  };
+  attributes: {
+    birthDate: Schema.Attribute.Date;
+    city: Schema.Attribute.String;
+    fullName: Schema.Attribute.String & Schema.Attribute.Required;
+    gender: Schema.Attribute.Enumeration<['Mann', 'Kvinne', 'Annet']>;
+    phoneNumber: Schema.Attribute.String;
+    postalCode: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 4;
+        minLength: 4;
+      }>;
+    streetAddress: Schema.Attribute.String;
+  };
+}
+
+export interface UserProfilePublicProfile extends Struct.ComponentSchema {
+  collectionName: 'components_user_profile_public_profiles';
+  info: {
+    description: '';
+    displayName: 'Public Profile';
+  };
+  attributes: {
+    biography: Schema.Attribute.Text &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 256;
+      }>;
+    displayName: Schema.Attribute.String & Schema.Attribute.Required;
+    profileimage: Schema.Attribute.Media<'images' | 'files'>;
+    showAddress: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    showEmail: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    showPhone: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+  };
 }
 
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'landing-page.hero-section': LandingPageHeroSection;
-      'user.profile': UserProfile;
+      'user-profile.account-administration': UserProfileAccountAdministration;
+      'user-profile.notification-settings': UserProfileNotificationSettings;
+      'user-profile.personal-information': UserProfilePersonalInformation;
+      'user-profile.public-profile': UserProfilePublicProfile;
     }
   }
 }
