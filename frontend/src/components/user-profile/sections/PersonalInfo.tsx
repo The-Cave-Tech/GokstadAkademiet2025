@@ -397,7 +397,6 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
             <div className="space-y-4 sm:col-span-1">
               {renderField(fieldConfigs[4])} 
               
-appen
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   {renderField(fieldConfigs[5])}
