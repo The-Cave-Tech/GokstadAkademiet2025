@@ -62,7 +62,7 @@ export default function DashboardMenu() {
       desc: "Se, legg til, endre prosjekter",
     },
     {
-      href: "/dashboard/admin/blogg",
+      href: "/dashboard/admin/blog",
       title: "Administrer Blogger",
       desc: "Se alle blogger og slett",
     },

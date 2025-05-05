@@ -43,3 +43,31 @@ export interface ProjectAttributes {
 
 // Project response type
 export type ProjectResponse = ProjectAttributes;
+
+export interface BlogAttributes {
+  id: number;
+  title: string;
+  summary: string;
+  content: string;
+  category?: string;
+  tags?: string[] | string; // Can be array or comma-separated string
+  state: "draft" | "published" | "archived";
+  blogImage?: Media;
+  author?: {
+    id: number;
+    username: string;
+    email?: string;
+  };
+  createdAt?: string;
+  updatedAt?: string;
+  publishedAt?: string;
+  documentId?: string;
+}
+
+// Blog response type (represents the blog post structure)
+export type BlogResponse = BlogAttributes;
+
+// BlogCard props for rendering blog post cards
+export interface BlogCardProps {
+  blog: BlogAttributes;
+}

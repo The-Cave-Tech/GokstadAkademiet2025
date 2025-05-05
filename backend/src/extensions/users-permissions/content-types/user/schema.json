@@ -70,6 +70,12 @@
       "type": "component",
       "repeatable": false,
       "component": "user.profile"
+    },
+    "blog": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::blog.blog",
+      "inversedBy": "author"
     }
   }
 }

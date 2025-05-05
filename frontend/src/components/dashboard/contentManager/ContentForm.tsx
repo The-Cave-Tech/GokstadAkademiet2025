@@ -5,12 +5,12 @@ import Image from "next/image";
 import TipTapEditor from "@/components/ui/TipTapEditor";
 
 export interface ContentFormProps {
-  event: Event;
+  event?: Event;
   onSave: (data: any, image?: File | null) => Promise<void>;
   onCancel: () => void;
   isLoading: boolean;
   config: {
-    type: "event" | "project"; // Determines the type of content
+    type: "event" | "project" | "blog"; // Determines the type of content
     fields: Array<{
       name: string;
       label: string;
@@ -30,6 +30,7 @@ const ContentForm: React.FC<ContentFormProps> = ({
   isLoading,
   config,
   data,
+  event,
 }) => {
   const [formData, setFormData] = useState<any>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -39,6 +40,8 @@ const ContentForm: React.FC<ContentFormProps> = ({
   useEffect(() => {
     if (data) {
       setFormData(data);
+    } else if (event) {
+      setFormData(event);
     } else {
       // Initialize formData with empty values for all fields
       const initialData: any = {};
@@ -47,7 +50,7 @@ const ContentForm: React.FC<ContentFormProps> = ({
       });
       setFormData(initialData);
     }
-  }, [data, config.fields]);
+  }, [data, event, config.fields]);
 
   // Handle input changes
   const handleChange = (
@@ -88,7 +91,7 @@ const ContentForm: React.FC<ContentFormProps> = ({
     const newErrors: Record<string, string> = {};
 
     config.fields.forEach((field) => {
-      if (field.required && !formData[field.name]?.trim()) {
+      if (field.required && !formData[field.name]?.toString().trim()) {
         newErrors[field.name] = `${field.label} is required`;
       }
     });
@@ -97,31 +100,74 @@ const ContentForm: React.FC<ContentFormProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission
+  // Handle form submission - fully dynamic based on config.type
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) return;
 
     try {
-      // Ensure the form data matches the expected structure
-      const submissionData = {
-        title: formData.title,
-        description: formData.description,
-        state: formData.state,
-        category: formData.category,
-        technologies: formData.technologies
-          ?.split(",")
-          .map((tech: string) => tech.trim()), // Convert comma-separated string to array
-        demoUrl: formData.demoUrl,
-        githubUrl: formData.githubUrl,
-        content: formData.content,
-      };
+      // Build a dynamic submission object based on field definitions
+      const submissionData: Record<string, any> = {};
 
+      // Add all form fields to the submission data
+      config.fields.forEach((field) => {
+        if (field.name === "technologies" || field.name === "tags") {
+          // Handle comma-separated strings for arrays
+          if (typeof formData[field.name] === "string") {
+            submissionData[field.name] = formData[field.name]
+              ?.split(",")
+              .map((item: string) => item.trim())
+              .filter(Boolean);
+          } else {
+            submissionData[field.name] = formData[field.name];
+          }
+        } else {
+          // Handle all other field types normally
+          submissionData[field.name] = formData[field.name];
+        }
+      });
+
+      // Type-specific handling if needed
+      if (config.type === "event") {
+        // Event-specific handling (e.g., formatting dates, times)
+        if (submissionData.time) {
+          const timeRegex = /^\d{2}:\d{2}:\d{2}\.\d{3}$/; // Matches HH:mm:ss.SSS
+          if (!timeRegex.test(submissionData.time)) {
+            const [hours, minutes] = submissionData.time.split(":");
+            submissionData.time = `${hours}:${minutes}:00.000`; // Format to HH:mm:ss.SSS
+          }
+        }
+      }
+
+      // Pass the dynamically built submission data to the save handler
       await onSave(submissionData, image);
     } catch (err) {
-      console.error("Error submitting form:", err);
+      console.error(`Error submitting ${config.type} form:`, err);
     }
+  };
+
+  // Determine the image field name based on content type
+  const getImageFieldName = () => {
+    switch (config.type) {
+      case "blog":
+        return "blogImage";
+      case "event":
+        return "eventCardImage";
+      case "project":
+        return "projectImage";
+      default:
+        return "image";
+    }
+  };
+
+  // Get the current image if it exists
+  const getCurrentImage = () => {
+    if (!data && !event) return null;
+
+    const sourceData = data || event;
+    const imageField = getImageFieldName();
+    return sourceData[imageField];
   };
 
   return (
@@ -205,12 +251,12 @@ const ContentForm: React.FC<ContentFormProps> = ({
           className="w-full border border-gray-300 rounded-md px-3 py-2"
           disabled={isLoading}
         />
-        {data?.image && !image && config.getImageUrl && (
+        {getCurrentImage() && !image && config.getImageUrl && (
           <div className="mt-2">
             <p className="text-sm text-gray-500 mb-1">Current image:</p>
             <div className="relative h-32 w-48 rounded overflow-hidden">
               <Image
-                src={config.getImageUrl(data.image)}
+                src={config.getImageUrl(getCurrentImage())}
                 alt={`${config.type} image`}
                 fill
                 className="object-cover"

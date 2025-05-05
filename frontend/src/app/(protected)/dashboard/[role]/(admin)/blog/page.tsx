@@ -5,33 +5,54 @@ import Link from "next/link";
 import Image from "next/image";
 import { blogService } from "@/lib/data/services/blogService";
 import { formatDate } from "@/lib/utils/eventUtils";
-import { useAuth } from "@/lib/context/AuthContext";
-import { Theme } from "@/styles/activityTheme";
 
-// User Blog Posts Page - Similar to admin page but only shows the user's own posts
-export default function UserBlogPage() {
+// Earthy color palette variables for easy customization (matching your existing colors)
+const colors = {
+  primary: "rgb(121, 85, 72)", // Brown
+  primaryHover: "rgb(109, 76, 65)", // Darker brown
+  secondary: "rgb(78, 52, 46)", // Dark brown
+  tertiary: "rgb(188, 170, 164)", // Light brown
+  accent: "rgb(141, 110, 99)", // Medium brown
+  background: "rgb(245, 241, 237)", // Light beige
+  surface: "rgb(255, 253, 250)", // Creamy white
+  surfaceHover: "rgb(237, 231, 225)", // Light warm gray
+  divider: "rgb(225, 217, 209)", // Soft divider
+  text: {
+    primary: "rgb(62, 39, 35)", // Dark brown text
+    secondary: "rgb(97, 79, 75)", // Medium brown text
+    light: "rgb(145, 131, 127)", // Light brown text
+  },
+  success: "rgb(96, 125, 83)", // Mossy green
+  successHover: "rgb(85, 111, 74)",
+  error: "rgb(168, 77, 70)", // Earthy red
+  errorHover: "rgb(150, 69, 63)",
+  warning: "rgb(190, 142, 79)", // Amber/ochre
+  warningHover: "rgb(171, 128, 71)",
+  info: "rgb(84, 110, 122)", // Slate blue-gray
+  infoHover: "rgb(75, 99, 110)",
+};
+
+export default function BlogAdminPage() {
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const { userRole } = useAuth();
 
   useEffect(() => {
-    loadUserBlogPosts();
+    loadBlogPosts();
   }, []);
 
-  const loadUserBlogPosts = async () => {
+  const loadBlogPosts = async () => {
     setIsLoading(true);
     try {
-      // Get only the current user's blog posts
-      const data = await blogService.getUserPosts({
+      const data = await blogService.getAll({
         sort: ["createdAt:desc"],
-        populate: ["blogImage"],
+        populate: ["blogImage", "author"],
       });
       setBlogPosts(data);
       setError(null);
     } catch (err) {
-      setError("An error occurred while loading your blog posts");
+      setError("An error occurred while loading blog posts");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -56,27 +77,42 @@ export default function UserBlogPage() {
     }
   };
 
+  const handleArchive = async (id: string) => {
+    try {
+      await blogService.update(id, { state: "archived" }); // Changed from status to state
+      setSuccessMessage("Blog post archived successfully!");
+
+      // Refresh the list to show updated status
+      loadBlogPosts();
+    } catch (error) {
+      console.error("Failed to archive blog post:", error);
+      setError("Failed to archive blog post. Please try again.");
+    } finally {
+      setTimeout(() => setSuccessMessage(null), 3000);
+    }
+  };
+
   const getStateColor = (state: string) => {
     switch (state) {
       case "published":
         return {
           bg: "rgba(96, 125, 83, 0.2)",
-          text: Theme.colors.success || "rgb(96, 125, 83)",
+          text: colors.success,
         };
       case "draft":
         return {
           bg: "rgba(190, 142, 79, 0.2)",
-          text: Theme.colors.warning || "rgb(190, 142, 79)",
+          text: colors.warning,
         };
       case "archived":
         return {
           bg: "rgba(168, 77, 70, 0.2)",
-          text: Theme.colors.error || "rgb(168, 77, 70)",
+          text: colors.error,
         };
       default:
         return {
           bg: "rgba(84, 110, 122, 0.2)",
-          text: Theme.colors.info || "rgb(84, 110, 122)",
+          text: colors.info,
         };
     }
   };
@@ -84,7 +120,7 @@ export default function UserBlogPage() {
   return (
     <div
       className="min-h-screen p-6 sm:p-8 md:p-10"
-      style={{ backgroundColor: Theme.colors.background }}
+      style={{ backgroundColor: colors.background }}
     >
       {/* Success Message */}
       {successMessage && (
@@ -92,8 +128,8 @@ export default function UserBlogPage() {
           className="px-4 py-3 mb-6 rounded-md"
           style={{
             backgroundColor: "rgba(96, 125, 83, 0.1)", // Light green background
-            color: Theme.colors.success,
-            border: `1px solid ${Theme.colors.success}`,
+            color: colors.success, // Green text
+            border: `1px solid ${colors.success}`,
           }}
         >
           <div className="flex items-center">
@@ -120,8 +156,8 @@ export default function UserBlogPage() {
           className="px-4 py-3 mb-6 rounded-md"
           style={{
             backgroundColor: "rgba(168, 77, 70, 0.1)",
-            color: Theme.colors.error,
-            border: `1px solid ${Theme.colors.error}`,
+            color: colors.error,
+            border: `1px solid ${colors.error}`,
           }}
         >
           <div className="flex items-center">
@@ -145,17 +181,19 @@ export default function UserBlogPage() {
       {/* Card Container */}
       <div
         className="max-w-7xl mx-auto rounded-xl shadow-lg overflow-hidden"
-        style={{ backgroundColor: Theme.colors.surface }}
+        style={{ backgroundColor: colors.surface }}
       >
         {/* Header */}
         <div
           className="px-6 py-5 sm:px-8 sm:py-6"
-          style={{ backgroundColor: Theme.colors.primary, color: "white" }}
+          style={{ backgroundColor: colors.primary, color: "white" }}
         >
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <h1 className="text-2xl sm:text-3xl font-bold">My Blog Posts</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">
+              Manage Blog Posts
+            </h1>
             <Link
-              href="/dashboard/blog/new"
+              href="/dashboard/admin/blog/new"
               className="px-4 py-2 rounded-md text-sm font-medium shadow transition duration-150 ease-in-out"
               style={{
                 backgroundColor: "rgba(255, 255, 255, 0.15)",
@@ -185,8 +223,8 @@ export default function UserBlogPage() {
                 style={{
                   borderWidth: "3px",
                   borderStyle: "solid",
-                  borderColor: `${Theme.colors.divider}`,
-                  borderTopColor: Theme.colors.primary,
+                  borderColor: `${colors.divider}`,
+                  borderTopColor: colors.primary,
                 }}
               ></div>
             </div>
@@ -202,7 +240,7 @@ export default function UserBlogPage() {
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
-                style={{ color: Theme.colors.tertiary }}
+                style={{ color: colors.tertiary }}
               >
                 <path
                   strokeLinecap="round"
@@ -213,15 +251,12 @@ export default function UserBlogPage() {
               </svg>
               <p
                 className="text-lg font-medium"
-                style={{ color: Theme.colors.text.primary }}
+                style={{ color: colors.text.primary }}
               >
-                You haven't created any blog posts yet
+                No blog posts found
               </p>
-              <p
-                className="mt-2"
-                style={{ color: Theme.colors.text.secondary }}
-              >
-                Create your first blog post to get started.
+              <p className="mt-2" style={{ color: colors.text.secondary }}>
+                Create a new blog post to get started.
               </p>
             </div>
           ) : (
@@ -236,8 +271,8 @@ export default function UserBlogPage() {
                     <th
                       className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tl-md"
                       style={{
-                        backgroundColor: Theme.colors.tertiary,
-                        color: Theme.colors.text.primary,
+                        backgroundColor: colors.tertiary,
+                        color: colors.text.primary,
                       }}
                     >
                       Image
@@ -245,8 +280,8 @@ export default function UserBlogPage() {
                     <th
                       className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider"
                       style={{
-                        backgroundColor: Theme.colors.tertiary,
-                        color: Theme.colors.text.primary,
+                        backgroundColor: colors.tertiary,
+                        color: colors.text.primary,
                       }}
                     >
                       Title
@@ -254,8 +289,17 @@ export default function UserBlogPage() {
                     <th
                       className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider"
                       style={{
-                        backgroundColor: Theme.colors.tertiary,
-                        color: Theme.colors.text.primary,
+                        backgroundColor: colors.tertiary,
+                        color: colors.text.primary,
+                      }}
+                    >
+                      Author
+                    </th>
+                    <th
+                      className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                      style={{
+                        backgroundColor: colors.tertiary,
+                        color: colors.text.primary,
                       }}
                     >
                       State
@@ -263,8 +307,8 @@ export default function UserBlogPage() {
                     <th
                       className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider"
                       style={{
-                        backgroundColor: Theme.colors.tertiary,
-                        color: Theme.colors.text.primary,
+                        backgroundColor: colors.tertiary,
+                        color: colors.text.primary,
                       }}
                     >
                       Date
@@ -272,8 +316,8 @@ export default function UserBlogPage() {
                     <th
                       className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tr-md"
                       style={{
-                        backgroundColor: Theme.colors.tertiary,
-                        color: Theme.colors.text.primary,
+                        backgroundColor: colors.tertiary,
+                        color: colors.text.primary,
                       }}
                     >
                       Actions
@@ -283,8 +327,8 @@ export default function UserBlogPage() {
                 <tbody
                   className="divide-y"
                   style={{
-                    color: Theme.colors.text.primary,
-                    borderColor: Theme.colors.divider,
+                    color: colors.text.primary,
+                    borderColor: colors.divider,
                   }}
                 >
                   {blogPosts.map((post, index) => (
@@ -299,7 +343,7 @@ export default function UserBlogPage() {
                       }}
                       onMouseOver={(e) =>
                         (e.currentTarget.style.backgroundColor =
-                          Theme.colors.surfaceHover)
+                          colors.surfaceHover)
                       }
                       onMouseOut={(e) =>
                         (e.currentTarget.style.backgroundColor =
@@ -324,7 +368,7 @@ export default function UserBlogPage() {
                         ) : (
                           <div
                             className="h-16 w-16 rounded-md flex items-center justify-center"
-                            style={{ backgroundColor: Theme.colors.divider }}
+                            style={{ backgroundColor: colors.divider }}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -332,7 +376,7 @@ export default function UserBlogPage() {
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
-                              style={{ color: Theme.colors.text.light }}
+                              style={{ color: colors.text.light }}
                             >
                               <path
                                 strokeLinecap="round"
@@ -345,17 +389,39 @@ export default function UserBlogPage() {
                         )}
                       </td>
 
-                      {/* Title and Summary */}
+                      {/* Title and Description */}
                       <td className="px-4 py-4">
                         <div className="font-medium">{post.title}</div>
                         {post.summary && (
                           <div
                             className="mt-1 truncate max-w-xs"
-                            style={{ color: Theme.colors.text.secondary }}
+                            style={{ color: colors.text.secondary }}
                           >
                             {post.summary}
                           </div>
                         )}
+                      </td>
+
+                      {/* Author */}
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4 mr-1.5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            style={{ color: colors.accent }}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
+                          </svg>
+                          <span>{post.author?.username || "Unknown"}</span>
+                        </div>
                       </td>
 
                       {/* State */}
@@ -380,7 +446,7 @@ export default function UserBlogPage() {
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
-                            style={{ color: Theme.colors.accent }}
+                            style={{ color: colors.accent }}
                           >
                             <path
                               strokeLinecap="round"
@@ -400,34 +466,56 @@ export default function UserBlogPage() {
                             onClick={() => handleDelete(post.documentId)}
                             className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-150 ease-in-out"
                             style={{
-                              backgroundColor: Theme.colors.error,
+                              backgroundColor: colors.error,
                               color: "white",
                             }}
                             onMouseOver={(e) =>
                               (e.currentTarget.style.backgroundColor =
-                                Theme.colors.errorHover)
+                                colors.errorHover)
                             }
                             onMouseOut={(e) =>
                               (e.currentTarget.style.backgroundColor =
-                                Theme.colors.error)
+                                colors.error)
                             }
                           >
                             Delete
                           </button>
+
+                          {post.state !== "archived" && (
+                            <button
+                              onClick={() => handleArchive(post.documentId)}
+                              className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-150 ease-in-out"
+                              style={{
+                                backgroundColor: colors.warning,
+                                color: "white",
+                              }}
+                              onMouseOver={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                  colors.warningHover)
+                              }
+                              onMouseOut={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                  colors.warning)
+                              }
+                            >
+                              Archive
+                            </button>
+                          )}
+
                           <Link
-                            href={`/dashboard/blog/${post.documentId}`}
+                            href={`/admin/blog/${post.documentId}`}
                             className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-150 ease-in-out"
                             style={{
-                              backgroundColor: Theme.colors.info,
+                              backgroundColor: colors.info,
                               color: "white",
                             }}
                             onMouseOver={(e) =>
                               (e.currentTarget.style.backgroundColor =
-                                Theme.colors.infoHover)
+                                colors.infoHover)
                             }
                             onMouseOut={(e) =>
                               (e.currentTarget.style.backgroundColor =
-                                Theme.colors.info)
+                                colors.info)
                             }
                           >
                             Edit
@@ -437,16 +525,16 @@ export default function UserBlogPage() {
                             target="_blank"
                             className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-150 ease-in-out"
                             style={{
-                              backgroundColor: Theme.colors.success,
+                              backgroundColor: colors.success,
                               color: "white",
                             }}
                             onMouseOver={(e) =>
                               (e.currentTarget.style.backgroundColor =
-                                Theme.colors.successHover)
+                                colors.successHover)
                             }
                             onMouseOut={(e) =>
                               (e.currentTarget.style.backgroundColor =
-                                Theme.colors.success)
+                                colors.success)
                             }
                           >
                             View
