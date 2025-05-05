@@ -150,25 +150,6 @@ export const blogService = {
         await blogService.uploadBlogImage(blogId, blogImage);
       }
 
-      // Try to fetch the created blog post with error handling
-      try {
-        // Add a short delay to ensure the post is available
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        // Clean the ID to ensure proper format
-        const cleanId = String(blogId).replace(/[^0-9]/g, "");
-
-        const createdBlog = await blogService.getOne(cleanId);
-        if (createdBlog) {
-          return createdBlog;
-        }
-      } catch (fetchError) {
-        console.warn(
-          "[BlogService] Could not fetch the created blog, returning creation data instead:",
-          fetchError
-        );
-      }
-
       // If fetch fails, construct a valid BlogResponse from the payload
       // but don't include blogImage since we can't create a valid Media object
       const fallbackResponse: BlogResponse = {
