@@ -5,46 +5,41 @@ import Link from "next/link";
 import { fetchStrapiData } from "@/lib/data/services/strapiApiData";
 import { SiteLogo } from "./SiteLogo";
 
-type SocialLink = {
+type OpeningHourItem = {
   id: number;
-  name: string;
-  url: string;
-};
-
-type OpeningHours = {
-  day: string;
-  hours: string;
+  Mandag?: string;
+  Tirsdag?: string;
+  Onsdag?: string;
+  Torsdag?: string;
+  Fredag?: string;
 };
 
 export default function Footer() {
-  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
-  const [footerText, setFooterText] = useState<string>("");
-  const [backgroundColor, setBackgroundColor] = useState<string>("#0f172a");
-
-  // MOCK åpningstider (skal komme fra Strapi senere)
-  const [openingHours, setOpeningHours] = useState<OpeningHours[]>([
-    { day: "Mandag - Fredag", hours: "08:00 - 16:00" },
-    { day: "Lørdag", hours: "10:00 - 14:00" },
-    { day: "Søndag", hours: "Stengt" },
-  ]);
+  const [footerText, setFooterText] = useState(
+    "© TheCaveTech. All rights reserved."
+  );
+  const [backgroundColor, setBackgroundColor] = useState("#0f172a");
+  const [openingHours, setOpeningHours] = useState<OpeningHourItem[]>([]);
+  const [year, setYear] = useState<number | null>(null);
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
+    setHasMounted(true);
+    setYear(new Date().getFullYear());
+
     const fetchFooterData = async () => {
       try {
         const { data } = await fetchStrapiData(
-          "/api/global-setting?populate=*"
+          "/api/footer?populate[openingHours]=*"
         );
         const attributes = data?.attributes;
 
         if (attributes) {
-          setSocialLinks(attributes.SocialLinks || []);
           setFooterText(
-            attributes.footerText || "© TheCaveTech. All rights reserved."
+            attributes.footerText ?? "© TheCaveTech. All rights reserved."
           );
-          setBackgroundColor(attributes.footerBackgroundColor || "#0f172a");
-
-          // Når Strapi er klart:
-          // setOpeningHours(attributes.openingHours || []);
+          setBackgroundColor(attributes.footerBackgroundColor ?? "#0f172a");
+          setOpeningHours(attributes.openingHours ?? []);
         }
       } catch (error) {
         console.error("Kunne ikke hente footer-data:", error);
@@ -54,13 +49,15 @@ export default function Footer() {
     fetchFooterData();
   }, []);
 
+  if (!hasMounted) return null;
+
   return (
     <footer
       className="text-white pt-12 pb-8 px-6"
       style={{ backgroundColor }}
       role="contentinfo"
     >
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Logo & beskrivelse */}
         <div>
           <SiteLogo className="w-40 mb-4" />
@@ -91,35 +88,43 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Sosiale medier */}
-        <div>
-          <h3 className="text-lg font-semibold mb-4">Følg oss</h3>
-          <ul className="flex flex-wrap gap-4">
-            {socialLinks.map((link) => (
-              <li key={link.id}>
-                <Link
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-white transition-colors"
-                  aria-label={`Gå til ${link.name}`}
-                >
-                  {link.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
         {/* Åpningstider */}
         <div>
           <h3 className="text-lg font-semibold mb-4">Åpningstider</h3>
           <ul className="space-y-1 text-sm text-gray-300">
             {openingHours.map((item, index) => (
-              <li key={index} className="flex justify-between">
-                <span>{item.day}</span>
-                <span>{item.hours}</span>
-              </li>
+              <div key={item.id || index}>
+                {item.Mandag && (
+                  <li className="flex justify-between">
+                    <span>Mandag</span>
+                    <span>{item.Mandag}</span>
+                  </li>
+                )}
+                {item.Tirsdag && (
+                  <li className="flex justify-between">
+                    <span>Tirsdag</span>
+                    <span>{item.Tirsdag}</span>
+                  </li>
+                )}
+                {item.Onsdag && (
+                  <li className="flex justify-between">
+                    <span>Onsdag</span>
+                    <span>{item.Onsdag}</span>
+                  </li>
+                )}
+                {item.Torsdag && (
+                  <li className="flex justify-between">
+                    <span>Torsdag</span>
+                    <span>{item.Torsdag}</span>
+                  </li>
+                )}
+                {item.Fredag && (
+                  <li className="flex justify-between">
+                    <span>Fredag</span>
+                    <span>{item.Fredag}</span>
+                  </li>
+                )}
+              </div>
             ))}
           </ul>
         </div>
@@ -127,7 +132,7 @@ export default function Footer() {
 
       {/* Bunntekst */}
       <div className="mt-12 border-t border-gray-700 pt-6 text-center text-sm text-gray-400">
-        &copy; {new Date().getFullYear()} {footerText}
+        &copy; {year ?? ""} {footerText}
       </div>
     </footer>
   );

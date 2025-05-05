@@ -435,6 +435,34 @@ export interface ApiEventEvent extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiFooterFooter extends Struct.SingleTypeSchema {
+  collectionName: 'footers';
+  info: {
+    displayName: 'Footer';
+    pluralName: 'footers';
+    singularName: 'footer';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::footer.footer'
+    > &
+      Schema.Attribute.Private;
+    openingHours: Schema.Attribute.Component<'footer.opening-hours', true>;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiGlobalSettingGlobalSetting extends Struct.SingleTypeSchema {
   collectionName: 'global_settings';
   info: {
@@ -1050,6 +1078,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::auth-setting.auth-setting': ApiAuthSettingAuthSetting;
       'api::event.event': ApiEventEvent;
+      'api::footer.footer': ApiFooterFooter;
       'api::global-setting.global-setting': ApiGlobalSettingGlobalSetting;
       'api::landing-page.landing-page': ApiLandingPageLandingPage;
       'api::project.project': ApiProjectProject;
