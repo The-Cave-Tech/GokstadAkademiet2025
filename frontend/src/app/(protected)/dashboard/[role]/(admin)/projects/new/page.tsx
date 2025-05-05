@@ -3,6 +3,7 @@
 import React from "react";
 import ContentForm from "@/components/dashboard/contentManager/ContentForm";
 import { projectService } from "@/lib/data/services/projectService";
+import { useRouter } from "next/navigation";
 
 const colors = {
   primary: "rgb(121, 85, 72)", // Brown
@@ -15,8 +16,19 @@ const colors = {
 };
 
 const NewProjectPage = () => {
+  const router = useRouter();
+
   const handleSave = async (data: any, image?: File | null) => {
-    await projectService.create(data, image);
+    try {
+      await projectService.create(data, image);
+      router.push("/dashboard/admin/projects");
+    } catch (error) {
+      console.error("Error creating project:", error);
+    }
+  };
+
+  const handleCancel = () => {
+    router.push("/dashboard/admin/projects");
   };
 
   return (
@@ -40,13 +52,28 @@ const NewProjectPage = () => {
         <div className="p-6 sm:p-8">
           <ContentForm
             onSave={handleSave}
-            onCancel={() => console.log("Cancelled")}
+            onCancel={handleCancel}
             isLoading={false}
             config={{
               type: "project",
               fields: [
                 { name: "title", label: "Title", type: "text", required: true },
                 { name: "description", label: "Description", type: "textarea" },
+                {
+                  name: "state",
+                  label: "State",
+                  type: "select",
+                  options: ["planning", "in-progress", "complete"],
+                  required: true,
+                },
+                { name: "category", label: "Category", type: "text" },
+                {
+                  name: "technologies",
+                  label: "Technologies (comma separated)",
+                  type: "text",
+                },
+                { name: "demoUrl", label: "Demo URL", type: "text" },
+                { name: "githubUrl", label: "GitHub URL", type: "text" },
                 { name: "content", label: "Content", type: "editor" },
               ],
               getImageUrl: projectService.getMediaUrl,

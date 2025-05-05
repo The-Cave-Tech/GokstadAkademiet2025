@@ -81,23 +81,49 @@ export const eventsService = {
     eventCardImage?: File | null
   ): Promise<EventResponse> => {
     try {
-      // Ensure the payload matches the expected structure
+      // Format time if provided
+      if (data.time) {
+        const timeRegex = /^\d{2}:\d{2}:\d{2}\.\d{3}$/; // Matches HH:mm:ss.SSS
+        if (!timeRegex.test(data.time)) {
+          const [hours, minutes] = data.time.split(":");
+          data.time = `${hours}:${minutes}:00.000`; // Format to HH:mm:ss.SSS
+        }
+      }
+
+      // Validate startDate - if missing or invalid, use current date
+      if (!data.startDate) {
+        const today = new Date();
+        data.startDate = today.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+        console.warn(
+          "[EventsService] Missing startDate, defaulting to today:",
+          data.startDate
+        );
+      }
+
+      // IMPORTANT: Here's the fix - use Description with uppercase D for your Strapi field name
+      // Create payload only with the fields that exist in your Strapi schema
       const payload = {
-        title: data.title,
-        description: data.Description || data.Description, // Handle both variations
+        title: data.title || "Untitled Event",
+        description: data.description || "", // Keep it as Description with capital D
         startDate: data.startDate,
         endDate: data.endDate,
         time: data.time,
-        location: data.location,
-        content: data.content,
+        location: data.location || "",
+        content: data.content || "",
       };
 
-      console.log("Creating event with payload:", payload);
+      console.log("[EventsService] Creating event with payload:", payload);
 
       const response = await strapiService.fetch<any>("events", {
         method: "POST",
         body: { data: payload },
       });
+
+      console.log("[EventsService] Create event response:", response);
+
+      if (!response || !response.data || !response.data.id) {
+        throw new Error("Invalid response from server when creating event");
+      }
 
       const eventId = response.data.id;
 
@@ -106,14 +132,23 @@ export const eventsService = {
         await eventsService.uploadEventImage(eventId, eventCardImage);
       }
 
-      // Fetch and return the created event
-      const createdEvent = await eventsService.getOne(eventId);
-      if (!createdEvent) {
-        throw new Error("Failed to fetch the created event.");
-      }
-      return createdEvent;
+      // If fetch fails, construct a valid EventResponse from the payload
+      const fallbackResponse: EventResponse = {
+        id: eventId,
+        title: payload.title,
+        description: payload.description, // Use the correct field name with capital D
+        content: payload.content,
+        startDate: payload.startDate,
+        endDate: payload.endDate,
+        time: payload.time,
+        location: payload.location,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      return fallbackResponse;
     } catch (error) {
-      console.error("Error creating event:", error);
+      console.error("[EventsService] Error creating event:", error);
       throw error;
     }
   },

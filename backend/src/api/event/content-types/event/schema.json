@@ -14,7 +14,7 @@
     "title": {
       "type": "string"
     },
-    "Description": {
+    "description": {
       "type": "text"
     },
     "content": {

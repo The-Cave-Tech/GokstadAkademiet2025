@@ -70,12 +70,12 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
           </h3>
 
           {/* Description - visible on all screens */}
-          {event.Description && (
+          {event.description && (
             <p
               className="text-sm md:text-base mt-2 line-clamp-2 md:line-clamp-3"
               style={{ color: Theme.colors.text.secondary }}
             >
-              {event.Description}
+              {event.description}
             </p>
           )}
         </div>

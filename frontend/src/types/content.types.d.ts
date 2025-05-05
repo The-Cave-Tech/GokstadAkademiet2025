@@ -13,9 +13,9 @@ export interface Media {
 export interface EventAttributes {
   id: number; // Include the ID directly in the attributes
   title: string;
-  Description?: string;
+  description: string;
   content?: string;
-  startDate: string;
+  startDate?: string; // Ensure startDate is a string or null
   endDate?: string;
   time?: string;
   location?: string;
@@ -32,7 +32,8 @@ export type EventResponse = EventAttributes;
 export interface ProjectAttributes {
   id: number;
   title: string;
-  description?: string;
+  description: string;
+  content?: string;
   projectImage?: Media; // Updated to use Media type
   state?: string; // Ensure 'state' is defined
   category?: string;

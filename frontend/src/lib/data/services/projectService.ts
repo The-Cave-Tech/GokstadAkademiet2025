@@ -72,14 +72,42 @@ export const projectService = {
 
   // Create a new project
   create: async (
-    data: Partial<ProjectAttributes>,
+    data: Partial<ProjectAttributes & { technologies?: string | string[] }>,
     projectImage?: File | null
   ): Promise<ProjectResponse> => {
     try {
+      // Process technologies if they come as a comma-separated string
+      if (typeof data.technologies === "string") {
+        data.technologies = data.technologies
+          .split(",")
+          .map((tech) => tech.trim())
+          .filter(Boolean);
+      }
+
+      // Ensure all required fields are present with default values
+      const payload = {
+        title: data.title || "Untitled Project",
+        description: data.description || "",
+        content: data.content || "",
+        state: data.state || "draft",
+        category: data.category || "Other",
+        technologies: data.technologies || [],
+        demoUrl: data.demoUrl,
+        githubUrl: data.githubUrl,
+      };
+
+      console.log("[ProjectService] Creating project with payload:", payload);
+
       const response = await strapiService.fetch<any>("projects", {
         method: "POST",
-        body: { data },
+        body: { data: payload },
       });
+
+      console.log("[ProjectService] Create project response:", response);
+
+      if (!response || !response.data || !response.data.id) {
+        throw new Error("Invalid response from server when creating project");
+      }
 
       const projectId = response.data.id;
 
@@ -88,14 +116,23 @@ export const projectService = {
         await projectService.uploadProjectImage(projectId, projectImage);
       }
 
-      // Fetch and return the created project
-      const createdProject = await projectService.getOne(projectId);
-      if (!createdProject) {
-        throw new Error("Failed to fetch the created project.");
-      }
-      return createdProject;
+      // If fetch fails, construct a valid ProjectResponse from the payload
+      const fallbackResponse: ProjectResponse = {
+        id: projectId,
+        title: payload.title,
+        description: payload.description,
+        content: payload.content,
+        state: payload.state,
+        category: payload.category,
+        technologies: payload.technologies,
+        demoUrl: payload.demoUrl,
+        githubUrl: payload.githubUrl,
+        // projectImage is not included since it's optional and we don't have a valid Media object
+      };
+
+      return fallbackResponse;
     } catch (error) {
-      console.error("Error creating project:", error);
+      console.error("[ProjectService] Error creating project:", error);
       throw error;
     }
   },

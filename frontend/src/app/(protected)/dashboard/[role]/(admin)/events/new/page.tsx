@@ -3,6 +3,7 @@
 import React from "react";
 import ContentForm from "@/components/dashboard/contentManager/ContentForm";
 import { eventsService } from "@/lib/data/services/eventService";
+import { useRouter } from "next/navigation";
 
 const colors = {
   primary: "rgb(121, 85, 72)", // Brown
@@ -15,8 +16,10 @@ const colors = {
 };
 
 const NewEventPage = () => {
+  const router = useRouter();
   const handleSave = async (data: any, image?: File | null) => {
     await eventsService.create(data, image);
+    router.push("/dashboard/admin/events"); // Redirect to user's event list after successful creation
   };
 
   return (

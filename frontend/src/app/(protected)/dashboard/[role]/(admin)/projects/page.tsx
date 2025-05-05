@@ -321,12 +321,12 @@ export default function ProjectsAdminPage() {
                       {/* Title and Description */}
                       <td className="px-4 py-4">
                         <div className="font-medium">{project.title}</div>
-                        {project.summary && (
+                        {project.description && (
                           <div
                             className="mt-1 truncate max-w-xs"
                             style={{ color: colors.text.secondary }}
                           >
-                            {project.summary}
+                            {project.description}
                           </div>
                         )}
                       </td>

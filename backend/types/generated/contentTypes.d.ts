@@ -454,7 +454,7 @@ export interface ApiEventEvent extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    Description: Schema.Attribute.Text;
+    description: Schema.Attribute.Text;
     endDate: Schema.Attribute.Date;
     eventCardImage: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios'
