@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { fetchStrapiData } from "@/lib/data/services/strapiApiData";
+import { strapiService } from "@/lib/data/services/strapiClient";
 import { SiteLogo } from "./SiteLogo";
 
 type OpeningHourItem = {
@@ -20,19 +20,14 @@ export default function Footer() {
   );
   const [backgroundColor, setBackgroundColor] = useState("#0f172a");
   const [openingHours, setOpeningHours] = useState<OpeningHourItem[]>([]);
-  const [year, setYear] = useState<number | null>(null);
-  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
-    setHasMounted(true);
-    setYear(new Date().getFullYear());
-
     const fetchFooterData = async () => {
       try {
-        const { data } = await fetchStrapiData(
-          "/api/footer?populate[openingHours]=*"
+        const data = await strapiService.fetch<any>(
+          "footer?populate[openingHours]=*"
         );
-        const attributes = data?.attributes;
+        const attributes = data?.data?.attributes;
 
         if (attributes) {
           setFooterText(
@@ -49,7 +44,7 @@ export default function Footer() {
     fetchFooterData();
   }, []);
 
-  if (!hasMounted) return null;
+  const year = new Date().getFullYear();
 
   return (
     <footer
@@ -93,7 +88,7 @@ export default function Footer() {
           <h3 className="text-lg font-semibold mb-4">Åpningstider</h3>
           <ul className="space-y-1 text-sm text-gray-300">
             {openingHours.map((item, index) => (
-              <div key={item.id || index}>
+              <React.Fragment key={item.id || index}>
                 {item.Mandag && (
                   <li className="flex justify-between">
                     <span>Mandag</span>
@@ -124,7 +119,7 @@ export default function Footer() {
                     <span>{item.Fredag}</span>
                   </li>
                 )}
-              </div>
+              </React.Fragment>
             ))}
           </ul>
         </div>
@@ -132,7 +127,7 @@ export default function Footer() {
 
       {/* Bunntekst */}
       <div className="mt-12 border-t border-gray-700 pt-6 text-center text-sm text-gray-400">
-        &copy; {year ?? ""} {footerText}
+        &copy; {year} {footerText}
       </div>
     </footer>
   );
