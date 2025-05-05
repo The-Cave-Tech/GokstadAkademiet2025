@@ -7,6 +7,8 @@ import { AccountEmailVerificationModalProps } from "@/types/accountAdministratio
 import { useAccountDeletionVerificationValidation } from "@/hooks/useProfileValidation";
 import { ZodErrors } from "@/components/ZodErrors";
 import { profileFieldError, handleStrapiError } from "@/lib/utils/serverAction-errorHandler";
+import { z } from "zod";
+import { universalVerificationCodeValidation } from "@/lib/validation/universalValidation";
 
 export function AccountDeletionVerificationModal({
   isOpen,
@@ -21,6 +23,7 @@ export function AccountDeletionVerificationModal({
 }: AccountEmailVerificationModalProps) {
   const [verificationCode, setVerificationCode] = useState("");
   const [error, setError] = useState("");
+  const [validationError, setValidationError] = useState<string[]>([]);
   const [resendSuccess, setResendSuccess] = useState(false);
   const [resendDisabled, setResendDisabled] = useState(false);
   const [resendCountdown, setResendCountdown] = useState(0);
@@ -75,6 +78,23 @@ export function AccountDeletionVerificationModal({
     const value = e.target.value.replace(/\D/g, '').slice(0, 6);
     setVerificationCode(value);
     validateField("verificationCode", value);
+    
+    // Direct Zod validation for immediate feedback
+    try {
+      universalVerificationCodeValidation.parse(value);
+      setValidationError([]);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        // Extract properly formatted error messages
+        setValidationError(
+          err.errors
+            .filter(e => e.message) // Filter out empty messages
+            .map(e => e.message)    // Extract just the message
+        );
+      } else if (err instanceof Error) {
+        setValidationError([err.message]);
+      }
+    }
   };
 
   const handleDeletionReasonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -87,7 +107,21 @@ export function AccountDeletionVerificationModal({
     setError("");
     setResendSuccess(false);
     
-    // Validate the entire form
+    // Direct validation for verification code
+    try {
+      universalVerificationCodeValidation.parse(verificationCode);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        setValidationError(
+          err.errors
+            .filter(e => e.message)
+            .map(e => e.message)
+        );
+        return;
+      }
+    }
+    
+    // Validate the entire form with hook
     const formData = {
       verificationCode,
       deletionReason
@@ -211,12 +245,12 @@ export function AccountDeletionVerificationModal({
                     disabled={isLoading}
                     aria-describedby="code-description"
                   />
-                  <ZodErrors
-                    error={profileFieldError(
-                      validationErrors,
-                      null,
-                      "verificationCode"
-                    )}
+                  {/* Show both validation errors */}
+                  <ZodErrors 
+                    error={validationError.length > 0 ? 
+                      validationError : 
+                      profileFieldError(validationErrors, null, "verificationCode")
+                    } 
                   />
                   <p id="code-description" className="text-sm text-gray-500">
                     Koden er 6 siffer
@@ -286,7 +320,7 @@ export function AccountDeletionVerificationModal({
                   <Button
                     variant="danger"
                     onClick={handleSubmit}
-                    disabled={isLoading || validationErrors.verificationCode?.length > 0 || verificationCode.length !== 6}
+                    disabled={isLoading || validationErrors.verificationCode?.length > 0 || validationError.length > 0 || verificationCode.length !== 6}
                     ariaLabel={isLoading ? "Verifiserer..." : "Bekreft sletting"}
                     type="button"
                     className="px-6 py-2 rounded-3xl"

@@ -1,17 +1,14 @@
 // src/lib/data/services/strapiClient.ts
 
-import { strapi } from "@strapi/client";
+import { strapi } from '@strapi/client';
 import { getAuthCookie } from "@/lib/utils/cookie";
 
-// Basisurl for Strapi API
 const BASE_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337/api";
 
-// Opprett Strapi-klienten
 export const strapiClient = strapi({
   baseURL: BASE_URL,
 });
 
-// Definere typer for fetch-opsjoner som ikke utvider RequestInit
 export interface StrapiRequestOptions {
   method?: string;
   headers?: Record<string, string>;
@@ -19,7 +16,6 @@ export interface StrapiRequestOptions {
   params?: Record<string, string | number | boolean>;
 }
 
-// Hjelpefunksjon for å hente autentisert Strapi-klient
 export async function getAuthenticatedClient() {
   const token = await getAuthCookie();
   
@@ -29,14 +25,12 @@ export async function getAuthenticatedClient() {
   });
 }
 
-// Grunnleggende hjelpefunksjoner for enklere bruk
 export const strapiService = {
-  // Fetch-metode med automatisk autentisering
   async fetch<T>(endpoint: string, options: StrapiRequestOptions = {}): Promise<T> {
     try {
       const token = await getAuthCookie();
       
-      // Sett opp headers på riktig måte
+      // Set up headers properly
       const headers: HeadersInit = {
         "Content-Type": "application/json",
       };
@@ -45,14 +39,14 @@ export const strapiService = {
         headers["Authorization"] = `Bearer ${token}`;
       }
       
-      // Kopier over alle egendefinerte headers
+      // Copy all custom headers
       if (options.headers) {
         Object.entries(options.headers).forEach(([key, value]) => {
           headers[key] = value;
         });
       }
       
-      // Konverter body basert på type
+      // Convert body based on type
       let bodyToSend: BodyInit | null = null;
       if (options.body) {
         if (options.body instanceof FormData) {
@@ -63,14 +57,24 @@ export const strapiService = {
         }
       }
       
-      // Lag en standard RequestInit
+      // Create standard RequestInit
       const fetchOptions: RequestInit = {
         method: options.method || 'GET',
         headers,
         body: bodyToSend,
       };
       
-      const response = await fetch(`${BASE_URL}/${endpoint}`, fetchOptions);
+      // Build URL with query parameters if provided
+      let url = `${BASE_URL}/${endpoint}`;
+      if (options.params) {
+        const searchParams = new URLSearchParams();
+        Object.entries(options.params).forEach(([key, value]) => {
+          searchParams.append(key, String(value));
+        });
+        url += `?${searchParams.toString()}`;
+      }
+      
+      const response = await fetch(url, fetchOptions);
       
       if (!response.ok) {
         // Enhanced error handling - parse error properly
@@ -99,35 +103,33 @@ export const strapiService = {
     }
   },
   
-  // Hjelpefunksjoner for collection types
+  // Helper functions for collection types
   collection(name: string) {
     return strapiClient.collection(name);
   },
   
-  // Hjelpefunksjoner for single types
+  // Helper functions for single types
   single(name: string) {
     return strapiClient.single(name);
   },
   
-  // Mediahåndtering
+  // Media handling
   media: {
     getMediaUrl(media: unknown): string {
       if (!media) return "";
       
-      const baseMediaUrl = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+      const apiUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337/api";
+      const baseMediaUrl = apiUrl.replace(/\/api$/, "");
       
-      // Håndter string
       if (typeof media === "string") {
         return media.startsWith("http") ? media : `${baseMediaUrl}${media}`;
       }
       
-      // Håndter objekt med url property
       if (media && typeof media === "object" && "url" in media && typeof media.url === "string") {
         const url = media.url;
         return url.startsWith("http") ? url : `${baseMediaUrl}${url}`;
       }
       
-      // Håndter data.attributes.url struktur (vanlig i Strapi v4)
       if (media && typeof media === "object" && "data" in media && media.data) {
         const data = media.data;
         if (data && typeof data === "object" && "attributes" in data) {
@@ -154,7 +156,6 @@ export const strapiService = {
         return media.alt;
       }
       
-      // Håndter data.attributes struktur
       if ("data" in media && media.data && typeof media.data === "object" && "attributes" in media.data) {
         const attributes = media.data.attributes;
         if (attributes && typeof attributes === "object") {

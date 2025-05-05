@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useRef, useEffect } from "react";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/custom/Button";
@@ -7,6 +8,7 @@ import PageIcons from "@/components/ui/custom/PageIcons";
 import { ZodErrors } from "@/components/ZodErrors";
 import { universalVerificationCodeValidation } from "@/lib/validation/universalValidation";
 import { handleStrapiError } from "@/lib/utils/serverAction-errorHandler";
+import { z } from "zod";
 
 export function EmailVerificationModal({
   isOpen,
@@ -71,7 +73,14 @@ export function EmailVerificationModal({
       universalVerificationCodeValidation.parse(value);
       setValidationError([]);
     } catch (err) {
-      if (err instanceof Error) {
+      if (err instanceof z.ZodError) {
+        // Extract properly formatted error messages
+        setValidationError(
+          err.errors
+            .filter(e => e.message) // Filter out empty messages
+            .map(e => e.message)    // Extract just the message
+        );
+      } else if (err instanceof Error) {
         setValidationError([err.message]);
       }
     }
@@ -85,7 +94,13 @@ export function EmailVerificationModal({
     try {
       universalVerificationCodeValidation.parse(verificationCode);
     } catch (err) {
-      if (err instanceof Error) {
+      if (err instanceof z.ZodError) {
+        setValidationError(
+          err.errors
+            .filter(e => e.message)
+            .map(e => e.message)
+        );
+      } else if (err instanceof Error) {
         setValidationError([err.message]);
       }
       return;

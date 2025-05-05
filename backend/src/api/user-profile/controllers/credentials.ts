@@ -197,19 +197,20 @@ export default factories.createCoreController('plugin::users-permissions.user', 
   async changePassword(ctx) {
     const userId = ctx.state.user.id;
     const { currentPassword, newPassword, passwordConfirmation } = ctx.request.body;
-
+  
     if (!currentPassword || !newPassword || !passwordConfirmation) {
       return ctx.badRequest('All password fields are required');
     }
-
+  
     if (newPassword !== passwordConfirmation) {
       return ctx.badRequest('New password and confirmation do not match');
     }
-
+  
     try {
-      const user = await strapi.db.query('plugin::users-permissions.user').findOne({ where: { id: userId } });
+      const user = await strapi.db.query('plugin::users-permissions.user').findOne({ 
+        where: { id: userId } 
+      });
       
-      // Verifiser nåværende passord
       const validPassword = await strapi.plugin('users-permissions').service('user').validatePassword(
         currentPassword,
         user.password
@@ -219,19 +220,10 @@ export default factories.createCoreController('plugin::users-permissions.user', 
         return ctx.badRequest('Current password is incorrect');
       }
       
-      // Sjekk passordkrav (minst 8 tegn)
-      if (newPassword.length < 8) {
-        return ctx.badRequest('New password must be at least 8 characters long');
-      }
-      
-      // Oppdater passord (Strapi håndterer hashing automatisk)
-      await strapi.db.query('plugin::users-permissions.user').update({
-        where: { id: userId },
-        data: { 
-          password: newPassword
-        }
+      await strapi.entityService.update('plugin::users-permissions.user', userId, {
+        data: { password: newPassword }
       });
-
+  
       return { 
         success: true, 
         message: 'Password updated successfully'
