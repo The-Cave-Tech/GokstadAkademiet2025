@@ -8,10 +8,11 @@ import { register } from "@/lib/data/actions/auth";
 import { useActionState } from "react";
 import { ZodErrors } from "@/components/ZodErrors";
 import { PasswordToggle } from "@/components/ui/custom/PasswordToggle";
+import PasswordStrengthMeter from "@/components/ui/custom/PasswordStrengthMeter";
 import { authFieldError } from "@/lib/utils/serverAction-errorHandler"; 
 import { useSignUpValidation } from "@/hooks/useValidation";
 import { RegisterFormState, SignUpValidationErrorKeys } from "@/types/auth.types";
-import { SignUpFormData } from "@/lib/validation/validationSchemas";
+import { SignUpFormData } from "@/lib/validation/userAuthValidation";
 
 const initialState: RegisterFormState = {
   zodErrors: null,
@@ -178,6 +179,12 @@ export function SignUpForm() {
                     togglePassword={() => setShowPassword((prev) => !prev)}
                   />
                 </div>
+                {formValues.password && (
+                  <PasswordStrengthMeter 
+                    password={formValues.password} 
+                    className="mt-1"
+                  />
+                )}
                 <ZodErrors
                   error={authFieldError(validationErrors, displayedServerErrors ?? validationErrors, "password")}
                 />

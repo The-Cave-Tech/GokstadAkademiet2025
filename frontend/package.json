@@ -10,6 +10,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@strapi/client": "^1.2.0",
     "next": "^15.2.4",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",

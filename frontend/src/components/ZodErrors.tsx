@@ -1,3 +1,4 @@
+"use client"
 export function ZodErrors({ error }: { error: string[] }) {
     if (!error) return null;
     return error.map((err: string, index: number) => (

@@ -1,5 +1,4 @@
 import { useActionState, useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; // Import useRouter
 import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,7 +6,7 @@ import { SiteLogo } from "@/components/ui/SiteLogo";
 import { useSignInValidation } from "@/hooks/useValidation";
 import { login } from "@/lib/data/actions/auth";
 import { LoginFormState, SignInValidationErrorKeys } from "@/types/auth.types";
-import { SignInFormData } from "@/lib/validation/validationSchemas";
+import { SignInFormData } from "@/lib/validation/userAuthValidation";
 import { authFieldError } from "@/lib/utils/serverAction-errorHandler";
 import { ZodErrors } from "../ZodErrors";
 import { PasswordToggle } from "../ui/custom/PasswordToggle";
@@ -30,8 +29,7 @@ export function SignInForm() {
 
   const { validationErrors, validateField } = useSignInValidation();
   const [formState, formAction] = useActionState(login, initialState);
-  const { setIsAuthenticated, refreshAuthStatus } = useAuth();  // Use the refreshAuthStatus here
-  const router = useRouter(); // Initialize router
+  const { setIsAuthenticated, refreshAuthStatus, handleSuccessfulAuth } = useAuth(); 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -49,18 +47,14 @@ export function SignInForm() {
       formState.success
     ) {
       setIsAuthenticated(true);
+      refreshAuthStatus();
       
-      // Refresh auth status to get user role
-      refreshAuthStatus().then(() => {
-        router.push('/dashboard');
-      }).catch(() => {
-        // If refresh fails, redirect anyway
-        router.push('/dashboard');
-      });
+      // Bruk den sentraliserte handleSuccessfulAuth-metoden
+      handleSuccessfulAuth();
     }
     
     setIsSubmitting(false);
-  }, [formState, setIsAuthenticated, refreshAuthStatus, router]);  // Ensure refreshAuthStatus is included here
+  }, [formState, setIsAuthenticated, refreshAuthStatus, handleSuccessfulAuth]);
 
   const inputClass = "w-full p-2 mt-1 border border-gray-300 rounded-md";
   const labelClass = "text-base font-roboto font-normal text-gray-700";

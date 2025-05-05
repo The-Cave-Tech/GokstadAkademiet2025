@@ -2,7 +2,7 @@
 
 // påminnelse til oss: fjerne alle konsoll logger når vi er ferdige, de eksponerer sensitiv informasjon
 
-import { signInSchema, signUpSchema } from "@/lib/validation/validationSchemas";
+import { signInSchema, signUpSchema } from "@/lib/validation/userAuthValidation";
 import { redirect } from "next/navigation";
 import {
   RegisterFormState,
@@ -75,21 +75,14 @@ export async function register(prevState: RegisterFormState, formData: FormData)
  */
 export async function login(prevState: LoginFormState, formData: FormData): Promise<LoginFormState> {
   const fields = Object.fromEntries(formData.entries()) as Record<string, string>;
-  console.log("[Server] Auth - Input data:", fields);
 
   const validation = signInSchema.safeParse(fields);
-  console.log("[Server] Auth - Validation result:", {
-    success: validation.success,
-    errors: validation.success ? null : validation.error.flatten().fieldErrors,
-  });
 
   if (!validation.success) {
     const errors = handleValidationErrors(validation.error, {
       identifier: [],
       password: [],
     }) as SignInValidationErrors;
-
-    console.warn("[Server] Auth - Validation failed:", errors);
 
     return {
       ...prevState,
@@ -102,13 +95,10 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
   try {
     const { identifier, password } = fields;    
     const response = await loginUserService({ identifier, password });
-    console.log("[Server] Login - Success. JWT:", response.jwt);
     
     if (!response || !response.jwt) {
       throw new Error("Ingen token mottatt fra serveren");
     }
-
-    console.log("[Server] Jwt mottatt");
     
     await setAuthCookie(response.jwt);
     
@@ -118,12 +108,11 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
       zodErrors: null,
       strapiErrors: null,
       values: fields,
-      success: true, // Indicate success
+      success: true,
     };
     
   } catch (error) {
     const errorMessage = handleStrapiError(error);
-    console.error("[Server] Login - Error:", error);
     
     return {
       ...prevState,
