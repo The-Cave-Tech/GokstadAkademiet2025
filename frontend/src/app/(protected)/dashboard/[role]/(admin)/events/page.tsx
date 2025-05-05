@@ -343,12 +343,12 @@ export default function EventsAdminPage() {
                       {/* Title and Description */}
                       <td className="px-4 py-4">
                         <div className="font-medium">{event.title}</div>
-                        {event.Description && (
+                        {event.description && (
                           <div
                             className="mt-1 truncate max-w-xs"
                             style={{ color: colors.text.secondary }}
                           >
-                            {event.Description}
+                            {event.description}
                           </div>
                         )}
                       </td>
