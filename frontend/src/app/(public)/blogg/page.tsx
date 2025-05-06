@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { blogService } from "@/lib/data/services/blogService";
-import { BlogCard } from "@/components/layouts/dashboard/contentManager/BlogCard";
+import { BlogCard } from "@/components/dashboard/contentManager/BlogCard";
 import { Theme } from "@/styles/activityTheme";
 import { BlogAttributes } from "@/types/content.types";
 

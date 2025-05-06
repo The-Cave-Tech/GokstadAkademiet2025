@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Sentralisert metode for å håndtere vellykket autentisering
   const handleSuccessfulAuth = () => {
     console.log("[AuthContext] Håndterer vellykket autentisering");
-    router.push("/dashboard");
+    router.push("/");
   };
 
   const refreshAuthStatus = async () => {

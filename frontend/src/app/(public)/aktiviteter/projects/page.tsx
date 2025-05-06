@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ActivitiesLayout } from "@/components/layouts/ActivitiesLayout";
-import { ProjectCard } from "@/components/layouts/dashboard/contentManager/ProjectCard";
+import { ProjectCard } from "@/components/dashboard/contentManager/ProjectCard";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { useActivities } from "@/lib/context/ActivityContext";
