@@ -84,9 +84,6 @@ const config = {
         'profile-button-sm': "var(--profile-button-sm)",
         'profile-button-md': "var(--profile-button-md)",
       },
-      fontSize: {
-        'profile-icon-size': "var(--profile-icon-size)",
-      },
       borderWidth: {
         'profile-border': "1px",
         'profile-border-light': "1px",

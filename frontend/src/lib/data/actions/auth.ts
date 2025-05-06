@@ -119,7 +119,6 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
       strapiErrors: null,
       values: fields,
       success: true,
-      success: true,
     };
   } catch (error) {
     const errorMessage = handleStrapiError(error);
