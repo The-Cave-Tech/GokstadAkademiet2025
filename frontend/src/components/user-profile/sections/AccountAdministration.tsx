@@ -11,7 +11,7 @@ import {
 } from "@/lib/data/services/profileSections/accountAdministrationService";
 import { useAuth } from "@/lib/context/AuthContext";
 import { getUserCredentials } from "@/lib/data/services/userProfile";
-import { Button } from "@/components/ui/custom/Button";
+import { Button } from "@/components/ui/Button";
 import { DeleteAccountModal } from "../modals/DeleteAccountModal";
 import { AccountDeletionVerificationModal } from "../modals/AccountDeletionVerificationModal";
 
