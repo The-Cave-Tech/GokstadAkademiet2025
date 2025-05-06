@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardBody, CardFooter, CardHeader } from '@/components/ui/Card';
 import ToggleSwitch from '@/components/ui/custom/ToogleSwith';
-import { Button } from '@/components/ui/custom/Button';
 import PageIcons from '@/components/ui/custom/PageIcons';
 import { ZodErrors } from "@/components/ZodErrors";
 import { usePublicProfileValidation } from "@/hooks/useProfileValidation";
@@ -16,6 +15,8 @@ import {
 } from '@/lib/data/services/profileSections/publicProfileService';
 import { ProfileImageUploader } from '@/components/user-profile/profileImage/ProfileImageUploader';
 import { UserProfile } from '@/lib/data/services/userProfile';
+import { Button } from '@/components/ui/custom/Button';
+
 
 interface PublicProfileProps {
   profile: UserProfile;
