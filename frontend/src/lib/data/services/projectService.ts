@@ -52,6 +52,7 @@ export const projectService = {
       };
 
       const response = await strapiService.fetch<any>(`projects/${id}`, {
+        method: "GET",
         params: queryParams,
       });
 
@@ -67,6 +68,20 @@ export const projectService = {
     } catch (error) {
       console.error("Error fetching project:", error);
       return null;
+    }
+  },
+
+  getProjectById: async (id: number | string, params: any = {}) => {
+    console.log("getProjectById called with ID:", id);
+    console.log("and params:", params);
+
+    try {
+      const result = await projectService.getOne(id, params);
+      console.log("getProjectById result:", result);
+      return result;
+    } catch (error) {
+      console.error("Error in getProjectById:", error);
+      throw error;
     }
   },
 

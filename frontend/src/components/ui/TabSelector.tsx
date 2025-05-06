@@ -1,3 +1,4 @@
+// components/ui/TabSelector.tsx
 import React from "react";
 import { Theme } from "@/styles/activityTheme";
 

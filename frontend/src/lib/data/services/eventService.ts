@@ -39,6 +39,49 @@ export const eventsService = {
     }
   },
 
+  getByDocumentId: async (
+    documentId: string,
+    params: any = {}
+  ): Promise<EventResponse | null> => {
+    try {
+      console.log(`Fetching event with documentId: ${documentId}`);
+
+      // Merge the filters to include the documentId filter
+      const queryParams = {
+        ...params,
+        filters: {
+          ...(params.filters || {}),
+          documentId: { $eq: documentId },
+        },
+        populate: params.populate || ["eventCardImage"],
+      };
+
+      const data = await strapiService.fetch<any>("events", {
+        params: queryParams,
+      });
+
+      if (!data.data || data.data.length === 0) {
+        console.log(`No event found with documentId: ${documentId}`);
+        return null;
+      }
+
+      const event = data.data[0];
+      console.log(`Found event:`, event);
+
+      return {
+        id: event.id,
+        ...event,
+        eventCardImage: strapiService.media.getMediaUrl(event.eventCardImage),
+      };
+    } catch (error) {
+      console.error(
+        `Error fetching event with documentId ${documentId}:`,
+        error
+      );
+      return null;
+    }
+  },
+
   // Get media URL helper
   getMediaUrl: (media: any) => {
     return strapiService.media.getMediaUrl(media);

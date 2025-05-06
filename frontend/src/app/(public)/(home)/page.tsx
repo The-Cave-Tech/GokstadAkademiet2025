@@ -1,8 +1,9 @@
+// app/home/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { fetchStrapiData } from "@/lib/data/services/strapiApiData";
+import { strapiService } from "@/lib/data/services/strapiClient";
 import { eventsService } from "@/lib/data/services/eventService";
 import { projectService } from "@/lib/data/services/projectService";
 import ClientMessage from "@/components/ClientMessage";
@@ -36,7 +37,11 @@ export default function LandingPageContent() {
   useEffect(() => {
     async function getLandingPageData() {
       try {
-        const response = await fetchStrapiData("/api/landing-page?populate=*");
+        // Use strapiService.single for single type content
+        const landingPage = strapiService.single("landing-page");
+        const response = await landingPage.find({
+          populate: "*",
+        });
 
         if (!response.data) {
           throw new Error("Ingen 'data' funnet i Strapi-respons");
@@ -49,12 +54,10 @@ export default function LandingPageContent() {
         };
 
         const introImage = response.data.IntroductionImage;
-        let imageUrl: string | null = null;
-        if (introImage?.url) {
-          imageUrl = introImage.url.startsWith("http")
-            ? introImage.url
-            : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${introImage.url}`;
-        }
+        // Use strapiService.media helpers for handling the image
+        const imageUrl = strapiService.media.isValidMedia(introImage)
+          ? strapiService.media.getMediaUrl(introImage)
+          : null;
 
         const introduction = {
           title: response.data.intoductionTitle || "Mangler tittel",
@@ -139,6 +142,7 @@ export default function LandingPageContent() {
 
   return (
     <>
+      {/* Hero Section */}
       <section className="relative text-center py-20 px-4 bg-gray-900 text-white">
         <ClientMessage />
         <div className="absolute inset-0 z-0">
@@ -165,6 +169,7 @@ export default function LandingPageContent() {
         </div>
       </section>
 
+      {/* Introduction Section */}
       <section className="py-16 px-4 max-w-6xl mx-auto grid gap-10 md:grid-cols-2 items-center">
         <div>
           <h2 className="text-2xl sm:text-3xl font-bold mb-4">
@@ -192,6 +197,7 @@ export default function LandingPageContent() {
         </div>
       </section>
 
+      {/* Projects Section */}
       <section className="flex py-20 px-4 bg-secondary gap-5">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold mb-12 text-center">
@@ -211,6 +217,7 @@ export default function LandingPageContent() {
         </div>
       </section>
 
+      {/* Events Section */}
       <section className="py-20 px-4 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold mb-12 text-center">

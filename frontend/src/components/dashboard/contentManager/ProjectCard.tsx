@@ -1,11 +1,11 @@
-// components/ProjectCard.tsx
+// Updated: frontend/src/components/dashboard/contentManager/ProjectCard.tsx
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Theme } from "@/styles/activityTheme";
 import { Project } from "@/types/activity.types";
-import { FaGithub, FaExternalLinkAlt } from "react-icons/fa"; // Import basic icons
-import { MdCategory } from "react-icons/md"; // Category icon
-import { AiOutlineTool } from "react-icons/ai"; // Technology icon
+import { FaGithub, FaExternalLinkAlt } from "react-icons/fa";
+import { MdCategory } from "react-icons/md";
+import { AiOutlineTool } from "react-icons/ai";
 
 interface ProjectCardProps {
   project: Project;
@@ -14,9 +14,14 @@ interface ProjectCardProps {
 export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   const router = useRouter();
 
-  // Function to navigate to the project details page
+  // Function to navigate to the project details page within the aktiviteter route
   const handleClick = () => {
-    router.push(`/projects/${project.id}`);
+    // Use documentId and route through aktiviteter/project/:id
+    if (project.documentId) {
+      router.push(`/aktiviteter/projects/${project.id}`);
+    } else {
+      console.error("Project has no documentId:", project);
+    }
   };
 
   return (
@@ -26,6 +31,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
       tabIndex={0}
       role="button"
       aria-label={`Vis detaljer om prosjektet ${project.title}`}
+      onClick={handleClick}
     >
       {/* Project Image */}
       {project.projectImage && (

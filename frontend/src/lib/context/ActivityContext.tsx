@@ -95,12 +95,14 @@ export const ActivitiesProvider: React.FC<{ children: React.ReactNode }> = ({
 
       try {
         if (state.activeTab === "projects") {
+          // Only fetch projects data when activeTab is projects
           const data = await projectService.getAll({
             sort: ["createdAt:desc"],
             populate: ["projectImage", "technologies"],
           });
           dispatch({ type: "SET_PROJECTS", payload: data });
         } else if (state.activeTab === "events") {
+          // Only fetch events data when activeTab is events
           const data = await eventsService.getAll({
             sort: ["startDate:desc"],
             populate: ["eventCardImage"],
@@ -145,7 +147,7 @@ export const ActivitiesProvider: React.FC<{ children: React.ReactNode }> = ({
         if (["planning", "in-progress", "completed"].includes(state.filter)) {
           // Filter by status
           filtered = filtered.filter(
-            (project) => project.status === state.filter
+            (project) => project.state === state.filter
           );
         } else {
           // Filter by category
@@ -171,18 +173,22 @@ export const ActivitiesProvider: React.FC<{ children: React.ReactNode }> = ({
             event.title
               .toLowerCase()
               .includes(state.searchQuery.toLowerCase()) ||
-            (event.Description &&
-              event.Description.toLowerCase().includes(
-                state.searchQuery.toLowerCase()
-              ))
+            (event.description &&
+              event.description
+                .toLowerCase()
+                .includes(state.searchQuery.toLowerCase()))
         );
       }
 
       // Apply date-based filters
       if (state.filter === "upcoming") {
-        filtered = filtered.filter((event) => !isDatePast(event.startDate));
+        filtered = filtered.filter(
+          (event) => event.startDate && !isDatePast(event.startDate)
+        );
       } else if (state.filter === "past") {
-        filtered = filtered.filter((event) => isDatePast(event.startDate));
+        filtered = filtered.filter(
+          (event) => event.startDate && isDatePast(event.startDate)
+        );
       }
 
       dispatch({ type: "SET_FILTERED_EVENTS", payload: filtered });

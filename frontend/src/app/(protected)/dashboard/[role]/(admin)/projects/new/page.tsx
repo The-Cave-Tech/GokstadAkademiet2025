@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import ContentForm from "@/components/dashboard/contentManager/ContentForm";
+import ContentForm from "@/components/layouts/dashboard/contentManager/ContentForm";
 import { projectService } from "@/lib/data/services/projectService";
 import { useRouter } from "next/navigation";
 

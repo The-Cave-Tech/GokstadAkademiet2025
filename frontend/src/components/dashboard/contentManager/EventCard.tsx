@@ -1,9 +1,10 @@
-// components/EventCard.tsx
+// Updated: frontend/src/components/dashboard/contentManager/EventCard.tsx
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Theme } from "@/styles/activityTheme";
 import { Event } from "@/types/activity.types";
 import { formatDate } from "@/lib/utils/eventUtils";
+import { isDatePast } from "@/lib/utils/dateUtils";
 
 interface EventCardProps {
   event: Event;
@@ -26,10 +27,16 @@ const formatTime = (timeString: string): string => {
 
 export const EventCard: React.FC<EventCardProps> = ({ event }) => {
   const router = useRouter();
+  const isPastEvent = event.startDate ? isDatePast(event.startDate) : false;
 
-  // Function to navigate to the event details page
+  // Function to navigate to the event details page within the aktiviteter route
   const handleClick = () => {
-    router.push(`/events/${event.id}`);
+    // Use documentId and route through aktiviteter/event/:id
+    if (event.id) {
+      router.push(`/aktiviteter/event/${event.id}`);
+    } else {
+      console.error("Event has no documentId:", event);
+    }
   };
 
   return (
@@ -49,12 +56,21 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
             alt={event.eventCardImage.alternativeText || event.title}
             className="w-full h-48 sm:h-full object-cover"
           />
+
+          {/* Status indicator - past/upcoming */}
           <div
             className="absolute bottom-0 right-0 p-1 bg-black bg-opacity-60 text-white text-xs rounded-tl-md"
             style={{ fontSize: "0.7rem" }}
           >
             {formatEventDate(event)}
           </div>
+
+          {/* Past event overlay */}
+          {isPastEvent && (
+            <div className="absolute top-0 left-0 p-1 bg-red-500 text-white text-xs">
+              Past Event
+            </div>
+          )}
         </div>
       )}
 
@@ -165,7 +181,7 @@ const formatEventDate = (event: Event): string => {
 
   const formattedStart = formatDate(event.startDate);
 
-  if (event.endDate) {
+  if (event.endDate && event.endDate !== event.startDate) {
     const formattedEnd = formatDate(event.endDate);
     return `${formattedStart} - ${formattedEnd}`;
   }

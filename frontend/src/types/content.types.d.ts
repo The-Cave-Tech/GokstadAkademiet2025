@@ -12,6 +12,7 @@ export interface Media {
 // Event attributes matching the updated structure
 export interface EventAttributes {
   id: number; // Include the ID directly in the attributes
+  documentId?: string; // Optional document ID
   title: string;
   description: string;
   content?: string;
@@ -31,6 +32,7 @@ export type EventResponse = EventAttributes;
 // Project attributes
 export interface ProjectAttributes {
   id: number;
+  documentId?: string; // Optional document ID
   title: string;
   description: string;
   content?: string;

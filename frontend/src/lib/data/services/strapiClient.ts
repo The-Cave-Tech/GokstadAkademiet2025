@@ -1,16 +1,15 @@
 // src/lib/data/services/strapiClient.ts
+
 import { strapi } from "@strapi/client";
 import { getAuthCookie } from "@/lib/utils/cookie";
 
-// Basisurl for Strapi API
-const BASE_URL = "http://localhost:1337/api";
+const BASE_URL =
+  process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337/api";
 
-// Opprett Strapi-klienten
 export const strapiClient = strapi({
   baseURL: BASE_URL,
 });
 
-// Definere typer for fetch-opsjoner som ikke utvider RequestInit
 export interface StrapiRequestOptions {
   method?: string;
   headers?: Record<string, string>;
@@ -18,7 +17,6 @@ export interface StrapiRequestOptions {
   params?: Record<string, string | number | boolean>;
 }
 
-// Hjelpefunksjon for å hente autentisert Strapi-klient
 export async function getAuthenticatedClient() {
   const token = await getAuthCookie();
 
@@ -28,9 +26,7 @@ export async function getAuthenticatedClient() {
   });
 }
 
-// Grunnleggende hjelpefunksjoner for enklere bruk
 export const strapiService = {
-  // Fetch-metode med automatisk autentisering
   async fetch<T>(
     endpoint: string,
     options: StrapiRequestOptions = {}
@@ -38,7 +34,7 @@ export const strapiService = {
     try {
       const token = await getAuthCookie();
 
-      // Set up headers
+      // Set up headers properly
       const headers: HeadersInit = {
         "Content-Type": "application/json",
       };
@@ -47,44 +43,61 @@ export const strapiService = {
         headers["Authorization"] = `Bearer ${token}`;
       }
 
-      // Merge custom headers
+      // Copy all custom headers
       if (options.headers) {
         Object.entries(options.headers).forEach(([key, value]) => {
           headers[key] = value;
         });
       }
 
-      // Prepare the request body
+      // Convert body based on type
       let bodyToSend: BodyInit | null = null;
       if (options.body) {
         if (options.body instanceof FormData) {
           bodyToSend = options.body;
-          delete headers["Content-Type"]; // Let the browser set the correct boundary
+          delete headers["Content-Type"];
         } else {
           bodyToSend = JSON.stringify(options.body);
         }
       }
 
-      // Create the fetch options
+      // Create standard RequestInit
       const fetchOptions: RequestInit = {
         method: options.method || "GET",
         headers,
         body: bodyToSend,
       };
 
-      const response = await fetch(`${BASE_URL}/${endpoint}`, fetchOptions);
-
-      // Handle non-OK responses
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.error?.message || response.statusText || "Unknown error"
-        );
+      // Build URL with query parameters if provided
+      let url = `${BASE_URL}/${endpoint}`;
+      if (options.params) {
+        const searchParams = new URLSearchParams();
+        Object.entries(options.params).forEach(([key, value]) => {
+          searchParams.append(key, String(value));
+        });
+        url += `?${searchParams.toString()}`;
       }
 
-      // Handle empty responses (e.g., 204 No Content)
-      if (response.status === 204) {
-        return {} as T; // Return an empty object for void responses
+      const response = await fetch(url, fetchOptions);
+
+      if (!response.ok) {
+        // Enhanced error handling - parse error properly
+        const errorData = await response.json().catch(() => ({}));
+
+        let errorMessage = "Ukjent feil";
+        if (errorData.error) {
+          if (typeof errorData.error === "string") {
+            errorMessage = errorData.error;
+          } else if (errorData.error.message) {
+            errorMessage = errorData.error.message;
+          } else if (errorData.error.details?.message) {
+            errorMessage = errorData.error.details.message;
+          }
+        } else if (response.statusText) {
+          errorMessage = response.statusText;
+        }
+
+        throw new Error(errorMessage);
       }
 
       return response.json();
@@ -94,30 +107,29 @@ export const strapiService = {
     }
   },
 
-  // Hjelpefunksjoner for collection types
+  // Helper functions for collection types
   collection(name: string) {
     return strapiClient.collection(name);
   },
 
-  // Hjelpefunksjoner for single types
+  // Helper functions for single types
   single(name: string) {
     return strapiClient.single(name);
   },
 
-  // Mediahåndtering
+  // Media handling
   media: {
     getMediaUrl(media: unknown): string {
       if (!media) return "";
 
-      const baseMediaUrl =
-        process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+      const apiUrl =
+        process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337/api";
+      const baseMediaUrl = apiUrl.replace(/\/api$/, "");
 
-      // Håndter string
       if (typeof media === "string") {
         return media.startsWith("http") ? media : `${baseMediaUrl}${media}`;
       }
 
-      // Håndter objekt med url property
       if (
         media &&
         typeof media === "object" &&
@@ -128,7 +140,6 @@ export const strapiService = {
         return url.startsWith("http") ? url : `${baseMediaUrl}${url}`;
       }
 
-      // Håndter data.attributes.url struktur (vanlig i Strapi v4)
       if (media && typeof media === "object" && "data" in media && media.data) {
         const data = media.data;
         if (data && typeof data === "object" && "attributes" in data) {
@@ -165,7 +176,6 @@ export const strapiService = {
         return media.alt;
       }
 
-      // Håndter data.attributes struktur
       if (
         "data" in media &&
         media.data &&
