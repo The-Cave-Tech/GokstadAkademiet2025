@@ -86,6 +86,14 @@ export interface UserProfilePublicProfile extends Struct.ComponentSchema {
   };
 }
 
+export interface UserProfile extends Struct.ComponentSchema {
+  collectionName: 'components_user_profiles';
+  info: {
+    displayName: 'Profile';
+  };
+  attributes: {};
+}
+
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
@@ -94,6 +102,7 @@ declare module '@strapi/strapi' {
       'user-profile.notification-settings': UserProfileNotificationSettings;
       'user-profile.personal-information': UserProfilePersonalInformation;
       'user-profile.public-profile': UserProfilePublicProfile;
+      'user.profile': UserProfile;
     }
   }
 }

@@ -1,16 +1,12 @@
-// src/components/user-profile/sections/PublicPorfile.tsx
-
-"use client"
+"use client";
 import React, { useState, useEffect } from 'react';
 import { Card, CardBody, CardFooter, CardHeader } from '@/components/ui/Card';
-
 import ToggleSwitch from '@/components/ui/custom/ToogleSwith';
 import { Button } from '@/components/ui/custom/Button';
 import PageIcons from '@/components/ui/custom/PageIcons';
 import { ZodErrors } from "@/components/ZodErrors";
 import { usePublicProfileValidation } from "@/hooks/useProfileValidation";
 import { profileFieldError } from "@/lib/utils/serverAction-errorHandler";
-
 import { 
   updateDisplayName, 
   updateBiography, 
@@ -19,14 +15,15 @@ import {
   updateShowAddress,
 } from '@/lib/data/services/profileSections/publicProfileService';
 import { ProfileImageUploader } from '@/components/user-profile/profileImage/ProfileImageUploader';
-import { getUserProfile, UserProfile } from '@/lib/data/services/userProfile';
+import { UserProfile } from '@/lib/data/services/userProfile';
 
 interface PublicProfileProps {
   profile: UserProfile;
   onProfileUpdate: (updatedProfile: UserProfile) => void;
+  refreshProfile: () => Promise<void>;
 }
 
-export function PublicProfile({ profile, onProfileUpdate }: PublicProfileProps) {
+export function PublicProfile({ profile, onProfileUpdate, refreshProfile }: PublicProfileProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   
@@ -112,10 +109,10 @@ export function PublicProfile({ profile, onProfileUpdate }: PublicProfileProps) 
       
       if (updatedProfile) {
         onProfileUpdate(updatedProfile);
+        await refreshProfile();
       }
     } catch (error) {
       console.error(`Feil ved oppdatering av ${key}:`, error);
-      // Revert on error
       setContactInfo(prev => ({
         ...prev,
         [key]: !enabled
@@ -133,7 +130,6 @@ export function PublicProfile({ profile, onProfileUpdate }: PublicProfileProps) 
       return;
     }
     
-    // Validate all fields before saving
     const formData = {
       displayName,
       biography,
@@ -153,28 +149,22 @@ export function PublicProfile({ profile, onProfileUpdate }: PublicProfileProps) 
       setIsSaving(true);
       setError(null);
       
-      // Track if any updates were made
       let updatesPerformed = false;
       
-      // Update display name if changed
       if (displayName !== originalDisplayName) {
         await updateDisplayName(displayName);
         updatesPerformed = true;
       }
       
-      // Update biography if changed
       if (biography !== originalBiography) {
         await updateBiography(biography);
         updatesPerformed = true;
       }
       
-      // If any updates were performed, refresh the profile
       if (updatesPerformed) {
-        const updatedProfile = await getUserProfile();
-        onProfileUpdate(updatedProfile);
+        await refreshProfile();
       }
       
-      // Update original values
       setOriginalDisplayName(displayName);
       setOriginalBiography(biography);
       
@@ -187,7 +177,6 @@ export function PublicProfile({ profile, onProfileUpdate }: PublicProfileProps) 
     }
   };
 
-  // Cancel editing and revert changes
   const handleCancel = () => {
     setDisplayName(originalDisplayName);
     setBiography(originalBiography);
@@ -222,13 +211,12 @@ export function PublicProfile({ profile, onProfileUpdate }: PublicProfileProps) 
             <ProfileImageUploader
               profile={profile}
               onImageUpdate={onProfileUpdate}
+              refreshProfile={refreshProfile} // Added missing prop
             />
           </div>
 
-          {/* Form for display name and biography */}
           <div className="flex flex-col space-y-4">
             <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
-              {/* Display name */}
               <div className="mb-4">
                 <label htmlFor="displayName" className="block p-1 font-medium text-gray-700 leading-6">
                   Visningsnavn
@@ -255,7 +243,6 @@ export function PublicProfile({ profile, onProfileUpdate }: PublicProfileProps) 
                 />
               </div>
 
-              {/* Biography */}
               <div className="mb-4">
                 <label htmlFor="biography" className="block mb-1 font-medium text-gray-700 leading-6">
                   Biografi
@@ -286,7 +273,6 @@ export function PublicProfile({ profile, onProfileUpdate }: PublicProfileProps) 
                 </div>
               </div>
 
-              {/* Edit/Save button */}
               <div className="flex justify-end space-x-2">
                 {isEditing && (
                   <Button
@@ -313,7 +299,6 @@ export function PublicProfile({ profile, onProfileUpdate }: PublicProfileProps) 
         </div>
       </CardBody>
 
-      {/* Contact info section */}
       <CardFooter className="flex justify-center border-t border-gray-350 px-3 sm:p-6">
         <div className="space-y-1 w-full max-w-3xl">
           <h3 className="text-lg font-medium text-gray-600">Kontaktinformasjon</h3>

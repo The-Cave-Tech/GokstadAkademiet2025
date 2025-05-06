@@ -22,10 +22,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
-  // Sentralisert metode for å håndtere vellykket autentisering
   const handleSuccessfulAuth = () => {
     console.log("[AuthContext] Håndterer vellykket autentisering");
-    router.push("/dashboard");
+    router.push("/");
   };
 
   const refreshAuthStatus = async () => {
