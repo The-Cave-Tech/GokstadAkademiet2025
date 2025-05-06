@@ -11,10 +11,17 @@ export interface StrapiAuthResponse {
       id: number;
       name: string;
     };
+    role: {
+      id: number;
+      name: string;
+    };
   };
 }
 
-type RegisterUserProps = Pick<SignUpFormData, "username" | "email" | "password">;
+type RegisterUserProps = Pick<
+  SignUpFormData,
+  "username" | "email" | "password"
+>;
 type LoginUserProps = Pick<SignInFormData, "identifier" | "password">;
 
 export async function registerUserService(userData: RegisterUserProps): Promise<StrapiAuthResponse> {

@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_footer_opening_hours",
+  "info": {
+    "displayName": "openingHours",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "Mandag": {
+      "type": "string"
+    },
+    "Tirsdag": {
+      "type": "string"
+    },
+    "Onsdag": {
+      "type": "string"
+    },
+    "Torsdag": {
+      "type": "string"
+    },
+    "Fredag": {
+      "type": "string"
+    }
+  }
+}

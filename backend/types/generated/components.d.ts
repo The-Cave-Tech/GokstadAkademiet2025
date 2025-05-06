@@ -1,5 +1,20 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface FooterOpeningHours extends Struct.ComponentSchema {
+  collectionName: 'components_footer_opening_hours';
+  info: {
+    description: '';
+    displayName: 'openingHours';
+  };
+  attributes: {
+    Fredag: Schema.Attribute.String;
+    Mandag: Schema.Attribute.String;
+    Onsdag: Schema.Attribute.String;
+    Tirsdag: Schema.Attribute.String;
+    Torsdag: Schema.Attribute.String;
+  };
+}
+
 export interface LandingPageHeroSection extends Struct.ComponentSchema {
   collectionName: 'components_landing_page_hero_sections';
   info: {
@@ -97,6 +112,7 @@ export interface UserProfile extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'footer.opening-hours': FooterOpeningHours;
       'landing-page.hero-section': LandingPageHeroSection;
       'user-profile.account-administration': UserProfileAccountAdministration;
       'user-profile.notification-settings': UserProfileNotificationSettings;
