@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import { Card, CardHeader, CardBody, CardFooter } from '@/components/ui/Card';
-import PageIcons from '@/components/ui/custom/PageIcons';
-import { getProfileImageUrl } from '@/lib/data/services/profileSections/publicProfileService';
-import { getUserCredentials } from '@/lib/data/services/userProfile';
-import type { ProfileDisplayCardProps, CardSize } from '@/types/ProfileDisplayCard.types';
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
+import PageIcons from "@/components/ui/custom/PageIcons";
+import { getProfileImageUrl } from "@/lib/data/services/profileSections/publicProfileService";
+import { getUserCredentials } from "@/lib/data/services/userProfile";
+import type { ProfileDisplayCardProps, CardSize } from "@/types/ProfileDisplayCard.types";
 
 const sizeStyles: Record<CardSize, {
   title: string; text: string; contactGap: string; cardGap: string;
 }> = {
-  sm: { title: 'text-2xl', text: 'text-sm',  contactGap: 'gap-4', cardGap: 'gap-6' },
-  md: { title: 'text-3xl', text: 'text-base',contactGap: 'gap-6', cardGap: 'gap-8' },
-  lg: { title: 'text-4xl', text: 'text-lg',  contactGap: 'gap-8', cardGap: 'gap-10' },
+  sm: { title: "text-2xl", text: "text-sm", contactGap: "gap-4", cardGap: "gap-6" },
+  md: { title: "text-3xl", text: "text-base", contactGap: "gap-6", cardGap: "gap-8" },
+  lg: { title: "text-4xl", text: "text-lg", contactGap: "gap-8", cardGap: "gap-10" },
 };
 
 export default function ProfileDisplayCard({
   profile,
-  size = 'md',
+  size = "md",
   avatarSize = 200,
   showBio = true,
   showIcons = true,
@@ -26,30 +26,55 @@ export default function ProfileDisplayCard({
 }: ProfileDisplayCardProps) {
   const s = sizeStyles[size];
 
-  const [email, setEmail] = useState<string>();
-  useEffect(() => {
-    if (!profile.publicProfile?.showEmail) return;
-    getUserCredentials()
-      .then(c => c?.email && setEmail(c.email))
-      .catch(console.error);
-  }, [profile]);
+  const [email, setEmail] = useState<string | undefined>(undefined);
+  const [isLoadingEmail, setIsLoadingEmail] = useState(false);
 
-  const { phoneNumber, streetAddress = '', postalCode = '', city = '' } =
-    profile.personalInformation ?? {};
-  const address     = [streetAddress, postalCode, city].filter(Boolean).join(', ');
-  const displayName = profile.publicProfile?.displayName ?? 'Bruker';
+  useEffect(() => {
+    if (!profile?.publicProfile?.showEmail) {
+      setEmail(undefined);
+      return;
+    }
+
+    setIsLoadingEmail(true);
+    getUserCredentials()
+      .then((c) => {
+        if (c?.email) {
+          setEmail(c.email);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch email:", error);
+      })
+      .finally(() => {
+        setIsLoadingEmail(false);
+      });
+  }, [profile?.publicProfile?.showEmail]);
+
+  const { phoneNumber, streetAddress = "", postalCode = "", city = "" } =
+    profile?.personalInformation ?? {};
+  const address = [streetAddress, postalCode, city].filter(Boolean).join(", ");
+  const displayName = profile?.publicProfile?.displayName ?? "Bruker";
 
   const contact = [
-    profile.publicProfile?.showEmail && email && { icon: 'email', label: email, href: `mailto:${email}` },
-    profile.publicProfile?.showPhone && phoneNumber && { icon: 'phone', label: phoneNumber },
-    profile.publicProfile?.showAddress && address && { icon: 'location', label: address },
+    profile?.publicProfile?.showEmail && email && { icon: "email", label: email, href: `mailto:${email}` },
+    profile?.publicProfile?.showPhone && phoneNumber && { icon: "phone", label: phoneNumber },
+    profile?.publicProfile?.showAddress && address && { icon: "location", label: address },
   ].filter(Boolean) as { icon: string; label: string; href?: string }[];
+
+  // Fallback UI while profile is loading
+  if (!profile) {
+    return (
+      <Card className={`flex flex-col md:flex-row ${s.cardGap} items-start break-words ${className ?? ""}`}>
+        <div className="p-4">Laster profil...</div>
+      </Card>
+    );
+  }
 
   return (
     <Card
       aria-labelledby={`${displayName}-heading`}
-      className={`flex flex-col md:flex-row ${s.cardGap} items-start break-words ${className ?? ''}`}
-      >
+      className={`flex flex-col md:flex-row ${s.cardGap} items-start break-words ${className ?? ""}`}
+    >
       <CardHeader className="p-0">
         <figure
           aria-label="Profilbilde"
@@ -95,7 +120,7 @@ export default function ProfileDisplayCard({
                         href={href}
                         className="underline underline-offset-4 hover:text-gray-900"
                       >
-                        {label}
+                        {isLoadingEmail && label === email ? "Laster e-post..." : label}
                       </a>
                     ) : (
                       <span>{label}</span>

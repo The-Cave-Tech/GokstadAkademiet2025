@@ -3,7 +3,99 @@
 @tailwind utilities;
 
 :root {
+  --color-primary: #d5bdaf; /* Header and dropdown menus */
+  --color-secondary: #f5ebe0; /* Background for text or dropdowns */
+  --color-card: #846267; /* Cards for projects||products */
   --background: #ffffff;
+
+  /* Main title sizes for desktop */
+  --main-title-big: 64px; /* Desktop big */
+  --main-title-medium: 48px; /* Desktop medium */
+  --main-title-small: 36px; /* Desktop small */
+
+  /* section title sizes for desktop */
+  --section-title-big: 36px; /* Desktop big */
+  --section-title-medium: 32px; /* Desktop medium */
+  --section-title-small: 24px; /* Desktop small */
+
+  /* sub section title sizes for desktop */
+  --sub-section-title-big: 24px; /* Desktop big */
+  --sub-section-title-small: 20px; /* Desktop small */
+
+  /*  body text sizes for desktop */
+  --body-text-big: 18px; /* Desktop big */
+  --body-text-small: 16px; /* Desktop small */
+
+  /*  captions text sizes for desktop */
+  --captions-big: 14px; /* Desktop big */
+  --captions-small: 12px; /* Desktop small */
+
+  /* Button CTA text sizes for desktop */
+  --btn-cta-big: 18px; /* Desktop big */
+  --btn-cta-medium: 16px; /* Desktop medium */
+  --btn-cta-small: 14px; /* Desktop small */
+}
+
+@media (max-width: 1024px) {
+  :root {
+    /* Main title sizes for tablets */
+    --main-title-big: 40px; /* Tablet big */
+    --main-title-medium: 32px; /* Tablet medium */
+    --main-title-small: 28px; /* Tablet small */
+
+    /* section title sizes for Tablet */
+    --section-title-big: 28px; /* Tablet big */
+    --section-title-medium: 24px; /* Tablet medium */
+    --section-title-small: 22px; /* Tablet small */
+
+    /* sub section title sizes for tablet */
+    --sub-section-title-big: 22px; /* tablet big */
+    --sub-section-title-small: 18px; /* tablet small */
+
+    /*  body text sizes for tablet */
+    --body-text-big: 17px; /* tablet big */
+    --body-text-small: 15px; /* tablet small */
+
+    /*  captions text sizes for tablet */
+    --captions-big: 14px; /* tablet big */
+    --captions-small: 12px; /* tablet small */
+
+    /* Button CTA text sizes for tablet */
+    --btn-cta-big: 17px; /* tablet big */
+    --btn-cta-medium: 16px; /* tablet medium */
+    --btn-cta-small: 15px; /* tablet small */
+  }
+}
+
+@media (max-width: 639px) {
+  :root {
+    /* Main title sizes for phones */
+    --main-title-big: 32px; /* Phone big */
+    --main-title-medium: 28px; /* Phone medium */
+    --main-title-small: 24px; /* Phone small */
+
+    /* section title sizes for Phone */
+    --section-title-big: 24px; /* Phone big */
+    --section-title-medium: 22px; /* Phone medium */
+    --section-title-small: 20px; /* Phone small */
+
+    /* sub section title sizes for phone */
+    --sub-section-title-big: 22px; /* phone big */
+    --sub-section-title-small: 18px; /* phone small */
+
+    /*  body text sizes for phone */
+    --body-text-big: 16px; /* phone big */
+    --body-text-small: 14px; /* phone small */
+
+    /*  captions text sizes for phone */
+    --captions-big: 14px; /* phone big */
+    --captions-small: 12px; /* phone small */
+
+    /* Button CTA text sizes for phone */
+    --btn-cta-big: 16px; /* phone big */
+    --btn-cta-medium: 15px; /* phone medium */
+    --btn-cta-small: 14px; /* phone small */
+  }
 }
 
 .dark {

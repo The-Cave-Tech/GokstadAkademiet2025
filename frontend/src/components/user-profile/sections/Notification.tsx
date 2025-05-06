@@ -10,12 +10,16 @@ import { useNotificationSettingsValidation } from "@/hooks/useProfileValidation"
 import { ZodErrors } from "@/components/ZodErrors";
 import { profileFieldError } from "@/lib/utils/serverAction-errorHandler";
 import { 
-  NotificationProps, 
   NotificationFormData, 
   NotificationLoadingStates 
 } from "@/types/notificationSettings.types";
 
-export function Notification({ profile, onProfileUpdate = () => {} }: NotificationProps) {
+interface NotificationProps {
+  profile: UserProfile;
+  refreshProfile: () => Promise<void>;
+}
+
+export function Notification({ profile, refreshProfile }: NotificationProps) {
   const [formData, setFormData] = useState<NotificationFormData>({
     importantUpdates: false,
     newsletter: false
@@ -87,14 +91,7 @@ export function Notification({ profile, onProfileUpdate = () => {} }: Notificati
           ...prev,
           [settingName]: enabled
         }));
-        if (onProfileUpdate && profile) {
-          const updatedProfile = { ...profile } as UserProfile;
-          if (!updatedProfile.notificationSettings) {
-            updatedProfile.notificationSettings = {};
-          }
-          updatedProfile.notificationSettings[settingName] = enabled;
-          onProfileUpdate(updatedProfile);
-        }
+        await refreshProfile();
       }
       
       console.log(`Endret ${settingName} til ${enabled}`);

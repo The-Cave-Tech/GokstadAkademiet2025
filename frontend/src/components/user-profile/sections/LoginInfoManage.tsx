@@ -21,7 +21,11 @@ import { UsernameChangeModal } from "../modals/UsernameChangeModal";
 import { PasswordChangeModal } from "../modals/PasswordChangeModal";
 import { handleStrapiError } from "@/lib/utils/serverAction-errorHandler";
 
-export function LoginInfoManage() {
+interface LoginInfoManageProps {
+  refreshProfile: () => Promise<void>;
+}
+
+export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
   const [userData, setUserData] = useState<UserCredentials>({
     username: "",
     email: "",
@@ -38,7 +42,6 @@ export function LoginInfoManage() {
     value: string;
   }>({ type: null, value: "" });
 
-  
   useEffect(() => {
     async function fetchUserCredentials() {
       try {
@@ -87,7 +90,6 @@ export function LoginInfoManage() {
       }
     } catch (error) {
       console.error("Feil ved forespørsel om brukernavn-endring:", error);
-      // Use handleStrapiError here to transform the error before throwing
       const errorMessage = handleStrapiError(error);
       throw new Error(errorMessage);
     } finally {
@@ -111,7 +113,6 @@ export function LoginInfoManage() {
       }
     } catch (error) {
       console.error("Feil ved forespørsel om e-post-endring:", error);
-      // Use handleStrapiError here to transform the error before throwing
       const errorMessage = handleStrapiError(error);
       throw new Error(errorMessage);
     } finally {
@@ -131,14 +132,13 @@ export function LoginInfoManage() {
           ...prev,
           password: "•••••••",
         }));
-        
+        await refreshProfile();
         handleCloseModal();
       } else {
         throw new Error(response.message || "Kunne ikke endre passord");
       }
     } catch (error) {
       console.error("Feil ved passord-endring:", error);
-      // Use handleStrapiError here to transform the error before throwing
       const errorMessage = handleStrapiError(error);
       throw new Error(errorMessage);
     } finally {
@@ -158,6 +158,7 @@ export function LoginInfoManage() {
             ...prev,
             username: response.username,
           }));
+          await refreshProfile();
         } else {
           throw new Error(response.message || "Kunne ikke verifisere brukernavn-endring");
         }
@@ -169,6 +170,7 @@ export function LoginInfoManage() {
             ...prev,
             email: response.email,
           }));
+          await refreshProfile();
         } else {
           throw new Error(response.message || "Kunne ikke verifisere e-post-endring");
         }
@@ -177,7 +179,6 @@ export function LoginInfoManage() {
       handleCloseModal();
     } catch (error) {
       console.error("Feil ved verifisering:", error);
-      // Use handleStrapiError here to transform the error before throwing
       const errorMessage = handleStrapiError(error);
       throw new Error(errorMessage);
     } finally {
@@ -192,10 +193,8 @@ export function LoginInfoManage() {
       
       let response;
       if (pendingData.type === "username") {
-        // Resend username verification code
         response = await resendUsernameVerification();
       } else if (pendingData.type === "email") {
-        // Resend email verification code
         response = await resendEmailVerification();
       } else {
         throw new Error("Ingen aktiv verifisering funnet");
@@ -208,7 +207,6 @@ export function LoginInfoManage() {
       return true;
     } catch (error) {
       console.error("Feil ved sending av ny kode:", error);
-      // Use handleStrapiError here to transform the error before throwing
       const errorMessage = handleStrapiError(error);
       throw new Error(errorMessage);
     } finally {

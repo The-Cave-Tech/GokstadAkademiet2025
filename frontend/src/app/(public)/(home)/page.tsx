@@ -4,8 +4,12 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { strapiService } from "@/lib/data/services/strapiClient";
-import { mediaService } from "@/lib/data/services/mediaService";
+import { eventsService } from "@/lib/data/services/eventService";
+import { projectService } from "@/lib/data/services/projectService";
 import ClientMessage from "@/components/ClientMessage";
+import { EventAttributes, ProjectAttributes } from "@/types/content.types";
+import { ProjectCard } from "@/components/dashboard/contentManager/ProjectCard";
+import { EventCard } from "@/components/dashboard/contentManager/EventCard";
 
 interface LandingPageData {
   hero: {
@@ -21,15 +25,22 @@ interface LandingPageData {
 
 export default function LandingPageContent() {
   const [content, setContent] = useState<LandingPageData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [events, setEvents] = useState<EventAttributes[]>([]);
+  const [projects, setProjects] = useState<ProjectAttributes[]>([]);
+  const [loadingContent, setLoadingContent] = useState(true);
+  const [loadingEvents, setLoadingEvents] = useState(true);
+  const [loadingProjects, setLoadingProjects] = useState(true);
+  const [errorContent, setErrorContent] = useState<string | null>(null);
+  const [errorEvents, setErrorEvents] = useState<string | null>(null);
+  const [errorProjects, setErrorProjects] = useState<string | null>(null);
 
   useEffect(() => {
     async function getLandingPageData() {
       try {
-        const landingPage = strapiService.single('landing-page');
+        // Use strapiService.single for single type content
+        const landingPage = strapiService.single("landing-page");
         const response = await landingPage.find({
-          populate: '*'
+          populate: "*",
         });
 
         if (!response.data) {
@@ -43,9 +54,9 @@ export default function LandingPageContent() {
         };
 
         const introImage = response.data.IntroductionImage;
-        // Bruk mediaService for å håndtere bildet
-        const imageUrl = mediaService.isValidMedia(introImage) 
-          ? mediaService.getMediaUrl(introImage) 
+        // Use strapiService.media helpers for handling the image
+        const imageUrl = strapiService.media.isValidMedia(introImage)
+          ? strapiService.media.getMediaUrl(introImage)
           : null;
 
         const introduction = {
@@ -55,27 +66,76 @@ export default function LandingPageContent() {
         };
 
         setContent({ hero, introduction });
+        setErrorContent(null);
       } catch (err) {
-        setError(
-          "Klarte ikke å hente landingsside-innhold: " +
+        setErrorContent(
+          "Klarte ikke å hente data: " +
             (err instanceof Error ? err.message : "Ukjent feil")
         );
       } finally {
-        setLoading(false);
+        setLoadingContent(false);
       }
     }
 
     getLandingPageData();
   }, []);
 
-  if (loading) {
+  useEffect(() => {
+    async function fetchEvents() {
+      setLoadingEvents(true);
+      try {
+        const eventsData = await eventsService.getAll({
+          sort: ["startDate:asc"],
+          populate: ["eventCardImage"],
+        });
+        setEvents(eventsData);
+        setErrorEvents(null);
+      } catch (err) {
+        setErrorEvents(
+          "Klarte ikke å hente eventer: " +
+            (err instanceof Error ? err.message : "Ukjent feil")
+        );
+      } finally {
+        setLoadingEvents(false);
+      }
+    }
+
+    fetchEvents();
+  }, []);
+
+  useEffect(() => {
+    async function fetchProjects() {
+      setLoadingProjects(true);
+      try {
+        const projectData = await projectService.getAll({
+          sort: ["createdAt:desc"],
+        });
+        setProjects(projectData);
+        setErrorProjects(null);
+      } catch (err) {
+        setErrorProjects(
+          "Klarte ikke å hente prosjekter: " +
+            (err instanceof Error ? err.message : "Ukjent feil")
+        );
+      } finally {
+        setLoadingProjects(false);
+      }
+    }
+
+    fetchProjects();
+  }, []);
+
+  if (loadingContent || loadingEvents || loadingProjects) {
     return <p className="text-center py-10">Laster innhold...</p>;
   }
 
-  if (error || !content) {
+  if (errorContent || errorEvents || errorProjects || !content) {
     return (
       <div className="text-center text-red-500 py-10">
-        {error || "Kunne ikke laste innhold"}
+        {errorContent ||
+          errorEvents ||
+          errorProjects ||
+          "Kunne ikke laste innhold"}
       </div>
     );
   }
@@ -84,7 +144,7 @@ export default function LandingPageContent() {
     <>
       {/* Hero Section */}
       <section className="relative text-center py-20 px-4 bg-gray-900 text-white">
-      <ClientMessage />
+        <ClientMessage />
         <div className="absolute inset-0 z-0">
           {content.introduction.imageUrl ? (
             <Image
@@ -134,6 +194,44 @@ export default function LandingPageContent() {
               <p className="text-gray-600">Bilde mangler</p>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Projects Section */}
+      <section className="flex py-20 px-4 bg-secondary gap-5">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-12 text-center">
+            Prosjekter
+          </h2>
+          <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
+            {projects.length > 0 ? (
+              projects.map((project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))
+            ) : (
+              <p className="text-center text-gray-500">
+                Ingen prosjekter funnet
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Events Section */}
+      <section className="py-20 px-4 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-12 text-center">
+            Arrangementer
+          </h2>
+          <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
+            {events.length > 0 ? (
+              events.map((event) => <EventCard key={event.id} event={event} />)
+            ) : (
+              <p className="text-center text-gray-500">
+                Ingen arrangementer funnet
+              </p>
+            )}
+          </div>
         </div>
       </section>
     </>
