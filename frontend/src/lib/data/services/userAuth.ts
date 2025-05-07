@@ -11,10 +11,6 @@ export interface StrapiAuthResponse {
       id: number;
       name: string;
     };
-    role: {
-      id: number;
-      name: string;
-    };
   };
 }
 
