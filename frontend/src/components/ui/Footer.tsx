@@ -6,7 +6,15 @@ import { strapiService } from "@/lib/data/services/strapiClient";
 import { SiteLogo } from "./SiteLogo";
 
 type OpeningHourItem = {
-  id: number;
+  id: string;
+  attributes?: {
+    Mandag?: string;
+    Tirsdag?: string;
+    Onsdag?: string;
+    Torsdag?: string;
+    Fredag?: string;
+  };
+
   Mandag?: string;
   Tirsdag?: string;
   Onsdag?: string;
@@ -14,112 +22,108 @@ type OpeningHourItem = {
   Fredag?: string;
 };
 
-// Define a more comprehensive type for Strapi response
-interface FooterResponse {
-  data: {
-    id: number;
-    attributes: {
-      footerText?: string;
-      footerBackgroundColor?: string;
-      openingHours:
-        | {
-            data: Array<{
-              id: number;
-              attributes: OpeningHourItem;
-            }> | null;
-          }
-        | Array<OpeningHourItem>
-        | null;
-      // For direct component usage
-    };
-  };
-}
-
 export default function Footer() {
-  const [footerText, setFooterText] = useState(
-    "© TheCaveTech. All rights reserved."
-  );
-  const [backgroundColor, setBackgroundColor] = useState("#0f172a");
+  const [footerText, setFooterText] = useState("");
+  const [backgroundColor, setBackgroundColor] = useState("");
   const [openingHours, setOpeningHours] = useState<OpeningHourItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [currentYear, setCurrentYear] = useState<number | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const fetchFooterData = async () => {
       try {
-        setIsLoading(true);
+        console.log("Attempting to fetch footer data from Strapi");
 
-        // Use the specific type for better TypeScript support
-        const response = await strapiService.fetch<FooterResponse>(
+        const data = await strapiService.fetch<any>(
           "footer?populate[openingHours][populate]=*"
         );
 
-        console.log("Full footer response:", response);
+        console.log("Footer API response:", JSON.stringify(data, null, 2));
 
-        const attributes = response?.data?.attributes;
+        if (data?.data) {
+          console.log("Data object exists:", data.data);
 
-        if (attributes) {
-          // Set basic footer properties
-          setFooterText(
-            attributes.footerText ?? "© TheCaveTech. All rights reserved."
-          );
-          setBackgroundColor(attributes.footerBackgroundColor ?? "#0f172a");
+          if (typeof data.data === "object") {
+            console.log("Data keys:", Object.keys(data.data));
 
-          // Enhanced logging for debugging
-          console.log("Opening hours raw data:", attributes.openingHours);
+            if (data.data.attributes) {
+              console.log("Footer attributes found:", data.data.attributes);
+              setFooterText(data.data.attributes.footerText || "");
+              setBackgroundColor(
+                data.data.attributes.footerBackgroundColor || ""
+              );
 
-          // Handle the opening hours data with more robust checks
-          if (!attributes.openingHours) {
-            console.warn("No opening hours data found");
+              if (data.data.attributes.openingHours) {
+                console.log(
+                  "Opening hours object:",
+                  data.data.attributes.openingHours
+                );
+
+                if (Array.isArray(data.data.attributes.openingHours)) {
+                  setOpeningHours(
+                    data.data.attributes.openingHours.map(
+                      (item: { id: any }) => ({
+                        id: item.id || String(Math.random()),
+                        attributes: item,
+                      })
+                    )
+                  );
+                } else if (data.data.attributes.openingHours.data) {
+                  console.log(
+                    "Opening hours data:",
+                    data.data.attributes.openingHours.data
+                  );
+                  setOpeningHours(data.data.attributes.openingHours.data);
+                } else {
+                  console.log("Unrecognized opening hours format");
+                  setOpeningHours([]);
+                }
+              } else {
+                console.log("No opening hours found in attributes");
+                setOpeningHours([]);
+              }
+            } else {
+              console.log("No attributes in data object");
+
+              if (
+                data.data.openingHours &&
+                Array.isArray(data.data.openingHours)
+              ) {
+                console.log("Found openingHours directly in data object");
+                setOpeningHours(data.data.openingHours);
+              } else {
+                setOpeningHours([]);
+              }
+            }
+          } else {
+            console.log("Data is not an object:", typeof data.data);
             setOpeningHours([]);
           }
-          // Case 1: Array of components directly in openingHours
-          else if (Array.isArray(attributes.openingHours)) {
-            console.log("Direct array of components found");
-            setOpeningHours(attributes.openingHours);
-          }
-          // Case 2: Relation with data property containing array
-          else if (
-            attributes.openingHours.data &&
-            Array.isArray(attributes.openingHours.data)
-          ) {
-            console.log(
-              "Relation data array found with length:",
-              attributes.openingHours.data.length
-            );
-            const hoursData = attributes.openingHours.data.map((item) => {
-              console.log("Processing item:", item);
-              return item.attributes;
-            });
-            setOpeningHours(hoursData);
-          }
-          // Fallback case
-          else {
-            console.warn(
-              "Unexpected opening hours structure:",
-              attributes.openingHours
-            );
-            setOpeningHours([]);
-          }
+        } else {
+          console.log("No data object in API response");
+          setOpeningHours([]);
         }
       } catch (error) {
-        console.error("Could not fetch footer data:", error);
-        setError("Failed to load opening hours. Please try again later.");
+        console.error("Kunne ikke hente footer-data:", error);
       } finally {
-        setIsLoading(false);
+        setCurrentYear(new Date().getFullYear());
+        setIsLoaded(true);
       }
     };
 
     fetchFooterData();
   }, []);
 
-  const year = new Date().getFullYear();
+  if (!isLoaded) {
+    return null;
+  }
 
   return (
     <footer
       className="text-white pt-12 pb-8 px-6"
-      style={{ backgroundColor }}
+      style={{ backgroundColor: backgroundColor || "#0f172a" }}
       role="contentinfo"
+      suppressHydrationWarning
     >
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Logo & beskrivelse */}
@@ -155,64 +159,65 @@ export default function Footer() {
         {/* Åpningstider */}
         <div>
           <h3 className="text-lg font-semibold mb-4">Åpningstider</h3>
-          {isLoading && (
-            <p className="text-sm text-gray-300">Laster åpningstider...</p>
-          )}
+          <ul className="space-y-1 text-sm text-gray-300">
+            {openingHours && openingHours.length > 0 ? (
+              openingHours.map((item, index) => {
+                console.log("Rendering opening hour item:", item);
+                const mandag = item.attributes?.Mandag || item.Mandag;
+                const tirsdag = item.attributes?.Tirsdag || item.Tirsdag;
+                const onsdag = item.attributes?.Onsdag || item.Onsdag;
+                const torsdag = item.attributes?.Torsdag || item.Torsdag;
+                const fredag = item.attributes?.Fredag || item.Fredag;
 
-          {error && <p className="text-sm text-red-300">{error}</p>}
-
-          {!isLoading && !error && (
-            <>
-              {openingHours.length === 0 ? (
-                <p className="text-sm text-gray-300">
-                  Ingen åpningstider tilgjengelig
-                </p>
-              ) : (
-                <ul className="space-y-1 text-sm text-gray-300">
-                  {openingHours.map((item, index) => (
-                    <React.Fragment key={item.id || index}>
-                      {item.Mandag && (
-                        <li className="flex justify-between">
-                          <span>Mandag</span>
-                          <span>{item.Mandag}</span>
-                        </li>
-                      )}
-                      {item.Tirsdag && (
-                        <li className="flex justify-between">
-                          <span>Tirsdag</span>
-                          <span>{item.Tirsdag}</span>
-                        </li>
-                      )}
-                      {item.Onsdag && (
-                        <li className="flex justify-between">
-                          <span>Onsdag</span>
-                          <span>{item.Onsdag}</span>
-                        </li>
-                      )}
-                      {item.Torsdag && (
-                        <li className="flex justify-between">
-                          <span>Torsdag</span>
-                          <span>{item.Torsdag}</span>
-                        </li>
-                      )}
-                      {item.Fredag && (
-                        <li className="flex justify-between">
-                          <span>Fredag</span>
-                          <span>{item.Fredag}</span>
-                        </li>
-                      )}
-                    </React.Fragment>
-                  ))}
-                </ul>
-              )}
-            </>
-          )}
+                return (
+                  <React.Fragment key={item.id || `opening-hour-${index}`}>
+                    {mandag && (
+                      <li className="flex">
+                        <span className="w-16">Mandag</span>
+                        <span>{mandag}</span>
+                      </li>
+                    )}
+                    {tirsdag && (
+                      <li className="flex">
+                        <span className="w-16">Tirsdag</span>
+                        <span>{tirsdag}</span>
+                      </li>
+                    )}
+                    {onsdag && (
+                      <li className="flex">
+                        <span className="w-16">Onsdag</span>
+                        <span>{onsdag}</span>
+                      </li>
+                    )}
+                    {torsdag && (
+                      <li className="flex">
+                        <span className="w-16">Torsdag</span>
+                        <span>{torsdag}</span>
+                      </li>
+                    )}
+                    {fredag && (
+                      <li className="flex">
+                        <span className="w-16">Fredag</span>
+                        <span>{fredag}</span>
+                      </li>
+                    )}
+                  </React.Fragment>
+                );
+              })
+            ) : (
+              <li>Ingen åpningstider tilgjengelig</li>
+            )}
+          </ul>
         </div>
       </div>
 
-      {/* Bunntekst */}
       <div className="mt-12 border-t border-gray-700 pt-6 text-center text-sm text-gray-400">
-        &copy; {year} {footerText}
+        {currentYear !== null && (
+          <>
+            &copy; {currentYear}{" "}
+            {footerText || "© TheCaveTech. All rights reserved."}
+          </>
+        )}
       </div>
     </footer>
   );

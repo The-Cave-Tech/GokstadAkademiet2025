@@ -34,6 +34,10 @@ export default function LandingPageContent() {
   const [errorContent, setErrorContent] = useState<string | null>(null);
   const [errorEvents, setErrorEvents] = useState<string | null>(null);
   const [errorProjects, setErrorProjects] = useState<string | null>(null);
+  const [imageLoadError, setImageLoadError] = useState<{
+    hero: boolean;
+    intro: boolean;
+  }>({ hero: false, intro: false });
 
   useEffect(() => {
     async function getLandingPageData() {
@@ -54,17 +58,35 @@ export default function LandingPageContent() {
           subtitle: heroComponent?.Subtitle || "Mangler undertittel",
         };
 
-        // Get hero image separately from intro image
+        // Get hero image using enhanced error handling
+        let heroImageUrl = null;
         const heroImage = response.data.HeroImage;
-        const heroImageUrl = strapiService.media.isValidMedia(heroImage)
-          ? strapiService.media.getMediaUrl(heroImage)
-          : null;
+        if (strapiService.media.isValidMedia(heroImage)) {
+          try {
+            heroImageUrl = strapiService.media.getMediaUrl(heroImage);
+            // Add a cache-busting parameter to avoid cached 404 responses
+            if (heroImageUrl) {
+              heroImageUrl = `${heroImageUrl}?t=${Date.now()}`;
+            }
+          } catch (err) {
+            console.error("Error processing hero image:", err);
+          }
+        }
 
+        // Get intro image using enhanced error handling
+        let introImageUrl = null;
         const introImage = response.data.IntroductionImage;
-        // Use strapiService.media helpers for handling the image
-        const introImageUrl = strapiService.media.isValidMedia(introImage)
-          ? strapiService.media.getMediaUrl(introImage)
-          : null;
+        if (strapiService.media.isValidMedia(introImage)) {
+          try {
+            introImageUrl = strapiService.media.getMediaUrl(introImage);
+            // Add a cache-busting parameter to avoid cached 404 responses
+            if (introImageUrl) {
+              introImageUrl = `${introImageUrl}?t=${Date.now()}`;
+            }
+          } catch (err) {
+            console.error("Error processing intro image:", err);
+          }
+        }
 
         const introduction = {
           title: response.data.intoductionTitle || "Mangler tittel",
@@ -79,6 +101,7 @@ export default function LandingPageContent() {
           "Klarte ikke å hente data: " +
             (err instanceof Error ? err.message : "Ukjent feil")
         );
+        console.error("Error fetching landing page data:", err);
       } finally {
         setLoadingContent(false);
       }
@@ -102,6 +125,7 @@ export default function LandingPageContent() {
           "Klarte ikke å hente eventer: " +
             (err instanceof Error ? err.message : "Ukjent feil")
         );
+        console.error("Error fetching events:", err);
       } finally {
         setLoadingEvents(false);
       }
@@ -124,6 +148,7 @@ export default function LandingPageContent() {
           "Klarte ikke å hente prosjekter: " +
             (err instanceof Error ? err.message : "Ukjent feil")
         );
+        console.error("Error fetching projects:", err);
       } finally {
         setLoadingProjects(false);
       }
@@ -131,6 +156,15 @@ export default function LandingPageContent() {
 
     fetchProjects();
   }, []);
+
+  // Handle image load errors
+  const handleImageError = (imageType: "hero" | "intro") => {
+    setImageLoadError((prev) => ({
+      ...prev,
+      [imageType]: true,
+    }));
+    console.error(`Failed to load ${imageType} image`);
+  };
 
   if (loadingContent || loadingEvents || loadingProjects) {
     return <p className="text-center py-10">Laster innhold...</p>;
@@ -153,7 +187,7 @@ export default function LandingPageContent() {
       <section className="relative text-center py-20 px-4 bg-gray-900 text-white">
         <ClientMessage />
         <div className="absolute inset-0 z-0">
-          {content.hero.imageUrl ? (
+          {content.hero.imageUrl && !imageLoadError.hero ? (
             <Image
               src={content.hero.imageUrl}
               alt="Hero Background Image"
@@ -161,6 +195,7 @@ export default function LandingPageContent() {
               className="object-cover opacity-50"
               priority
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 100vw"
+              onError={() => handleImageError("hero")}
             />
           ) : (
             <div className="w-full h-full bg-gray-700" />
@@ -180,7 +215,7 @@ export default function LandingPageContent() {
       <section className="py-16 px-4 max-w-6xl mx-auto grid gap-10 md:grid-cols-2 items-center">
         {/* Image section - now first in the grid order */}
         <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[500px] rounded-xl overflow-hidden shadow-lg">
-          {content.introduction.imageUrl ? (
+          {content.introduction.imageUrl && !imageLoadError.intro ? (
             <Image
               src={content.introduction.imageUrl}
               alt="Introduction Image"
@@ -188,6 +223,7 @@ export default function LandingPageContent() {
               className="object-cover"
               priority
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+              onError={() => handleImageError("intro")}
             />
           ) : (
             <div className="w-full h-full bg-gray-300 flex items-center justify-center">
@@ -208,7 +244,7 @@ export default function LandingPageContent() {
       </section>
 
       {/* Projects Section */}
-      <section className="flex py-20 px-4 bg-secondary gap-5">
+      <section className="py-20 px-4 bg-secondary">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold mb-12 text-center">
             Prosjekter
