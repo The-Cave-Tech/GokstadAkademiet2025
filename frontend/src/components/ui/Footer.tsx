@@ -14,47 +14,99 @@ type OpeningHourItem = {
   Fredag?: string;
 };
 
+// Define a more comprehensive type for Strapi response
+interface FooterResponse {
+  data: {
+    id: number;
+    attributes: {
+      footerText?: string;
+      footerBackgroundColor?: string;
+      openingHours:
+        | {
+            data: Array<{
+              id: number;
+              attributes: OpeningHourItem;
+            }> | null;
+          }
+        | Array<OpeningHourItem>
+        | null;
+      // For direct component usage
+    };
+  };
+}
+
 export default function Footer() {
   const [footerText, setFooterText] = useState(
     "© TheCaveTech. All rights reserved."
   );
   const [backgroundColor, setBackgroundColor] = useState("#0f172a");
   const [openingHours, setOpeningHours] = useState<OpeningHourItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchFooterData = async () => {
       try {
-        const data = await strapiService.fetch<any>(
-          "footer?populate[openingHours]=*"
+        setIsLoading(true);
+
+        // Use the specific type for better TypeScript support
+        const response = await strapiService.fetch<FooterResponse>(
+          "footer?populate[openingHours][populate]=*"
         );
-        const attributes = data?.data?.attributes;
+
+        console.log("Full footer response:", response);
+
+        const attributes = response?.data?.attributes;
 
         if (attributes) {
+          // Set basic footer properties
           setFooterText(
             attributes.footerText ?? "© TheCaveTech. All rights reserved."
           );
           setBackgroundColor(attributes.footerBackgroundColor ?? "#0f172a");
 
-          // Add console.log to see the full structure
-          console.log("Full footer data:", data);
-          console.log("Opening hours data:", attributes.openingHours);
+          // Enhanced logging for debugging
+          console.log("Opening hours raw data:", attributes.openingHours);
 
-          // Check if openingHours is a nested relation
-          if (attributes.openingHours && attributes.openingHours.data) {
-            // If it's a relation, it might have a different structure
-            const hoursData = attributes.openingHours.data.map(
-              (item: { attributes: any; }) => item.attributes
+          // Handle the opening hours data with more robust checks
+          if (!attributes.openingHours) {
+            console.warn("No opening hours data found");
+            setOpeningHours([]);
+          }
+          // Case 1: Array of components directly in openingHours
+          else if (Array.isArray(attributes.openingHours)) {
+            console.log("Direct array of components found");
+            setOpeningHours(attributes.openingHours);
+          }
+          // Case 2: Relation with data property containing array
+          else if (
+            attributes.openingHours.data &&
+            Array.isArray(attributes.openingHours.data)
+          ) {
+            console.log(
+              "Relation data array found with length:",
+              attributes.openingHours.data.length
             );
+            const hoursData = attributes.openingHours.data.map((item) => {
+              console.log("Processing item:", item);
+              return item.attributes;
+            });
             setOpeningHours(hoursData);
-          } else {
-            // If it's a component or direct field
-            setOpeningHours(attributes.openingHours ?? []);
+          }
+          // Fallback case
+          else {
+            console.warn(
+              "Unexpected opening hours structure:",
+              attributes.openingHours
+            );
+            setOpeningHours([]);
           }
         }
       } catch (error) {
-        console.error("Kunne ikke hente footer-data:", error);
-        // Log the full error
-        console.error("Detailed error:", JSON.stringify(error));
+        console.error("Could not fetch footer data:", error);
+        setError("Failed to load opening hours. Please try again later.");
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -103,42 +155,58 @@ export default function Footer() {
         {/* Åpningstider */}
         <div>
           <h3 className="text-lg font-semibold mb-4">Åpningstider</h3>
-          <ul className="space-y-1 text-sm text-gray-300">
-            {openingHours.map((item, index) => (
-              <React.Fragment key={item.id || index}>
-                {item.Mandag && (
-                  <li className="flex justify-between">
-                    <span>Mandag</span>
-                    <span>{item.Mandag}</span>
-                  </li>
-                )}
-                {item.Tirsdag && (
-                  <li className="flex justify-between">
-                    <span>Tirsdag</span>
-                    <span>{item.Tirsdag}</span>
-                  </li>
-                )}
-                {item.Onsdag && (
-                  <li className="flex justify-between">
-                    <span>Onsdag</span>
-                    <span>{item.Onsdag}</span>
-                  </li>
-                )}
-                {item.Torsdag && (
-                  <li className="flex justify-between">
-                    <span>Torsdag</span>
-                    <span>{item.Torsdag}</span>
-                  </li>
-                )}
-                {item.Fredag && (
-                  <li className="flex justify-between">
-                    <span>Fredag</span>
-                    <span>{item.Fredag}</span>
-                  </li>
-                )}
-              </React.Fragment>
-            ))}
-          </ul>
+          {isLoading && (
+            <p className="text-sm text-gray-300">Laster åpningstider...</p>
+          )}
+
+          {error && <p className="text-sm text-red-300">{error}</p>}
+
+          {!isLoading && !error && (
+            <>
+              {openingHours.length === 0 ? (
+                <p className="text-sm text-gray-300">
+                  Ingen åpningstider tilgjengelig
+                </p>
+              ) : (
+                <ul className="space-y-1 text-sm text-gray-300">
+                  {openingHours.map((item, index) => (
+                    <React.Fragment key={item.id || index}>
+                      {item.Mandag && (
+                        <li className="flex justify-between">
+                          <span>Mandag</span>
+                          <span>{item.Mandag}</span>
+                        </li>
+                      )}
+                      {item.Tirsdag && (
+                        <li className="flex justify-between">
+                          <span>Tirsdag</span>
+                          <span>{item.Tirsdag}</span>
+                        </li>
+                      )}
+                      {item.Onsdag && (
+                        <li className="flex justify-between">
+                          <span>Onsdag</span>
+                          <span>{item.Onsdag}</span>
+                        </li>
+                      )}
+                      {item.Torsdag && (
+                        <li className="flex justify-between">
+                          <span>Torsdag</span>
+                          <span>{item.Torsdag}</span>
+                        </li>
+                      )}
+                      {item.Fredag && (
+                        <li className="flex justify-between">
+                          <span>Fredag</span>
+                          <span>{item.Fredag}</span>
+                        </li>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </ul>
+              )}
+            </>
+          )}
         </div>
       </div>
 
