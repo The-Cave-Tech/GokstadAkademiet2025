@@ -10,6 +10,7 @@ import { ProjectResponse } from "@/types/content.types";
 import { AiOutlineTool, AiOutlineGithub, AiOutlineLink } from "react-icons/ai";
 import { MdCategory } from "react-icons/md";
 import ProjectContent from "@/components/BlockRenderer";
+import BackButton from "@/components/BackButton";
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -109,7 +110,7 @@ export default function ProjectDetailPage() {
                   </div>
                 </div>
                 <h3 className="text-xl font-semibold text-center">
-                  Prosjektnavn
+                  {project.title}
                 </h3>
                 <p className="text-sm text-gray-500 mt-1">
                   {project.documentId
@@ -172,7 +173,7 @@ export default function ProjectDetailPage() {
                     href={project.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors"
+                    className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors hover:underline"
                   >
                     <AiOutlineGithub className="text-lg" />
                     <span>GitHub repository</span>
