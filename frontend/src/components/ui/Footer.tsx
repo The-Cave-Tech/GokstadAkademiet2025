@@ -34,10 +34,27 @@ export default function Footer() {
             attributes.footerText ?? "© TheCaveTech. All rights reserved."
           );
           setBackgroundColor(attributes.footerBackgroundColor ?? "#0f172a");
-          setOpeningHours(attributes.openingHours ?? []);
+
+          // Add console.log to see the full structure
+          console.log("Full footer data:", data);
+          console.log("Opening hours data:", attributes.openingHours);
+
+          // Check if openingHours is a nested relation
+          if (attributes.openingHours && attributes.openingHours.data) {
+            // If it's a relation, it might have a different structure
+            const hoursData = attributes.openingHours.data.map(
+              (item: { attributes: any; }) => item.attributes
+            );
+            setOpeningHours(hoursData);
+          } else {
+            // If it's a component or direct field
+            setOpeningHours(attributes.openingHours ?? []);
+          }
         }
       } catch (error) {
         console.error("Kunne ikke hente footer-data:", error);
+        // Log the full error
+        console.error("Detailed error:", JSON.stringify(error));
       }
     };
 
