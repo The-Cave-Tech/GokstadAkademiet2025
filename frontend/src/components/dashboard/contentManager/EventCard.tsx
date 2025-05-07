@@ -1,23 +1,24 @@
-// Updated: frontend/src/components/dashboard/contentManager/EventCard.tsx
+"use client";
+
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Theme } from "@/styles/activityTheme";
-import { Event } from "@/types/activity.types";
+import { EventResponse } from "@/types/content.types";
 import { formatDate } from "@/lib/utils/eventUtils";
 import { isDatePast } from "@/lib/utils/dateUtils";
+import { strapiService } from "@/lib/data/services/strapiClient";
+import Image from "next/image";
 
 interface EventCardProps {
-  event: Event;
+  event: EventResponse;
 }
 
 // Helper function to format time in 00.00 format
 const formatTime = (timeString: string): string => {
-  // Check if the timeString is in a valid format
   if (!timeString) return "";
 
-  // Assuming timeString is in format "HH:MM" or similar
   const parts = timeString.split(":");
-  if (parts.length < 2) return timeString; // Return original if not in expected format
+  if (parts.length < 2) return timeString;
 
   const hours = parts[0].padStart(2, "0");
   const minutes = parts[1].padStart(2, "0");
@@ -29,15 +30,24 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
   const router = useRouter();
   const isPastEvent = event.startDate ? isDatePast(event.startDate) : false;
 
-  // Function to navigate to the event details page within the aktiviteter route
+  // Function to navigate to the event details page
   const handleClick = () => {
-    // Use documentId and route through aktiviteter/event/:id
     if (event.id) {
-      router.push(`/aktiviteter/event/${event.id}`);
+      router.push(`/aktiviteter/events/${event.id}`);
     } else {
-      console.error("Event has no documentId:", event);
+      console.error("Event has no id:", event);
     }
   };
+
+  // Helper function to safely get image URL using strapiService
+  const getImageUrl = (): string | null => {
+    if (!event.eventCardImage) return null;
+
+    // Use the global strapiService.media.getMediaUrl function
+    return strapiService.media.getMediaUrl(event.eventCardImage);
+  };
+
+  const imageUrl = getImageUrl();
 
   return (
     <article
@@ -48,16 +58,25 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
       role="button"
       aria-label={`Vis detaljer om arrangementet ${event.title}`}
     >
-      {/* Image Section - Full width on mobile, left side on larger screens */}
-      {event.eventCardImage && (
+      {/* Image Section */}
+      {imageUrl && (
         <div className="relative w-full sm:w-48 md:w-64 lg:w-72">
-          <img
-            src={event.eventCardImage.url}
-            alt={event.eventCardImage.alternativeText || event.title}
-            className="w-full h-48 sm:h-full object-cover"
-          />
+          <div className="w-full h-48 sm:h-full relative">
+            <Image
+              src={imageUrl}
+              alt={event.title}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 768px) 33vw, 25vw"
+              className="object-cover"
+              onError={(e) => {
+                // Hide the image container on error
+                const target = e.target as HTMLImageElement;
+                target.style.display = "none";
+              }}
+            />
+          </div>
 
-          {/* Status indicator - past/upcoming */}
+          {/* Status indicator */}
           <div
             className="absolute bottom-0 right-0 p-1 bg-black bg-opacity-60 text-white text-xs rounded-tl-md"
             style={{ fontSize: "0.7rem" }}
@@ -74,18 +93,18 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
         </div>
       )}
 
-      {/* Content Section - Takes remaining width */}
+      {/* Content Section */}
       <div className="flex flex-col p-4 flex-grow justify-between min-w-0">
         <div>
           {/* Title */}
           <h3
-            className="text-lg md:text-xl font-semibold"
+            className="text-lg md:text-xl font-semibold line-clamp-2"
             style={{ color: Theme.colors.text.primary }}
           >
             {event.title}
           </h3>
 
-          {/* Description - visible on all screens */}
+          {/* Description */}
           {event.description && (
             <p
               className="text-sm md:text-base mt-2 line-clamp-2 md:line-clamp-3"
@@ -157,7 +176,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
             </div>
           )}
 
-          {/* Action button - visible on all screens */}
+          {/* Action button */}
           <div className="ml-auto flex items-center">
             <span
               className="whitespace-nowrap text-xs py-1.5 px-3 rounded-full"
@@ -176,7 +195,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
 };
 
 // Helper function to format event date
-const formatEventDate = (event: Event): string => {
+const formatEventDate = (event: EventResponse): string => {
   if (!event.startDate) return "Dato kommer";
 
   const formattedStart = formatDate(event.startDate);

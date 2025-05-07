@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { eventsService } from "@/lib/data/services/eventService";
 import { formatDate } from "@/lib/utils/eventUtils";
+import BackButton from "@/components/BackButton";
 
 // Earthy color palette variables for easy customization
 const colors = {
@@ -82,6 +83,7 @@ export default function EventsAdminPage() {
       className="min-h-screen p-6 sm:p-8 md:p-10"
       style={{ backgroundColor: colors.background }}
     >
+      <BackButton />
       {/* Success Message */}
       {successMessage && (
         <div
@@ -282,7 +284,7 @@ export default function EventsAdminPage() {
                 >
                   {events.map((event, index) => (
                     <tr
-                      key={event.documentId}
+                      key={event.id}
                       className="transition-colors duration-150 ease-in-out"
                       style={{
                         backgroundColor:

@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ActivitiesLayout } from "@/components/layouts/ActivitiesLayout";
-import { EventCard } from "@/components/layouts/dashboard/contentManager/EventCard";
+import { EventCard } from "@/components/dashboard/contentManager/EventCard";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { useActivities } from "@/lib/context/ActivityContext";
