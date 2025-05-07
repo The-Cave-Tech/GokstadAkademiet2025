@@ -1,9 +1,11 @@
+//frontend/src/lib/context/AuthContext.tsx
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { getAuthCookie } from "@/lib/utils/cookie";
 import { getUserWithRole } from "@/lib/data/services/userAuth";
 import { useRouter } from "next/navigation";
+import { UserAuthProvider } from "@/types/userProfile.types";
 
 type AuthContextType = {
   isAuthenticated: boolean;
@@ -11,6 +13,7 @@ type AuthContextType = {
   refreshAuthStatus: () => Promise<void>;
   userRole: string | null;
   isAdmin: boolean;
+  authProvider: UserAuthProvider; 
   handleSuccessfulAuth: () => void;
 };
 
@@ -21,6 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [authProvider, setAuthProvider] = useState<UserAuthProvider>(null); 
 
   // Sentralisert metode for å håndtere vellykket autentisering
   const handleSuccessfulAuth = () => {
@@ -36,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsAuthenticated(false);
         setUserRole(null);
         setIsAdmin(false);
+        setAuthProvider(null); 
         return;
       }
 
@@ -46,17 +51,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const role = userData.role?.name || "Authenticated users";
         setUserRole(role);
         setIsAdmin(role === "Admin/moderator/superadmin");
+        setAuthProvider(userData.provider as UserAuthProvider || 'local'); 
       } catch (error) {
         console.error("[AuthContext] Failed to fetch user data:", error);
         setIsAuthenticated(false);
         setUserRole(null);
         setIsAdmin(false);
+        setAuthProvider(null);
       }
     } catch (error) {
       console.error("[AuthContext] Failed to refresh auth status:", error);
       setIsAuthenticated(false);
       setUserRole(null);
       setIsAdmin(false);
+      setAuthProvider(null);
     }
   };
 
@@ -71,6 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       refreshAuthStatus, 
       userRole,
       isAdmin,
+      authProvider, 
       handleSuccessfulAuth
     }}>
       {children}

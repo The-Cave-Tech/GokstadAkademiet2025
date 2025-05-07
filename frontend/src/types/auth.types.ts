@@ -1,3 +1,4 @@
+//frontend/src/types/auth.types.ts
 export interface SignUpValidationErrors {
   username: string[];
   email: string[];
@@ -25,6 +26,17 @@ export interface LoginFormState {
   strapiErrors: StrapiError | null;
   values: Record<string, string>;
   success: boolean;
+}
+
+export interface OAuthCallbackResult {
+  success: boolean;
+  error?: string;
+}
+
+export interface SocialLoginButton {
+  provider: string;
+  text: string;
+  src: string;
 }
 
 export type SignUpValidationErrorKeys = keyof SignUpValidationErrors;

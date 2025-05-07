@@ -7,6 +7,7 @@ export interface StrapiAuthResponse {
     id: number;
     username: string;
     email: string;
+    provider: string;
     role: {
       id: number;
       name: string;
