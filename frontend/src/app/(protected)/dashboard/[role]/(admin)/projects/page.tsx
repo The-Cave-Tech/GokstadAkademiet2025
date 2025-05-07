@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { projectService } from "@/lib/data/services/projectService";
 import { formatDate } from "@/lib/utils/eventUtils";
+import BackButton from "@/components/BackButton";
 
 // Earthy color palette variables for easy customization
 const colors = {
@@ -86,6 +87,7 @@ export default function ProjectsAdminPage() {
       className="min-h-screen p-6 sm:p-8 md:p-10"
       style={{ backgroundColor: colors.background }}
     >
+      <BackButton />
       {/* Card Container */}
       <div
         className="max-w-7xl mx-auto rounded-xl shadow-lg overflow-hidden"
@@ -412,7 +414,7 @@ export default function ProjectsAdminPage() {
                             Edit
                           </Link>
                           <Link
-                            href={`/projects/${project.id}`}
+                            href={`/aktiviteter/projects/${project.id}`}
                             target="_blank"
                             className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-150 ease-in-out"
                             style={{

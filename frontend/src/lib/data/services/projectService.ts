@@ -1,88 +1,219 @@
 // services/projectService.ts
-import { ProjectAttributes } from "@/types/content.types";
+import {
+  ProjectAttributes,
+  ProjectResponse,
+  Media,
+} from "@/types/content.types";
 import { strapiService } from "@/lib/data/services/strapiClient";
-
-// Define ProjectResponse type that includes id
-interface ProjectResponse extends ProjectAttributes {
-  id: number;
-}
 
 // Projects service
 export const projectService = {
   // Get all projects with optional filters, sorting, and pagination
-  getAll: async (params: any = {}): Promise<ProjectResponse[]> => {
+  getAll: async (
+    params: Record<string, unknown> = {}
+  ): Promise<ProjectResponse[]> => {
     try {
-      const queryParams = {
-        ...params,
-        populate: params.populate || ["projectImage"], // Ensure projectImage and state is populated
-      };
+      // Using collection method for consistent approach
+      const projectsCollection = strapiService.collection("projects");
 
-      const response = await strapiService.fetch<any>("projects", {
-        params: queryParams,
-      });
-
-      if (!response.data || !Array.isArray(response.data)) {
-        console.warn("No projects found or data is not an array");
-        return [];
-      }
-      console.log("Fetched projects:", response.data);
-
-      return response.data.map((item: any) => ({
-        id: item.id,
-        ...item,
-        projectImage: strapiService.media.getMediaUrl(item.projectImage), // Use media utility
-      }));
-    } catch (error) {
-      console.error("Error fetching projects:", error);
-      return [];
-    }
-  },
-
-  getMediaUrl: (imagePath: string) => `/media/${imagePath}`, // Add this method
-
-  // Get a single project by ID
-  getOne: async (
-    id: number | string,
-    params: any = {}
-  ): Promise<ProjectResponse | null> => {
-    try {
-      const queryParams = {
+      // Ensure populate parameter is properly typed
+      const queryParams: Record<string, unknown> = {
         ...params,
         populate: params.populate || ["projectImage"], // Ensure projectImage is populated
       };
 
-      const response = await strapiService.fetch<any>(`projects/${id}`, {
-        method: "GET",
-        params: queryParams,
+      // Use the collection's find method
+      const response = await projectsCollection.find(queryParams);
+
+      if (!response.data || !Array.isArray(response.data)) {
+        throw new Error(
+          "Invalid response format: No projects found or data is not an array"
+        );
+      }
+
+      console.log("Fetched projects:", response.data);
+
+      // Transform the response to match our ProjectResponse type
+      return response.data.map((item) => {
+        // Extract the base project data directly without attributes nesting
+        const project: ProjectResponse = {
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          content: item.content || "",
+          state: item.state || "draft",
+          category: item.category || "Other",
+          technologies: item.technologies || [],
+          demoUrl: item.demoUrl || "",
+          githubUrl: item.githubUrl || "",
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          publishedAt: item.publishedAt,
+        };
+
+        // Process the image data if it exists
+        if (item.projectImage) {
+          // Handle both direct and nested data structures
+          let imageUrl: string;
+
+          // For Strapi v5
+          if (typeof item.projectImage.data !== "undefined") {
+            // This means we're dealing with the original nested structure
+            const data = item.projectImage.data;
+
+            if (data) {
+              // Structure with attributes (old format)
+              imageUrl = strapiService.media.getMediaUrl(data);
+
+              project.projectImage = {
+                id: data.id || 0,
+                url: imageUrl,
+                alternativeText: data.alternativeText,
+                width: data.width,
+                height: data.height,
+                formats: data.formats,
+              };
+            }
+          } else {
+            // Direct format - no nesting
+            imageUrl = strapiService.media.getMediaUrl(item.projectImage);
+
+            project.projectImage = {
+              id: item.projectImage.id || 0,
+              url: imageUrl,
+              alternativeText: item.projectImage.alternativeText,
+              width: item.projectImage.width,
+              height: item.projectImage.height,
+              formats: item.projectImage.formats,
+            };
+          }
+        }
+
+        return project;
       });
-
-      if (!response.data) return null;
-
-      return {
-        id: response.data.id,
-        ...response.data.attributes,
-        projectImage: strapiService.media.getMediaUrl(
-          response.data.attributes.projectImage
-        ), // Use media utility
-      };
     } catch (error) {
-      console.error("Error fetching project:", error);
+      console.error(
+        "Error fetching projects:",
+        new Error(
+          `Failed to retrieve projects: ${error instanceof Error ? error.message : String(error)}`
+        )
+      );
+      return [];
+    }
+  },
+
+  // Get a single project by ID
+  getOne: async (
+    id: string | number,
+    params: Record<string, unknown> = {}
+  ): Promise<ProjectResponse | null> => {
+    try {
+      const projectsCollection = strapiService.collection("projects");
+
+      // Define a properly typed query params object
+      const queryParams: Record<string, unknown> = {
+        ...params,
+        populate: params.populate || ["projectImage"], // Ensure projectImage is populated
+      };
+
+      // Use the collection's findOne method
+      const response = await projectsCollection.findOne(
+        id.toString(),
+        queryParams
+      );
+
+      if (!response.data) {
+        throw new Error(`Project with ID ${id} not found`);
+      }
+
+      // Transform to match our ProjectResponse type without attributes nesting
+      const project: ProjectResponse = {
+        id: response.data.id,
+        title: response.data.title,
+        description: response.data.description,
+        content: response.data.content || "",
+        state: response.data.state || "draft",
+        category: response.data.category || "Other",
+        technologies: response.data.technologies || [],
+        demoUrl: response.data.demoUrl || "",
+        githubUrl: response.data.githubUrl || "",
+        createdAt: response.data.createdAt,
+        updatedAt: response.data.updatedAt,
+        publishedAt: response.data.publishedAt,
+      };
+
+      // Process the image data if it exists
+      if (response.data.projectImage) {
+        // Handle both direct and nested data structures
+        let imageUrl: string;
+
+        // For Strapi v5
+        if (typeof response.data.projectImage.data !== "undefined") {
+          // This means we're dealing with the original nested structure
+          const data = response.data.projectImage.data;
+
+          if (data && data.attributes) {
+            // Structure with attributes (old format)
+            imageUrl = strapiService.media.getMediaUrl(data);
+
+            project.projectImage = {
+              id: data.id || 0,
+              url: imageUrl,
+              alternativeText: data.attributes.alternativeText,
+              width: data.attributes.width,
+              height: data.attributes.height,
+              formats: data.attributes.formats,
+            };
+          }
+        } else {
+          // Direct format - no nesting
+          imageUrl = strapiService.media.getMediaUrl(
+            response.data.projectImage
+          );
+
+          project.projectImage = {
+            id: response.data.projectImage.id || 0,
+            url: imageUrl,
+            alternativeText: response.data.projectImage.alternativeText,
+            width: response.data.projectImage.width,
+            height: response.data.projectImage.height,
+            formats: response.data.projectImage.formats,
+          };
+        }
+      }
+
+      return project;
+    } catch (error) {
+      console.error(
+        "Error fetching project:",
+        new Error(
+          `Failed to retrieve project: ${error instanceof Error ? error.message : String(error)}`
+        )
+      );
       return null;
     }
   },
 
-  getProjectById: async (id: number | string, params: any = {}) => {
-    console.log("getProjectById called with ID:", id);
-    console.log("and params:", params);
-
+  getProjectById: async (
+    id: number | string,
+    params: Record<string, unknown> = {}
+  ) => {
     try {
-      const result = await projectService.getOne(id, params);
-      console.log("getProjectById result:", result);
-      return result;
+      return await projectService.getOne(id, params);
     } catch (error) {
-      console.error("Error in getProjectById:", error);
+      console.error(
+        "Error in getProjectById:",
+        new Error(
+          `Failed to get project by ID ${id}: ${error instanceof Error ? error.message : String(error)}`
+        )
+      );
       throw error;
     }
+  },
+
+  // Helper method to get media URL (for backward compatibility)
+  getMediaUrl: (media: Media | Record<string, unknown>) => {
+    return strapiService.media.getMediaUrl(media);
   },
 
   // Create a new project
@@ -101,24 +232,20 @@ export const projectService = {
 
       // Ensure all required fields are present with default values
       const payload = {
-        title: data.title || "Untitled Project",
-        description: data.description || "",
-        content: data.content || "",
-        state: data.state || "draft",
-        category: data.category || "Other",
-        technologies: data.technologies || [],
-        demoUrl: data.demoUrl,
-        githubUrl: data.githubUrl,
+        data: {
+          title: data.title || "Untitled Project",
+          description: data.description || "",
+          content: data.content || "",
+          state: data.state || "draft",
+          category: data.category || "Other",
+          technologies: data.technologies || [],
+          demoUrl: data.demoUrl,
+          githubUrl: data.githubUrl,
+        },
       };
 
-      console.log("[ProjectService] Creating project with payload:", payload);
-
-      const response = await strapiService.fetch<any>("projects", {
-        method: "POST",
-        body: { data: payload },
-      });
-
-      console.log("[ProjectService] Create project response:", response);
+      const projectsCollection = strapiService.collection("projects");
+      const response = await projectsCollection.create(payload);
 
       if (!response || !response.data || !response.data.id) {
         throw new Error("Invalid response from server when creating project");
@@ -131,38 +258,46 @@ export const projectService = {
         await projectService.uploadProjectImage(projectId, projectImage);
       }
 
-      // If fetch fails, construct a valid ProjectResponse from the payload
-      const fallbackResponse: ProjectResponse = {
-        id: projectId,
-        title: payload.title,
-        description: payload.description,
-        content: payload.content,
-        state: payload.state,
-        category: payload.category,
-        technologies: payload.technologies,
-        demoUrl: payload.demoUrl,
-        githubUrl: payload.githubUrl,
-        // projectImage is not included since it's optional and we don't have a valid Media object
-      };
+      // Fetch and return the created project
+      const newProject = await projectService.getOne(projectId);
+      if (!newProject) {
+        // Provide a fallback if fetch fails
+        return {
+          id: projectId,
+          title: payload.data.title,
+          description: payload.data.description,
+          content: payload.data.content,
+          state: payload.data.state,
+          category: payload.data.category,
+          technologies: payload.data.technologies,
+          demoUrl: payload.data.demoUrl || "",
+          githubUrl: payload.data.githubUrl || "",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+      }
 
-      return fallbackResponse;
+      return newProject;
     } catch (error) {
-      console.error("[ProjectService] Error creating project:", error);
+      console.error(
+        "Error creating project:",
+        new Error(
+          `Failed to create project: ${error instanceof Error ? error.message : String(error)}`
+        )
+      );
       throw error;
     }
   },
 
   // Update an existing project
   update: async (
-    id: number | string,
+    id: string | number,
     data: Partial<ProjectAttributes>,
     projectImage?: File | null
   ): Promise<ProjectResponse> => {
     try {
-      await strapiService.fetch<any>(`projects/${id}`, {
-        method: "PUT",
-        body: { data },
-      });
+      const projectsCollection = strapiService.collection("projects");
+      await projectsCollection.update(id.toString(), { data });
 
       // Upload project image if provided
       if (projectImage) {
@@ -176,20 +311,29 @@ export const projectService = {
       }
       return updatedProject;
     } catch (error) {
-      console.error("Error updating project:", error);
+      console.error(
+        "Error updating project:",
+        new Error(
+          `Failed to update project: ${error instanceof Error ? error.message : String(error)}`
+        )
+      );
       throw error;
     }
   },
 
   // Delete a project
-  delete: async (id: string): Promise<boolean> => {
+  delete: async (id: string | number): Promise<boolean> => {
     try {
-      await strapiService.fetch<any>(`projects/${id}`, {
-        method: "DELETE",
-      });
+      const projectsCollection = strapiService.collection("projects");
+      await projectsCollection.delete(id.toString());
       return true;
     } catch (error) {
-      console.error("Error deleting project:", error);
+      console.error(
+        "Error deleting project:",
+        new Error(
+          `Failed to delete project: ${error instanceof Error ? error.message : String(error)}`
+        )
+      );
       return false;
     }
   },
@@ -206,12 +350,17 @@ export const projectService = {
       formData.append("field", "projectImage");
       formData.append("files", image);
 
-      await strapiService.fetch<any>("upload", {
+      await strapiService.fetch("upload", {
         method: "POST",
-        body: formData as any, // Type cast needed here
+        body: formData,
       });
     } catch (error) {
-      console.error("Error uploading project image:", error);
+      console.error(
+        "Error uploading project image:",
+        new Error(
+          `Failed to upload image: ${error instanceof Error ? error.message : String(error)}`
+        )
+      );
       throw error;
     }
   },
