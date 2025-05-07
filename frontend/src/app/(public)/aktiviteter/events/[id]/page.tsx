@@ -2,20 +2,22 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import { eventsService } from "@/lib/data/services/eventService";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { formatDate } from "@/lib/utils/eventUtils";
 import { Theme } from "@/styles/activityTheme";
-import { EventAttributes } from "@/types/content.types";
+import { EventResponse } from "@/types/content.types";
 
 export default function EventDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const [event, setEvent] = useState<EventAttributes | null>(null);
+  const [event, setEvent] = useState<EventResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Get the ID from params
   const eventId = params.id as string;
 
   useEffect(() => {
@@ -23,16 +25,37 @@ export default function EventDetailPage() {
       if (!eventId) return;
 
       setIsLoading(true);
+
       try {
-        const data = await eventsService.getOne(eventId, {
+        // For Strapi v5, we need to use documentId instead of id
+        // First try to fetch all events to find the one with the matching URL id
+        const allEvents = await eventsService.getAll({
           populate: ["eventCardImage"],
         });
 
-        if (!data) {
+        // Find the event with matching id or documentId
+        let targetEvent = null;
+
+        // First try to find by numeric ID (for backward compatibility)
+        if (!isNaN(Number(eventId))) {
+          targetEvent = allEvents.find((e) => e.id === Number(eventId));
+        }
+
+        // If not found and eventId has a specific format (like documentId)
+        if (!targetEvent && eventId.includes("-")) {
+          targetEvent = allEvents.find((e) => e.documentId === eventId);
+        }
+
+        // If still not found, try finding by string ID
+        if (!targetEvent) {
+          targetEvent = allEvents.find((e) => e.id.toString() === eventId);
+        }
+
+        if (!targetEvent) {
           throw new Error("Event not found");
         }
 
-        setEvent(data);
+        setEvent(targetEvent);
       } catch (err) {
         console.error("Error fetching event details:", err);
         setError("Could not load event details. Please try again.");
@@ -99,16 +122,19 @@ export default function EventDetailPage() {
         <div className="relative">
           {event.eventCardImage?.url && (
             <div className="w-full h-72 sm:h-96 relative">
-              <img
+              <Image
                 src={event.eventCardImage.url}
                 alt={event.title}
-                className="w-full h-full object-cover"
+                fill
+                sizes="(min-width: 1024px) 1024px, 100vw"
+                className="object-cover"
+                priority
               />
               <div
-                className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"
+                className="absolute inset-0"
                 style={{
                   background:
-                    "linear-gradient(to top, rgba(0,0,0,0.7), transparent)",
+                    "linear-gradient(to top, rgba(0,0,0,0.7), transparent 50%)",
                 }}
               ></div>
             </div>
@@ -129,7 +155,7 @@ export default function EventDetailPage() {
             >
               <div className="flex items-center">
                 <svg
-                  className="w-5 h-5 mr-2"
+                  className="w-5 h-5 mr-2 flex-shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -152,7 +178,7 @@ export default function EventDetailPage() {
               {event.time && (
                 <div className="flex items-center">
                   <svg
-                    className="w-5 h-5 mr-2"
+                    className="w-5 h-5 mr-2 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -164,14 +190,14 @@ export default function EventDetailPage() {
                       d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <span>{formatTime(event.time)}</span>
+                  <span>kl: {formatTime(event.time)}</span>
                 </div>
               )}
 
               {event.location && (
                 <div className="flex items-center">
                   <svg
-                    className="w-5 h-5 mr-2"
+                    className="w-5 h-5 mr-2 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -228,16 +254,16 @@ export default function EventDetailPage() {
             className="mt-10 pt-6 border-t"
             style={{ borderColor: Theme.colors.divider }}
           >
-            <div className="bg-blue-50 p-4 rounded-lg">
+            <div className="bg-blue-50 p-5 rounded-lg">
               <h3 className="text-lg font-medium text-blue-800">
                 Vil du delta?
               </h3>
-              <p className="mt-1 text-sm text-blue-600">
+              <p className="mt-2 text-sm text-blue-600">
                 For å melde deg på dette arrangementet, vennligst ta kontakt med
                 oss.
               </p>
               <button
-                className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
                 onClick={() => router.push("/kontakt-oss")}
               >
                 Kontakt oss for påmelding
