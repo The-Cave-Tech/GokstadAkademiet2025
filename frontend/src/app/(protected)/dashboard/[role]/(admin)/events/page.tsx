@@ -482,7 +482,7 @@ export default function EventsAdminPage() {
                             Edit
                           </Link>
                           <Link
-                            href={`/events/${event.documentId}`}
+                            href={`/aktiviteter/events/${event.id}`}
                             target="_blank"
                             className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-150 ease-in-out"
                             style={{

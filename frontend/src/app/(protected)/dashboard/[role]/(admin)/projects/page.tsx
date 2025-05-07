@@ -414,7 +414,7 @@ export default function ProjectsAdminPage() {
                             Edit
                           </Link>
                           <Link
-                            href={`/projects/${project.id}`}
+                            href={`/aktiviteter/projects/${project.id}`}
                             target="_blank"
                             className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-150 ease-in-out"
                             style={{
