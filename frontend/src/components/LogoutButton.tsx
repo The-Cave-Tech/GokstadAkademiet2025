@@ -1,4 +1,3 @@
-//frontend/src/components/LogoutButton.tsx
 "use client";
 
 import { useTransition } from "react";
@@ -14,7 +13,6 @@ export function LogoutButton({ className = "" }: { className?: string }) {
       try {
         setIsAuthenticated(false);
         await logout();
-        
         console.log("[Client] Logout successful");
       } catch (error) {
         console.error("[Client] Logout error:", error);

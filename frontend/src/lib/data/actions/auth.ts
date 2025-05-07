@@ -19,6 +19,7 @@ import {
   handleStrapiError,
   handleValidationErrors,
 } from "@/lib/utils/serverAction-errorHandler";
+import { strapiService } from "@/lib/data/services/strapiClient";
 
 /**
  * Registrerer en ny bruker.
@@ -112,7 +113,6 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
     
     await setAuthCookie(response.jwt);
 
-    // Return success state
     return {
       ...prevState,
       zodErrors: null,
@@ -138,8 +138,17 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
 export async function logout(): Promise<void> {
   try {
     console.log("[Server] Logout - Starting logout process");
+    try {
+      await strapiService.fetch("auth/logout", {
+        method: "POST"
+      });
+      console.log("[Server] Logout - Successfully logged out from Strapi");
+    } catch (error) {
+      console.error("[Server] Logout - Error logging out from Strapi:", error);
+    }
+    
     await removeAuthCookie();
-    console.log("[Server] Logout - Successfully removed auth cookie");
+    console.log("[Server] Logout - Successfully removed auth and session cookies");
   } catch (error) {
     console.error("[Server] Logout - Error during logout:", error);
     throw error;

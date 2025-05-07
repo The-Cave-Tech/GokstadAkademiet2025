@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 
 export async function setAuthCookie(token: string): Promise<void> {
   const cookieStore = await cookies();
-  const maxAge = 2 * 60 * 60; // 2 hours
+  const maxAge = 2 * 60 * 60;
   
   cookieStore.set("authToken", token, {
     httpOnly: true,
@@ -20,12 +20,34 @@ export async function setAuthCookie(token: string): Promise<void> {
 
 export async function removeAuthCookie(): Promise<void> {
   const cookieStore = await cookies();
+  const domain = new URL(process.env.NEXTAUTH_URL || "http://localhost:3000").hostname;
+  
   cookieStore.delete({
     name: "authToken",
     path: "/",
-    domain: new URL(process.env.NEXTAUTH_URL || "http://localhost:3000").hostname,
+    domain,
   });
-  console.log("[Server] Auth - JWT cookie removed");
+  
+  cookieStore.delete({
+    name: "koa.sess",
+    path: "/",
+    domain,
+  });
+  
+  cookieStore.delete({
+    name: "koa.sess.sig",
+    path: "/",
+    domain,
+  });
+  
+  // HMR cookies might be causing issues, though they should be dev-only
+  cookieStore.delete({
+    name: "__next_hmr_refresh_hash__",
+    path: "/",
+    domain,
+  });
+  
+  console.log("[Server] Auth - JWT cookie and session cookies removed");
 }
 
 export async function getAuthCookie(): Promise<string | null> {

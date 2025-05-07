@@ -26,7 +26,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [authProvider, setAuthProvider] = useState<UserAuthProvider>(null); 
 
-  // Sentralisert metode for å håndtere vellykket autentisering
   const handleSuccessfulAuth = () => {
     console.log("[AuthContext] Håndterer vellykket autentisering");
     router.push("/");

@@ -35,19 +35,18 @@ export function SignInForm() {
   const [formState, formAction] = useActionState(login, initialState);
   const { setIsAuthenticated, refreshAuthStatus, handleSuccessfulAuth } = useAuth(); 
 
-  // Social login buttons
+  // Here can providere be added or removed easy
   const socialButtons: SocialLoginButton[] = [
     { provider: "facebook", text: "Facebook", src: "facebook" },
     { provider: "microsoft", text: "Microsoft", src: "microsoft" },
     { provider: "google", text: "Google", src: "google" }
   ];
 
-  // OAuth login handler using Next.js router instead of window.location
+  // OAuth login
   const handleSocialLogin = (provider: string) => {
     const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL?.replace(/\/api$/, "") || "http://localhost:1337";
     const callbackUrl = `${window.location.origin}/api/auth/callback/${provider}`;
     
-    // Use router.push instead of direct window.location assignment
     router.push(`${baseUrl}/api/connect/${provider}?callback=${encodeURIComponent(callbackUrl)}`);
   };
 
@@ -68,8 +67,6 @@ export function SignInForm() {
     ) {
       setIsAuthenticated(true);
       refreshAuthStatus();
-      
-      // Use the centralized handleSuccessfulAuth method
       handleSuccessfulAuth();
     }
     
