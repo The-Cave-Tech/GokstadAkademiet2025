@@ -15,6 +15,7 @@ interface LandingPageData {
   hero: {
     title: string;
     subtitle: string;
+    imageUrl: string | null;
   };
   introduction: {
     title: string;
@@ -53,19 +54,25 @@ export default function LandingPageContent() {
           subtitle: heroComponent?.Subtitle || "Mangler undertittel",
         };
 
+        // Get hero image separately from intro image
+        const heroImage = response.data.HeroImage;
+        const heroImageUrl = strapiService.media.isValidMedia(heroImage)
+          ? strapiService.media.getMediaUrl(heroImage)
+          : null;
+
         const introImage = response.data.IntroductionImage;
         // Use strapiService.media helpers for handling the image
-        const imageUrl = strapiService.media.isValidMedia(introImage)
+        const introImageUrl = strapiService.media.isValidMedia(introImage)
           ? strapiService.media.getMediaUrl(introImage)
           : null;
 
         const introduction = {
           title: response.data.intoductionTitle || "Mangler tittel",
           text: response.data.introductionText || "Mangler tekst",
-          imageUrl,
+          imageUrl: introImageUrl,
         };
 
-        setContent({ hero, introduction });
+        setContent({ hero: { ...hero, imageUrl: heroImageUrl }, introduction });
         setErrorContent(null);
       } catch (err) {
         setErrorContent(
@@ -146,10 +153,10 @@ export default function LandingPageContent() {
       <section className="relative text-center py-20 px-4 bg-gray-900 text-white">
         <ClientMessage />
         <div className="absolute inset-0 z-0">
-          {content.introduction.imageUrl ? (
+          {content.hero.imageUrl ? (
             <Image
-              src={content.introduction.imageUrl}
-              alt="Landing Image"
+              src={content.hero.imageUrl}
+              alt="Hero Background Image"
               fill
               className="object-cover opacity-50"
               priority
@@ -169,16 +176,9 @@ export default function LandingPageContent() {
         </div>
       </section>
 
-      {/* Introduction Section */}
+      {/* Introduction Section - Image moved to the left */}
       <section className="py-16 px-4 max-w-6xl mx-auto grid gap-10 md:grid-cols-2 items-center">
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-            {content.introduction.title}
-          </h2>
-          <p className="text-base sm:text-lg leading-relaxed">
-            {content.introduction.text}
-          </p>
-        </div>
+        {/* Image section - now first in the grid order */}
         <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[500px] rounded-xl overflow-hidden shadow-lg">
           {content.introduction.imageUrl ? (
             <Image
@@ -194,6 +194,16 @@ export default function LandingPageContent() {
               <p className="text-gray-600">Bilde mangler</p>
             </div>
           )}
+        </div>
+
+        {/* Text section - now second in the grid order */}
+        <div>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4">
+            {content.introduction.title}
+          </h2>
+          <p className="text-base sm:text-lg leading-relaxed">
+            {content.introduction.text}
+          </p>
         </div>
       </section>
 
