@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { blogService } from "@/lib/data/services/blogService";
 import { formatDate } from "@/lib/utils/eventUtils";
+import BackButton from "@/components/BackButton";
 
 // Earthy color palette variables for easy customization (matching your existing colors)
 const colors = {
@@ -122,6 +123,7 @@ export default function BlogAdminPage() {
       className="min-h-screen p-6 sm:p-8 md:p-10"
       style={{ backgroundColor: colors.background }}
     >
+      <BackButton />
       {/* Success Message */}
       {successMessage && (
         <div

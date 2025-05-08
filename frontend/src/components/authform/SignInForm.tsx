@@ -1,16 +1,19 @@
+"use client";
+
 import { useActionState, useState, useEffect } from "react";
 import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
-import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { SiteLogo } from "@/components/ui/SiteLogo";
 import { useSignInValidation } from "@/hooks/useValidation";
 import { login } from "@/lib/data/actions/auth";
-import { LoginFormState, SignInValidationErrorKeys } from "@/types/auth.types";
+import { LoginFormState, SignInValidationErrorKeys, SocialLoginButton } from "@/types/auth.types";
 import { SignInFormData } from "@/lib/validation/userAuthValidation";
 import { authFieldError } from "@/lib/utils/serverAction-errorHandler";
 import { ZodErrors } from "../ZodErrors";
 import { PasswordToggle } from "../ui/custom/PasswordToggle";
 import { useAuth } from "@/lib/context/AuthContext";
+import { PageIcons } from "@/components/ui/custom/PageIcons";
 
 const initialState: LoginFormState = {
   zodErrors: null,
@@ -20,6 +23,7 @@ const initialState: LoginFormState = {
 };
 
 export function SignInForm() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [formValues, setFormValues] = useState<SignInFormData>({
     identifier: "",
@@ -30,6 +34,21 @@ export function SignInForm() {
   const { validationErrors, validateField } = useSignInValidation();
   const [formState, formAction] = useActionState(login, initialState);
   const { setIsAuthenticated, refreshAuthStatus, handleSuccessfulAuth } = useAuth(); 
+
+  // Here can providere be added or removed easy
+  const socialButtons: SocialLoginButton[] = [
+    { provider: "google", text: "Google", src: "google" },
+    { provider: "facebook", text: "Facebook", src: "facebook" },
+   /*  { provider: "microsoft", text: "Microsoft", src: "microsoft" } */
+  ];
+
+  // OAuth login
+  const handleSocialLogin = (provider: string) => {
+    const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL?.replace(/\/api$/, "") || "http://localhost:1337";
+    const callbackUrl = `${window.location.origin}/api/auth/callback/${provider}`;
+    
+    router.push(`${baseUrl}/api/connect/${provider}?callback=${encodeURIComponent(callbackUrl)}`);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -48,8 +67,6 @@ export function SignInForm() {
     ) {
       setIsAuthenticated(true);
       refreshAuthStatus();
-      
-      // Bruk den sentraliserte handleSuccessfulAuth-metoden
       handleSuccessfulAuth();
     }
     
@@ -139,9 +156,9 @@ export function SignInForm() {
             </fieldset>
 
             <div className="flex justify-end items-center my-4">
-              <a href="#" className="text-sm text-blue-500 hover:underline">
+              <Link href="/forgot-password" className="text-sm text-blue-500 hover:underline">
                 Glemt passord?
-              </a>
+              </Link>
             </div>
 
             <button
@@ -170,25 +187,26 @@ export function SignInForm() {
             </section>
 
             <ul className="mt-4 flex flex-col gap-2">
-              {[{ src: "/authlogo/facebook.svg", text: "Facebook" },
-                { src: "/authlogo/microsoft.svg", text: "Microsoft" },
-                { src: "/authlogo/google.svg", text: "Google" }]
-                .map(({ src, text }) => (
-                  <li key={text}>
-                    <button type="button" className="flex justify-center border w-full gap-2 rounded-lg p-2 hover:bg-gray-300">
-                      <Image
-                        src={src}
-                        alt={`${text} logo`}
-                        width={24}
-                        height={24}
-                        className="w-6 h-6"
-                      />
-                      <span className="text-gray-900 dark:text-white">
-                        Logg inn med {text}
-                      </span>
-                    </button>
-                  </li>
-                ))}
+              {socialButtons.map(({ src, text, provider }) => (
+                <li key={text}>
+                  <button 
+                    type="button" 
+                    onClick={() => handleSocialLogin(provider)}
+                    className="flex justify-center border w-full gap-2 rounded-lg p-2 hover:bg-gray-300"
+                  >
+                    <PageIcons
+                      name={src}
+                      directory="authlogo"
+                      size={24}
+                      alt={`${text} logo`}
+                      className="w-6 h-6"
+                    />
+                    <span className="text-gray-900 dark:text-white">
+                      Logg inn med {text}
+                    </span>
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
         </CardFooter>

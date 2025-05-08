@@ -1,3 +1,4 @@
+//frontend/src/lib/data/services/userAuth.ts
 import { SignInFormData, SignUpFormData } from "@/lib/validation/userAuthValidation";
 import { strapiService } from "@/lib/data/services/strapiClient";
 
@@ -7,6 +8,7 @@ export interface StrapiAuthResponse {
     id: number;
     username: string;
     email: string;
+    provider: string;
     role: {
       id: number;
       name: string;

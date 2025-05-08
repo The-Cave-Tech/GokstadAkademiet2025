@@ -1,9 +1,10 @@
 // src/lib/data/services/strapiClient.ts
 
-import { strapi } from '@strapi/client';
+import { strapi } from "@strapi/client";
 import { getAuthCookie } from "@/lib/utils/cookie";
 
-const BASE_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337/api";
+const BASE_URL =
+  process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337/api";
 
 export const strapiClient = strapi({
   baseURL: BASE_URL,
@@ -18,7 +19,7 @@ export interface StrapiRequestOptions {
 
 export async function getAuthenticatedClient() {
   const token = await getAuthCookie();
-  
+
   return strapi({
     baseURL: BASE_URL,
     auth: token || undefined,
@@ -26,26 +27,29 @@ export async function getAuthenticatedClient() {
 }
 
 export const strapiService = {
-  async fetch<T>(endpoint: string, options: StrapiRequestOptions = {}): Promise<T> {
+  async fetch<T>(
+    endpoint: string,
+    options: StrapiRequestOptions = {}
+  ): Promise<T> {
     try {
       const token = await getAuthCookie();
-      
+
       // Set up headers properly
       const headers: HeadersInit = {
         "Content-Type": "application/json",
       };
-      
+
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
       }
-      
+
       // Copy all custom headers
       if (options.headers) {
         Object.entries(options.headers).forEach(([key, value]) => {
           headers[key] = value;
         });
       }
-      
+
       // Convert body based on type
       let bodyToSend: BodyInit | null = null;
       if (options.body) {
@@ -56,14 +60,14 @@ export const strapiService = {
           bodyToSend = JSON.stringify(options.body);
         }
       }
-      
+
       // Create standard RequestInit
       const fetchOptions: RequestInit = {
-        method: options.method || 'GET',
+        method: options.method || "GET",
         headers,
         body: bodyToSend,
       };
-      
+
       // Build URL with query parameters if provided
       let url = `${BASE_URL}/${endpoint}`;
       if (options.params) {
@@ -73,16 +77,16 @@ export const strapiService = {
         });
         url += `?${searchParams.toString()}`;
       }
-      
+
       const response = await fetch(url, fetchOptions);
-      
+
       if (!response.ok) {
         // Enhanced error handling - parse error properly
         const errorData = await response.json().catch(() => ({}));
-        
+
         let errorMessage = "Ukjent feil";
         if (errorData.error) {
-          if (typeof errorData.error === 'string') {
+          if (typeof errorData.error === "string") {
             errorMessage = errorData.error;
           } else if (errorData.error.message) {
             errorMessage = errorData.error.message;
@@ -92,94 +96,120 @@ export const strapiService = {
         } else if (response.statusText) {
           errorMessage = response.statusText;
         }
-        
+
         throw new Error(errorMessage);
       }
-      
+
       return response.json();
     } catch (error) {
       console.error("strapiService fetch error:", error);
       throw error;
     }
   },
-  
+
   // Helper functions for collection types
   collection(name: string) {
     return strapiClient.collection(name);
   },
-  
+
   // Helper functions for single types
   single(name: string) {
     return strapiClient.single(name);
   },
-  
+
   // Media handling
   media: {
     getMediaUrl(media: unknown): string {
       if (!media) return "";
-      
-      const apiUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337/api";
+
+      const apiUrl =
+        process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337/api";
       const baseMediaUrl = apiUrl.replace(/\/api$/, "");
-      
+
       if (typeof media === "string") {
         return media.startsWith("http") ? media : `${baseMediaUrl}${media}`;
       }
-      
-      if (media && typeof media === "object" && "url" in media && typeof media.url === "string") {
+
+      if (
+        media &&
+        typeof media === "object" &&
+        "url" in media &&
+        typeof media.url === "string"
+      ) {
         const url = media.url;
         return url.startsWith("http") ? url : `${baseMediaUrl}${url}`;
       }
-      
+
       if (media && typeof media === "object" && "data" in media && media.data) {
         const data = media.data;
         if (data && typeof data === "object" && "attributes" in data) {
           const attributes = data.attributes;
-          if (attributes && typeof attributes === "object" && "url" in attributes) {
+          if (
+            attributes &&
+            typeof attributes === "object" &&
+            "url" in attributes
+          ) {
             const url = attributes.url;
-            return typeof url === "string" ? 
-              (url.startsWith("http") ? url : `${baseMediaUrl}${url}`) : "";
+            return typeof url === "string"
+              ? url.startsWith("http")
+                ? url
+                : `${baseMediaUrl}${url}`
+              : "";
           }
         }
       }
-      
+
       return "";
     },
-    
+
     getAltText(media: unknown): string {
       if (!media || typeof media !== "object") return "";
-      
-      if ("alternativeText" in media && typeof media.alternativeText === "string") {
+
+      if (
+        "alternativeText" in media &&
+        typeof media.alternativeText === "string"
+      ) {
         return media.alternativeText;
       }
-      
+
       if ("alt" in media && typeof media.alt === "string") {
         return media.alt;
       }
-      
-      if ("data" in media && media.data && typeof media.data === "object" && "attributes" in media.data) {
+
+      if (
+        "data" in media &&
+        media.data &&
+        typeof media.data === "object" &&
+        "attributes" in media.data
+      ) {
         const attributes = media.data.attributes;
         if (attributes && typeof attributes === "object") {
-          if ("alternativeText" in attributes && typeof attributes.alternativeText === "string") {
+          if (
+            "alternativeText" in attributes &&
+            typeof attributes.alternativeText === "string"
+          ) {
             return attributes.alternativeText;
           }
         }
       }
-      
+
       return "";
     },
-    
+
     isValidMedia(media: unknown): boolean {
       if (!media) return false;
-      
+
       if (typeof media === "string") return true;
-      
+
       if (typeof media === "object" && media !== null) {
-        return "url" in media || 
-               ("data" in media && media.data !== null) ||
-               "formats" in media;
+        return (
+          "url" in media ||
+          ("data" in media && media.data !== null) ||
+          "formats" in media
+        );
       }
-      
+
       return false;
-    }
-  }
+    },
+  },
 };

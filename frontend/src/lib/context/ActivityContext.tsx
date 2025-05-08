@@ -96,16 +96,15 @@ export const ActivitiesProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         if (state.activeTab === "projects") {
           // Only fetch projects data when activeTab is projects
+          // Using string format for sort parameter and simple populate instead of array
           const data = await projectService.getAll({
-            sort: ["createdAt:desc"],
-            populate: ["projectImage", "technologies"],
+            sort: "createdAt:desc",
           });
           dispatch({ type: "SET_PROJECTS", payload: data });
         } else if (state.activeTab === "events") {
           // Only fetch events data when activeTab is events
           const data = await eventsService.getAll({
             sort: ["startDate:desc"],
-            populate: ["eventCardImage"],
           });
           dispatch({ type: "SET_EVENTS", payload: data });
         }

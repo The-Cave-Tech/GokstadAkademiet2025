@@ -36,7 +36,7 @@ export const ActivitiesLayout: React.FC<ActivitiesLayoutProps> = ({
         style={{ backgroundColor: Theme.colors.surface }}
       >
         {/* Header */}
-        <div className="bg-primary px-6 py-5 sm:px-8 sm:py-6">
+        <div className="text-profile-text px-6 py-5 sm:px-8 sm:py-6">
           <div className="flex flex-col sm:flex-row justify-between items-center">
             {/* Navigation Tabs */}
             <TabSelector activeTab={activeTab} setActiveTab={onTabAction} />

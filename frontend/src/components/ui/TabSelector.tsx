@@ -17,13 +17,13 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
         onClick={() => setActiveTab("projects")}
         className={`px-4 py-2 rounded-l-md text-sm font-medium ${
           activeTab === "projects"
-            ? "bg-white text-primary"
-            : "bg-transparent text-white"
+            ? "bg-secondary text-white"
+            : "bg-transparent text-primary"
         }`}
         style={{
           border: `1px solid ${Theme.colors.divider}`,
           backgroundColor:
-            activeTab === "projects" ? Theme.colors.surface : "transparent",
+            activeTab === "projects" ? Theme.colors.primary : "transparent",
         }}
       >
         Prosjekter
@@ -32,13 +32,13 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
         onClick={() => setActiveTab("events")}
         className={`px-4 py-2 rounded-r-md text-sm font-medium ${
           activeTab === "events"
-            ? "bg-white text-primary"
-            : "bg-transparent text-white"
+            ? "bg-black text-white"
+            : "bg-transparent text-primary"
         }`}
         style={{
           border: `1px solid ${Theme.colors.divider}`,
           backgroundColor:
-            activeTab === "events" ? Theme.colors.surface : "transparent",
+            activeTab === "events" ? Theme.colors.primary : "transparent",
         }}
       >
         Arrangementer

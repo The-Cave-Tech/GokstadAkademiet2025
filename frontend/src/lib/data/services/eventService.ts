@@ -1,121 +1,194 @@
-// services/eventsService.ts
-import { EventAttributes, Media } from "@/types/content.types";
+// services/eventsService.ts - Updated for Strapi v5 and Next.js 15
+import { EventAttributes, EventResponse, Media } from "@/types/content.types";
 import { strapiService } from "@/lib/data/services/strapiClient";
-
-// Define EventResponse type that includes id
-interface EventResponse extends EventAttributes {
-  id: number;
-}
 
 // Events service
 export const eventsService = {
   // Get all events with optional filters, sorting, and pagination
-  getAll: async (params: any = {}): Promise<EventResponse[]> => {
+  getAll: async (
+    params: Record<string, unknown> = {}
+  ): Promise<EventResponse[]> => {
     try {
-      const queryParams = {
+      // Using collection method for consistent approach
+      const eventsCollection = strapiService.collection("events");
+
+      // Define a properly typed query params object
+      const queryParams: Record<string, unknown> = {
         ...params,
         populate: params.populate || ["eventCardImage"], // Ensure eventCardImage is populated
       };
 
-      const response = await strapiService.fetch<any>("events", {
-        params: queryParams,
-      });
+      // Use the collection's find method
+      const response = await eventsCollection.find(queryParams);
 
       if (!response.data || !Array.isArray(response.data)) {
-        console.warn("No events found or data is not an array");
-        return [];
+        throw new Error(
+          "Invalid response format: No events found or data is not an array"
+        );
       }
 
-      const test = response.data.map((item: any) => ({
-        id: item.id,
-        ...item, // This includes all fields directly
-        eventCardImage: strapiService.media.getMediaUrl(item.eventCardImage),
-      }));
-      console.log("Fetched events:", test);
-      return test;
+      // Transform the response to match our EventResponse type
+      return response.data.map((item) => {
+        // Extract the base event data directly without attributes nesting
+        const event: EventResponse = {
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          content: item.content || "",
+          startDate: item.startDate,
+          endDate: item.endDate,
+          time: item.time,
+          location: item.location || "",
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          publishedAt: item.publishedAt,
+        };
+
+        // Process the image data if it exists
+        if (item.eventCardImage) {
+          // Handle both direct and nested data structures
+          let imageUrl: string;
+
+          // For Strapi v5
+          if (typeof item.eventCardImage.data !== "undefined") {
+            // This means we're dealing with the original nested structure
+            const data = item.eventCardImage.data;
+
+            if (data) {
+              // Structure with attributes (old format)
+              imageUrl = strapiService.media.getMediaUrl(data);
+
+              event.eventCardImage = {
+                id: data.id || 0,
+                url: imageUrl,
+                alternativeText: data.alternativeText,
+                width: data.width,
+                height: data.height,
+                formats: data.formats,
+              };
+            }
+          } else {
+            // Direct format - no nesting
+            imageUrl = strapiService.media.getMediaUrl(item.eventCardImage);
+
+            event.eventCardImage = {
+              id: item.eventCardImage.id || 0,
+              url: imageUrl,
+              alternativeText: item.eventCardImage.alternativeText,
+              width: item.eventCardImage.width,
+              height: item.eventCardImage.height,
+              formats: item.eventCardImage.formats,
+            };
+          }
+        }
+
+        return event;
+      });
     } catch (error) {
-      console.error("Error fetching events:", error);
+      console.error(
+        "Error fetching events:",
+        new Error(
+          `Failed to retrieve events: ${error instanceof Error ? error.message : String(error)}`
+        )
+      );
       return [];
     }
   },
 
-  getByDocumentId: async (
-    documentId: string,
-    params: any = {}
+  // Get a single event by ID
+  getOne: async (
+    id: string | number,
+    params: Record<string, unknown> = {}
   ): Promise<EventResponse | null> => {
     try {
-      console.log(`Fetching event with documentId: ${documentId}`);
+      const eventsCollection = strapiService.collection("events");
 
-      // Merge the filters to include the documentId filter
-      const queryParams = {
+      // Define a properly typed query params object
+      const queryParams: Record<string, unknown> = {
         ...params,
-        filters: {
-          ...(params.filters || {}),
-          documentId: { $eq: documentId },
-        },
-        populate: params.populate || ["eventCardImage"],
+        populate: params.populate || ["eventCardImage"], // Ensure eventCardImage is populated
       };
 
-      const data = await strapiService.fetch<any>("events", {
-        params: queryParams,
-      });
+      // Use the collection's findOne method
+      const response = await eventsCollection.findOne(
+        id.toString(),
+        queryParams
+      );
 
-      if (!data.data || data.data.length === 0) {
-        console.log(`No event found with documentId: ${documentId}`);
-        return null;
+      if (!response.data) {
+        throw new Error(`Event with ID ${id} not found`);
       }
 
-      const event = data.data[0];
-      console.log(`Found event:`, event);
-
-      return {
-        id: event.id,
-        ...event,
-        eventCardImage: strapiService.media.getMediaUrl(event.eventCardImage),
+      // Transform to match our EventResponse type without attributes nesting
+      const event: EventResponse = {
+        id: response.data.id,
+        title: response.data.title,
+        description: response.data.description,
+        content: response.data.content || "",
+        startDate: response.data.startDate,
+        endDate: response.data.endDate,
+        time: response.data.time,
+        location: response.data.location || "",
+        createdAt: response.data.createdAt,
+        updatedAt: response.data.updatedAt,
+        publishedAt: response.data.publishedAt,
       };
+
+      // Process the image data if it exists
+      if (response.data.eventCardImage) {
+        // Handle both direct and nested data structures
+        let imageUrl: string;
+
+        // For Strapi v5
+        if (typeof response.data.eventCardImage.data !== "undefined") {
+          // This means we're dealing with the original nested structure
+          const data = response.data.eventCardImage.data;
+
+          if (data && data.attributes) {
+            // Structure with attributes (old format)
+            imageUrl = strapiService.media.getMediaUrl(data);
+
+            event.eventCardImage = {
+              id: data.id || 0,
+              url: imageUrl,
+              alternativeText: data.attributes.alternativeText,
+              width: data.attributes.width,
+              height: data.attributes.height,
+              formats: data.attributes.formats,
+            };
+          }
+        } else {
+          // Direct format - no nesting
+          imageUrl = strapiService.media.getMediaUrl(
+            response.data.eventCardImage
+          );
+
+          event.eventCardImage = {
+            id: response.data.eventCardImage.id || 0,
+            url: imageUrl,
+            alternativeText: response.data.eventCardImage.alternativeText,
+            width: response.data.eventCardImage.width,
+            height: response.data.eventCardImage.height,
+            formats: response.data.eventCardImage.formats,
+          };
+        }
+      }
+
+      return event;
     } catch (error) {
       console.error(
-        `Error fetching event with documentId ${documentId}:`,
-        error
+        "Error fetching event:",
+        new Error(
+          `Failed to retrieve event: ${error instanceof Error ? error.message : String(error)}`
+        )
       );
       return null;
     }
   },
 
-  // Get media URL helper
-  getMediaUrl: (media: any) => {
+  // Helper method to get media URL (for backward compatibility)
+  getMediaUrl: (media: Media | Record<string, unknown>) => {
     return strapiService.media.getMediaUrl(media);
-  },
-
-  // Get a single event by ID
-  getOne: async (
-    id: number | string,
-    params: any = {}
-  ): Promise<EventResponse | null> => {
-    try {
-      const queryParams = {
-        ...params,
-        populate: params.populate || ["eventCardImage"], // Ensure eventCardImage is populated
-      };
-
-      const response = await strapiService.fetch<any>(`events/${id}`, {
-        params: queryParams,
-      });
-
-      if (!response.data) return null;
-
-      // Handle flat structure (no attributes)
-      return {
-        id: response.data.id,
-        ...response.data, // Include all fields directly
-        eventCardImage: strapiService.media.getMediaUrl(
-          response.data.eventCardImage
-        ),
-      };
-    } catch (error) {
-      console.error("Error fetching event:", error);
-      return null;
-    }
   },
 
   // Create a new event
@@ -137,32 +210,23 @@ export const eventsService = {
       if (!data.startDate) {
         const today = new Date();
         data.startDate = today.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-        console.warn(
-          "[EventsService] Missing startDate, defaulting to today:",
-          data.startDate
-        );
       }
 
-      // IMPORTANT: Here's the fix - use Description with uppercase D for your Strapi field name
-      // Create payload only with the fields that exist in your Strapi schema
+      // Create payload for Strapi
       const payload = {
-        title: data.title || "Untitled Event",
-        description: data.description || "", // Keep it as Description with capital D
-        startDate: data.startDate,
-        endDate: data.endDate,
-        time: data.time,
-        location: data.location || "",
-        content: data.content || "",
+        data: {
+          title: data.title || "Untitled Event",
+          description: data.description || "",
+          startDate: data.startDate,
+          endDate: data.endDate,
+          time: data.time,
+          location: data.location || "",
+          content: data.content || "",
+        },
       };
 
-      console.log("[EventsService] Creating event with payload:", payload);
-
-      const response = await strapiService.fetch<any>("events", {
-        method: "POST",
-        body: { data: payload },
-      });
-
-      console.log("[EventsService] Create event response:", response);
+      const eventsCollection = strapiService.collection("events");
+      const response = await eventsCollection.create(payload);
 
       if (!response || !response.data || !response.data.id) {
         throw new Error("Invalid response from server when creating event");
@@ -175,43 +239,45 @@ export const eventsService = {
         await eventsService.uploadEventImage(eventId, eventCardImage);
       }
 
-      // If fetch fails, construct a valid EventResponse from the payload
-      const fallbackResponse: EventResponse = {
-        id: eventId,
-        title: payload.title,
-        description: payload.description, // Use the correct field name with capital D
-        content: payload.content,
-        startDate: payload.startDate,
-        endDate: payload.endDate,
-        time: payload.time,
-        location: payload.location,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      // Fetch and return the created event
+      const newEvent = await eventsService.getOne(eventId);
+      if (!newEvent) {
+        // Provide a fallback if fetch fails
+        return {
+          id: eventId,
+          title: payload.data.title,
+          description: payload.data.description,
+          content: payload.data.content || "",
+          startDate: payload.data.startDate,
+          endDate: payload.data.endDate,
+          time: payload.data.time,
+          location: payload.data.location,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+      }
 
-      return fallbackResponse;
+      return newEvent;
     } catch (error) {
-      console.error("[EventsService] Error creating event:", error);
+      console.error(
+        "Error creating event:",
+        new Error(
+          `Failed to create event: ${error instanceof Error ? error.message : String(error)}`
+        )
+      );
       throw error;
     }
   },
 
   // Update an existing event
   update: async (
-    id: number | string,
+    id: string | number,
     data: Partial<EventAttributes>,
     eventCardImage?: File | null
   ): Promise<EventResponse> => {
     try {
-      // Log the update payload for debugging
-      console.log(`Updating event ${id} with data:`, data);
-
-      const response = await strapiService.fetch<any>(`events/${id}`, {
-        method: "PUT",
-        body: { data },
-      });
-
-      console.log("Update response:", response);
+      const eventsCollection = strapiService.collection("events");
+      await eventsCollection.update(id.toString(), { data });
 
       // Upload event image if provided
       if (eventCardImage) {
@@ -225,7 +291,12 @@ export const eventsService = {
       }
       return updatedEvent;
     } catch (error) {
-      console.error("Error updating event:", error);
+      console.error(
+        "Error updating event:",
+        new Error(
+          `Failed to update event: ${error instanceof Error ? error.message : String(error)}`
+        )
+      );
       throw error;
     }
   },
@@ -233,13 +304,16 @@ export const eventsService = {
   // Delete an event
   delete: async (id: string | number): Promise<boolean> => {
     try {
-      console.log(`Deleting event with ID: ${id}`);
-      await strapiService.fetch<any>(`events/${id}`, {
-        method: "DELETE",
-      });
+      const eventsCollection = strapiService.collection("events");
+      await eventsCollection.delete(id.toString());
       return true;
     } catch (error) {
-      console.error("Error deleting event:", error);
+      console.error(
+        "Error deleting event:",
+        new Error(
+          `Failed to delete event: ${error instanceof Error ? error.message : String(error)}`
+        )
+      );
       return false;
     }
   },
@@ -250,22 +324,23 @@ export const eventsService = {
     image: File
   ): Promise<void> => {
     try {
-      console.log(`Uploading image for event ${eventId}`);
-
       const formData = new FormData();
       formData.append("ref", "api::event.event");
       formData.append("refId", eventId.toString());
       formData.append("field", "eventCardImage");
       formData.append("files", image);
 
-      const response = await strapiService.fetch<any>("upload", {
+      await strapiService.fetch("upload", {
         method: "POST",
         body: formData,
       });
-
-      console.log("Image upload response:", response);
     } catch (error) {
-      console.error("Error uploading event image:", error);
+      console.error(
+        "Error uploading event image:",
+        new Error(
+          `Failed to upload image: ${error instanceof Error ? error.message : String(error)}`
+        )
+      );
       throw error;
     }
   },

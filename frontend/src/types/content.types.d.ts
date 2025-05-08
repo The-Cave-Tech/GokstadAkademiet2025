@@ -1,5 +1,5 @@
 // frontend/src/types/content.types.d.ts
-// Media type
+// Media type for Strapi v5
 export interface Media {
   id: number;
   url: string;
@@ -9,51 +9,47 @@ export interface Media {
   formats?: Record<string, any>;
 }
 
-// Event attributes matching the updated structure
-export interface EventAttributes {
-  id: number; // Include the ID directly in the attributes
-  documentId?: string; // Optional document ID
-  title: string;
-  description: string;
-  content?: string;
-  startDate?: string; // Ensure startDate is a string or null
-  endDate?: string;
-  time?: string;
-  location?: string;
-  eventCardImage?: Media;
+// Base content interface with common fields for all content types
+interface BaseContent {
+  id: number;
+  documentId?: string;
   createdAt?: string;
   updatedAt?: string;
   publishedAt?: string;
 }
 
-// Event response type (directly represents the event structure)
-export type EventResponse = EventAttributes;
-
-// Project attributes
-export interface ProjectAttributes {
-  id: number;
-  documentId?: string; // Optional document ID
+// Event attributes matching Strapi v5 structure
+export interface EventAttributes extends BaseContent {
   title: string;
   description: string;
   content?: string;
-  projectImage?: Media; // Updated to use Media type
-  state?: string; // Ensure 'state' is defined
+  startDate?: string;
+  endDate?: string;
+  time?: string;
+  location?: string;
+  eventCardImage?: Media;
+}
+
+// Project attributes
+export interface ProjectAttributes extends BaseContent {
+  title: string;
+  description: string;
+  content?: string;
+  projectImage?: Media;
+  state?: string;
   category?: string;
   technologies?: string[];
   demoUrl?: string;
   githubUrl?: string;
 }
 
-// Project response type
-export type ProjectResponse = ProjectAttributes;
-
-export interface BlogAttributes {
-  id: number;
+// Blog attributes
+export interface BlogAttributes extends BaseContent {
   title: string;
   summary: string;
   content: string;
   category?: string;
-  tags?: string[] | string; // Can be array or comma-separated string
+  tags?: string[] | string;
   state: "draft" | "published" | "archived";
   blogImage?: Media;
   author?: {
@@ -61,16 +57,9 @@ export interface BlogAttributes {
     username: string;
     email?: string;
   };
-  createdAt?: string;
-  updatedAt?: string;
-  publishedAt?: string;
-  documentId?: string;
 }
 
-// Blog response type (represents the blog post structure)
+// Response types
+export type EventResponse = EventAttributes;
+export type ProjectResponse = ProjectAttributes;
 export type BlogResponse = BlogAttributes;
-
-// BlogCard props for rendering blog post cards
-export interface BlogCardProps {
-  blog: BlogAttributes;
-}
