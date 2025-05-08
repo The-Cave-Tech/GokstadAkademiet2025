@@ -1,7 +1,7 @@
 {
-  "collectionName": "components_landing_page_hero_sections",
+  "collectionName": "components_landing_page_intros",
   "info": {
-    "displayName": "HeroSection",
+    "displayName": "Intro",
     "description": ""
   },
   "options": {},
@@ -9,12 +9,12 @@
     "Title": {
       "type": "string"
     },
-    "Subtitle": {
+    "IntroductionText": {
       "type": "string"
     },
-    "heroImage": {
+    "introductionImage": {
       "type": "media",
-      "multiple": false,
+      "multiple": true,
       "required": false,
       "allowedTypes": [
         "images",
