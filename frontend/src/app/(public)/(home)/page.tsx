@@ -261,17 +261,23 @@ export default function LandingPageContent() {
         </div>
       </section>
 
-      {/* Events Section */}
+      {/* Events Section - Vertical Layout with exact dimensions */}
       <section className="py-20 px-4 bg-gray-50">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-12 text-center">
-            Arrangementer
-          </h2>
-          <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Arrangementer
+            </h2>
+            <p className="text-lg text-gray-700 max-w-2xl mx-auto">
+              Se våre kommende arrangementer
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center gap-4 max-w-[658px] mx-auto">
             {events.length > 0 ? (
               events.map((event) => <EventCard key={event.id} event={event} />)
             ) : (
-              <p className="text-center text-gray-500">
+              <p className="text-center text-gray-500 w-full h-[76px] flex items-center justify-center border rounded-lg">
                 Ingen arrangementer funnet
               </p>
             )}
