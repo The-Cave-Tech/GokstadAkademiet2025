@@ -37,9 +37,9 @@ export function SignInForm() {
 
   // Here can providere be added or removed easy
   const socialButtons: SocialLoginButton[] = [
+    { provider: "google", text: "Google", src: "google" },
     { provider: "facebook", text: "Facebook", src: "facebook" },
-    { provider: "microsoft", text: "Microsoft", src: "microsoft" },
-    { provider: "google", text: "Google", src: "google" }
+    { provider: "microsoft", text: "Microsoft", src: "microsoft" }
   ];
 
   // OAuth login

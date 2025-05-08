@@ -1,4 +1,3 @@
-// src/types/userProfile.types.ts (ny fil)
 export type UserAuthProvider = 'local' | 'google' | 'facebook' | null;
 
 export function getProviderDisplayName(provider?: string): string {
