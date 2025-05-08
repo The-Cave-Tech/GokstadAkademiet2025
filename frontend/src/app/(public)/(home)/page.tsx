@@ -24,6 +24,18 @@ interface LandingPageData {
   };
 }
 
+// Helper function to ensure image URLs are properly formed
+const ensureFullUrl = (url: string): string => {
+  if (url.startsWith("http")) {
+    return url;
+  }
+  const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "";
+  return `${baseUrl}${url.startsWith("/") ? url : `/${url}`}`;
+};
+
+// Default placeholder image path - make sure this file exists in your public folder
+const PLACEHOLDER_IMAGE = "/placeholder.jpg";
+
 export default function LandingPageContent() {
   const [content, setContent] = useState<LandingPageData | null>(null);
   const [events, setEvents] = useState<EventAttributes[]>([]);
@@ -39,6 +51,13 @@ export default function LandingPageContent() {
     intro: boolean;
   }>({ hero: false, intro: false });
 
+  // Debug function that returns a string (never null) to satisfy TypeScript
+  const debugImageUrl = (imageUrl: string | null, type: string): string => {
+    console.log(`DEBUG ${type} image URL:`, imageUrl);
+    // Return the actual URL or a placeholder to satisfy TypeScript
+    return imageUrl || PLACEHOLDER_IMAGE;
+  };
+
   useEffect(() => {
     async function getLandingPageData() {
       try {
@@ -52,6 +71,8 @@ export default function LandingPageContent() {
           throw new Error("Ingen 'data' funnet i Strapi-respons");
         }
 
+        console.log("Full Strapi response:", response.data);
+
         const heroComponent = response.data.Hero;
         const hero = {
           title: heroComponent?.Title || "Mangler tittel",
@@ -61,12 +82,39 @@ export default function LandingPageContent() {
         // Get hero image using enhanced error handling
         let heroImageUrl = null;
         const heroImage = response.data.HeroImage;
-        if (strapiService.media.isValidMedia(heroImage)) {
+        console.log("Raw hero image data:", heroImage);
+
+        if (heroImage && typeof heroImage === "object") {
           try {
-            heroImageUrl = strapiService.media.getMediaUrl(heroImage);
-            // Add a cache-busting parameter to avoid cached 404 responses
-            if (heroImageUrl) {
+            // First check if we're dealing with a valid media object with new Strapi structure
+            if (heroImage.data && heroImage.data.attributes) {
+              // Directly access the URL from the attributes
+              const urlPath = heroImage.data.attributes.url;
+              if (urlPath) {
+                // Build the full URL with base URL if needed
+                heroImageUrl = ensureFullUrl(urlPath);
+
+                // Add a cache-busting parameter
+                heroImageUrl = `${heroImageUrl}?t=${Date.now()}`;
+                console.log("Hero image URL built directly:", heroImageUrl);
+              }
+            }
+            // Try the helper method as fallback
+            else if (strapiService.media.isValidMedia(heroImage)) {
+              heroImageUrl = strapiService.media.getMediaUrl(heroImage);
+              if (heroImageUrl) {
+                heroImageUrl = `${heroImageUrl}?t=${Date.now()}`;
+                console.log("Hero image URL from helper:", heroImageUrl);
+              }
+            }
+            // Try the old structure directly
+            else if (heroImage.url) {
+              heroImageUrl = ensureFullUrl(heroImage.url);
               heroImageUrl = `${heroImageUrl}?t=${Date.now()}`;
+              console.log(
+                "Hero image URL from direct url property:",
+                heroImageUrl
+              );
             }
           } catch (err) {
             console.error("Error processing hero image:", err);
@@ -76,12 +124,39 @@ export default function LandingPageContent() {
         // Get intro image using enhanced error handling
         let introImageUrl = null;
         const introImage = response.data.IntroductionImage;
-        if (strapiService.media.isValidMedia(introImage)) {
+        console.log("Raw intro image data:", introImage);
+
+        if (introImage && typeof introImage === "object") {
           try {
-            introImageUrl = strapiService.media.getMediaUrl(introImage);
-            // Add a cache-busting parameter to avoid cached 404 responses
-            if (introImageUrl) {
+            // First check if we're dealing with a valid media object with new Strapi structure
+            if (introImage.data && introImage.data.attributes) {
+              // Directly access the URL from the attributes
+              const urlPath = introImage.data.attributes.url;
+              if (urlPath) {
+                // Build the full URL with base URL if needed
+                introImageUrl = ensureFullUrl(urlPath);
+
+                // Add a cache-busting parameter
+                introImageUrl = `${introImageUrl}?t=${Date.now()}`;
+                console.log("Intro image URL built directly:", introImageUrl);
+              }
+            }
+            // Try the helper method as fallback
+            else if (strapiService.media.isValidMedia(introImage)) {
+              introImageUrl = strapiService.media.getMediaUrl(introImage);
+              if (introImageUrl) {
+                introImageUrl = `${introImageUrl}?t=${Date.now()}`;
+                console.log("Intro image URL from helper:", introImageUrl);
+              }
+            }
+            // Try the old structure directly
+            else if (introImage.url) {
+              introImageUrl = ensureFullUrl(introImage.url);
               introImageUrl = `${introImageUrl}?t=${Date.now()}`;
+              console.log(
+                "Intro image URL from direct url property:",
+                introImageUrl
+              );
             }
           } catch (err) {
             console.error("Error processing intro image:", err);
@@ -158,13 +233,13 @@ export default function LandingPageContent() {
     fetchProjects();
   }, []);
 
-  // Handle image load errors
+  // Handle image load errors with improved logging
   const handleImageError = (imageType: "hero" | "intro") => {
+    console.error(`Image load error for ${imageType} image`);
     setImageLoadError((prev) => ({
       ...prev,
       [imageType]: true,
     }));
-    console.error(`Failed to load ${imageType} image`);
   };
 
   if (loadingContent || loadingEvents || loadingProjects) {
@@ -189,15 +264,24 @@ export default function LandingPageContent() {
         <ClientMessage />
         <div className="absolute inset-0 z-0">
           {content.hero.imageUrl && !imageLoadError.hero ? (
-            <Image
-              src={content.hero.imageUrl}
-              alt="Hero Background Image"
-              fill
-              className="object-cover opacity-50"
-              priority
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 100vw"
-              onError={() => handleImageError("hero")}
-            />
+            <>
+              {console.log("Rendering hero image:", content.hero.imageUrl)}
+              <Image
+                src={debugImageUrl(content.hero.imageUrl, "hero")}
+                alt="Hero Background Image"
+                fill
+                className="object-cover opacity-50"
+                priority
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 100vw"
+                onError={() => {
+                  console.error(
+                    "Hero image failed to load:",
+                    content.hero.imageUrl
+                  );
+                  handleImageError("hero");
+                }}
+              />
+            </>
           ) : (
             <div className="w-full h-full bg-gray-700" />
           )}
@@ -217,15 +301,27 @@ export default function LandingPageContent() {
         {/* Image section - now first in the grid order */}
         <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[500px] rounded-xl overflow-hidden shadow-lg">
           {content.introduction.imageUrl && !imageLoadError.intro ? (
-            <Image
-              src={content.introduction.imageUrl}
-              alt="Introduction Image"
-              fill
-              className="object-cover"
-              priority
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-              onError={() => handleImageError("intro")}
-            />
+            <>
+              {console.log(
+                "Rendering intro image:",
+                content.introduction.imageUrl
+              )}
+              <Image
+                src={debugImageUrl(content.introduction.imageUrl, "intro")}
+                alt="Introduction Image"
+                fill
+                className="object-cover"
+                priority
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                onError={() => {
+                  console.error(
+                    "Intro image failed to load:",
+                    content.introduction.imageUrl
+                  );
+                  handleImageError("intro");
+                }}
+              />
+            </>
           ) : (
             <div className="w-full h-full bg-gray-300 flex items-center justify-center">
               <p className="text-gray-600">Bilde mangler</p>
