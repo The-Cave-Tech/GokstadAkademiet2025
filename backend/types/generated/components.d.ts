@@ -8,10 +8,42 @@ export interface FooterOpeningHours extends Struct.ComponentSchema {
   };
   attributes: {
     Fredag: Schema.Attribute.String;
+    Lordag: Schema.Attribute.String;
     Mandag: Schema.Attribute.String;
     Onsdag: Schema.Attribute.String;
+    Sondag: Schema.Attribute.String;
     Tirsdag: Schema.Attribute.String;
     Torsdag: Schema.Attribute.String;
+  };
+}
+
+export interface FooterSocialLinks extends Struct.ComponentSchema {
+  collectionName: 'components_footer_social_links';
+  info: {
+    description: '';
+    displayName: 'socialLinks';
+  };
+  attributes: {
+    icon: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+    url: Schema.Attribute.String;
+  };
+}
+
+export interface FooterSocialMedia extends Struct.ComponentSchema {
+  collectionName: 'components_footer_social_medias';
+  info: {
+    description: '';
+    displayName: 'socialMedia';
+  };
+  attributes: {
+    icon: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+    url: Schema.Attribute.String;
   };
 }
 
@@ -113,6 +145,8 @@ declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'footer.opening-hours': FooterOpeningHours;
+      'footer.social-links': FooterSocialLinks;
+      'footer.social-media': FooterSocialMedia;
       'landing-page.hero-section': LandingPageHeroSection;
       'user-profile.account-administration': UserProfileAccountAdministration;
       'user-profile.notification-settings': UserProfileNotificationSettings;
