@@ -7,7 +7,7 @@ type Provider = typeof SUPPORTED_PROVIDERS[number]; //er en union type
 
 const PROVIDER_PARAM_MAP: Record<Provider, "code" | "access_token"> = {
   google: "access_token",    // Google kan bruke begge, men access_token er vanlig i Strapi
-  facebook: "access_token",  // Facebook bruker typisk access_token
+  facebook: "access_token",  // Facebook bruker access_token
   /* microsoft: "access_token", */
 };
 

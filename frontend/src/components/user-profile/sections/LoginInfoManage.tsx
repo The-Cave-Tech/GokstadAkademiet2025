@@ -4,81 +4,70 @@ import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { useState, useEffect } from "react";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import { Button } from "@/components/ui/custom/Button";
-import { ModalType, UserCredentials } from "@/types/loginInfoManage.types";
+import { LoginInfoManageProps, ModalType, UserCredentials } from "@/types/loginInfoManage.types";
 import { EmailChangeModal } from "@/components/user-profile/modals/EmailChangeModal";
 import { EmailVerificationModal } from "@/components/user-profile/modals/EmailVerificationModal";
-import { getUserCredentials } from "@/lib/data/services/userProfile";
-import { 
-  requestUsernameChange, 
-  changeUsername, 
-  requestEmailChange, 
-  verifyEmailChange,
-  changePassword,
-  resendUsernameVerification,
-  resendEmailVerification
-} from "@/lib/data/services/profileSections/credentialsService";
 import { UsernameChangeModal } from "../modals/UsernameChangeModal";
 import { PasswordChangeModal } from "../modals/PasswordChangeModal";
+import { getUserCredentials } from "@/lib/data/services/userProfile";
 import { handleStrapiError } from "@/lib/utils/serverAction-errorHandler";
-
-interface LoginInfoManageProps {
-  refreshProfile: () => Promise<void>;
-}
+import { useAuth } from "@/lib/context/AuthContext";
+import { getProviderDisplayName, getProviderLoginUrl } from "@/types/userProfile.types";
+import { requestUsernameChange, changeUsername, requestEmailChange, 
+  verifyEmailChange, changePassword, resendUsernameVerification, resendEmailVerification 
+} from "@/lib/data/services/profileSections/credentialsService";
 
 export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
-  const [userData, setUserData] = useState<UserCredentials>({
-    username: "",
-    email: "",
-    password: "•••••••",
-  });
-
+  const { authProvider, refreshAuthStatus } = useAuth();
+  const isOAuthUser = authProvider && authProvider !== 'local';
+  
+  // State
+  const [userData, setUserData] = useState<UserCredentials>({ username: "", email: "", password: "•••••••" });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [modalType, setModalType] = useState<ModalType>(null);
   const [isModalLoading, setIsModalLoading] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
-  const [pendingData, setPendingData] = useState<{
-    type: "username" | "email" | null;
-    value: string;
-  }>({ type: null, value: "" });
+  const [pendingData, setPendingData] = useState<{ type: "username" | "email" | null; value: string }>({ type: null, value: "" });
 
+  // Hent oppdatert autentiseringsstatus og brukerdata
   useEffect(() => {
-    async function fetchUserCredentials() {
-      try {
-        setLoading(true);
-        const credentials = await getUserCredentials();
-        setUserData({
-          username: credentials.username,
-          email: credentials.email,
-          password: "•••••••", 
-        });
-        setError(null);
-      } catch (err) {
-        console.error("Feil ved henting av brukerdata:", err);
-        setError(handleStrapiError(err));
-      } finally {
-        setLoading(false);
-      }
+    refreshAuthStatus().then(() => {
+      loadUserData();
+    });
+  }, [refreshAuthStatus]);
+  
+  // Separat funksjon for lasting av brukerdata
+  const loadUserData = async () => {
+    try {
+      setLoading(true);
+      const credentials = await getUserCredentials();
+      setUserData({
+        username: credentials.username,
+        email: credentials.email,
+        password: "•••••••", 
+      });
+      setError(null);
+    } catch (err) {
+      console.error("Feil ved henting av brukerdata:", err);
+      setError(handleStrapiError(err));
+    } finally {
+      setLoading(false);
     }
-
-    fetchUserCredentials();
-  }, []);
-
-  const handleOpenModal = (fieldName: ModalType) => {
-    setModalType(fieldName);
   };
 
+  // Modal handlers
+  const handleOpenModal = (fieldName: ModalType) => setModalType(fieldName);
   const handleCloseModal = () => {
     setModalType(null);
     setShowVerificationModal(false);
     setPendingData({ type: null, value: "" });
   };
 
+  // Update handlers
   const handleUsernameUpdate = async (newUsername: string, password: string) => {
     try {
       setIsModalLoading(true);
-      
-      // Request username change, this will send verification code to email
       const response = await requestUsernameChange(newUsername, password);
       
       if (response.success) {
@@ -90,8 +79,7 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
       }
     } catch (error) {
       console.error("Feil ved forespørsel om brukernavn-endring:", error);
-      const errorMessage = handleStrapiError(error);
-      throw new Error(errorMessage);
+      throw new Error(handleStrapiError(error));
     } finally {
       setIsModalLoading(false);
     }
@@ -101,7 +89,13 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
     try {
       setIsModalLoading(true);
       
-      // Request email change, this will send verification code to new email
+      // Refresh auth status før endring for å sikre at vi har oppdatert informasjon
+      await refreshAuthStatus();
+      
+      if (authProvider && authProvider !== 'local') {
+        throw new Error(`Du må endre e-post hos ${getProviderDisplayName(authProvider)}`);
+      }
+      
       const response = await requestEmailChange(newEmail, password);
       
       if (response.success) {
@@ -113,8 +107,7 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
       }
     } catch (error) {
       console.error("Feil ved forespørsel om e-post-endring:", error);
-      const errorMessage = handleStrapiError(error);
-      throw new Error(errorMessage);
+      throw new Error(handleStrapiError(error));
     } finally {
       setIsModalLoading(false);
     }
@@ -124,14 +117,17 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
     try {
       setIsModalLoading(true);
       
-      // Change password
+      // Refresh auth status før endring for å sikre at vi har oppdatert informasjon
+      await refreshAuthStatus();
+      
+      if (authProvider && authProvider !== 'local') {
+        throw new Error(`Du må endre passord hos ${getProviderDisplayName(authProvider)}`);
+      }
+      
       const response = await changePassword(currentPassword, newPassword);
       
       if (response.success) {
-        setUserData(prev => ({
-          ...prev,
-          password: "•••••••",
-        }));
+        setUserData(prev => ({ ...prev, password: "•••••••" }));
         await refreshProfile();
         handleCloseModal();
       } else {
@@ -139,8 +135,7 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
       }
     } catch (error) {
       console.error("Feil ved passord-endring:", error);
-      const errorMessage = handleStrapiError(error);
-      throw new Error(errorMessage);
+      throw new Error(handleStrapiError(error));
     } finally {
       setIsModalLoading(false);
     }
@@ -152,52 +147,42 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
       
       if (pendingData.type === "username" && pendingData.value) {
         const response = await changeUsername(pendingData.value, verificationCode);
-        
         if (response.success) {
-          setUserData(prev => ({
-            ...prev,
-            username: response.username,
-          }));
-          await refreshProfile();
+          setUserData(prev => ({ ...prev, username: response.username }));
         } else {
           throw new Error(response.message || "Kunne ikke verifisere brukernavn-endring");
         }
       } else if (pendingData.type === "email") {
         const response = await verifyEmailChange(verificationCode);
-        
         if (response.success) {
-          setUserData(prev => ({
-            ...prev,
-            email: response.email,
-          }));
-          await refreshProfile();
+          setUserData(prev => ({ ...prev, email: response.email }));
         } else {
           throw new Error(response.message || "Kunne ikke verifisere e-post-endring");
         }
       }
       
+      await refreshProfile();
       handleCloseModal();
     } catch (error) {
       console.error("Feil ved verifisering:", error);
-      const errorMessage = handleStrapiError(error);
-      throw new Error(errorMessage);
+      throw new Error(handleStrapiError(error));
     } finally {
       setIsModalLoading(false);
     }
   };
 
-  // Handler for resending verification code
   const handleResendVerificationCode = async () => {
     try {
       setIsModalLoading(true);
       
-      let response;
+      let response: { success: boolean; message?: string };
+      
       if (pendingData.type === "username") {
         response = await resendUsernameVerification();
       } else if (pendingData.type === "email") {
         response = await resendEmailVerification();
       } else {
-        throw new Error("Ingen aktiv verifisering funnet");
+        response = { success: false, message: "Ingen aktiv verifisering funnet" };
       }
       
       if (!response.success) {
@@ -207,13 +192,13 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
       return true;
     } catch (error) {
       console.error("Feil ved sending av ny kode:", error);
-      const errorMessage = handleStrapiError(error);
-      throw new Error(errorMessage);
+      throw new Error(handleStrapiError(error));
     } finally {
       setIsModalLoading(false);
     }
   };
 
+  // Loading and error states
   if (loading) {
     return (
       <Card className="w-full bg-[rgb(245,238,231)]">
@@ -238,6 +223,38 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
     );
   }
 
+  // UI Components
+  const InfoField = ({ label, value, fieldType }: { label: string; value: string; fieldType: ModalType }) => (
+    <div className="flex flex-col">
+      <dt className="text-gray-700 font-medium mb-2">{label}</dt>
+      <dd className="flex items-center">
+        <span
+          id={`${fieldType}-value`}
+          className={`flex-grow bg-white p-3 rounded-md border border-gray-200 shadow-sm h-12 flex items-center ${fieldType === "password" ? "font-mono" : ""}`}
+          aria-live="polite"
+        >
+          {value}
+        </span>
+        <div className="ml-3">
+          {isOAuthUser && (fieldType === "email" || fieldType === "password" || fieldType === "username") ? (
+            <div className="p-2 bg-gray-100 rounded-full text-xs text-gray-500 flex items-center justify-center">
+              <PageIcons name="lock" directory="profileIcons" size={18} alt="Låst" />
+            </div>
+          ) : (
+            <Button
+              variant="modalChange"
+              modalState={isModalLoading && modalType === fieldType ? "loading" : "edit"}
+              onClick={() => handleOpenModal(fieldType)}
+              ariaLabel={`Endre ${label.toLowerCase()}`}
+              disabled={isModalLoading}
+              size="sm"
+            />
+          )}
+        </div>
+      </dd>
+    </div>
+  );
+
   return (
     <section aria-labelledby="login-info-heading" className="w-full max-w-[600px] mx-auto">
       <Card className="w-full bg-[rgb(245,238,231)]">
@@ -255,79 +272,34 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
           </div>
         </CardHeader>
 
-        <CardBody className="pt-5 px-4 pb-8 rounded-md">
-          <dl className="space-y-8">
-            <div className="flex flex-col">
-              <dt className="text-gray-600 mb-2">Brukernavn</dt>
-              <dd className="flex items-center">
-                <span
-                  id="username-value"
-                  className="flex-grow bg-white p-3 rounded-md border border-gray-200 shadow-sm h-12 flex items-center"
-                  aria-live="polite"
-                >
-                  {userData.username}
-                </span>
-                <div className="ml-3">
-                  <Button
-                    variant="modalChange"
-                    modalState={isModalLoading && modalType === "username" ? "loading" : "edit"}
-                    onClick={() => handleOpenModal("username")}
-                    ariaLabel="Endre brukernavn"
-                    disabled={isModalLoading}
-                    size="sm"
-                  />
-                </div>
-              </dd>
+        <CardBody className="rounded-md">
+          {isOAuthUser && (
+            <div className="mb-2 p-4 bg-blue-50 border border-blue-200 rounded-md">
+              <h3 className="text-base font-medium text-blue-800 flex items-center">
+                Du er logget inn via {getProviderDisplayName(authProvider)}
+              </h3>
+              <p className="mt-2 text-sm text-blue-600">
+                For å endre brukernavn eller e-post:{" "}
+                <a href={getProviderLoginUrl(authProvider as string)} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="underline hover:text-blue-800">
+                  Gå til {getProviderDisplayName(authProvider)}
+                </a>
+              </p>
             </div>
+          )}
 
-            <div className="flex flex-col">
-              <dt className="text-gray-600 mb-2">E-post</dt>
-              <dd className="flex items-center">
-                <span
-                  id="email-value"
-                  className="flex-grow bg-white p-3 rounded-md border border-gray-200 shadow-sm h-12 flex items-center"
-                  aria-live="polite"
-                >
-                  {userData.email}
-                </span>
-                <div className="ml-3">
-                  <Button
-                    variant="modalChange"
-                    modalState={isModalLoading && modalType === "email" ? "loading" : "edit"}
-                    onClick={() => handleOpenModal("email")}
-                    ariaLabel="Endre e-post"
-                    disabled={isModalLoading}
-                    size="sm"
-                  />
-                </div>
-              </dd>
-            </div>
-
-            <div className="flex flex-col">
-              <dt className="text-gray-600 mb-2">Passord</dt>
-              <dd className="flex items-center">
-                <span
-                  id="password-value"
-                  className="flex-grow bg-white p-3 rounded-md border border-gray-200 shadow-sm font-mono h-12 flex items-center"
-                  aria-live="polite"
-                >
-                  {userData.password}
-                </span>
-                <div className="ml-3">
-                  <Button
-                    variant="modalChange"
-                    modalState={isModalLoading && modalType === "password" ? "loading" : "edit"}
-                    onClick={() => handleOpenModal("password")}
-                    ariaLabel="Endre passord"
-                    disabled={isModalLoading}
-                    size="sm"
-                  />
-                </div>
-              </dd>
-            </div>
+          <dl className="space-y-4">
+            <InfoField label="Brukernavn" value={userData.username} fieldType="username" />
+            <InfoField label="E-post" value={userData.email} fieldType="email" />
+            {/* Skjul passordfeltet helt for OAuth-brukere */}
+            {!isOAuthUser && (
+              <InfoField label="Passord" value={userData.password} fieldType="password" />
+            )}
           </dl>
 
-          {/* Username Change Modal */}
+          {/* Modals */}
           {modalType === "username" && (
             <UsernameChangeModal
               isOpen={true}
@@ -339,7 +311,6 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
             />
           )}
 
-          {/* Email Change Modal */}
           {modalType === "email" && (
             <EmailChangeModal
               isOpen={true}
@@ -351,18 +322,16 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
             />
           )}
 
-          {/* Password Change Modal */}
           {modalType === "password" && (
             <PasswordChangeModal
               isOpen={true}
               onClose={handleCloseModal}
-              onUpdate={(currentPassword, newPassword) => handlePasswordUpdate(currentPassword, newPassword)}
+              onUpdate={handlePasswordUpdate}
               isLoading={isModalLoading}
               setIsLoading={setIsModalLoading}
             />
           )}
 
-          {/* Verification Modal */}
           {showVerificationModal && (
             <EmailVerificationModal
               isOpen={true}
