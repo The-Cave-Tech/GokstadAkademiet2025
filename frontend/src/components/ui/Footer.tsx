@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, ReactElement } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { strapiService } from "@/lib/data/services/strapiClient";
 import { SiteLogo } from "./SiteLogo";
 import { FaFacebookF, FaInstagram } from "react-icons/fa";
@@ -154,6 +153,8 @@ export default function Footer() {
             }
           }
 
+          // Log socialMediaItems for debugging
+          console.log("Social Media Items:", socialItems);
           setSocialMediaItems(socialItems);
         }
       } catch (error) {
@@ -219,51 +220,29 @@ export default function Footer() {
                 const lordag = item.attributes?.Lordag || item.Lordag;
                 const sondag = item.attributes?.Sondag || item.Sondag;
 
-                return (
-                  <React.Fragment key={item.id || `opening-hour-${index}`}>
-                    {mandag && (
-                      <li className="flex flex-col sm:flex-row sm:items-center">
-                        <span className="font-medium sm:w-16">Mandag</span>
-                        <span className="ml-0 sm:ml-2">{mandag}</span>
+                const days = [
+                  { name: "Mandag", value: mandag },
+                  { name: "Tirsdag", value: tirsdag },
+                  { name: "Onsdag", value: onsdag },
+                  { name: "Torsdag", value: torsdag },
+                  { name: "Fredag", value: fredag },
+                  { name: "Lørdag", value: lordag },
+                  { name: "Søndag", value: sondag },
+                ];
+
+                return days.map(
+                  (day) =>
+                    day.value && (
+                      <li
+                        key={`${item.id || `opening-hour-${index}`}-${
+                          day.name
+                        }`}
+                        className="flex flex-col sm:flex-row sm:items-center"
+                      >
+                        <span className="font-medium sm:w-16">{day.name}</span>
+                        <span className="ml-0 sm:ml-2">{day.value}</span>
                       </li>
-                    )}
-                    {tirsdag && (
-                      <li className="flex flex-col sm:flex-row sm:items-center">
-                        <span className="font-medium sm:w-16">Tirsdag</span>
-                        <span className="ml-0 sm:ml-2">{tirsdag}</span>
-                      </li>
-                    )}
-                    {onsdag && (
-                      <li className="flex flex-col sm:flex-row sm:items-center">
-                        <span className="font-medium sm:w-16">Onsdag</span>
-                        <span className="ml-0 sm:ml-2">{onsdag}</span>
-                      </li>
-                    )}
-                    {torsdag && (
-                      <li className="flex flex-col sm:flex-row sm:items-center">
-                        <span className="font-medium sm:w-16">Torsdag</span>
-                        <span className="ml-0 sm:ml-2">{torsdag}</span>
-                      </li>
-                    )}
-                    {fredag && (
-                      <li className="flex flex-col sm:flex-row sm:items-center">
-                        <span className="font-medium sm:w-16">Fredag</span>
-                        <span className="ml-0 sm:ml-2">{fredag}</span>
-                      </li>
-                    )}
-                    {lordag && (
-                      <li className="flex flex-col sm:flex-row sm:items-center">
-                        <span className="font-medium sm:w-16">Lørdag</span>
-                        <span className="ml-0 sm:ml-2">{lordag}</span>
-                      </li>
-                    )}
-                    {sondag && (
-                      <li className="flex flex-col sm:flex-row sm:items-center">
-                        <span className="font-medium sm:w-16">Søndag</span>
-                        <span className="ml-0 sm:ml-2">{sondag}</span>
-                      </li>
-                    )}
-                  </React.Fragment>
+                    )
                 );
               })
             ) : (
@@ -280,9 +259,14 @@ export default function Footer() {
             <div className="flex flex-col space-y-3">
               {socialMediaItems.map((item, index) => {
                 const { name, url, icon } = getSocialMediaInfo(item);
+                // Generate a unique key using index, type, and a hash of url
+                const urlHash = url ? btoa(url).slice(0, 8) : `no-url-${index}`;
+                const uniqueKey = `${item.id || `social-${index}`}-${
+                  item.type
+                }-${urlHash}`;
                 return (
                   <Link
-                    key={item.id || `social-${index}`}
+                    key={uniqueKey}
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -305,7 +289,7 @@ export default function Footer() {
       <div className="mt-8 sm:mt-10 lg:mt-12 border-t border-gray-700 pt-4 sm:pt-6 text-center text-xs sm:text-sm text-gray-400">
         {currentYear !== null && (
           <>
-            &copy; {currentYear} {footerText || "© TheCaveTech."}
+            © {currentYear} {footerText || "© TheCaveTech."}
           </>
         )}
       </div>
