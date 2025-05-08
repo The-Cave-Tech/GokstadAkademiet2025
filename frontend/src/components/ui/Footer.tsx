@@ -40,13 +40,18 @@ interface OpeningHourItem {
     Onsdag?: string;
     Torsdag?: string;
     Fredag?: string;
+    Lordag?: string;
+    Sondag?: string;
   };
   Mandag?: string;
   Tirsdag?: string;
   Onsdag?: string;
   Torsdag?: string;
   Fredag?: string;
+  Lordag?: string;
+  Sondag?: string;
 }
+
 interface SocialMediaInfo {
   name: string;
   url: string;
@@ -63,7 +68,6 @@ export default function Footer() {
   const [currentYear, setCurrentYear] = useState<number | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Updated function to use the defined interface
   const getSocialMediaInfo = (
     item: FacebookItem | InstagramItem
   ): SocialMediaInfo => {
@@ -101,7 +105,6 @@ export default function Footer() {
       };
     }
 
-    // Default for other types
     return {
       name: "Sosiale medier",
       url: safeUrl,
@@ -116,127 +119,42 @@ export default function Footer() {
   useEffect(() => {
     const fetchFooterData = async () => {
       try {
-        console.log("Attempting to fetch footer data from Strapi");
-
         const data = await strapiService.fetch<any>("footer?populate=*");
 
-        console.log(
-          "Full API response structure:",
-          JSON.stringify(data, null, 2)
-        );
-
         if (data?.data) {
-          console.log("Data object exists:", data.data);
+          setFooterText(data.data.footerText || "");
+          setBackgroundColor(data.data.footerBackgroundColor || "");
 
-          if (typeof data.data === "object") {
-            console.log("Data keys:", Object.keys(data.data));
+          const hours =
+            data.data.openingHours || data.data.attributes?.openingHours || [];
+          setOpeningHours(Array.isArray(hours) ? hours : []);
 
-            setFooterText(data.data.footerText || "");
-            setBackgroundColor(data.data.footerBackgroundColor || "");
+          const socialItems: SocialMediaItem[] = [];
 
-            if (
-              data.data.openingHours &&
-              Array.isArray(data.data.openingHours)
-            ) {
-              console.log("Opening hours found:", data.data.openingHours);
-              setOpeningHours(data.data.openingHours);
-            } else if (
-              data.data.attributes?.openingHours &&
-              Array.isArray(data.data.attributes.openingHours)
-            ) {
-              console.log(
-                "Opening hours found in attributes:",
-                data.data.attributes.openingHours
+          const fb = data.data.faceBook || data.data.attributes?.faceBook;
+          const ig = data.data.instaGram || data.data.attributes?.instaGram;
+
+          if (fb) {
+            if (Array.isArray(fb)) {
+              fb.forEach((item: any) =>
+                socialItems.push({ ...item, type: "facebook" })
               );
-              setOpeningHours(data.data.attributes.openingHours);
             } else {
-              console.log("No valid opening hours found");
-              setOpeningHours([]);
+              socialItems.push({ ...fb, type: "facebook" });
             }
-
-            const socialItems: SocialMediaItem[] = [];
-
-            if (data.data.faceBook) {
-              console.log("Facebook item found:", data.data.faceBook);
-              if (Array.isArray(data.data.faceBook)) {
-                data.data.faceBook.forEach((item: any) => {
-                  socialItems.push({
-                    ...item,
-                    type: "facebook",
-                  });
-                });
-              } else {
-                socialItems.push({
-                  ...data.data.faceBook,
-                  type: "facebook",
-                });
-              }
-            } else if (data.data.attributes?.faceBook) {
-              console.log(
-                "Facebook item found in attributes:",
-                data.data.attributes.faceBook
-              );
-              if (Array.isArray(data.data.attributes.faceBook)) {
-                data.data.attributes.faceBook.forEach((item: any) => {
-                  socialItems.push({
-                    ...item,
-                    type: "facebook",
-                  });
-                });
-              } else {
-                socialItems.push({
-                  ...data.data.attributes.faceBook,
-                  type: "facebook",
-                });
-              }
-            }
-
-            if (data.data.instaGram) {
-              console.log("Instagram item found:", data.data.instaGram);
-              if (Array.isArray(data.data.instaGram)) {
-                data.data.instaGram.forEach((item: any) => {
-                  socialItems.push({
-                    ...item,
-                    type: "instagram",
-                  });
-                });
-              } else {
-                socialItems.push({
-                  ...data.data.instaGram,
-                  type: "instagram",
-                });
-              }
-            } else if (data.data.attributes?.instaGram) {
-              console.log(
-                "Instagram item found in attributes:",
-                data.data.attributes.instaGram
-              );
-              if (Array.isArray(data.data.attributes.instaGram)) {
-                data.data.attributes.instaGram.forEach((item: any) => {
-                  socialItems.push({
-                    ...item,
-                    type: "instagram",
-                  });
-                });
-              } else {
-                socialItems.push({
-                  ...data.data.attributes.instaGram,
-                  type: "instagram",
-                });
-              }
-            }
-
-            console.log("All social media items:", socialItems);
-            setSocialMediaItems(socialItems);
-          } else {
-            console.log("Data is not an object:", typeof data.data);
-            setOpeningHours([]);
-            setSocialMediaItems([]);
           }
-        } else {
-          console.log("No data object in API response");
-          setOpeningHours([]);
-          setSocialMediaItems([]);
+
+          if (ig) {
+            if (Array.isArray(ig)) {
+              ig.forEach((item: any) =>
+                socialItems.push({ ...item, type: "instagram" })
+              );
+            } else {
+              socialItems.push({ ...ig, type: "instagram" });
+            }
+          }
+
+          setSocialMediaItems(socialItems);
         }
       } catch (error) {
         console.error("Kunne ikke hente footer-data:", error);
@@ -249,11 +167,7 @@ export default function Footer() {
     fetchFooterData();
   }, []);
 
-  if (!isLoaded) {
-    return null;
-  }
-
-  console.log("Social media items for rendering:", socialMediaItems);
+  if (!isLoaded) return null;
 
   return (
     <footer
@@ -262,15 +176,11 @@ export default function Footer() {
       role="contentinfo"
       suppressHydrationWarning
     >
-      {/* Main footer content with improved responsive grid */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {/* Logo & description - full width on mobile, 1/4 on large screens */}
         <div className="space-y-3">
           <SiteLogo className="w-32 sm:w-40 mb-2 sm:mb-4" />
-          <p className="text-sm text-gray-300 leading-relaxed"></p>
         </div>
 
-        {/* Navigation links - 1/2 width on tablet, 1/4 on desktop */}
         <div className="space-y-3">
           <h3 className="text-base lg:text-lg font-semibold mb-2 sm:mb-3">
             Navigasjon
@@ -294,20 +204,20 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Opening hours - 1/2 width on tablet, 1/4 on desktop */}
         <div className="space-y-3">
           <h3 className="text-base lg:text-lg font-semibold mb-2 sm:mb-3">
             Åpningstider
           </h3>
           <ul className="space-y-1 text-sm text-gray-300">
-            {openingHours && openingHours.length > 0 ? (
+            {openingHours.length > 0 ? (
               openingHours.map((item, index) => {
-                console.log("Rendering opening hour item:", item);
                 const mandag = item.attributes?.Mandag || item.Mandag;
                 const tirsdag = item.attributes?.Tirsdag || item.Tirsdag;
                 const onsdag = item.attributes?.Onsdag || item.Onsdag;
                 const torsdag = item.attributes?.Torsdag || item.Torsdag;
                 const fredag = item.attributes?.Fredag || item.Fredag;
+                const lordag = item.attributes?.Lordag || item.Lordag;
+                const sondag = item.attributes?.Sondag || item.Sondag;
 
                 return (
                   <React.Fragment key={item.id || `opening-hour-${index}`}>
@@ -341,6 +251,18 @@ export default function Footer() {
                         <span className="ml-0 sm:ml-2">{fredag}</span>
                       </li>
                     )}
+                    {lordag && (
+                      <li className="flex flex-col sm:flex-row sm:items-center">
+                        <span className="font-medium sm:w-16">Lørdag</span>
+                        <span className="ml-0 sm:ml-2">{lordag}</span>
+                      </li>
+                    )}
+                    {sondag && (
+                      <li className="flex flex-col sm:flex-row sm:items-center">
+                        <span className="font-medium sm:w-16">Søndag</span>
+                        <span className="ml-0 sm:ml-2">{sondag}</span>
+                      </li>
+                    )}
                   </React.Fragment>
                 );
               })
@@ -350,7 +272,6 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Social Media & Links - 1/2 width on tablet, 1/4 on desktop */}
         <div className="space-y-3">
           <h3 className="text-base lg:text-lg font-semibold mb-2 sm:mb-3">
             Følg oss
@@ -381,7 +302,6 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Copyright section */}
       <div className="mt-8 sm:mt-10 lg:mt-12 border-t border-gray-700 pt-4 sm:pt-6 text-center text-xs sm:text-sm text-gray-400">
         {currentYear !== null && (
           <>
