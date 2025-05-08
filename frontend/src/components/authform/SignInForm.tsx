@@ -39,7 +39,7 @@ export function SignInForm() {
   const socialButtons: SocialLoginButton[] = [
     { provider: "google", text: "Google", src: "google" },
     { provider: "facebook", text: "Facebook", src: "facebook" },
-    { provider: "microsoft", text: "Microsoft", src: "microsoft" }
+   /*  { provider: "microsoft", text: "Microsoft", src: "microsoft" } */
   ];
 
   // OAuth login
