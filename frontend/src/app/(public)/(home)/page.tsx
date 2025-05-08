@@ -8,8 +8,8 @@ import { eventsService } from "@/lib/data/services/eventService";
 import { projectService } from "@/lib/data/services/projectService";
 import ClientMessage from "@/components/ClientMessage";
 import { EventAttributes, ProjectAttributes } from "@/types/content.types";
-import { ProjectCard } from "@/components/dashboard/contentManager/ProjectCard";
 import { EventCard } from "@/components/dashboard/contentManager/EventCard";
+import ProjectCarousel from "@/components/ui/ProjectCarousel";
 
 interface LandingPageData {
   hero: {
@@ -140,6 +140,7 @@ export default function LandingPageContent() {
       try {
         const projectData = await projectService.getAll({
           sort: ["createdAt:desc"],
+          populate: "*", // Make sure to populate all fields for better display
         });
         setProjects(projectData);
         setErrorProjects(null);
@@ -243,22 +244,19 @@ export default function LandingPageContent() {
         </div>
       </section>
 
-      {/* Projects Section */}
-      <section className="py-20 px-4 bg-secondary">
+      {/* Projects Section - Now with Carousel */}
+      <section className="py-20 px-4 bg-gradient-to-b from-secondary to-secondary/70">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-12 text-center">
-            Prosjekter
-          </h2>
-          <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
-            {projects.length > 0 ? (
-              projects.map((project) => (
-                <ProjectCard key={project.id} project={project} />
-              ))
-            ) : (
-              <p className="text-center text-gray-500">
-                Ingen prosjekter funnet
-              </p>
-            )}
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Prosjekter</h2>
+            <p className="text-lg text-gray-700 max-w-2xl mx-auto">
+              Se våre nyeste og pågående prosjekter
+            </p>
+          </div>
+
+          {/* Project Carousel Component */}
+          <div className="relative px-8">
+            <ProjectCarousel projects={projects} />
           </div>
         </div>
       </section>

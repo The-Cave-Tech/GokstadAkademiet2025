@@ -20,6 +20,12 @@
     },
     "Fredag": {
       "type": "string"
+    },
+    "Lordag": {
+      "type": "string"
+    },
+    "Sondag": {
+      "type": "string"
     }
   }
 }

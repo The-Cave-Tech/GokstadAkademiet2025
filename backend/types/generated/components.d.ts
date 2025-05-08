@@ -8,8 +8,10 @@ export interface FooterOpeningHours extends Struct.ComponentSchema {
   };
   attributes: {
     Fredag: Schema.Attribute.String;
+    Lordag: Schema.Attribute.String;
     Mandag: Schema.Attribute.String;
     Onsdag: Schema.Attribute.String;
+    Sondag: Schema.Attribute.String;
     Tirsdag: Schema.Attribute.String;
     Torsdag: Schema.Attribute.String;
   };
