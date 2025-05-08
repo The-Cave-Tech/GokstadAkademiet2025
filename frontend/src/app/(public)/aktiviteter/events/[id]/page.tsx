@@ -6,9 +6,8 @@ import Image from "next/image";
 import { eventsService } from "@/lib/data/services/eventService";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
-import { formatDate } from "@/lib/utils/eventUtils";
-import { Theme } from "@/styles/activityTheme";
 import { EventResponse } from "@/types/content.types";
+import { MdLocationOn, MdAccessTime, MdEvent } from "react-icons/md";
 
 export default function EventDetailPage() {
   const params = useParams();
@@ -80,194 +79,186 @@ export default function EventDetailPage() {
     return `${hours}.${minutes}`;
   };
 
+  // Format date in Norwegian format
+  const formatDate = (dateString: string): string => {
+    if (!dateString) return "";
+
+    const date = new Date(dateString);
+    return date.toLocaleDateString("nb-NO", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
   if (isLoading) return <LoadingSpinner />;
   if (error) return <ErrorMessage message={error} />;
   if (!event) return <ErrorMessage message="Event not found" />;
 
   return (
-    <div className="bg-background min-h-screen py-10 px-4 sm:px-6">
-      <div
-        className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden"
-        style={{ backgroundColor: Theme.colors.surface }}
-      >
-        {/* Back button */}
-        <div
-          className="p-4 border-b"
-          style={{ borderColor: Theme.colors.divider }}
-        >
-          <button
-            onClick={() => router.back()}
-            className="flex items-center text-sm hover:underline"
-            style={{ color: Theme.colors.text.secondary }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 mr-1"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            Tilbake til arrangementer
-          </button>
-        </div>
+    <div className="bg-white min-h-screen">
+      {/* Header/Banner Image */}
+      <div className="w-full h-64 relative bg-gray-200">
+        {event.eventCardImage?.url ? (
+          <Image
+            src={event.eventCardImage.url}
+            alt={event.title}
+            fill
+            className="object-cover"
+            priority
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-blue-50 to-blue-100">
+            <h1 className="text-3xl font-bold text-gray-700">{event.title}</h1>
+          </div>
+        )}
+      </div>
 
-        {/* Event Header */}
-        <div className="relative">
-          {event.eventCardImage?.url && (
-            <div className="w-full h-72 sm:h-96 relative">
-              <Image
-                src={event.eventCardImage.url}
-                alt={event.title}
-                fill
-                sizes="(min-width: 1024px) 1024px, 100vw"
-                className="object-cover"
-                priority
-              />
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "linear-gradient(to top, rgba(0,0,0,0.7), transparent 50%)",
-                }}
-              ></div>
-            </div>
-          )}
-
-          <div
-            className={`${event.eventCardImage?.url ? "absolute bottom-0 left-0 right-0" : ""} p-6 text-white`}
-          >
-            <h1
-              className={`text-3xl sm:text-4xl font-bold ${event.eventCardImage?.url ? "text-white" : "text-gray-800"}`}
-            >
-              {event.title}
-            </h1>
-
-            {/* Date and time information */}
-            <div
-              className={`flex flex-wrap gap-4 mt-4 ${event.eventCardImage?.url ? "text-white" : "text-gray-700"}`}
-            >
-              <div className="flex items-center">
-                <svg
-                  className="w-5 h-5 mr-2 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                <span>
-                  {formatDate(event.startDate || "")}
-                  {event.endDate &&
-                    event.endDate !== event.startDate &&
-                    ` - ${formatDate(event.endDate)}`}
-                </span>
+      {/* Main Content Container */}
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Left Sidebar */}
+          <div className="md:w-1/4">
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              {/* Event Icon and Name */}
+              <div className="flex flex-col items-center mb-6">
+                <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 mb-4 relative">
+                  {event.eventCardImage?.url ? (
+                    <Image
+                      src={event.eventCardImage.url}
+                      alt={event.title}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center text-3xl font-bold text-gray-400">
+                      {event.title.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+                <h3 className="text-xl font-semibold text-center">
+                  {event.title}
+                </h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  {event.documentId
+                    ? `ID: ${event.documentId}`
+                    : `ID: ${event.id}`}
+                </p>
               </div>
 
-              {event.time && (
-                <div className="flex items-center">
-                  <svg
-                    className="w-5 h-5 mr-2 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <span>kl: {formatTime(event.time)}</span>
-                </div>
-              )}
+              {/* Event Info */}
+              <div className="mt-6">
+                <h4 className="font-medium text-gray-700 mb-2">
+                  Arrangement info
+                </h4>
+                <ul className="space-y-2 text-sm">
+                  {/* Date */}
+                  <li className="flex items-center gap-2">
+                    <MdEvent className="text-gray-500" />
+                    <span>
+                      {formatDate(event.startDate || "")}
+                      {event.endDate &&
+                        event.endDate !== event.startDate &&
+                        ` - ${formatDate(event.endDate)}`}
+                    </span>
+                  </li>
 
-              {event.location && (
-                <div className="flex items-center">
-                  <svg
-                    className="w-5 h-5 mr-2 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                  <span>{event.location}</span>
-                </div>
-              )}
+                  {/* Time */}
+                  {event.time && (
+                    <li className="flex items-center gap-2">
+                      <MdAccessTime className="text-gray-500" />
+                      <span>kl: {formatTime(event.time)}</span>
+                    </li>
+                  )}
+
+                  {/* Location */}
+                  {event.location && (
+                    <li className="flex items-center gap-2">
+                      <MdLocationOn className="text-gray-500" />
+                      <span>{event.location}</span>
+                    </li>
+                  )}
+                </ul>
+              </div>
+
+              {/* Event Links */}
+              <div className="mt-8 space-y-3">
+                <button
+                  onClick={() => router.push("/kontakt-oss")}
+                  className="flex items-center w-full gap-2 mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 justify-center"
+                >
+                  Kontakt oss for påmelding
+                </button>
+              </div>
+
+              {/* Event Metadata */}
+              <div className="mt-8 pt-6 border-t border-gray-100 text-xs text-gray-500 space-y-1">
+                {event.publishedAt && (
+                  <p>Publisert: {formatDate(event.publishedAt)}</p>
+                )}
+                {event.createdAt && (
+                  <p>Opprettet: {formatDate(event.createdAt)}</p>
+                )}
+                {event.updatedAt && (
+                  <p>Sist oppdatert: {formatDate(event.updatedAt)}</p>
+                )}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Event Content */}
-        <div className="p-6 sm:p-8">
-          {/* Description */}
-          {event.description && (
-            <div className="mb-8">
-              <h2
-                className="text-xl font-semibold mb-2"
-                style={{ color: Theme.colors.text.primary }}
-              >
-                Om arrangementet
+          {/* Main Content Area */}
+          <div className="md:w-3/4">
+            {/* Event Title and Header */}
+            <div className="border-b border-gray-200 pb-4 mb-6">
+              <h1 className="text-3xl font-bold text-gray-800">
+                {event.title}
+              </h1>
+              <div className="text-sm text-red-500 mt-2 tracking-wider uppercase">
+                ARRANGEMENT •{" "}
+                {formatDate(event.publishedAt || event.createdAt || "")}
+              </div>
+            </div>
+
+            {/* Event Description */}
+            {event.description && (
+              <div className="mb-8">
+                <h2 className="text-xl font-semibold text-gray-800 mb-3 border-l-4 border-red-500 pl-3">
+                  Om Arrangementet
+                </h2>
+                <p className="text-gray-700 leading-relaxed">
+                  {event.description}
+                </p>
+              </div>
+            )}
+
+            {/* Event Content */}
+            {event.content && (
+              <div className="prose max-w-none">
+                <div dangerouslySetInnerHTML={{ __html: event.content }} />
+              </div>
+            )}
+
+            {/* Registration Section */}
+            <div className="mt-12 pt-8 border-t border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                Påmelding
               </h2>
-              <p style={{ color: Theme.colors.text.secondary }}>
-                {event.description}
-              </p>
-            </div>
-          )}
-
-          {/* Main content */}
-          {event.content && (
-            <div
-              className="prose max-w-none"
-              style={{ color: Theme.colors.text.primary }}
-            >
-              <div dangerouslySetInnerHTML={{ __html: event.content }} />
-            </div>
-          )}
-
-          {/* Registration or RSVP section */}
-          <div
-            className="mt-10 pt-6 border-t"
-            style={{ borderColor: Theme.colors.divider }}
-          >
-            <div className="bg-blue-50 p-5 rounded-lg">
-              <h3 className="text-lg font-medium text-blue-800">
-                Vil du delta?
-              </h3>
-              <p className="mt-2 text-sm text-blue-600">
-                For å melde deg på dette arrangementet, vennligst ta kontakt med
-                oss.
-              </p>
-              <button
-                className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
-                onClick={() => router.push("/kontakt-oss")}
-              >
-                Kontakt oss for påmelding
-              </button>
+              <div className="bg-blue-50 p-5 rounded-lg">
+                <h3 className="text-lg font-medium text-blue-800">
+                  Vil du delta?
+                </h3>
+                <p className="mt-2 text-sm text-blue-600">
+                  For å melde deg på dette arrangementet, vennligst ta kontakt
+                  med oss via skjemaet nedenfor eller bruk kontaktinformasjonen
+                  til høyre.
+                </p>
+                <button
+                  className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
+                  onClick={() => router.push("/kontakt-oss")}
+                >
+                  Kontakt oss for påmelding
+                </button>
+              </div>
             </div>
           </div>
         </div>
