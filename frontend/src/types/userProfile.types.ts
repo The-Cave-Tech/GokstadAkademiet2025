@@ -1,3 +1,4 @@
+//frontend/src/types/userProfile.types.ts
 export type UserAuthProvider = 'local' | 'google' | 'facebook' | null;
 
 export function getProviderDisplayName(provider?: string): string {
@@ -5,8 +6,7 @@ export function getProviderDisplayName(provider?: string): string {
   
   const providerMap: Record<string, string> = {
     google: 'Google',
-    facebook: 'Facebook',
-    microsoft: 'Microsoft',
+    facebook: 'Facebook'
   };
   
   return providerMap[provider] || provider;
