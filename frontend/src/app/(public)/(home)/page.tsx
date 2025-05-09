@@ -24,8 +24,68 @@ interface LandingPageData {
   };
 }
 
-// Default placeholder image path
-const PLACEHOLDER_IMAGE = "/placeholder.jpg";
+// Funksjon for å sjekke bildetypen
+const getImageType = (url: string | null): "svg" | "other" => {
+  if (!url) return "other";
+  return url.toLowerCase().endsWith(".svg") ? "svg" : "other";
+};
+
+// MediaRenderer-komponent for å håndtere alle bildeformater
+const MediaRenderer = ({
+  url,
+  alt,
+  className,
+  objectFit = "cover",
+  onError,
+}: {
+  url: string | null;
+  alt: string;
+  className?: string;
+  objectFit?: "cover" | "contain" | "fill" | "none" | "scale-down";
+  onError?: () => void;
+}) => {
+  const imageType = url ? getImageType(url) : "other";
+
+  if (!url) {
+    return (
+      <div
+        className={`bg-gray-300 flex items-center justify-center ${className}`}
+      >
+        <p className="text-gray-600">Bilde mangler</p>
+      </div>
+    );
+  }
+
+  if (imageType === "svg") {
+    return (
+      <div
+        className={className}
+        style={{
+          backgroundImage: `url('${url}')`,
+          backgroundSize: objectFit,
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+        role="img"
+        aria-label={alt}
+      />
+    );
+  }
+
+  return (
+    <Image
+      src={url}
+      alt={alt}
+      fill
+      className={className}
+      style={{ objectFit }}
+      priority
+      unoptimized={true}
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+      onError={onError}
+    />
+  );
+};
 
 // Helper function to transform API response data to match our component's interface
 const transformResponseToPageData = (responseData: any): LandingPageData => {
@@ -44,7 +104,10 @@ const transformResponseToPageData = (responseData: any): LandingPageData => {
 
   // For dypere analyse av bildeobjektene
   console.log("Hero image object:", heroComponent.heroImage);
-  console.log("Introduction image object:", introductionComponent.introductionImage);
+  console.log(
+    "Introduction image object:",
+    introductionComponent.introductionImage
+  );
 
   return {
     hero: {
@@ -67,6 +130,15 @@ const getImageUrl = (mediaObject: any): string | null => {
     return null;
   }
 
+  // NYTT: Håndter hvis mediaObject er et array (ta første element)
+  if (Array.isArray(mediaObject) && mediaObject.length > 0) {
+    console.log(
+      "Media object is an array, using first element:",
+      mediaObject[0]
+    );
+    return getImageUrl(mediaObject[0]);
+  }
+
   console.log("Processing media object type:", typeof mediaObject);
   console.log("Media object structure:", mediaObject);
 
@@ -83,14 +155,41 @@ const getImageUrl = (mediaObject: any): string | null => {
       return fullUrl;
     }
 
+    // NYTT: Håndter direkte filreferanse med navn og url
+    if (mediaObject.name && mediaObject.url) {
+      const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "";
+      const mediaBaseUrl = baseUrl.replace(/\/api\/?$/, "");
+
+      const url = mediaObject.url;
+      let fullUrl = "";
+
+      if (url.startsWith("http")) {
+        fullUrl = url;
+      } else {
+        if (url.startsWith("/uploads/")) {
+          fullUrl = `${mediaBaseUrl}${url}`;
+        } else if (url.startsWith("uploads/")) {
+          fullUrl = `${mediaBaseUrl}/${url}`;
+        } else if (url.startsWith("/api/uploads/")) {
+          fullUrl = `${mediaBaseUrl}${url.replace("/api", "")}`;
+        } else {
+          fullUrl = `${mediaBaseUrl}${url.startsWith("/") ? url : `/${url}`}`;
+        }
+      }
+
+      console.log("Found file with name and url:", fullUrl);
+      return fullUrl;
+    }
+
     // Sjekk for Strapi v4 struktur
     if (mediaObject.data && mediaObject.data.attributes) {
       const attributes = mediaObject.data.attributes;
+      // Fjern /api fra slutten av URL-en hvis den er der
       const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "";
+      const mediaBaseUrl = baseUrl.replace(/\/api\/?$/, "");
 
       if (attributes.url) {
         // Viktig: URL-en bør peke direkte til filen, ikke til API-endepunktet
-        // Fjern "api/" fra banen hvis den ikke skal være der
         const url = attributes.url;
         let fullUrl = "";
 
@@ -98,16 +197,19 @@ const getImageUrl = (mediaObject: any): string | null => {
           fullUrl = url;
         } else {
           // Spesielt for Strapi-bilder - URL-en kan peke feil
-          // Vi fikser dette ved å erstatte "/api/uploads/" med "/uploads/"
-          if (url.startsWith("/api/uploads/")) {
-            const correctedUrl = url.replace("/api/uploads/", "/uploads/");
-            fullUrl = `${baseUrl}${correctedUrl}`;
+          if (url.startsWith("/uploads/")) {
+            fullUrl = `${mediaBaseUrl}${url}`;
+          } else if (url.startsWith("uploads/")) {
+            fullUrl = `${mediaBaseUrl}/${url}`;
+          } else if (url.startsWith("/api/uploads/")) {
+            // Direkte fiks for URL-er som starter med /api/uploads/
+            fullUrl = `${mediaBaseUrl}${url.replace("/api", "")}`;
           } else {
-            fullUrl = `${baseUrl}${url.startsWith("/") ? url : `/${url}`}`;
+            fullUrl = `${mediaBaseUrl}${url.startsWith("/") ? url : `/${url}`}`;
           }
         }
 
-        console.log("Found URL in data.attributes.url (corrected):", fullUrl);
+        console.log("Found URL in data.attributes.url:", fullUrl);
         return fullUrl;
       }
 
@@ -125,15 +227,20 @@ const getImageUrl = (mediaObject: any): string | null => {
           if (url.startsWith("http")) {
             fullUrl = url;
           } else {
-            if (url.startsWith("/api/uploads/")) {
-              const correctedUrl = url.replace("/api/uploads/", "/uploads/");
-              fullUrl = `${baseUrl}${correctedUrl}`;
+            if (url.startsWith("/uploads/")) {
+              fullUrl = `${mediaBaseUrl}${url}`;
+            } else if (url.startsWith("uploads/")) {
+              fullUrl = `${mediaBaseUrl}/${url}`;
+            } else if (url.startsWith("/api/uploads/")) {
+              fullUrl = `${mediaBaseUrl}${url.replace("/api", "")}`;
             } else {
-              fullUrl = `${baseUrl}${url.startsWith("/") ? url : `/${url}`}`;
+              fullUrl = `${mediaBaseUrl}${
+                url.startsWith("/") ? url : `/${url}`
+              }`;
             }
           }
 
-          console.log("Found URL in formats (corrected):", fullUrl);
+          console.log("Found URL in formats:", fullUrl);
           return fullUrl;
         }
       }
@@ -142,19 +249,20 @@ const getImageUrl = (mediaObject: any): string | null => {
     // Sjekk for direkte URL egenskap
     if (mediaObject.url) {
       const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "";
+      const mediaBaseUrl = baseUrl.replace(/\/api\/?$/, "");
       let fullUrl = "";
 
       if (mediaObject.url.startsWith("http")) {
         fullUrl = mediaObject.url;
       } else {
-        if (mediaObject.url.startsWith("/api/uploads/")) {
-          const correctedUrl = mediaObject.url.replace(
-            "/api/uploads/",
-            "/uploads/"
-          );
-          fullUrl = `${baseUrl}${correctedUrl}`;
+        if (mediaObject.url.startsWith("/uploads/")) {
+          fullUrl = `${mediaBaseUrl}${mediaObject.url}`;
+        } else if (mediaObject.url.startsWith("uploads/")) {
+          fullUrl = `${mediaBaseUrl}/${mediaObject.url}`;
+        } else if (mediaObject.url.startsWith("/api/uploads/")) {
+          fullUrl = `${mediaBaseUrl}${mediaObject.url.replace("/api", "")}`;
         } else {
-          fullUrl = `${baseUrl}${
+          fullUrl = `${mediaBaseUrl}${
             mediaObject.url.startsWith("/")
               ? mediaObject.url
               : `/${mediaObject.url}`
@@ -162,7 +270,32 @@ const getImageUrl = (mediaObject: any): string | null => {
         }
       }
 
-      console.log("Found direct URL property (corrected):", fullUrl);
+      console.log("Found direct URL property:", fullUrl);
+      return fullUrl;
+    }
+
+    // NYTT: Spesiell håndtering for dokumenter med ID og navn
+    if (mediaObject.documentId && mediaObject.name) {
+      console.log(
+        "Found document with ID and name:",
+        mediaObject.documentId,
+        mediaObject.name
+      );
+      const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "";
+      const mediaBaseUrl = baseUrl.replace(/\/api\/?$/, "");
+
+      // Prøv å konstruere URL fra filnavn og hash hvis tilgjengelig
+      if (mediaObject.hash) {
+        const fullUrl = `${mediaBaseUrl}/uploads/${
+          mediaObject.hash
+        }.${mediaObject.ext.replace(".", "")}`;
+        console.log("Constructed URL from hash:", fullUrl);
+        return fullUrl;
+      }
+
+      // Fallback til bare filename
+      const fullUrl = `${mediaBaseUrl}/uploads/${mediaObject.name}`;
+      console.log("Constructed URL from filename:", fullUrl);
       return fullUrl;
     }
 
@@ -174,6 +307,18 @@ const getImageUrl = (mediaObject: any): string | null => {
     ) {
       const helperUrl = strapiService.media.getMediaUrl(mediaObject);
       console.log("Used strapiService helper to get URL:", helperUrl);
+
+      // Sjekk om URL-en inneholder "/api/uploads/" og fiks det
+      if (helperUrl && helperUrl.includes("/api/uploads/")) {
+        const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "";
+        const mediaBaseUrl = baseUrl.replace(/\/api\/?$/, "");
+        const correctedUrl = helperUrl
+          .replace(baseUrl, mediaBaseUrl)
+          .replace("/api/uploads/", "/uploads/");
+        console.log("Corrected helper URL:", correctedUrl);
+        return correctedUrl;
+      }
+
       return helperUrl;
     }
 
@@ -210,23 +355,20 @@ export default function LandingPageContent() {
   });
 
   // Fetch landing page data
-  // Inne i useEffect:
   useEffect(() => {
     async function getLandingPageData() {
       try {
+        // Bruk det korrekte navnet på single-type
+        // Fra konsollen ser vi at 'landing-page' er endepunktet som fungerer
         const landingPage = strapiService.single("landing-page");
 
         const response = await landingPage.find({
           populate: {
             hero: {
-              populate: "*",
+              populate: ["heroImage"],
             },
             introduction: {
-              populate: {
-                introductionImage: {
-                  populate: "*",
-                },
-              },
+              populate: ["introductionImage"],
             },
           },
         });
@@ -246,20 +388,42 @@ export default function LandingPageContent() {
         const transformedData = transformResponseToPageData(response.data);
         console.log("Transformed data:", transformedData);
 
+        // Logg rådata for introduksjonsbildet for debugging
+        console.log(
+          "Raw introduction image data:",
+          transformedData.introduction.introductionImage
+        );
+
         // Store the transformed data
         setPageData(transformedData);
 
         // Extract and process image URLs
         const heroImageUrl = getImageUrl(transformedData.hero.heroImage);
         console.log("Hero image URL:", heroImageUrl);
+        console.log("Hero image type:", getImageType(heroImageUrl));
 
         const introImageUrl = getImageUrl(
           transformedData.introduction.introductionImage
         );
-        console.log("Intro image URL:", introImageUrl);
+        console.log("Introduction image URL result:", introImageUrl);
+        console.log("Introduction image type:", getImageType(introImageUrl));
 
-        setHeroImageUrl(heroImageUrl);
-        setIntroImageUrl(introImageUrl);
+        // Fiks URL-ene direkte hvis de inneholder "/api/uploads/"
+        let fixedHeroUrl = heroImageUrl;
+        let fixedIntroUrl = introImageUrl;
+
+        if (heroImageUrl && heroImageUrl.includes("/api/uploads/")) {
+          fixedHeroUrl = heroImageUrl.replace("/api/uploads/", "/uploads/");
+          console.log("Fixed hero URL:", fixedHeroUrl);
+        }
+
+        if (introImageUrl && introImageUrl.includes("/api/uploads/")) {
+          fixedIntroUrl = introImageUrl.replace("/api/uploads/", "/uploads/");
+          console.log("Fixed intro URL:", fixedIntroUrl);
+        }
+
+        setHeroImageUrl(fixedHeroUrl);
+        setIntroImageUrl(fixedIntroUrl);
 
         setErrors((prev) => ({ ...prev, content: null }));
       } catch (err) {
@@ -336,108 +500,30 @@ export default function LandingPageContent() {
       `Image load error for ${imageType} image. URL attempted: ${url}`
     );
 
-    // Try to fetch the image directly to see if it's accessible
+    // Try to fix the URL
     if (url) {
       console.log("Testing URL accessibility:", url);
 
-      // Test with corrected URL (fjerne 'api' fra banen)
-      const correctedUrl = url.replace("api/uploads", "uploads");
-      console.log("Also testing corrected URL:", correctedUrl);
+      // Prøv å generere en alternativ URL for testing
+      let correctedUrl: string = url;
 
-      fetch(url, { method: "HEAD" })
-        .then((response) => {
-          console.log(
-            `Image URL ${url} fetch status: ${response.status} ${response.statusText}`
-          );
-          if (response.status !== 200 && url !== correctedUrl) {
-            // Prøv den korrigerte URL-en hvis originalen feiler
-            fetch(correctedUrl, { method: "HEAD" })
-              .then((correctedResponse) => {
-                console.log(
-                  `Corrected URL ${correctedUrl} fetch status: ${correctedResponse.status} ${correctedResponse.statusText}`
-                );
+      if (url.includes("/api/uploads/")) {
+        correctedUrl = url.replace("/api/uploads/", "/uploads/");
+        console.log("Created corrected URL:", correctedUrl);
 
-                // Om den korrigerte URL-en fungerer, oppdaterer vi state
-                if (correctedResponse.status === 200) {
-                  console.log("Corrected URL works, updating...");
-                  if (imageType === "hero") {
-                    setHeroImageUrl(correctedUrl);
-                  } else {
-                    setIntroImageUrl(correctedUrl);
-                  }
-                  return; // Ikke sett feiltilstand siden vi fikset URL-en
-                } else {
-                  setImageLoadError((prev) => ({
-                    ...prev,
-                    [imageType]: true,
-                  }));
-                }
-              })
-              .catch((err) => {
-                console.error(
-                  `Failed to fetch corrected URL ${correctedUrl}:`,
-                  err
-                );
-                setImageLoadError((prev) => ({
-                  ...prev,
-                  [imageType]: true,
-                }));
-              });
-          } else {
-            // Originalen fungerte, eller vi kan ikke korrigere
-            if (response.status !== 200) {
-              setImageLoadError((prev) => ({
-                ...prev,
-                [imageType]: true,
-              }));
-            }
-          }
-        })
-        .catch((err) => {
-          console.error(`Failed to fetch image URL ${url}:`, err);
-          // Prøv korrigert URL om originalen krasjer
-          if (url !== correctedUrl) {
-            fetch(correctedUrl, { method: "HEAD" })
-              .then((correctedResponse) => {
-                console.log(
-                  `Corrected URL ${correctedUrl} fetch status: ${correctedResponse.status} ${correctedResponse.statusText}`
-                );
-
-                // Om den korrigerte URL-en fungerer, oppdaterer vi state
-                if (correctedResponse.status === 200) {
-                  console.log(
-                    "Corrected URL works after original fetch error, updating..."
-                  );
-                  if (imageType === "hero") {
-                    setHeroImageUrl(correctedUrl);
-                  } else {
-                    setIntroImageUrl(correctedUrl);
-                  }
-                  return; // Ikke sett feiltilstand siden vi fikset URL-en
-                } else {
-                  setImageLoadError((prev) => ({
-                    ...prev,
-                    [imageType]: true,
-                  }));
-                }
-              })
-              .catch((err) => {
-                console.error(
-                  `Failed to fetch corrected URL ${correctedUrl}:`,
-                  err
-                );
-                setImageLoadError((prev) => ({
-                  ...prev,
-                  [imageType]: true,
-                }));
-              });
-          } else {
-            setImageLoadError((prev) => ({
-              ...prev,
-              [imageType]: true,
-            }));
-          }
-        });
+        // Prøv den korrigerte URL-en
+        if (imageType === "hero") {
+          setHeroImageUrl(correctedUrl);
+        } else {
+          setIntroImageUrl(correctedUrl);
+        }
+      } else {
+        // Hvis vi ikke kan korrigere URL-en, setter vi feilstatus
+        setImageLoadError((prev) => ({
+          ...prev,
+          [imageType]: true,
+        }));
+      }
     } else {
       setImageLoadError((prev) => ({
         ...prev,
@@ -450,6 +536,8 @@ export default function LandingPageContent() {
   console.log("Render state:", {
     heroImageUrl,
     introImageUrl,
+    heroImageType: getImageType(heroImageUrl),
+    introImageType: getImageType(introImageUrl),
     imageLoadError,
     pageDataExists: !!pageData,
   });
@@ -477,22 +565,17 @@ export default function LandingPageContent() {
       <section className="relative text-center py-20 px-4 bg-gray-900 text-white">
         <ClientMessage />
         <div className="absolute inset-0 z-0">
-          {heroImageUrl && !imageLoadError.hero ? (
-            <Image
-              src={heroImageUrl}
+          {!imageLoadError.hero ? (
+            <MediaRenderer
+              url={heroImageUrl}
               alt="Hero Background Image"
-              fill
-              className="object-cover opacity-50"
-              priority
-              unoptimized={true}
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 100vw"
+              className="w-full h-full opacity-50"
+              objectFit="cover"
               onError={() => handleImageError("hero", heroImageUrl)}
             />
           ) : (
             <div className="w-full h-full bg-gray-700 flex items-center justify-center">
-              <p className="text-white opacity-70">
-                {heroImageUrl ? `Kunne ikke laste bildet` : `Bilde mangler`}
-              </p>
+              <p className="text-white opacity-70">Kunne ikke laste bildet</p>
             </div>
           )}
         </div>
@@ -510,22 +593,17 @@ export default function LandingPageContent() {
       <section className="py-16 px-4 max-w-6xl mx-auto grid gap-10 md:grid-cols-2 items-center">
         {/* Image section */}
         <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[500px] rounded-xl overflow-hidden shadow-lg">
-          {introImageUrl && !imageLoadError.intro ? (
-            <Image
-              src={introImageUrl}
+          {!imageLoadError.intro ? (
+            <MediaRenderer
+              url={introImageUrl}
               alt="Introduction Image"
-              fill
-              className="object-cover"
-              priority
-              unoptimized={true}
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+              className="w-full h-full"
+              objectFit="contain"
               onError={() => handleImageError("intro", introImageUrl)}
             />
           ) : (
             <div className="w-full h-full bg-gray-300 flex items-center justify-center">
-              <p className="text-gray-600">
-                {introImageUrl ? `Kunne ikke laste bildet` : "Bilde mangler"}
-              </p>
+              <p className="text-gray-600">Kunne ikke laste bildet</p>
             </div>
           )}
         </div>

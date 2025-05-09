@@ -10,7 +10,7 @@
       "type": "string"
     },
     "IntroductionText": {
-      "type": "string"
+      "type": "text"
     },
     "introductionImage": {
       "type": "media",

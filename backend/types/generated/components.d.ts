@@ -71,7 +71,7 @@ export interface LandingPageIntro extends Struct.ComponentSchema {
       'images' | 'files' | 'videos' | 'audios',
       true
     >;
-    IntroductionText: Schema.Attribute.String;
+    IntroductionText: Schema.Attribute.Text;
     Title: Schema.Attribute.String;
   };
 }
