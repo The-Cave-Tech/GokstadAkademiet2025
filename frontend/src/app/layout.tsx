@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Roboto } from "next/font/google";
-import "@/styles/globals.css";
+import "@/styles/global.css";
 import { Header } from "@/components/ui/Header";
 import { AuthProvider } from "@/lib/context/AuthContext";
+import React from "react";
+import { ActivitiesProvider } from "@/lib/context/ActivityContext";
+import Footer from "@/components/ui/Footer";
 
 const roboto = Roboto({
   variable: "--font-roboto",
   subsets: ["latin"],
-  weight: ["400", "700"],  
+  weight: ["400", "700"],
 });
 
 const geistSans = Geist({
@@ -22,17 +25,18 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "The Cave Tech",
-  description: "Hjelper enkeltpersoner å få erfaring gjennom virkelige prosjekter og åpne kildekodeløsninger.",
-  keywords: "The Cave Tech, makerspace, tekk erfaring, åpen kildekode, nettverk",
+  description:
+    "Hjelper enkeltpersoner å få erfaring gjennom virkelige prosjekter og åpne kildekodeløsninger.",
+  keywords:
+    "The Cave Tech, makerspace, tekk erfaring, åpen kildekode, nettverk",
   openGraph: {
     title: "The Cave Tech",
-    description: "En ideell organisasjon som hjelper enkeltpersoner med å få erfaring gjennom virkelige tech-prosjekter.",
+    description:
+      "En ideell organisasjon som hjelper enkeltpersoner med å få erfaring gjennom virkelige tech-prosjekter.",
     url: "https://www.thecavetech.com",
     type: "website",
   },
 }; // Må kansje endres til den info TheCaveTech ønsker?
-
-
 
 export default function RootLayout({
   children,
@@ -44,10 +48,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${roboto.variable} antialiased`}
       >
-      <AuthProvider>
-        <Header />
-        {children}
-      </AuthProvider>
+        <AuthProvider>
+          <ActivitiesProvider>
+            <Header />
+            {children}
+            <Footer />
+          </ActivitiesProvider>
+        </AuthProvider>
       </body>
     </html>
   );

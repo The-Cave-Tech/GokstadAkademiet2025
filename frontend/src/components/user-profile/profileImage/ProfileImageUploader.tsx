@@ -14,9 +14,10 @@ import { initialProfileImageState } from "@/types/profileImages.types";
 interface ProfileImageUploaderProps {
   profile: UserProfile;
   onImageUpdate: (updatedProfile: UserProfile) => void;
+  refreshProfile: () => Promise<void>;
 }
 
-export function ProfileImageUploader({ profile, onImageUpdate }: ProfileImageUploaderProps) {
+export function ProfileImageUploader({ profile, onImageUpdate, refreshProfile }: ProfileImageUploaderProps) {
   // Form reference for the file input
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -32,7 +33,7 @@ export function ProfileImageUploader({ profile, onImageUpdate }: ProfileImageUpl
   const displayImage = getProfileImageUrl(profile);
   const isDefaultImage = !profile?.publicProfile?.profileimage;
 
-  // Handle file selection - bruk kun server-validering
+  // Handle file selection
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -54,6 +55,8 @@ export function ProfileImageUploader({ profile, onImageUpdate }: ProfileImageUpl
         
         if (result.success && result.updatedProfile) {
           onImageUpdate(result.updatedProfile);
+          // Add refresh to ensure all components have updated data
+          await refreshProfile();
         } else if (result.error) {
           setServerError(result.error);
         }
@@ -84,6 +87,8 @@ export function ProfileImageUploader({ profile, onImageUpdate }: ProfileImageUpl
         
         if (result.success && result.updatedProfile) {
           onImageUpdate(result.updatedProfile);
+          // Add refresh to ensure all components have updated data
+          await refreshProfile();
         } else if (result.error) {
           setServerError(result.error);
         }

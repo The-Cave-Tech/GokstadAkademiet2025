@@ -55,3 +55,7 @@ export interface VerificationModalProps extends BaseModalProps {
   email?: string;
   onResendCode?: () => Promise<boolean | void>; 
 }
+
+export interface LoginInfoManageProps {
+  refreshProfile: () => Promise<void>;
+}

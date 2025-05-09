@@ -18,7 +18,6 @@ import {
   updatePostalCode,
   updateCity
 } from "@/lib/data/services/profileSections/personalInfoService";
-import { getUserProfile } from "@/lib/data/services/userProfile";
 import { UserProfile } from "@/lib/data/services/userProfile";
 
 import {
@@ -28,13 +27,17 @@ import {
 } from "@/lib/validation/profileSectionValidation";
 
 import {
-  PersonalInfoProps,
   FormValues,
   FieldConfig,
   ExtendedUserProfile
 } from "@/types/personalInfo.types";
 
-export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalInfoProps) {
+interface PersonalInfoProps {
+  profile: UserProfile;
+  refreshProfile: () => Promise<void>;
+}
+
+export function PersonalInfo({ profile, refreshProfile }: PersonalInfoProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [formValues, setFormValues] = useState<FormValues>({
@@ -218,16 +221,14 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
       }
       
       if (updatesPerformed) {
-        const updatedProfile = await getUserProfile();
-        onProfileUpdate(updatedProfile);
-        
+        await refreshProfile();
         setOriginalValues({...formValues});
       }
       
       setIsEditing(false);
     } catch (error) {
       console.error("Feil ved lagring av profil:", error);
-      setError("Det oppstod en feil ved lagring av profilen din");
+      setError("Det oppst jogadores en feil ved lagring av profilen din");
     } finally {
       setIsSaving(false);
     }

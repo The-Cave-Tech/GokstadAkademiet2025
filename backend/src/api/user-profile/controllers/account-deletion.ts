@@ -1,5 +1,3 @@
-// backend/src/api/user-profile/controllers/account-deletion.ts
-
 import { factories } from '@strapi/strapi';
 import { 
   sendAccountDeletionVerification, 
@@ -10,38 +8,38 @@ import {
   createTokenData, 
   storeTokenInUser, 
   validateToken,
-  resendVerificationCode // Add this import
+  resendVerificationCode
 } from '../../../services/shared/tokenService';
 
 export default factories.createCoreController('plugin::users-permissions.user', ({ strapi }) => ({
-  //KontoSletting
   async requestAccountDeletion(ctx) {
     const userId = ctx.state.user.id;
     const { password } = ctx.request.body;
-    
-    if (!password) {
-      return ctx.badRequest('Password is required');
-    }
     
     try {
       const user = await strapi.db.query('plugin::users-permissions.user').findOne({ 
         where: { id: userId } 
       });
       
-      // Validate the user's password
-      const validPassword = await strapi.plugin('users-permissions').service('user').validatePassword(
-        password,
-        user.password
-      );
-      
-      if (!validPassword) {
-        return ctx.badRequest('Invalid password');
+      const isOAuthUser = user.provider && user.provider !== 'local';
+   
+      if (!isOAuthUser && !password) {
+        return ctx.badRequest('Password is required for local users');
       }
       
-      // Generer verifiseringskode og send e-post
+      if (!isOAuthUser) {
+        const validPassword = await strapi.plugin('users-permissions').service('user').validatePassword(
+          password,
+          user.password
+        );
+        
+        if (!validPassword) {
+          return ctx.badRequest('Invalid password');
+        }
+      }
+    
       const verificationCode = await sendAccountDeletionVerification(user.email, user.username);
       
-      // Opprett og lagre token
       const tokenData = createTokenData(verificationCode, 'account-deletion');
       await storeTokenInUser(userId, tokenData);
       
@@ -70,38 +68,31 @@ export default factories.createCoreController('plugin::users-permissions.user', 
     }
     
     try {
-      // Finn bruker
       const user = await strapi.db.query('plugin::users-permissions.user').findOne({ where: { id: userId } });
-      
-      // Valider token
+
       const validation = await validateToken(userId, verificationCode, 'account-deletion');
       if (!validation.valid) {
         return ctx.badRequest(validation.error);
       }
-      
-      // Hvis brukeren har oppgitt en slettingsgrunn, send den på e-post til adminstratorene
+     
       if (deletionReason) {
         try {
           await sendDeletionFeedback(user.email, user.username, deletionReason);
         } catch (err) {
           console.error('Error sending deletion feedback:', err);
-          // Vi fortsetter slettingsprosessen selv om sending av tilbakemelding feiler
         }
       }
       
       try {
-        // Send slettingsbekreftelse via e-post
         await sendAccountDeletionConfirmation(user.email, user.username);
       } catch (err) {
         console.error('Error sending deletion confirmation:', err);
       }
-      
-      // Finn brukerprofil
+
       const userProfiles = await strapi.db.query('api::user-profile.user-profile').findMany({
         where: { users_permissions_user: userId }
       });
-      
-      // Slett brukerprofil først
+
       if (userProfiles && userProfiles.length > 0) {
         const profileId = userProfiles[0].id;
         try {
@@ -113,8 +104,7 @@ export default factories.createCoreController('plugin::users-permissions.user', 
           console.error(`Error deleting user profile ${profileId}:`, err);
         }
       }
-      
-      // Slett brukerkonto
+
       await strapi.db.query('plugin::users-permissions.user').delete({
         where: { id: userId }
       });

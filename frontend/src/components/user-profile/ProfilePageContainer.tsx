@@ -1,39 +1,15 @@
 // src/components/user-profile/ProfilePageContainer.tsx
-"use client"
-import React, { useState, useEffect } from 'react';
+"use client";
+import React from 'react';
 import { PublicProfile } from './sections/PublicProfile';
 import { PersonalInfo } from './sections/PersonalInfo';
 import { Notification } from './sections/Notification';
 import { LoginInfoManage } from './sections/LoginInfoManage';
 import { AccountAdministration } from './sections/AccountAdministration';
-import { getUserProfile, UserProfile } from '@/lib/data/services/userProfile';
+import { useProfileState } from '@/hooks/useProfileState';
 
 export function ProfilePageContainer() {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setIsLoading(true);
-        // Hent profil med alle relevante relasjoner
-        const fetchedProfile = await getUserProfile();
-        setProfile(fetchedProfile);
-      } catch (err) {
-        setError('Kunne ikke hente brukerprofil. Vennligst prøv igjen senere.');
-        console.error('Feil ved henting av profil:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchProfile();
-  }, []);
-  
-  const handleProfileUpdate = (updatedProfile: UserProfile) => {
-    setProfile(updatedProfile);
-  };
+  const { profile, isLoading, error, refreshProfile, updateProfile } = useProfileState();
   
   if (isLoading) {
     return <div className="flex justify-center p-8">Laster profil...</div>;
@@ -45,16 +21,23 @@ export function ProfilePageContainer() {
   
   return (
     <section className="space-y-6">
-      <PublicProfile profile={profile} onProfileUpdate={handleProfileUpdate} />
+      <PublicProfile 
+        profile={profile} 
+        onProfileUpdate={updateProfile} 
+        refreshProfile={refreshProfile}
+      />
       <PersonalInfo 
         profile={profile} 
-        onProfileUpdate={handleProfileUpdate} 
+        refreshProfile={refreshProfile}
       />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <LoginInfoManage />
-            <Notification />
-          </div>
-          <AccountAdministration />
-        </section>
-      );
-    }
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <LoginInfoManage refreshProfile={refreshProfile} />
+        <Notification 
+          profile={profile} 
+          refreshProfile={refreshProfile}
+        />
+      </div>
+      <AccountAdministration />
+    </section>
+  );
+}

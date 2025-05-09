@@ -1,3 +1,4 @@
+//frontend/src/components/ui/custom/PageIcons.tsx
 "use client";
 
 import Image from "next/image";

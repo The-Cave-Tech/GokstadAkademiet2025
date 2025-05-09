@@ -10,15 +10,28 @@ import {
   SignUpValidationErrors,
   SignInValidationErrors,
 } from "@/types/auth.types";
-import { loginUserService, registerUserService} from "@/lib/data/services/userAuth";
+import {
+  loginUserService,
+  registerUserService,
+} from "@/lib/data/services/userAuth";
 import { removeAuthCookie, setAuthCookie } from "@/lib/utils/cookie";
-import { handleStrapiError, handleValidationErrors } from "@/lib/utils/serverAction-errorHandler";
+import {
+  handleStrapiError,
+  handleValidationErrors,
+} from "@/lib/utils/serverAction-errorHandler";
+import { strapiService } from "@/lib/data/services/strapiClient";
 
 /**
  * Registrerer en ny bruker.
  */
-export async function register(prevState: RegisterFormState, formData: FormData): Promise<RegisterFormState> {
-  const fields = Object.fromEntries(formData.entries()) as Record<string, string>;
+export async function register(
+  prevState: RegisterFormState,
+  formData: FormData
+): Promise<RegisterFormState> {
+  const fields = Object.fromEntries(formData.entries()) as Record<
+    string,
+    string
+  >;
   console.log("[Server] Auth - Input data:", fields);
 
   const validation = signUpSchema.safeParse(fields);
@@ -34,7 +47,7 @@ export async function register(prevState: RegisterFormState, formData: FormData)
       password: [],
       repeatPassword: [],
     }) as SignUpValidationErrors;
-    
+
     console.warn("[Server] Auth - Validation failed:", errors);
 
     return {
@@ -48,14 +61,12 @@ export async function register(prevState: RegisterFormState, formData: FormData)
   try {
     const { username, email, password } = fields;
     const response = await registerUserService({ username, email, password });
-    
+
     console.log("[Server] Register - Success. JWT:", response.jwt);
-    
+
     // NB: Vi setter IKKE auth-cookie her siden brukeren skal bekrefte e-post i fremtiden
-    
-   //lenken skal byttes ut senere
-   
-    
+
+    //lenken skal byttes ut senere
   } catch (error) {
     const errorMessage = handleStrapiError(error);
     console.error("[Server] Register - Error:", error);
@@ -93,7 +104,7 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
   }
 
   try {
-    const { identifier, password } = fields;    
+    const { identifier, password } = fields;
     const response = await loginUserService({ identifier, password });
     
     if (!response || !response.jwt) {
@@ -101,8 +112,7 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
     }
     
     await setAuthCookie(response.jwt);
-    
-    // Return success state
+
     return {
       ...prevState,
       zodErrors: null,
@@ -110,7 +120,6 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
       values: fields,
       success: true,
     };
-    
   } catch (error) {
     const errorMessage = handleStrapiError(error);
     
@@ -129,8 +138,17 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
 export async function logout(): Promise<void> {
   try {
     console.log("[Server] Logout - Starting logout process");
+    try {
+      await strapiService.fetch("auth/logout", {
+        method: "POST"
+      });
+      console.log("[Server] Logout - Successfully logged out from Strapi");
+    } catch (error) {
+      console.error("[Server] Logout - Error logging out from Strapi:", error);
+    }
+    
     await removeAuthCookie();
-    console.log("[Server] Logout - Successfully removed auth cookie");
+    console.log("[Server] Logout - Successfully removed auth and session cookies");
   } catch (error) {
     console.error("[Server] Logout - Error during logout:", error);
     throw error;
