@@ -119,7 +119,7 @@ export function EmailChangeModal({
           <CardBody className="px-6 py-4">
             {error && (
               <div
-                className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start"
+                className="mb-4 p-3 bg-red-50 border border-red-200 text-danger rounded-md flex items-start"
                 role="alert"
                 aria-live="assertive"
               >
@@ -137,7 +137,7 @@ export function EmailChangeModal({
                   id="current-password-for-email"
                   name="current-password-for-email"
                   type="password"
-                  className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-md border border-gray-300 p-2 focus:border-standard focus:outline-none focus:ring-2 focus:ring-standard"
                   value={currentPassword}
                   onChange={handlePasswordChange}
                   placeholder="Skriv ditt passord"
@@ -155,7 +155,7 @@ export function EmailChangeModal({
               </div>
 
               <div>
-                <label htmlFor="new-email" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="new-email" className="block text-sm font-medium text-typographyPrimary mb-1">
                   Ny e-postadresse
                 </label>
                 <input
@@ -163,7 +163,7 @@ export function EmailChangeModal({
                   id="new-email"
                   name="new-email"
                   type="email"
-                  className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-md border border-gray-300 p-2 focus:border-standard focus:outline-none focus:ring-2 focus:ring-standard"
                   value={newEmail}
                   onChange={handleEmailChange}
                   placeholder="din.nye@epost.no"

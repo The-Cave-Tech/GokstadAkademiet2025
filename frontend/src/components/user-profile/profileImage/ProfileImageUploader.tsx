@@ -97,7 +97,7 @@ export function ProfileImageUploader({ profile, onImageUpdate }: ProfileImageUpl
 
   return (
     <div className="flex flex-col items-center">
-      <label className="flex justify-center pb-2 font-medium text-gray-700 leading-6">
+      <label className="flex justify-center pb-2 font-medium text-typographyPrimary leading-6">
         Profilbilde
       </label>
       {/* Profile image */}
@@ -117,7 +117,7 @@ export function ProfileImageUploader({ profile, onImageUpdate }: ProfileImageUpl
         Tillatte formater: {ALLOWED_IMAGE_TYPES.map(type => type.split('/')[1].toUpperCase()).join(', ')}
       </div>
       {serverError && (
-        <div className=" border-red-200 text-red-700 rounded-md flex items-start w-full">
+        <div className=" border-red-200 text-danger rounded-md flex items-start w-full">
           <span>{serverError}</span>
         </div>
       )}
@@ -129,7 +129,7 @@ export function ProfileImageUploader({ profile, onImageUpdate }: ProfileImageUpl
           type="button"
           onClick={handleImageDelete}
           disabled={isDeleting || isDefaultImage || isPending}
-          className={`w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 shadow-sm text-gray-700 ${
+          className={`w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 shadow-elevation text-typographyPrimary ${
             isDefaultImage ? "invisible" : "hover:bg-gray-200"
           }`}
           aria-label="Slett profilbilde"
@@ -144,7 +144,7 @@ export function ProfileImageUploader({ profile, onImageUpdate }: ProfileImageUpl
         {/* Upload button */}
         <label
           htmlFor="profileImage"
-          className={`cursor-pointer w-10 h-10 hover:bg-gray-200 rounded-full flex items-center justify-center border border-gray-300 shadow-sm text-gray-700 ${
+          className={`cursor-pointer w-10 h-10 hover:bg-gray-200 rounded-full flex items-center justify-center border border-gray-300 shadow-elevation text-typographyPrimary ${
             (isUploading || isPending) ? 'opacity-50 cursor-wait' : ''
           }`}
         >

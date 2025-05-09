@@ -189,7 +189,7 @@ export function AccountDeletionVerificationModal({
       >
         <Card className="w-full shadow-xl rounded-lg border">
           <CardHeader className="px-6 py-4 border-b border-gray-200">
-            <h2 id="verification-modal-title" className="text-xl font-semibold text-gray-900">
+            <h2 id="verification-modal-title" className="text-xl font-semibold text-typographyPrimary">
               Bekreft sletting av konto
             </h2>
           </CardHeader>
@@ -197,7 +197,7 @@ export function AccountDeletionVerificationModal({
           <CardBody className="px-6 py-6">
             {error && (
               <div 
-                className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start"
+                className="mb-4 p-3 bg-red-50 border border-red-200 text-danger rounded-md flex items-start"
                 role="alert"
                 aria-live="assertive"
               >
@@ -208,7 +208,7 @@ export function AccountDeletionVerificationModal({
 
             {resendSuccess && (
               <div 
-                className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-md flex items-start"
+                className="mb-4 p-3 bg-green-50 border border-green-200 text-success rounded-md flex items-start"
                 role="alert"
                 aria-live="assertive"
               >
@@ -217,7 +217,7 @@ export function AccountDeletionVerificationModal({
             )}
             
             <div className="space-y-6">
-              <div className="text-gray-700">
+              <div className="text-typographyPrimary">
                 <p className="text-base">
                   Vi har sendt deg en kode på e-post for å verifisere at dette er deg.
                 </p>
@@ -228,7 +228,7 @@ export function AccountDeletionVerificationModal({
               
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label htmlFor="verification-code" className="block text-gray-700 font-medium">
+                  <label htmlFor="verification-code" className="block text-typographyPrimary font-medium">
                     Verifiseringskode
                   </label>
                   <input
@@ -258,7 +258,7 @@ export function AccountDeletionVerificationModal({
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="deletion-reason" className="block text-gray-700 font-medium">
+                  <label htmlFor="deletion-reason" className="block text-typographyPrimary font-medium">
                     Hvorfor ønsker du å slette kontoen din? (valgfritt)
                   </label>
                   <textarea
@@ -278,17 +278,17 @@ export function AccountDeletionVerificationModal({
                       "deletionReason"
                     )}
                   />
-                  <div className="text-xs text-gray-500 text-right">
+                  <div className="text-xs text-typographySecondary text-right">
                   {deletionReason.length}/256 tegn
                 </div>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-typographySecondary">
                     Din tilbakemelding blir sendt til vårt team på e-post (maad1006@gmail.com), 
                     men vil ikke bli lagret i systemet ettersom kontoen din slettes umiddelbart.
                   </p>
                 </div>
                 
                 <div className="flex items-center">
-                  <p className="text-gray-700">Har du ikke mottatt e-posten?</p>
+                  <p className="text-typographyPrimary">Har du ikke mottatt e-posten?</p>
                   <button
                     type="button"
                     onClick={handleResendCode}

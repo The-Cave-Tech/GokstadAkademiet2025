@@ -161,9 +161,9 @@ export function EmailVerificationModal({
         ref={modalRef}
         className="w-full max-w-[600px] mx-4 my-8"
       >
-        <Card className="w-full shadow-xl rounded-lg border">
+        <Card className="w-full shadow-elevation rounded-lg border">
           <CardHeader className="px-6 py-4 border-b border-gray-200">
-            <h2 id="verification-modal-title" className="text-xl font-semibold text-gray-900">
+            <h2 id="verification-modal-title" className="text-sub-section-title-small font-semibold text-typographyPrimary">
               Sjekk din e-post
             </h2>
           </CardHeader>
@@ -171,7 +171,7 @@ export function EmailVerificationModal({
           <CardBody className="px-6 py-6">
             {error && (
               <div 
-                className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start"
+                className="mb-4 p-3 bg-red-50 border border-red-200 text-danger rounded-md flex items-start"
                 role="alert"
                 aria-live="assertive"
               >
@@ -182,7 +182,7 @@ export function EmailVerificationModal({
             
             {resendSuccess && (
               <div 
-                className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-md flex items-start"
+                className="mb-4 p-3 bg-green-50 border border-green-200 text-success rounded-md flex items-start"
                 role="alert"
                 aria-live="assertive"
               >
@@ -191,25 +191,25 @@ export function EmailVerificationModal({
             )}
             
             <div className="space-y-6">
-              <div className="text-gray-700">
-                <p className="text-base">
+              <div className="text-typographyPrimary">
+                <p className="text-body-small">
                   Vi har sendt deg en kode på e-post for å verifisere at dette er deg.
                 </p>
-                <p className="mt-2 text-base">
+                <p className="mt-2 text-body-small">
                   Vennligst sjekk innboksen din {email ? `(${email})` : ""} og eventuelt søppelpost-mappen.
                 </p>
               </div>
               
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label htmlFor="verification-code" className="block text-gray-700 font-medium">
+                  <label htmlFor="verification-code" className="block text-typographyPrimary font-medium">
                     Verifiseringskode
                   </label>
                   <input
                     ref={inputRef}
                     id="verification-code"
                     type="text"
-                    className="w-full rounded-md border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-md border border-gray-300 p-3 focus:border-standard focus:outline-none focus:ring-2 focus:ring-standard"
                     value={verificationCode}
                     onChange={handleVerificationCodeChange}
                     placeholder="6-sifret kode"
@@ -220,17 +220,17 @@ export function EmailVerificationModal({
                     aria-describedby="code-description"
                   />
                   <ZodErrors error={validationError} />
-                  <p id="code-description" className="text-sm text-gray-500">
+                  <p id="code-description" className="text-sm text-typographyPrimary">
                     Koden er 6 siffer
                   </p>
                 </div>
                 
                 <div className="flex items-center">
-                  <p className="text-gray-700">Har du ikke mottatt e-posten?</p>
+                  <p className="text-typographyPrimary">Har du ikke mottatt e-posten?</p>
                   <button
                     type="button"
                     onClick={handleResendCode}
-                    className={`ml-2 text-blue-600 hover:text-blue-800 font-medium focus:outline-none ${
+                    className={`ml-2 text-standard hover:text-standard-hover-dark font-medium focus:outline-none ${
                       resendDisabled ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                     disabled={isLoading || resendDisabled}

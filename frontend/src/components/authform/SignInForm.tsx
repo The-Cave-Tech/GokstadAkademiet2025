@@ -64,7 +64,7 @@ export function SignInForm() {
       <Card className="max-w-md mx-auto">
         <CardHeader>
           <section className="flex flex-col items-center gap-4">
-            <h1 className="text-xl font-semibold">Logg Inn</h1>
+            <h1 className="text-section-title-small font-semibold">Logg Inn</h1>
             <SiteLogo
               className="/* Dark mode støtte */"
               style={{ width: "90px", height: "45px" }}
@@ -75,7 +75,7 @@ export function SignInForm() {
         <CardBody>
           <form action={formAction} onSubmit={() => setIsSubmitting(true)}>
             {formState.strapiErrors?.message && (
-              <p className="text-red-500 text-center text-xs sm:text-sm font-medium animate-fade-in">
+              <p className="text-danger text-center text-xs sm:text-sm font-medium animate-fade-in">
                 {formState.strapiErrors?.message}
               </p>
             )}
@@ -139,7 +139,7 @@ export function SignInForm() {
             </fieldset>
 
             <div className="flex justify-end items-center my-4">
-              <a href="#" className="text-sm text-blue-500 hover:underline">
+              <a href="#" className="text-sm text-standard hover:text-standard-hover hover:underline">
                 Glemt passord?
               </a>
             </div>
@@ -147,14 +147,14 @@ export function SignInForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
+              className="w-full bg-standard text-typographyPrimaryWH p-2 rounded-md hover:bg-standard-hover-dark"
             >
               {isSubmitting ? "Logger inn..." : "Logg inn"}
             </button>
 
-            <div className="flex gap-1 mt-4 text-center text-sm text-gray-700">
+            <div className="flex gap-1 mt-4 text-center text-captions-big text-typographyPrimary">
               <p>Har du ikke en konto?</p>
-              <Link href="/signup" className="text-blue-500 hover:underline">
+              <Link href="/signup" className="text-standard hover:text-standard-hover hover:underline">
                 Registrer deg
               </Link>
             </div>
@@ -163,10 +163,10 @@ export function SignInForm() {
 
         <CardFooter>
           <div className="mt-4">
-            <section className="flex gap-1 mt-4 text-center items-center text-sm text-gray-700">
-              <hr className="flex-grow border-t-2 border-gray-700" />
-              <span className="mx-4 text-sm text-gray-700">Eller</span>
-              <hr className="flex-grow border-t-2 border-gray-700" />
+            <section className="flex gap-1 mt-4 text-center items-center text-captions-big text-typographyPrimary">
+              <hr className="flex-grow border-t-1 border-gray-700" />
+              <span className="mx-4 text-captions-big text-typographyPrimary">Eller</span>
+              <hr className="flex-grow border-t-1 border-gray-700" />
             </section>
 
             <ul className="mt-4 flex flex-col gap-2">
@@ -183,7 +183,7 @@ export function SignInForm() {
                         height={24}
                         className="w-6 h-6"
                       />
-                      <span className="text-gray-900 dark:text-white">
+                      <span className="text-typographyPrimary dark:text-typographyPrimaryWH">
                         Logg inn med {text}
                       </span>
                     </button>

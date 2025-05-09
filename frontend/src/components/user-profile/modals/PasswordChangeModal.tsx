@@ -126,9 +126,9 @@ export function PasswordChangeModal({
         ref={modalRef}
         className="w-full max-w-[600px] mx-4 my-8"
       >
-        <Card className="w-full shadow-xl">
+        <Card className="w-full shadow-elevation">
           <CardHeader className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h3 id="password-modal-title" className="text-lg font-medium text-gray-900">
+            <h3 id="password-modal-title" className="text-sub-section-title-small font-medium text-typographyPrimary">
               Endre passord
             </h3>
           </CardHeader>
@@ -136,7 +136,7 @@ export function PasswordChangeModal({
           <CardBody className="px-6 py-4">
             {error && (
               <div 
-                className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start"
+                className="mb-4 p-3 bg-red-50 border border-red-200 text-danger rounded-md flex items-start"
                 role="alert"
                 aria-live="assertive"
               >
@@ -147,7 +147,7 @@ export function PasswordChangeModal({
             
             <div className="space-y-4">
               <div>
-                <label htmlFor="current-password" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="current-password" className="block text-body-small font-medium text-typographyPrimary mb-1">
                   Nåværende passord
                 </label>
                 <div className="relative">
@@ -155,7 +155,7 @@ export function PasswordChangeModal({
                     ref={inputRef}
                     id="current-password"
                     type={showCurrentPassword ? "text" : "password"}
-                    className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-md border border-gray-300 p-2 focus:border-standard focus:outline-none focus:ring-2 focus:ring-standard"
                     value={currentPassword}
                     onChange={handleCurrentPasswordChange}
                     placeholder="Skriv ditt nåværende passord"
@@ -178,14 +178,14 @@ export function PasswordChangeModal({
               </div>
 
               <div>
-                <label htmlFor="new-password" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="new-password" className="block text-body-small font-medium text-typographyPrimary mb-1">
                   Nytt passord
                 </label>
                 <div className="relative">
                   <input
                     id="new-password"
                     type={showNewPassword ? "text" : "password"}
-                    className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-md border border-gray-300 p-2 focus:border-standard focus:outline-none focus:ring-2 focus:ring-standard"
                     value={newPassword}
                     onChange={handleNewPasswordChange}
                     placeholder="Skriv nytt passord (minst 8 tegn)"
@@ -214,14 +214,14 @@ export function PasswordChangeModal({
               </div>
 
               <div>
-                <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="confirm-password" className="block text-body-small font-medium text-typographyPrimary mb-1">
                   Bekreft nytt passord
                 </label>
                 <div className="relative">
                   <input
                     id="confirm-password"
                     type={showConfirmPassword ? "text" : "password"}
-                    className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-md border border-gray-300 p-2 focus:border-standard focus:outline-none focus:ring-2 focus:ring-standard"
                     value={confirmPassword}
                     onChange={handleConfirmPasswordChange}
                     placeholder="Skriv passordet igjen"
@@ -243,7 +243,7 @@ export function PasswordChangeModal({
                 />
               </div>
               
-              <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded-md">
+              <div className="text-captions-big text-typographyPrimaryHover bg-gray-50 p-3 rounded-md">
                 <p id="new-password-description">Et sterkt passord bør være minst 8 tegn langt og inneholde en kombinasjon av 
                   store og små bokstaver, tall og spesialtegn.</p>
               </div>

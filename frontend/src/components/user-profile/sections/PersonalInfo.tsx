@@ -253,14 +253,14 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
       value: formValues[id],
       'aria-describedby': `${id}-description`,
       className: `w-full px-4 py-2 rounded-md shadow-sm border border-gray-300 focus:outline-none ${
-        isEditing ? "bg-white" : "bg-gray-100"
+        isEditing ? "bg-background" : "bg-gray-100"
       }`
     };
 
     return (
       <div key={id}>
         <label htmlFor={id} className="block mb-1 font-medium text-gray-700">
-          {label} {required && <span className="text-red-500" aria-hidden="true">*</span>}
+          {label} {required && <span className="text-danger" aria-hidden="true">*</span>}
         </label>
         
         {type === 'select' ? (
@@ -363,10 +363,10 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
           <figcaption className="sr-only">Ikon for private opplysninger</figcaption>
         </figure>
         <div>
-          <h2 className="text-base font-medium text-gray-900">
+          <h2 className="text-body-small font-medium text-typographyPrimary">
             Personlig informasjon
           </h2>
-          <p className="text-sm text-gray-600">
+          <p className="text-captions-big text-typographySecondary">
             Dine private opplysninger
           </p>
         </div>
@@ -374,7 +374,7 @@ export function PersonalInfo({ profile, onProfileUpdate = () => {} }: PersonalIn
 
       <CardBody className="pt-5 px-4 rounded-md">
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start">
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-danger rounded-md flex items-start">
             <PageIcons name="warning" directory="profileIcons" size={20} alt="" className="mt-0.5 mr-2 flex-shrink-0" />
             <span>{error}</span>
           </div>

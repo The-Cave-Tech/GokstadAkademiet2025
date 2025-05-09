@@ -109,9 +109,9 @@ export function UsernameChangeModal({
       aria-labelledby="username-modal-title"
     >
       <div ref={modalRef} className="w-full max-w-[600px] mx-4 my-8">
-        <Card className="w-full shadow-xl">
+        <Card className="w-full shadow-elevation">
           <CardHeader className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h3 id="username-modal-title" className="text-lg font-medium text-gray-900">
+            <h3 id="username-modal-title" className="text-section-title-small font-medium text-typographyPrimary">
               Endre brukernavn
             </h3>
           </CardHeader>
@@ -120,7 +120,7 @@ export function UsernameChangeModal({
             {/* Error message */}
             {error && (
               <div
-                className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start"
+                className="mb-4 p-3 bg-red-50 border border-red-200 text-danger rounded-md flex items-start"
                 role="alert"
                 aria-live="assertive"
               >
@@ -131,14 +131,14 @@ export function UsernameChangeModal({
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="current-password-for-username" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="current-password-for-username" className="block text-body-small font-medium text-typographyPrimary mb-1">
                  Passord
                 </label>
                 <input
                   id="current-password-for-username"
                   name="current-password-for-username"
                   type="password"
-                  className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-md border border-gray-300 p-2 focus:border-standard focus:outline-none focus:ring-2 focus:ring-standard"
                   value={currentPassword}
                   onChange={handlePasswordChange}
                   placeholder="Skriv ditt passord"
@@ -156,7 +156,7 @@ export function UsernameChangeModal({
               </div>
 
               <div>
-                <label htmlFor="new-username" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="new-username" className="block text-body-small font-medium text-typographyPrimary mb-1">
                   Nytt brukernavn
                 </label>
                 <input
@@ -164,7 +164,7 @@ export function UsernameChangeModal({
                   id="new-username"
                   name="new-username"
                   type="text"
-                  className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-md border border-gray-300 p-2 focus:border-standard focus:outline-none focus:ring-2 focus:ring-standard"
                   value={newUsername}
                   onChange={handleUsernameChange}
                   placeholder="Skriv inn nytt brukernavn"
@@ -181,7 +181,7 @@ export function UsernameChangeModal({
                 />
               </div>
 
-              <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded-md">
+              <div className="text-captions-big text-typographyPrimaryHover bg-gray-50 p-3 rounded-md">
                 <p id="username-description">
                   Når du endrer brukernavn, vil du motta en verifiseringskode på e-post. Dette er for å bekrefte at det er deg som gjør endringen.
                 </p>

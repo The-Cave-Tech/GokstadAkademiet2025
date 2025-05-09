@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 
-export default {
+const config = {
   darkMode: "class",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,77 +9,63 @@ export default {
   ],
   theme: {
     extend: {
+      fontSize: {
+        "main-title-big": "var(--main-title-big)",
+        "main-title-medium": "var(--main-title-medium)",
+        "main-title-small": "var(--main-title-small)",
+        "section-title-big": "var(--section-title-big)",
+        "section-title-medium": "var(--section-title-medium)",
+        "section-title-small": "var(--section-title-small)",
+        "sub-section-title-big": "var(--sub-section-title-big)",
+        "sub-section-title-small": "var(--sub-section-title-small)",
+        "body-big": "var(--body-text-big)",
+        "body-small": "var(--body-text-small)",
+        "captions-big": "var(--captions-big)",
+        "captions-small": "var(--captions-small)",
+        "btn-cta-big": "var(--btn-cta-big)",
+        "btn-cta-medium": "var(--btn-cta-medium)",
+        "btn-cta-small": "var(--btn-cta-small)",
+      },
+
+      boxShadow: {
+        elevation: "var(--shadow-elevation)"
+      },
+
       fontFamily: {
-        roboto: ['var(--font-roboto)', 'sans-serif'],
-        profile: ['var(--profile-font-primary)'],
-        profileMono: ['var(--profile-font-mono)'],
+        roboto: ["var(--font-roboto)", "sans-serif"],
       },
       screens: {
-        'custom-lg': '850px',
+        "custom-lg": "850px",
       },
-      colors: {
-        'zodValidation': '#b41400',
-        background: "var(--background)",
-        profile: {
-          background: "var(--profile-background)",
-          warningBg: "var(--profile-warning-bg)",
-          profileIcons: "var(--profile-icons-var1)",
-          danger: "var(--profile-danger)",
-          text: "var(--profile-text)",
-          textSecondary: "var(--profile-text-secondary)",
-          label: "var(--profile-label)",
-          error: "var(--profile-error)",
-          inputBg: "var(--profile-input-bg)",
-          inputDisabledBg: "var(--profile-input-disabled-bg)",
-          buttonDanger: "var(--profile-button-danger)",
-          buttonDangerText: "var(--profile-button-danger-text)",
-          buttonCancel: "var(--profile-button-cancel)",
-          buttonCancelText: "var(--profile-button-cancel-text)",
-          buttonBg: "var(--profile-button-bg)",
-          buttonHover: "var(--profile-button-hover)",
-          buttonText: "var(--profile-button-text)",
-          buttonIconBg: "var(--profile-button-icon-bg)",
-          buttonBorder: "var(--profile-button-border)",
-        },
-      },
+
       spacing: {
-        'profile-spacing-sm': "var(--profile-spacing-sm)",
-        'profile-spacing-md': "var(--profile-spacing-md)",
-        'profile-spacing-lg': "var(--profile-spacing-lg)",
-        'profile-spacing-xl': "var(--profile-spacing-xl)",
-        'profile-padding-sm': "var(--profile-padding-sm)",
-        'profile-padding-md': "var(--profile-padding-md)",
-        'profile-padding-lg': "var(--profile-padding-lg)",
-        'profile-margin-sm': "var(--profile-margin-sm)",
-        'profile-margin-md': "var(--profile-margin-md)",
-        'profile-margin-lg': "var(--profile-margin-lg)",
-        'profile-margin-button': "var(--profile-margin-button)",
+        sm: "var(--spacing-sm)",
+        md: "var(--spacing-md)",
+        lg: "var(--spacing-lg)",
       },
-      width: {
-        'profile-icon-container': "var(--profile-icon-container)",
-        'profile-button-sm': "var(--profile-button-sm)",
-        'profile-button-md': "var(--profile-button-md)",
-      },
-      height: {
-        'profile-icon-container': "var(--profile-icon-container)",
-        'profile-input-height': "var(--profile-input-height)",
-        'profile-button-sm': "var(--profile-button-sm)",
-        'profile-button-md': "var(--profile-button-md)",
-      },
-      fontSize: {
-        'profile-icon-size': "var(--profile-icon-size)",
-      },
-      borderWidth: {
-        'profile-border': "1px",
-        'profile-border-light': "1px",
-      },
-      borderColor: {
-        profile: {
-          border: "var(--profile-border)",
-          light: "var(--profile-border-light)",
-        },
+
+      colors: {
+        zodValidation: "#b41400",
+        background: "var(--background)",
+        grayed: "var(--grayed)",
+        primary: "var(--color-primary)",
+        secondary: "var(--color-secondary)",
+        card: "var(--color-card)",
+        danger: "var(--danger)",
+        "danger-hover": "var(--danger-hover)",
+        standard: "var(--standard)",
+        "standard-hover": "var(--standard-hover)",
+        "standard-hover-dark": "var(--standard-hover-dark)",
+        success: "var(--success)",
+        "success-hover": "var(--success-hover)",
+        typographyPrimary: "var(--typography-primary)",
+        typographyPrimaryHover: "var(--typography-primary-hover)",
+        typographyPrimaryWH: "var(--typography-primary-white)",
+        typographySecondary: "var(--typography-secondary)",
       },
     },
   },
   plugins: [],
 } satisfies Config;
+
+export default config;

@@ -91,16 +91,16 @@ export default function DashboardMenu() {
   }
 
   return (
-    <section className="mx-auto p-4 w-full flex flex-col items-center gap-5">
+    <section className="mx-auto bg-secondary space-x-4 p-4 w-full flex flex-col items-center gap-5">
       <div className="flex items-center w-full pb-5">
-        <div className="flex-grow border-t-4 border-green-400"></div>
-        <span className="flex-shrink mx-4 text-red-900">Bruker Panel</span>
-        <div className="flex-grow border-t-4 border-green-400"></div>
+        <div className="flex-grow border-t-2 border-typographyPrimary"></div>
+        <span className="flex-shrink mx-2 text-danger">Bruker Panel</span>
+        <div className="flex-grow border-t-2 border-typographyPrimary"></div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {baseMenuItems.map((item) => (
           <Link key={item.href} href={item.href} className="no-underline">
-            <Card className="relative flex flex-col bg-cyan-200 shadow-lg shadow-cyan-500/50 p-4 max-w-[350px] h-full">
+            <Card className="relative flex flex-col shadow-lg shadow-elevation p-4 max-w-[350px] h-full">
               <CardHeader>
                 <h1 className="text-left">{item.title}</h1>
               </CardHeader>
@@ -108,7 +108,7 @@ export default function DashboardMenu() {
                 <p className="text-left">{item.desc}</p>
               </CardBody>
               <CardFooter>
-                <aside className="absolute bottom-5 right-5 text-gray-500 text-sm">
+                <aside className="absolute bottom-5 right-5 text-typographyPrimary text-sm">
                   →
                 </aside>
               </CardFooter>
@@ -117,17 +117,17 @@ export default function DashboardMenu() {
         ))}
       </div>
       {isAdmin && (
-        <section className="w-full">
+        <section className="w-full bg-secondary">
           <div className="flex py-5 items-center w-full">
-            <div className="flex-grow border-t-4 border-green-400"></div>
-            <span className="flex-shrink mx-4 text-red-900">Admin Panel</span>
-            <div className="flex-grow border-t-4 border-green-400"></div>
+            <div className="flex-grow border-t-2 border-typographyPrimary"></div>
+            <span className="flex-shrink mx-2 text-danger">Admin Panel</span>
+            <div className="flex-grow border-t-2 border-typographyPrimary"></div>
           </div>
           <article className="mx-auto p-4 grid justify-center">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {adminItems.map((item) => (
                 <Link key={item.href} href={item.href} className="no-underline">
-                  <Card className="relative flex flex-col bg-cyan-200 shadow-lg shadow-cyan-500/50 p-4 h-full">
+                  <Card className="relative flex flex-col shadow-lg shadow-elevation p-4 max-w-[350px] h-full">
                     <CardHeader>
                       <h1 className="text-left">{item.title}</h1>
                     </CardHeader>
@@ -135,7 +135,7 @@ export default function DashboardMenu() {
                       <p className="text-left">{item.desc}</p>
                     </CardBody>
                     <CardFooter>
-                      <aside className="absolute bottom-5 right-5 text-gray-500 text-sm">
+                      <aside className="absolute bottom-5 right-5 text-typographyPrimary text-sm">
                         →
                       </aside>
                     </CardFooter>

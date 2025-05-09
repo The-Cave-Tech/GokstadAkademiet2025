@@ -221,7 +221,7 @@ export function LoginInfoManage() {
       <Card className="w-full bg-[rgb(245,238,231)]">
         <CardBody>
           <div className="flex justify-center items-center p-8">
-            <span className="text-gray-600">Laster påloggingsinformasjon...</span>
+            <span className="text-typographyPrimary">Laster påloggingsinformasjon...</span>
           </div>
         </CardBody>
       </Card>
@@ -233,7 +233,7 @@ export function LoginInfoManage() {
       <Card className="w-full bg-[rgb(245,238,231)]">
         <CardBody>
           <div className="flex justify-center items-center p-8">
-            <span className="text-red-600">{error}</span>
+            <span className="text-danger">{error}</span>
           </div>
         </CardBody>
       </Card>
@@ -248,10 +248,10 @@ export function LoginInfoManage() {
             <PageIcons name="key" directory="profileIcons" size={24} alt="Påloggingsinformasjon" />
           </figure>
           <div>
-            <h2 id="login-info-heading" className="text-base font-medium text-gray-900">
+            <h2 id="login-info-heading" className="text-body-big font-medium text-typographyPrimary">
               Påloggingsinformasjon
             </h2>
-            <p className="text-sm text-gray-600">
+            <p className="text-captions-big text-grayed">
               Brukes for å logge inn på kontoen din
             </p>
           </div>
@@ -260,11 +260,11 @@ export function LoginInfoManage() {
         <CardBody className="pt-5 px-4 pb-8 rounded-md">
           <dl className="space-y-8">
             <div className="flex flex-col">
-              <dt className="text-gray-600 mb-2">Brukernavn</dt>
+              <dt className="text-typographySecondary mb-2">Brukernavn</dt>
               <dd className="flex items-center">
                 <span
                   id="username-value"
-                  className="flex-grow bg-white p-3 rounded-md border border-gray-200 shadow-sm h-12 flex items-center"
+                  className="flex-grow bg-background p-3 rounded-md border border-gray-200 shadow-sm h-12 flex items-center"
                   aria-live="polite"
                 >
                   {userData.username}
@@ -283,11 +283,11 @@ export function LoginInfoManage() {
             </div>
 
             <div className="flex flex-col">
-              <dt className="text-gray-600 mb-2">E-post</dt>
+              <dt className="text-typographySecondary mb-2">E-post</dt>
               <dd className="flex items-center">
                 <span
                   id="email-value"
-                  className="flex-grow bg-white p-3 rounded-md border border-gray-200 shadow-sm h-12 flex items-center"
+                  className="flex-grow bg-background p-3 rounded-md border border-gray-200 shadow-sm h-12 flex items-center"
                   aria-live="polite"
                 >
                   {userData.email}
@@ -306,11 +306,11 @@ export function LoginInfoManage() {
             </div>
 
             <div className="flex flex-col">
-              <dt className="text-gray-600 mb-2">Passord</dt>
+              <dt className="text-typographySecondary mb-2">Passord</dt>
               <dd className="flex items-center">
                 <span
                   id="password-value"
-                  className="flex-grow bg-white p-3 rounded-md border border-gray-200 shadow-sm font-mono h-12 flex items-center"
+                  className="flex-grow bg-background p-3 rounded-md border border-gray-200 shadow-sm font-mono h-12 flex items-center"
                   aria-live="polite"
                 >
                   {userData.password}

@@ -134,10 +134,10 @@ export function Notification({ profile, onProfileUpdate = () => {} }: Notificati
           <figcaption className="sr-only">Ikon for varslingsinnstillinger</figcaption>
         </figure>
         <div>
-          <h2 className="text-base font-medium text-gray-900">
+          <h2 className="text-body-small font-medium text-typographyPrimary">
             Varslingsinnstillinger
           </h2>
-          <p className="text-sm text-gray-600">
+          <p className="text-captions-big text-typographySecondary">
             Hvordan vil du bli kontaktet?
           </p>
         </div>
@@ -145,7 +145,7 @@ export function Notification({ profile, onProfileUpdate = () => {} }: Notificati
 
       <CardBody className="pt-5 px-4 rounded-md">
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start">
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-danger rounded-md flex items-start">
             <PageIcons name="warning" directory="profileIcons" size={20} alt="" className="mt-0.5 mr-2 flex-shrink-0" />
             <span>{error}</span>
           </div>
@@ -154,8 +154,8 @@ export function Notification({ profile, onProfileUpdate = () => {} }: Notificati
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-base font-medium text-gray-700">E-postvarsler</h3>
-              <p className="text-sm text-gray-600">Motta viktige oppdateringer på e-post</p>
+              <h3 className="text-base font-medium text-typographyPrimaryHover">E-postvarsler</h3>
+              <p className="text-sm text-typographySecondary">Motta viktige oppdateringer på e-post</p>
               <ZodErrors
                 error={profileFieldError(
                   validationErrors,
@@ -176,8 +176,8 @@ export function Notification({ profile, onProfileUpdate = () => {} }: Notificati
           {/* Markedsføring */}
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-base font-medium text-gray-700">Markedsføring</h3>
-              <p className="text-sm text-gray-600">Motta nyheter og tilbud fra oss</p>
+              <h3 className="text-body-small font-medium text-typographyPrimaryHover">Markedsføring</h3>
+              <p className="text-captions-big text-typographySecondary">Motta nyheter og tilbud fra oss</p>
               <ZodErrors
                 error={profileFieldError(
                   validationErrors,

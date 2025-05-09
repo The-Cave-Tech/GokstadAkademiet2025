@@ -10,7 +10,7 @@ export default function BackButton() {
     <button
       type="button"
       onClick={() => router.back()}
-      className="flex items-center font-medium text-sm uppercase hover:underline "
+      className="flex items-center font-medium text-btn-cta-small uppercase hover:underline "
       aria-label="Gå tilbake til forrige side"
     >
       <figure className="mr-1">
