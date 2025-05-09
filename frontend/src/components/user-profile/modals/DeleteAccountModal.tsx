@@ -8,6 +8,7 @@ import { AccountDeletionModalProps } from "@/types/accountAdministration.types";
 import { useAccountDeletionValidation } from "@/hooks/useProfileValidation";
 import { ZodErrors } from "@/components/ZodErrors";
 import { profileFieldError, handleStrapiError } from "@/lib/utils/serverAction-errorHandler";
+import { useAuth } from "@/lib/context/AuthContext";
 
 export function DeleteAccountModal({
   isOpen,
@@ -22,17 +23,21 @@ export function DeleteAccountModal({
   
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { authProvider } = useAuth();
+  
+  // Check if user is using OAuth (third-party login)
+  const isOAuthUser = authProvider && authProvider !== 'local';
 
   // Get validation hook
   const { validationErrors, validateField, validateForm } = useAccountDeletionValidation();
 
   useEffect(() => {
-    if (isOpen && inputRef.current) {
+    if (isOpen && inputRef.current && !isOAuthUser) {
       setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
     }
-  }, [isOpen]);
+  }, [isOpen, isOAuthUser]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -61,7 +66,22 @@ export function DeleteAccountModal({
   const handleSubmit = async () => {
     setError("");
     
-    // Validate the entire form
+    // For OAuth users, we don't need password validation
+    if (isOAuthUser) {
+      try {
+        setIsLoading(true);
+        // Call onVerify with an empty string for OAuth users
+        await onVerify("");
+        resetForm();
+      } catch (error) {
+        setError(handleStrapiError(error));
+      } finally {
+        setIsLoading(false);
+      }
+      return;
+    }
+    
+    // Validate the entire form for non-OAuth users
     const formData = {
       password: currentPassword
     };
@@ -76,9 +96,8 @@ export function DeleteAccountModal({
       setIsLoading(true);
       // Here we send the password to the API for verification before sending the verification code
       await onVerify(currentPassword);
-      resetForm(); // Reset form after successful verification
+      resetForm(); 
     } catch (error) {
-      // Use handleStrapiError to translate the error to a user-friendly message
       setError(handleStrapiError(error));
     } finally {
       setIsLoading(false);
@@ -117,35 +136,40 @@ export function DeleteAccountModal({
             <div className="space-y-6">
               <div className="text-gray-700">
                 <p className="text-base">
-                  For å bekrefte at du ønsker å slette kontoen din ({currentEmail}), vennligst skriv inn passordet ditt.
+                  {isOAuthUser 
+                    ? `Vil du bekrefte at du ønsker å slette kontoen din (${currentEmail})?` 
+                    : `For å bekrefte at du ønsker å slette kontoen din (${currentEmail}), vennligst skriv inn passordet ditt.`
+                  }
                 </p>
               </div>
 
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <label htmlFor="current-password" className="block text-gray-700 font-medium">
-                    Passord
-                  </label>
-                  <input
-                    ref={inputRef}
-                    id="current-password"
-                    type="password"
-                    className="w-full rounded-md border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={currentPassword}
-                    onChange={handlePasswordChange}
-                    placeholder="Skriv inn passordet for kontoen din"
-                    required
-                    disabled={isLoading}
-                    aria-describedby="password-description"
-                  />
-                  <ZodErrors
-                    error={profileFieldError(
-                      validationErrors,
-                      null,
-                      "password"
-                    )}
-                  />
-                </div>
+                {!isOAuthUser && (
+                  <div className="space-y-2">
+                    <label htmlFor="current-password" className="block text-gray-700 font-medium">
+                      Passord
+                    </label>
+                    <input
+                      ref={inputRef}
+                      id="current-password"
+                      type="password"
+                      className="w-full rounded-md border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={currentPassword}
+                      onChange={handlePasswordChange}
+                      placeholder="Skriv inn passordet for kontoen din"
+                      required
+                      disabled={isLoading}
+                      aria-describedby="password-description"
+                    />
+                    <ZodErrors
+                      error={profileFieldError(
+                        validationErrors,
+                        null,
+                        "password"
+                      )}
+                    />
+                  </div>
+                )}
 
                 <div className="bg-amber-50 border border-amber-200 rounded-md p-4 mt-2">
                   <div className="flex gap-2">
@@ -174,7 +198,7 @@ export function DeleteAccountModal({
                   <Button
                     variant="danger"
                     onClick={handleSubmit}
-                    disabled={isLoading || !currentPassword || validationErrors.password?.length > 0}
+                    disabled={isLoading || (!isOAuthUser && (!currentPassword || validationErrors.password?.length > 0))}
                     ariaLabel={isLoading ? "Sender..." : "Send verifiseringskode"}
                     type="button"
                     className="px-6 py-2 rounded-3xl"
