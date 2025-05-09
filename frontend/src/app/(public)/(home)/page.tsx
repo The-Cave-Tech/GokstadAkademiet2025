@@ -1,4 +1,3 @@
-// app/home/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -11,247 +10,550 @@ import { EventAttributes, ProjectAttributes } from "@/types/content.types";
 import { EventCard } from "@/components/dashboard/contentManager/EventCard";
 import ProjectCarousel from "@/components/ui/ProjectCarousel";
 
+// Interface that defines our component's data structure
 interface LandingPageData {
   hero: {
-    title: string;
-    subtitle: string;
-    imageUrl: string | null;
+    Title: string;
+    Subtitle: string;
+    heroImage: any; // Strapi media object
   };
   introduction: {
-    title: string;
-    text: string;
-    imageUrl: string | null;
+    Title: string;
+    IntroductionText: string;
+    introductionImage: any; // Strapi media object
   };
 }
 
-// Helper function to ensure image URLs are properly formed
-const ensureFullUrl = (url: string): string => {
-  if (url.startsWith("http")) {
-    return url;
-  }
-  const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "";
-  return `${baseUrl}${url.startsWith("/") ? url : `/${url}`}`;
+// Funksjon for å sjekke bildetypen
+const getImageType = (url: string | null): "svg" | "other" => {
+  if (!url) return "other";
+  return url.toLowerCase().endsWith(".svg") ? "svg" : "other";
 };
 
-// Default placeholder image path - make sure this file exists in your public folder
-const PLACEHOLDER_IMAGE = "/placeholder.jpg";
+// MediaRenderer-komponent for å håndtere alle bildeformater
+const MediaRenderer = ({
+  url,
+  alt,
+  className,
+  objectFit = "cover",
+  onError,
+}: {
+  url: string | null;
+  alt: string;
+  className?: string;
+  objectFit?: "cover" | "contain" | "fill" | "none" | "scale-down";
+  onError?: () => void;
+}) => {
+  const imageType = url ? getImageType(url) : "other";
+
+  if (!url) {
+    return (
+      <div
+        className={`bg-gray-300 flex items-center justify-center ${className}`}
+      >
+        <p className="text-gray-600">Bilde mangler</p>
+      </div>
+    );
+  }
+
+  if (imageType === "svg") {
+    return (
+      <div
+        className={className}
+        style={{
+          backgroundImage: `url('${url}')`,
+          backgroundSize: objectFit,
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+        role="img"
+        aria-label={alt}
+      />
+    );
+  }
+
+  return (
+    <Image
+      src={url}
+      alt={alt}
+      fill
+      className={className}
+      style={{ objectFit }}
+      priority
+      unoptimized={true}
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+      onError={onError}
+    />
+  );
+};
+
+// Helper function to transform API response data to match our component's interface
+const transformResponseToPageData = (responseData: any): LandingPageData => {
+  console.log("Raw response data:", responseData);
+
+  // I Strapi v4 finnes data ofte i attributes-objektet
+  const attributes = responseData.attributes || responseData;
+  console.log("Data attributes:", attributes);
+
+  // Komponenter i Strapi kommer med sin egen struktur
+  const heroComponent = attributes.hero || {};
+  const introductionComponent = attributes.introduction || {};
+
+  console.log("Hero component raw:", heroComponent);
+  console.log("Introduction component raw:", introductionComponent);
+
+  // For dypere analyse av bildeobjektene
+  console.log("Hero image object:", heroComponent.heroImage);
+  console.log(
+    "Introduction image object:",
+    introductionComponent.introductionImage
+  );
+
+  return {
+    hero: {
+      Title: heroComponent.Title || "",
+      Subtitle: heroComponent.Subtitle || "",
+      heroImage: heroComponent.heroImage || null,
+    },
+    introduction: {
+      Title: introductionComponent.Title || "",
+      IntroductionText: introductionComponent.IntroductionText || "",
+      introductionImage: introductionComponent.introductionImage || null,
+    },
+  };
+};
+
+// Helper function to get image URL from Strapi media object
+const getImageUrl = (mediaObject: any): string | null => {
+  if (!mediaObject) {
+    console.log("Media object is null or undefined");
+    return null;
+  }
+
+  // NYTT: Håndter hvis mediaObject er et array (ta første element)
+  if (Array.isArray(mediaObject) && mediaObject.length > 0) {
+    console.log(
+      "Media object is an array, using first element:",
+      mediaObject[0]
+    );
+    return getImageUrl(mediaObject[0]);
+  }
+
+  console.log("Processing media object type:", typeof mediaObject);
+  console.log("Media object structure:", mediaObject);
+
+  try {
+    // Hvis mediaObject er en direkte streng URL
+    if (typeof mediaObject === "string") {
+      const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "";
+      const fullUrl = mediaObject.startsWith("http")
+        ? mediaObject
+        : `${baseUrl}${
+            mediaObject.startsWith("/") ? mediaObject : `/${mediaObject}`
+          }`;
+      console.log("Found direct string URL:", fullUrl);
+      return fullUrl;
+    }
+
+    // NYTT: Håndter direkte filreferanse med navn og url
+    if (mediaObject.name && mediaObject.url) {
+      const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "";
+      const mediaBaseUrl = baseUrl.replace(/\/api\/?$/, "");
+
+      const url = mediaObject.url;
+      let fullUrl = "";
+
+      if (url.startsWith("http")) {
+        fullUrl = url;
+      } else {
+        if (url.startsWith("/uploads/")) {
+          fullUrl = `${mediaBaseUrl}${url}`;
+        } else if (url.startsWith("uploads/")) {
+          fullUrl = `${mediaBaseUrl}/${url}`;
+        } else if (url.startsWith("/api/uploads/")) {
+          fullUrl = `${mediaBaseUrl}${url.replace("/api", "")}`;
+        } else {
+          fullUrl = `${mediaBaseUrl}${url.startsWith("/") ? url : `/${url}`}`;
+        }
+      }
+
+      console.log("Found file with name and url:", fullUrl);
+      return fullUrl;
+    }
+
+    // Sjekk for Strapi v4 struktur
+    if (mediaObject.data && mediaObject.data.attributes) {
+      const attributes = mediaObject.data.attributes;
+      // Fjern /api fra slutten av URL-en hvis den er der
+      const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "";
+      const mediaBaseUrl = baseUrl.replace(/\/api\/?$/, "");
+
+      if (attributes.url) {
+        // Viktig: URL-en bør peke direkte til filen, ikke til API-endepunktet
+        const url = attributes.url;
+        let fullUrl = "";
+
+        if (url.startsWith("http")) {
+          fullUrl = url;
+        } else {
+          // Spesielt for Strapi-bilder - URL-en kan peke feil
+          if (url.startsWith("/uploads/")) {
+            fullUrl = `${mediaBaseUrl}${url}`;
+          } else if (url.startsWith("uploads/")) {
+            fullUrl = `${mediaBaseUrl}/${url}`;
+          } else if (url.startsWith("/api/uploads/")) {
+            // Direkte fiks for URL-er som starter med /api/uploads/
+            fullUrl = `${mediaBaseUrl}${url.replace("/api", "")}`;
+          } else {
+            fullUrl = `${mediaBaseUrl}${url.startsWith("/") ? url : `/${url}`}`;
+          }
+        }
+
+        console.log("Found URL in data.attributes.url:", fullUrl);
+        return fullUrl;
+      }
+
+      // Sjekk formats
+      if (attributes.formats) {
+        const formats = attributes.formats;
+        const formatToUse =
+          formats.medium || formats.small || formats.thumbnail;
+
+        if (formatToUse && formatToUse.url) {
+          const url = formatToUse.url;
+          // Samme korreksjon som ovenfor
+          let fullUrl = "";
+
+          if (url.startsWith("http")) {
+            fullUrl = url;
+          } else {
+            if (url.startsWith("/uploads/")) {
+              fullUrl = `${mediaBaseUrl}${url}`;
+            } else if (url.startsWith("uploads/")) {
+              fullUrl = `${mediaBaseUrl}/${url}`;
+            } else if (url.startsWith("/api/uploads/")) {
+              fullUrl = `${mediaBaseUrl}${url.replace("/api", "")}`;
+            } else {
+              fullUrl = `${mediaBaseUrl}${
+                url.startsWith("/") ? url : `/${url}`
+              }`;
+            }
+          }
+
+          console.log("Found URL in formats:", fullUrl);
+          return fullUrl;
+        }
+      }
+    }
+
+    // Sjekk for direkte URL egenskap
+    if (mediaObject.url) {
+      const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "";
+      const mediaBaseUrl = baseUrl.replace(/\/api\/?$/, "");
+      let fullUrl = "";
+
+      if (mediaObject.url.startsWith("http")) {
+        fullUrl = mediaObject.url;
+      } else {
+        if (mediaObject.url.startsWith("/uploads/")) {
+          fullUrl = `${mediaBaseUrl}${mediaObject.url}`;
+        } else if (mediaObject.url.startsWith("uploads/")) {
+          fullUrl = `${mediaBaseUrl}/${mediaObject.url}`;
+        } else if (mediaObject.url.startsWith("/api/uploads/")) {
+          fullUrl = `${mediaBaseUrl}${mediaObject.url.replace("/api", "")}`;
+        } else {
+          fullUrl = `${mediaBaseUrl}${
+            mediaObject.url.startsWith("/")
+              ? mediaObject.url
+              : `/${mediaObject.url}`
+          }`;
+        }
+      }
+
+      console.log("Found direct URL property:", fullUrl);
+      return fullUrl;
+    }
+
+    // NYTT: Spesiell håndtering for dokumenter med ID og navn
+    if (mediaObject.documentId && mediaObject.name) {
+      console.log(
+        "Found document with ID and name:",
+        mediaObject.documentId,
+        mediaObject.name
+      );
+      const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "";
+      const mediaBaseUrl = baseUrl.replace(/\/api\/?$/, "");
+
+      // Prøv å konstruere URL fra filnavn og hash hvis tilgjengelig
+      if (mediaObject.hash) {
+        const fullUrl = `${mediaBaseUrl}/uploads/${
+          mediaObject.hash
+        }.${mediaObject.ext.replace(".", "")}`;
+        console.log("Constructed URL from hash:", fullUrl);
+        return fullUrl;
+      }
+
+      // Fallback til bare filename
+      const fullUrl = `${mediaBaseUrl}/uploads/${mediaObject.name}`;
+      console.log("Constructed URL from filename:", fullUrl);
+      return fullUrl;
+    }
+
+    // Prøv å bruke hjelperen hvis tilgjengelig
+    if (
+      strapiService.media &&
+      typeof strapiService.media.getMediaUrl === "function" &&
+      strapiService.media.isValidMedia(mediaObject)
+    ) {
+      const helperUrl = strapiService.media.getMediaUrl(mediaObject);
+      console.log("Used strapiService helper to get URL:", helperUrl);
+
+      // Sjekk om URL-en inneholder "/api/uploads/" og fiks det
+      if (helperUrl && helperUrl.includes("/api/uploads/")) {
+        const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "";
+        const mediaBaseUrl = baseUrl.replace(/\/api\/?$/, "");
+        const correctedUrl = helperUrl
+          .replace(baseUrl, mediaBaseUrl)
+          .replace("/api/uploads/", "/uploads/");
+        console.log("Corrected helper URL:", correctedUrl);
+        return correctedUrl;
+      }
+
+      return helperUrl;
+    }
+
+    console.log("Could not find a valid URL structure in the media object");
+  } catch (err) {
+    console.error("Error extracting image URL:", err);
+  }
+
+  return null;
+};
 
 export default function LandingPageContent() {
-  const [content, setContent] = useState<LandingPageData | null>(null);
+  const [pageData, setPageData] = useState<LandingPageData | null>(null);
   const [events, setEvents] = useState<EventAttributes[]>([]);
   const [projects, setProjects] = useState<ProjectAttributes[]>([]);
-  const [loadingContent, setLoadingContent] = useState(true);
-  const [loadingEvents, setLoadingEvents] = useState(true);
-  const [loadingProjects, setLoadingProjects] = useState(true);
-  const [errorContent, setErrorContent] = useState<string | null>(null);
-  const [errorEvents, setErrorEvents] = useState<string | null>(null);
-  const [errorProjects, setErrorProjects] = useState<string | null>(null);
-  const [imageLoadError, setImageLoadError] = useState<{
-    hero: boolean;
-    intro: boolean;
-  }>({ hero: false, intro: false });
+  const [heroImageUrl, setHeroImageUrl] = useState<string | null>(null);
+  const [introImageUrl, setIntroImageUrl] = useState<string | null>(null);
 
-  // Debug function that returns a string (never null) to satisfy TypeScript
-  const debugImageUrl = (imageUrl: string | null, type: string): string => {
-    console.log(`DEBUG ${type} image URL:`, imageUrl);
-    // Return the actual URL or a placeholder to satisfy TypeScript
-    return imageUrl || PLACEHOLDER_IMAGE;
-  };
+  const [loading, setLoading] = useState({
+    content: true,
+    events: true,
+    projects: true,
+  });
 
+  const [errors, setErrors] = useState({
+    content: null as string | null,
+    events: null as string | null,
+    projects: null as string | null,
+  });
+
+  const [imageLoadError, setImageLoadError] = useState({
+    hero: false,
+    intro: false,
+  });
+
+  // Fetch landing page data
   useEffect(() => {
     async function getLandingPageData() {
       try {
-        // Use strapiService.single for single type content
+        // Bruk det korrekte navnet på single-type
+        // Fra konsollen ser vi at 'landing-page' er endepunktet som fungerer
         const landingPage = strapiService.single("landing-page");
+
         const response = await landingPage.find({
-          populate: "*",
+          populate: {
+            hero: {
+              populate: ["heroImage"],
+            },
+            introduction: {
+              populate: ["introductionImage"],
+            },
+          },
         });
 
         if (!response.data) {
           throw new Error("Ingen 'data' funnet i Strapi-respons");
         }
 
-        console.log("Full Strapi response:", response.data);
-
-        const heroComponent = response.data.Hero;
-        const hero = {
-          title: heroComponent?.Title || "Mangler tittel",
-          subtitle: heroComponent?.Subtitle || "Mangler undertittel",
-        };
-
-        // Get hero image using enhanced error handling
-        let heroImageUrl = null;
-        const heroImage = response.data.HeroImage;
-        console.log("Raw hero image data:", heroImage);
-
-        if (heroImage && typeof heroImage === "object") {
-          try {
-            // First check if we're dealing with a valid media object with new Strapi structure
-            if (heroImage.data && heroImage.data.attributes) {
-              // Directly access the URL from the attributes
-              const urlPath = heroImage.data.attributes.url;
-              if (urlPath) {
-                // Build the full URL with base URL if needed
-                heroImageUrl = ensureFullUrl(urlPath);
-
-                // Add a cache-busting parameter
-                heroImageUrl = `${heroImageUrl}?t=${Date.now()}`;
-                console.log("Hero image URL built directly:", heroImageUrl);
-              }
-            }
-            // Try the helper method as fallback
-            else if (strapiService.media.isValidMedia(heroImage)) {
-              heroImageUrl = strapiService.media.getMediaUrl(heroImage);
-              if (heroImageUrl) {
-                heroImageUrl = `${heroImageUrl}?t=${Date.now()}`;
-                console.log("Hero image URL from helper:", heroImageUrl);
-              }
-            }
-            // Try the old structure directly
-            else if (heroImage.url) {
-              heroImageUrl = ensureFullUrl(heroImage.url);
-              heroImageUrl = `${heroImageUrl}?t=${Date.now()}`;
-              console.log(
-                "Hero image URL from direct url property:",
-                heroImageUrl
-              );
-            }
-          } catch (err) {
-            console.error("Error processing hero image:", err);
-          }
-        }
-
-        // Get intro image using enhanced error handling
-        let introImageUrl = null;
-        const introImage = response.data.IntroductionImage;
-        console.log("Raw intro image data:", introImage);
-
-        if (introImage && typeof introImage === "object") {
-          try {
-            // First check if we're dealing with a valid media object with new Strapi structure
-            if (introImage.data && introImage.data.attributes) {
-              // Directly access the URL from the attributes
-              const urlPath = introImage.data.attributes.url;
-              if (urlPath) {
-                // Build the full URL with base URL if needed
-                introImageUrl = ensureFullUrl(urlPath);
-
-                // Add a cache-busting parameter
-                introImageUrl = `${introImageUrl}?t=${Date.now()}`;
-                console.log("Intro image URL built directly:", introImageUrl);
-              }
-            }
-            // Try the helper method as fallback
-            else if (strapiService.media.isValidMedia(introImage)) {
-              introImageUrl = strapiService.media.getMediaUrl(introImage);
-              if (introImageUrl) {
-                introImageUrl = `${introImageUrl}?t=${Date.now()}`;
-                console.log("Intro image URL from helper:", introImageUrl);
-              }
-            }
-            // Try the old structure directly
-            else if (introImage.url) {
-              introImageUrl = ensureFullUrl(introImage.url);
-              introImageUrl = `${introImageUrl}?t=${Date.now()}`;
-              console.log(
-                "Intro image URL from direct url property:",
-                introImageUrl
-              );
-            }
-          } catch (err) {
-            console.error("Error processing intro image:", err);
-          }
-        }
-
-        const introduction = {
-          title: response.data.intoductionTitle || "Mangler tittel",
-          text: response.data.introductionText || "Mangler tekst",
-          imageUrl: introImageUrl,
-        };
-
-        setContent({ hero: { ...hero, imageUrl: heroImageUrl }, introduction });
-        setErrorContent(null);
-      } catch (err) {
-        setErrorContent(
-          "Klarte ikke å hente data: " +
-            (err instanceof Error ? err.message : "Ukjent feil")
+        console.log("Full Strapi response:", response);
+        console.log("Hero component data:", response.data.attributes?.hero);
+        console.log(
+          "Introduction component data:",
+          response.data.attributes?.introduction
         );
+
+        // Transform the response data to match our LandingPageData interface
+        const transformedData = transformResponseToPageData(response.data);
+        console.log("Transformed data:", transformedData);
+
+        // Logg rådata for introduksjonsbildet for debugging
+        console.log(
+          "Raw introduction image data:",
+          transformedData.introduction.introductionImage
+        );
+
+        // Store the transformed data
+        setPageData(transformedData);
+
+        // Extract and process image URLs
+        const heroImageUrl = getImageUrl(transformedData.hero.heroImage);
+        console.log("Hero image URL:", heroImageUrl);
+        console.log("Hero image type:", getImageType(heroImageUrl));
+
+        const introImageUrl = getImageUrl(
+          transformedData.introduction.introductionImage
+        );
+        console.log("Introduction image URL result:", introImageUrl);
+        console.log("Introduction image type:", getImageType(introImageUrl));
+
+        // Fiks URL-ene direkte hvis de inneholder "/api/uploads/"
+        let fixedHeroUrl = heroImageUrl;
+        let fixedIntroUrl = introImageUrl;
+
+        if (heroImageUrl && heroImageUrl.includes("/api/uploads/")) {
+          fixedHeroUrl = heroImageUrl.replace("/api/uploads/", "/uploads/");
+          console.log("Fixed hero URL:", fixedHeroUrl);
+        }
+
+        if (introImageUrl && introImageUrl.includes("/api/uploads/")) {
+          fixedIntroUrl = introImageUrl.replace("/api/uploads/", "/uploads/");
+          console.log("Fixed intro URL:", fixedIntroUrl);
+        }
+
+        setHeroImageUrl(fixedHeroUrl);
+        setIntroImageUrl(fixedIntroUrl);
+
+        setErrors((prev) => ({ ...prev, content: null }));
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "Ukjent feil";
+        setErrors((prev) => ({
+          ...prev,
+          content: `Klarte ikke å hente data: ${errorMessage}`,
+        }));
         console.error("Error fetching landing page data:", err);
       } finally {
-        setLoadingContent(false);
+        setLoading((prev) => ({ ...prev, content: false }));
       }
     }
 
     getLandingPageData();
   }, []);
 
+  // Fetch events
   useEffect(() => {
     async function fetchEvents() {
-      setLoadingEvents(true);
       try {
         const eventsData = await eventsService.getAll({
           sort: ["startDate:asc"],
           populate: ["eventCardImage"],
         });
         setEvents(eventsData);
-        setErrorEvents(null);
+        setErrors((prev) => ({ ...prev, events: null }));
       } catch (err) {
-        setErrorEvents(
-          "Klarte ikke å hente eventer: " +
-            (err instanceof Error ? err.message : "Ukjent feil")
-        );
+        const errorMessage = err instanceof Error ? err.message : "Ukjent feil";
+        setErrors((prev) => ({
+          ...prev,
+          events: `Klarte ikke å hente eventer: ${errorMessage}`,
+        }));
         console.error("Error fetching events:", err);
       } finally {
-        setLoadingEvents(false);
+        setLoading((prev) => ({ ...prev, events: false }));
       }
     }
 
     fetchEvents();
   }, []);
 
+  // Fetch projects
   useEffect(() => {
     async function fetchProjects() {
-      setLoadingProjects(true);
       try {
         const projectData = await projectService.getAll({
           sort: ["createdAt:desc"],
-          populate: "*", // Make sure to populate all fields for better display
+          populate: "*",
         });
         setProjects(projectData);
-        setErrorProjects(null);
+        setErrors((prev) => ({ ...prev, projects: null }));
       } catch (err) {
-        setErrorProjects(
-          "Klarte ikke å hente prosjekter: " +
-            (err instanceof Error ? err.message : "Ukjent feil")
-        );
+        const errorMessage = err instanceof Error ? err.message : "Ukjent feil";
+        setErrors((prev) => ({
+          ...prev,
+          projects: `Klarte ikke å hente prosjekter: ${errorMessage}`,
+        }));
         console.error("Error fetching projects:", err);
       } finally {
-        setLoadingProjects(false);
+        setLoading((prev) => ({ ...prev, projects: false }));
       }
     }
 
     fetchProjects();
   }, []);
 
-  // Handle image load errors with improved logging
-  const handleImageError = (imageType: "hero" | "intro") => {
-    console.error(`Image load error for ${imageType} image`);
-    setImageLoadError((prev) => ({
-      ...prev,
-      [imageType]: true,
-    }));
+  // Handle image load errors
+  const handleImageError = (
+    imageType: "hero" | "intro",
+    url: string | null
+  ) => {
+    console.error(
+      `Image load error for ${imageType} image. URL attempted: ${url}`
+    );
+
+    // Try to fix the URL
+    if (url) {
+      console.log("Testing URL accessibility:", url);
+
+      // Prøv å generere en alternativ URL for testing
+      let correctedUrl: string = url;
+
+      if (url.includes("/api/uploads/")) {
+        correctedUrl = url.replace("/api/uploads/", "/uploads/");
+        console.log("Created corrected URL:", correctedUrl);
+
+        // Prøv den korrigerte URL-en
+        if (imageType === "hero") {
+          setHeroImageUrl(correctedUrl);
+        } else {
+          setIntroImageUrl(correctedUrl);
+        }
+      } else {
+        // Hvis vi ikke kan korrigere URL-en, setter vi feilstatus
+        setImageLoadError((prev) => ({
+          ...prev,
+          [imageType]: true,
+        }));
+      }
+    } else {
+      setImageLoadError((prev) => ({
+        ...prev,
+        [imageType]: true,
+      }));
+    }
   };
 
-  if (loadingContent || loadingEvents || loadingProjects) {
+  // Debug log before render
+  console.log("Render state:", {
+    heroImageUrl,
+    introImageUrl,
+    heroImageType: getImageType(heroImageUrl),
+    introImageType: getImageType(introImageUrl),
+    imageLoadError,
+    pageDataExists: !!pageData,
+  });
+
+  // Show loading state if any data is still loading
+  if (loading.content || loading.events || loading.projects) {
     return <p className="text-center py-10">Laster innhold...</p>;
   }
 
-  if (errorContent || errorEvents || errorProjects || !content) {
+  // Show error state if any errors occurred
+  if (errors.content || errors.events || errors.projects || !pageData) {
     return (
       <div className="text-center text-red-500 py-10">
-        {errorContent ||
-          errorEvents ||
-          errorProjects ||
+        {errors.content ||
+          errors.events ||
+          errors.projects ||
           "Kunne ikke laste innhold"}
       </div>
     );
@@ -263,84 +565,61 @@ export default function LandingPageContent() {
       <section className="relative text-center py-20 px-4 bg-gray-900 text-white">
         <ClientMessage />
         <div className="absolute inset-0 z-0">
-          {content.hero.imageUrl && !imageLoadError.hero ? (
-            <>
-              {console.log("Rendering hero image:", content.hero.imageUrl)}
-              <Image
-                src={debugImageUrl(content.hero.imageUrl, "hero")}
-                alt="Hero Background Image"
-                fill
-                className="object-cover opacity-50"
-                priority
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 100vw"
-                onError={() => {
-                  console.error(
-                    "Hero image failed to load:",
-                    content.hero.imageUrl
-                  );
-                  handleImageError("hero");
-                }}
-              />
-            </>
+          {!imageLoadError.hero ? (
+            <MediaRenderer
+              url={heroImageUrl}
+              alt="Hero Background Image"
+              className="w-full h-full opacity-50"
+              objectFit="cover"
+              onError={() => handleImageError("hero", heroImageUrl)}
+            />
           ) : (
-            <div className="w-full h-full bg-gray-700" />
+            <div className="w-full h-full bg-gray-700 flex items-center justify-center">
+              <p className="text-white opacity-70">Kunne ikke laste bildet</p>
+            </div>
           )}
         </div>
         <div className="relative z-10 max-w-4xl mx-auto px-4">
           <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4">
-            {content.hero.title}
+            {pageData.hero?.Title || "Mangler tittel"}
           </h1>
           <p className="text-base sm:text-lg md:text-2xl">
-            {content.hero.subtitle}
+            {pageData.hero?.Subtitle || "Mangler undertittel"}
           </p>
         </div>
       </section>
 
-      {/* Introduction Section - Image moved to the left */}
+      {/* Introduction Section */}
       <section className="py-16 px-4 max-w-6xl mx-auto grid gap-10 md:grid-cols-2 items-center">
-        {/* Image section - now first in the grid order */}
+        {/* Image section */}
         <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[500px] rounded-xl overflow-hidden shadow-lg">
-          {content.introduction.imageUrl && !imageLoadError.intro ? (
-            <>
-              {console.log(
-                "Rendering intro image:",
-                content.introduction.imageUrl
-              )}
-              <Image
-                src={debugImageUrl(content.introduction.imageUrl, "intro")}
-                alt="Introduction Image"
-                fill
-                className="object-cover"
-                priority
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-                onError={() => {
-                  console.error(
-                    "Intro image failed to load:",
-                    content.introduction.imageUrl
-                  );
-                  handleImageError("intro");
-                }}
-              />
-            </>
+          {!imageLoadError.intro ? (
+            <MediaRenderer
+              url={introImageUrl}
+              alt="Introduction Image"
+              className="w-full h-full"
+              objectFit="contain"
+              onError={() => handleImageError("intro", introImageUrl)}
+            />
           ) : (
             <div className="w-full h-full bg-gray-300 flex items-center justify-center">
-              <p className="text-gray-600">Bilde mangler</p>
+              <p className="text-gray-600">Kunne ikke laste bildet</p>
             </div>
           )}
         </div>
 
-        {/* Text section - now second in the grid order */}
+        {/* Text section */}
         <div>
           <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-            {content.introduction.title}
+            {pageData.introduction?.Title || "Mangler tittel"}
           </h2>
           <p className="text-base sm:text-lg leading-relaxed">
-            {content.introduction.text}
+            {pageData.introduction?.IntroductionText || "Mangler tekst"}
           </p>
         </div>
       </section>
 
-      {/* Projects Section - Now with Carousel */}
+      {/* Projects Section */}
       <section className="py-20 px-4 bg-gradient-to-b from-secondary to-secondary/70">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
@@ -357,7 +636,7 @@ export default function LandingPageContent() {
         </div>
       </section>
 
-      {/* Events Section - Vertical Layout with exact dimensions */}
+      {/* Events Section */}
       <section className="py-20 px-4 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">

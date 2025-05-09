@@ -617,12 +617,8 @@ export interface ApiLandingPageLandingPage extends Struct.SingleTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    Hero: Schema.Attribute.Component<'landing-page.hero-section', false>;
-    IntroductionImage: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios'
-    >;
-    introductionText: Schema.Attribute.Text;
-    introductionTitle: Schema.Attribute.String;
+    hero: Schema.Attribute.Component<'landing-page.hero-section', false>;
+    introduction: Schema.Attribute.Component<'landing-page.intro', false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
