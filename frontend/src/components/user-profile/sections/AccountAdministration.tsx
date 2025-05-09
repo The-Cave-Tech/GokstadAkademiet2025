@@ -14,6 +14,7 @@ import { getUserCredentials } from "@/lib/data/services/userProfile";
 import { Button } from "@/components/ui/custom/Button";
 import { DeleteAccountModal } from "../modals/DeleteAccountModal";
 import { AccountDeletionVerificationModal } from "../modals/AccountDeletionVerificationModal";
+import { removeAuthCookie } from "@/lib/utils/cookie"; 
 
 export function AccountAdministration() {
   const [deletionReason, setDeletionReason] = useState("");
@@ -24,7 +25,6 @@ export function AccountAdministration() {
   const router = useRouter();
   const { setIsAuthenticated } = useAuth();
 
-  // Hent brukerens e-post når det trengs
   useEffect(() => {
     const fetchUserEmail = async () => {
       if (!userEmail) {
@@ -76,9 +76,14 @@ export function AccountAdministration() {
       const response = await verifyAndDeleteAccount(code, reason);
 
       if (response.success) {
+        await removeAuthCookie();
+        
         setIsAuthenticated(false);
-
-        router.push("/?message=Din konto er nå slettet");
+        
+        setTimeout(() => {
+          const timestamp = Date.now();
+          router.replace(`/?message=Din konto er nå slettet&t=${timestamp}`);
+        }, 100);
       } else {
         throw new Error(response.message || "Kunne ikke slette konto");
       }
@@ -94,7 +99,6 @@ export function AccountAdministration() {
     }
   };
 
-  // Handler for resending account deletion verification code
   const handleResendDeletionVerificationCode = async () => {
     try {
       setIsLoading(true);

@@ -1,26 +1,24 @@
-// src/lib/data/services/profileSections/accountAdministrationService.ts
-
 import { strapiService } from "../strapiClient";
 import { removeAuthCookie } from "@/lib/utils/cookie";
 import { AccountDeletionResponse } from "@/types/accountAdministration.types";
 
-export async function requestAccountDeletion(password: string): Promise<AccountDeletionResponse> {
-    try {
-      return await strapiService.fetch<AccountDeletionResponse>(
-        "user-profiles/request-account-deletion",
-        {
-          method: "POST",
-          body: { password: password }
-        }
-      );
-    } catch (error) {
-      console.error("Feil ved forespørsel om kontosletting:", error);
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : "Kunne ikke sende forespørsel om kontosletting";
-      throw new Error(errorMessage);
-    }
+export async function requestAccountDeletion(password?: string): Promise<AccountDeletionResponse> {
+  try {
+    return await strapiService.fetch<AccountDeletionResponse>(
+      "user-profiles/request-account-deletion",
+      {
+        method: "POST",
+        body: password ? { password } : {} 
+      }
+    );
+  } catch (error) {
+    console.error("Feil ved forespørsel om kontosletting:", error);
+    const errorMessage = error instanceof Error 
+      ? error.message 
+      : "Kunne ikke sende forespørsel om kontosletting";
+    throw new Error(errorMessage);
   }
+}
 
 export async function verifyAndDeleteAccount(
   verificationCode: string,

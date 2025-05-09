@@ -54,10 +54,24 @@ export interface LandingPageHeroSection extends Struct.ComponentSchema {
     displayName: 'HeroSection';
   };
   attributes: {
-    landingImage: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios'
-    >;
+    heroImage: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     Subtitle: Schema.Attribute.String;
+    Title: Schema.Attribute.String;
+  };
+}
+
+export interface LandingPageIntro extends Struct.ComponentSchema {
+  collectionName: 'components_landing_page_intros';
+  info: {
+    description: '';
+    displayName: 'Intro';
+  };
+  attributes: {
+    introductionImage: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+    IntroductionText: Schema.Attribute.Text;
     Title: Schema.Attribute.String;
   };
 }
@@ -148,6 +162,7 @@ declare module '@strapi/strapi' {
       'footer.social-links': FooterSocialLinks;
       'footer.social-media': FooterSocialMedia;
       'landing-page.hero-section': LandingPageHeroSection;
+      'landing-page.intro': LandingPageIntro;
       'user-profile.account-administration': UserProfileAccountAdministration;
       'user-profile.notification-settings': UserProfileNotificationSettings;
       'user-profile.personal-information': UserProfilePersonalInformation;

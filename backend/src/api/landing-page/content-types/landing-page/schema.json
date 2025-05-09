@@ -11,27 +11,16 @@
     "draftAndPublish": true
   },
   "attributes": {
-    "Hero": {
+    "hero": {
       "type": "component",
       "repeatable": false,
       "component": "landing-page.hero-section"
     },
-    "introductionTitle": {
-      "type": "string"
-    },
-    "introductionText": {
-      "type": "text"
-    },
-    "IntroductionImage": {
-      "type": "media",
-      "multiple": false,
-      "required": false,
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos",
-        "audios"
-      ]
+    "introduction": {
+      "displayName": "Intro",
+      "type": "component",
+      "repeatable": false,
+      "component": "landing-page.intro"
     }
   }
 }

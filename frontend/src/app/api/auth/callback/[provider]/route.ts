@@ -2,6 +2,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { setAuthCookie } from "@/lib/utils/cookie";
 
+const SUPPORTED_PROVIDERS = ["google", "facebook"/* , "microsoft" */] as const;
+type Provider = typeof SUPPORTED_PROVIDERS[number]; //er en union type
+
+const PROVIDER_PARAM_MAP: Record<Provider, "code" | "access_token"> = {
+  google: "access_token",    // Google kan bruke begge, men access_token er vanlig i Strapi
+  facebook: "access_token",  // Facebook bruker access_token
+  /* microsoft: "access_token", */
+};
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { provider: string } }
@@ -9,26 +18,38 @@ export async function GET(
   try {
     const provider = params.provider;
     
-    if (!['google', 'facebook'].includes(provider)) {
+    if (!SUPPORTED_PROVIDERS.includes(provider as Provider)) {
       console.error(`Invalid provider: ${provider}`);
       return NextResponse.redirect(new URL('/signin?error=InvalidProvider', request.url));
     }
 
     const searchParams = request.nextUrl.searchParams;
-    const code = searchParams.get("code") || searchParams.get("access_token");
+    const expectedParam = PROVIDER_PARAM_MAP[provider as Provider];
+    let authValue = searchParams.get(expectedParam);
     
-    if (!code) {
-      console.error("No auth code received in callback");
-      return NextResponse.redirect(new URL('/signin?error=NoAuthCode', request.url));
+    // Fallback-logikk: Hvis forventet parameter ikke finnes, prøv den andre
+    if (!authValue) {
+      const alternativeParam = expectedParam === "code" ? "access_token" : "code";
+      authValue = searchParams.get(alternativeParam);
+      
+      if (!authValue) {
+        console.error(`No auth parameters found for ${provider} callback`);
+        return NextResponse.redirect(new URL('/signin?error=NoAuthParams', request.url));
+      }
+      
+      console.log(`Using alternative parameter ${alternativeParam} for ${provider}`);
     }
     
-    console.log(`Processing ${provider} OAuth callback`);
+    console.log(`Processing ${provider} OAuth callback with ${expectedParam}`);
 
     const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL?.replace(/\/api$/, "") || "http://localhost:1337";
     
-    const param = code.startsWith('access_') ? 'access_token' : 'code';
+    const paramToUse = authValue === searchParams.get("code") ? "code" : "access_token"; // enten forventet eller alternativ
     
-    const response = await fetch(`${strapiUrl}/api/auth/${provider}/callback?${param}=${code}`, {
+    const callbackUrl = new URL(`${strapiUrl}/api/auth/${provider}/callback`);
+    callbackUrl.searchParams.append(paramToUse, authValue);
+    
+    const response = await fetch(callbackUrl.toString(), {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
