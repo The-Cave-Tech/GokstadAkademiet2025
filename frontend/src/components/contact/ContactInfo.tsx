@@ -32,7 +32,6 @@ export default async function ContactInfo() {
             size={94}
             alt=""
             className="w-24 h-24"
-            
           />
         </figure>
         <div>
@@ -46,35 +45,6 @@ export default async function ContactInfo() {
               {contactInfo.postalCode || ""} {contactInfo.city || ""}
             </span>
           </address>
-        </div>
-      </article>
-
-      {/* Phone Section */}
-      <article className="flex mb-16">
-        <figure className="mr-6" aria-hidden="true">
-          <PageIcons
-            name="phone"
-            directory="profileIcons"
-            size={94}
-            alt=""
-            className="w-24 h-24"
-          />
-        </figure>
-        <div>
-          <h2 className="text-xl font-medium mb-1">Telefon</h2>
-          <p className="text-lg">
-            {contactInfo.phoneNumber ? (
-              <a
-                href={`tel:${contactInfo.phoneNumber.replace(/\s+/g, "")}`}
-                className="hover:underline"
-                aria-label={`Ring oss på ${contactInfo.phoneNumber}`}
-              >
-                {contactInfo.phoneNumber}
-              </a>
-            ) : (
-              "Telefonnummer ikke tilgjengelig"
-            )}
-          </p>
         </div>
       </article>
 
