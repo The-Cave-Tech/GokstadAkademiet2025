@@ -1,3 +1,4 @@
+//Frontend/src/app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Roboto } from "next/font/google";
 import "@/styles/global.css";
@@ -6,6 +7,7 @@ import { AuthProvider } from "@/lib/context/AuthContext";
 import React from "react";
 import { ActivitiesProvider } from "@/lib/context/ActivityContext";
 import Footer from "@/components/ui/Footer";
+import { SessionHandler } from "@/components/auth/SessionHandler";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -36,7 +38,7 @@ export const metadata: Metadata = {
     url: "https://www.thecavetech.com",
     type: "website",
   },
-}; // Må kansje endres til den info TheCaveTech ønsker?
+};
 
 export default function RootLayout({
   children,
@@ -50,6 +52,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           <ActivitiesProvider>
+            <SessionHandler />
             <Header />
             {children}
             <Footer />
