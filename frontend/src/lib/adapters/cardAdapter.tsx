@@ -2,11 +2,13 @@
 // This file contains the adapter functions for different content types to convert them into a format suitable for the UniversalCard component.
 import { MdCategory, MdLocationOn, MdAccessTime } from "react-icons/md";
 import { AiOutlineTool } from "react-icons/ai";
+import { FaTag, FaBoxOpen, FaStar } from "react-icons/fa";
 import {
   BlogResponse,
   EventResponse,
   ProjectResponse,
 } from "@/types/content.types";
+import { ProductResponse } from "@/types/content.types";
 import {
   Badge,
   DetailItem,
@@ -88,6 +90,11 @@ export const getBlogStateType = (state: string): Badge["type"] => {
     default:
       return "neutral";
   }
+};
+
+// Format price with NOK currency
+export const formatPrice = (price: number): string => {
+  return `${price.toFixed(2)} kr`;
 };
 
 // Adapter for Blog content type
@@ -229,5 +236,89 @@ export const adaptProjectToCardProps = (
     onClick: onCardClick ? () => onCardClick(project.id) : undefined,
     variant: "vertical",
     size: "medium",
+  };
+};
+
+// Adapter for Product content type
+export const adaptProductToCardProps = (
+  product: ProductResponse,
+  onCardClick?: (id: number) => void
+): UniversalCardProps => {
+  // Generate badges for product status
+  const badges: Badge[] = [];
+
+  // Add stock status badge
+  if (product.stock <= 0) {
+    badges.push({
+      text: "Out of Stock",
+      type: "danger",
+    });
+  } else if (product.stock < 5) {
+    badges.push({
+      text: `Only ${product.stock} left!`,
+      type: "warning",
+      icon: <FaBoxOpen />,
+    });
+  }
+
+  // Generate detail items
+  const details: DetailItem[] = [];
+
+  // Price detail
+  if (product.price) {
+    details.push({
+      text: formatPrice(product.price),
+      icon: <span className="font-bold">Price:</span>,
+    });
+  }
+
+  // Stock detail
+  details.push({
+    text: product.stock > 0 ? `${product.stock} in stock` : "Out of stock",
+    icon: <span className="font-bold">Stock:</span>,
+  });
+
+  // Generate tags for category and product tags
+  const tags: Tag[] = [];
+
+  if (product.category) {
+    tags.push({
+      text: product.category,
+      icon: <MdCategory className="w-3 h-3" />,
+    });
+  }
+
+  // Fixed image property to handle the case when productImage is undefined
+  // This ensures we always have a src property even with fallbackLetter
+  const imageProps = product.productImage
+    ? {
+        src: product.productImage.url,
+        alt: product.productImage.alternativeText || product.title,
+        fallbackLetter: true,
+      }
+    : {
+        // Use a placeholder image URL instead of undefined
+        src: "/placeholders/product-placeholder.jpg",
+        alt: product.title,
+        fallbackLetter: true,
+      };
+
+  return {
+    title: product.title,
+    description: product.description,
+    image: imageProps,
+    badges,
+    tags,
+    details,
+    actionButton:
+      product.stock > 0
+        ? {
+            text: "View Product",
+          }
+        : undefined,
+    onClick: onCardClick ? () => onCardClick(product.id) : undefined,
+    variant: "vertical",
+    size: "medium",
+    hoverEffect: true,
   };
 };

@@ -59,7 +59,18 @@ export interface BlogAttributes extends BaseContent {
   };
 }
 
+// Product attributes extending the BaseContent interface
+export interface ProductAttributes extends BaseContent {
+  title: string;
+  description: string;
+  price: number;
+  stock: number;
+  category: string;
+  productImage?: Media;
+}
+
 // Response types
+export type ProductResponse = ProductAttributes;
 export type EventResponse = EventAttributes;
 export type ProjectResponse = ProjectAttributes;
 export type BlogResponse = BlogAttributes;
