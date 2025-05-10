@@ -10,6 +10,8 @@ import { adaptProductToCardProps } from "@/lib/adapters/cardAdapter";
 import { ProductResponse } from "@/types/content.types";
 import { SearchBar } from "@/components/ui/SearchBar";
 import { FilterDropdown } from "@/components/ui/FilterDropdown";
+import { Button } from "@/components/ui/custom/Button";
+import PageIcons from "@/components/ui/custom/PageIcons";
 
 export default function NettbutikkPage() {
   const router = useRouter();
@@ -190,14 +192,27 @@ export default function NettbutikkPage() {
             onSearch={handleSearch}
             className="w-full sm:w-auto"
           />
-
-          <FilterDropdown
-            filter={filter}
-            setFilter={setFilter}
-            options={getCategoryOptions()}
-            ariaLabel="Filter by category"
-            placeholder="Velg kategori"
-          />
+          <div className="flex items-center gap-20">
+            <FilterDropdown
+              filter={filter}
+              setFilter={setFilter}
+              options={getCategoryOptions()}
+              ariaLabel="Filter by category"
+              placeholder="Velg kategori"
+            />
+            <Button
+              variant="outline"
+              className="h-12 w-12 rounded-full"
+              onClick={() => router.push("/nettbutikk/cart")}
+            >
+              <PageIcons
+                name="cart"
+                directory="shopIcons"
+                size={10}
+                isDecorative={true}
+              />
+            </Button>
+          </div>
         </div>
       </div>
 
