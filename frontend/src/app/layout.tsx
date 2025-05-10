@@ -8,6 +8,7 @@ import React from "react";
 import { ActivitiesProvider } from "@/lib/context/ActivityContext";
 import Footer from "@/components/ui/Footer";
 import { SessionHandler } from "@/components/auth/SessionHandler";
+import { CartProvider } from "@/lib/context/shopContext";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -52,10 +53,12 @@ export default function RootLayout({
       >
         <AuthProvider>
           <ActivitiesProvider>
-            <SessionHandler />
-            <Header />
-            {children}
-            <Footer />
+            <CartProvider>
+              <SessionHandler />
+              <Header />
+              {children}
+              <Footer />
+            </CartProvider>
           </ActivitiesProvider>
         </AuthProvider>
       </body>

@@ -57,6 +57,7 @@ export interface UniversalCardProps {
   actionButton?: {
     text: string;
     onClick?: (e: React.MouseEvent) => void;
+    isProduct?: boolean;
   };
 
   // Styling and layout

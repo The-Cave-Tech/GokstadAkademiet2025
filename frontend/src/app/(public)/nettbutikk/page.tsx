@@ -10,11 +10,12 @@ import { adaptProductToCardProps } from "@/lib/adapters/cardAdapter";
 import { ProductResponse } from "@/types/content.types";
 import { SearchBar } from "@/components/ui/SearchBar";
 import { FilterDropdown } from "@/components/ui/FilterDropdown";
-import { Button } from "@/components/ui/custom/Button";
-import PageIcons from "@/components/ui/custom/PageIcons";
+import CartIcon from "@/components/ui/CartIcon";
+import { useCart } from "@/lib/context/shopContext";
 
 export default function NettbutikkPage() {
   const router = useRouter();
+  const { addToCart } = useCart();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [products, setProducts] = useState<ProductResponse[]>([]);
@@ -97,6 +98,22 @@ export default function NettbutikkPage() {
     router.push(`/nettbutikk/product/${id}`);
   };
 
+  // Handle add to cart
+  const handleAddToCart = (productId: number) => {
+    const product = products.find((p) => p.id === productId);
+    if (product) {
+      addToCart({
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        image: product.productImage?.url,
+      });
+
+      // Show feedback to user
+      alert(`${product.title} er lagt til i handlekurven!`);
+    }
+  };
+
   // Get unique categories for filter options
   const getCategoryOptions = () => {
     if (!products || products.length === 0)
@@ -155,9 +172,11 @@ export default function NettbutikkPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredProducts.map((product) => {
           try {
+            // Pass both handleProductClick and handleAddToCart to the adapter
             const cardProps = adaptProductToCardProps(
               product,
-              handleProductClick
+              handleProductClick,
+              handleAddToCart
             );
 
             return <UniversalCard key={product.id} {...cardProps} />;
@@ -193,7 +212,7 @@ export default function NettbutikkPage() {
             onSearch={handleSearch}
             className="w-full sm:w-auto"
           />
-          <div className="flex items-center gap-20">
+          <div className="flex items-center gap-4">
             <FilterDropdown
               filter={filter}
               setFilter={setFilter}
@@ -201,18 +220,7 @@ export default function NettbutikkPage() {
               ariaLabel="Filter by category"
               placeholder="Velg kategori"
             />
-            <Button
-              variant="outline"
-              type="button"
-              onClick={() => router.push("/nettbutikk/cart")}
-            >
-             <PageIcons
-                name="cart"
-                directory="shopIcons"
-                size={37}
-                isDecorative={true}
-              />
-            </Button>
+            <CartIcon />
           </div>
         </div>
       </div>

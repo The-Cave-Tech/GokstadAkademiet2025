@@ -17,6 +17,7 @@ import {
 } from "@/components/dashboard/contentManager/ContentCard";
 import { formatDate } from "@/lib/utils/eventUtils";
 import { isDatePast } from "@/lib/utils/dateUtils";
+import AddToCartButton from "@/components/ui/custom/AddToCartButton";
 
 // Helper function to format time from HH:MM:SS to HH.MM
 export const formatTime = (timeString: string): string => {
@@ -242,41 +243,42 @@ export const adaptProjectToCardProps = (
 // Adapter for Product content type
 export const adaptProductToCardProps = (
   product: ProductResponse,
-  onCardClick?: (id: number) => void
+  onCardClick?: (id: number) => void,
+  onAddToCart?: (id: number) => void
 ): UniversalCardProps => {
   // Generate badges for product status
   const badges: Badge[] = [];
 
+  // Add category badge if available
+  if (product.category) {
+    badges.push({
+      text: product.category,
+      type: "primary",
+      icon: <MdCategory className="w-3 h-3" />,
+    });
+  }
+
   // Add stock status badge
   if (product.stock <= 0) {
     badges.push({
-      text: "Out of Stock",
+      text: "Utsolgt",
       type: "danger",
     });
   } else if (product.stock < 5) {
     badges.push({
-      text: `Only ${product.stock} left!`,
+      text: `Kun ${product.stock} igjen!`,
       type: "warning",
-      icon: <FaBoxOpen />,
+      icon: <FaBoxOpen className="w-3 h-3" />,
     });
   }
 
-  // Generate detail items
-  const details: DetailItem[] = [];
-
-  // Price detail
+  // Add price badge
   if (product.price) {
-    details.push({
-      text: formatPrice(product.price),
-      icon: <span className="font-bold">Price:</span>,
+    badges.push({
+      text: `${product.price.toFixed(2)} kr`,
+      type: "success",
     });
   }
-
-  // Stock detail
-  details.push({
-    text: product.stock > 0 ? `${product.stock} in stock` : "Out of stock",
-    icon: <span className="font-bold">Stock:</span>,
-  });
 
   // Generate tags for category and product tags
   const tags: Tag[] = [];
@@ -284,38 +286,65 @@ export const adaptProductToCardProps = (
   if (product.category) {
     tags.push({
       text: product.category,
-      icon: <MdCategory className="w-3 h-3" />,
+      icon: <FaTag className="w-3 h-3" />,
     });
   }
 
-  // Fixed image property to handle the case when productImage is undefined
-  // This ensures we always have a src property even with fallbackLetter
-  const imageProps = product.productImage
+  // Generate detail items for product
+  const details: DetailItem[] = [];
+
+  // Add price detail with icon
+  if (product.price) {
+    details.push({
+      text: `${product.price.toFixed(2)} kr`,
+      icon: <span className="font-bold">Pris:</span>,
+    });
+  }
+
+  // Add stock detail with icon
+  details.push({
+    text: product.stock > 0 ? `${product.stock} på lager` : "Utsolgt",
+    icon: <span className="font-bold">Lager:</span>,
+  });
+
+  // IMPORTANT: Keep your original image handling
+  const image = product.productImage
     ? {
         src: product.productImage.url,
         alt: product.productImage.alternativeText || product.title,
         fallbackLetter: true,
       }
     : {
-        // Use a placeholder image URL instead of undefined
-        src: "/placeholders/product-placeholder.jpg",
+        src: "", // Keep this empty to use the fallbackLetter
         alt: product.title,
         fallbackLetter: true,
       };
 
+  // Create the AddToCartButton as a footer slot only if onAddToCart is provided and product is in stock
+  const footerSlot =
+    product.stock > 0 && onAddToCart ? (
+      <AddToCartButton
+        productId={product.id}
+        onAddToCart={(id) => onAddToCart(Number(id))}
+        className="w-full mt-4"
+        variant="primary"
+        showText={true}
+      />
+    ) : null;
+
   return {
     title: product.title,
     description: product.description,
-    image: imageProps,
+    image,
     badges,
     tags,
     details,
-    actionButton:
-      product.stock > 0
-        ? {
-            text: "View Product",
-          }
-        : undefined,
+    // Action button for viewing details
+    actionButton: {
+      text: "Se produkt",
+    },
+    // Include the AddToCartButton as the footerSlot
+    footerSlot,
     onClick: onCardClick ? () => onCardClick(product.id) : undefined,
     variant: "vertical",
     size: "medium",
