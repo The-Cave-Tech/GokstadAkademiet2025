@@ -1,7 +1,7 @@
-// src/lib/data/services/strapiClient.ts
-
+//from frontend/src/lib/data/services/strapiClient.ts
 import { strapi } from "@strapi/client";
-import { getAuthCookie } from "@/lib/utils/cookie";
+import { getAuthCookie, removeAuthCookie } from "@/lib/utils/cookie";
+import { isTokenExpired } from "@/lib/utils/jwt"; // Importer fra jwt.ts
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337/api";
@@ -33,8 +33,19 @@ export const strapiService = {
   ): Promise<T> {
     try {
       const token = await getAuthCookie();
+      if (token) {
+        if (isTokenExpired(token)) {
+          console.log("[strapiClient] Token expired before making request");
+          await removeAuthCookie();
+          
+          if (typeof window !== 'undefined') {
+            const event = new CustomEvent('auth-token-expired');
+            window.dispatchEvent(event);
+            throw new Error("Autentiseringen har utløpt. Vennligst logg inn på nytt.");
+          }
+        }
+      }
 
-      // Set up headers properly
       const headers: HeadersInit = {
         "Content-Type": "application/json",
       };
@@ -43,14 +54,12 @@ export const strapiService = {
         headers["Authorization"] = `Bearer ${token}`;
       }
 
-      // Copy all custom headers
       if (options.headers) {
         Object.entries(options.headers).forEach(([key, value]) => {
           headers[key] = value;
         });
       }
 
-      // Convert body based on type
       let bodyToSend: BodyInit | null = null;
       if (options.body) {
         if (options.body instanceof FormData) {
@@ -61,14 +70,12 @@ export const strapiService = {
         }
       }
 
-      // Create standard RequestInit
       const fetchOptions: RequestInit = {
         method: options.method || "GET",
         headers,
         body: bodyToSend,
       };
 
-      // Build URL with query parameters if provided
       let url = `${BASE_URL}/${endpoint}`;
       if (options.params) {
         const searchParams = new URLSearchParams();
@@ -80,8 +87,20 @@ export const strapiService = {
 
       const response = await fetch(url, fetchOptions);
 
+      if (response.status === 401) {
+        console.error("[strapiClient] Authentication failed: 401 Unauthorized");
+        
+        await removeAuthCookie();
+        
+        if (typeof window !== 'undefined') {
+          const event = new CustomEvent('auth-token-expired');
+          window.dispatchEvent(event);
+        }
+        
+        throw new Error("Autentiseringen har utløpt. Vennligst logg inn på nytt.");
+      }
+
       if (!response.ok) {
-        // Enhanced error handling - parse error properly
         const errorData = await response.json().catch(() => ({}));
 
         let errorMessage = "Ukjent feil";
@@ -107,17 +126,14 @@ export const strapiService = {
     }
   },
 
-  // Helper functions for collection types
   collection(name: string) {
     return strapiClient.collection(name);
   },
 
-  // Helper functions for single types
   single(name: string) {
     return strapiClient.single(name);
   },
 
-  // Media handling
   media: {
     getMediaUrl(media: unknown): string {
       if (!media) return "";

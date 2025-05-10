@@ -1,11 +1,13 @@
 //frontend/src/lib/context/AuthContext.tsx
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { getAuthCookie } from "@/lib/utils/cookie";
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
+import { getAuthCookie, removeAuthCookie } from "@/lib/utils/cookie";
 import { getUserWithRole } from "@/lib/data/services/userAuth";
 import { useRouter } from "next/navigation";
 import { UserAuthProvider } from "@/types/userProfile.types";
+import { isTokenExpired } from "@/lib/utils/jwt";
+import { logout } from "@/lib/data/actions/auth";
 
 type AuthContextType = {
   isAuthenticated: boolean;
@@ -15,6 +17,7 @@ type AuthContextType = {
   isAdmin: boolean;
   authProvider: UserAuthProvider; 
   handleSuccessfulAuth: () => void;
+  handleTokenExpired: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,8 +29,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [authProvider, setAuthProvider] = useState<UserAuthProvider>(null); 
 
+  // Handle token expiration
+  const handleTokenExpired = useCallback(async () => {
+    console.log("[AuthContext] Token expired - logging out");
+    try {
+      // Call server-side logout action to properly end the session
+      await logout();
+      
+      // Clear auth state client-side
+      setIsAuthenticated(false);
+      setUserRole(null);
+      setIsAdmin(false);
+      setAuthProvider(null);
+      
+      // Redirect with message
+      router.push("/?message=Din økt har utløpt. Vennligst logg inn på nytt.");
+    } catch (error) {
+      console.error("[AuthContext] Error handling token expiration:", error);
+      // Even if server-side logout fails, clean up client-side
+      await removeAuthCookie();
+      setIsAuthenticated(false);
+      setUserRole(null);
+      setIsAdmin(false);
+      setAuthProvider(null);
+      router.push("/signin");
+    }
+  }, [router]);
+
   const handleSuccessfulAuth = () => {
     console.log("[AuthContext] Håndterer vellykket autentisering");
+    refreshAuthStatus();
     router.push("/");
   };
 
@@ -40,6 +71,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUserRole(null);
         setIsAdmin(false);
         setAuthProvider(null); 
+        return;
+      }
+
+      // Check if token is expired
+      if (isTokenExpired(token)) {
+        handleTokenExpired();
         return;
       }
 
@@ -67,9 +104,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Set up event listener for token expiration events
   useEffect(() => {
+    const handleTokenExpiredEvent = () => {
+      handleTokenExpired();
+    };
+
+    window.addEventListener('auth-token-expired', handleTokenExpiredEvent);
+    
+    // Initial auth check
     refreshAuthStatus();
-  }, []);
+    
+    return () => {
+      window.removeEventListener('auth-token-expired', handleTokenExpiredEvent);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handleTokenExpired]);
 
   return (
     <AuthContext.Provider value={{ 
@@ -79,7 +129,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       userRole,
       isAdmin,
       authProvider, 
-      handleSuccessfulAuth
+      handleSuccessfulAuth,
+      handleTokenExpired
     }}>
       {children}
     </AuthContext.Provider>
