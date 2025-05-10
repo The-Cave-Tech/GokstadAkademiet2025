@@ -1,102 +1,182 @@
-// services/blogService.ts
-import { BlogAttributes, Media } from "@/types/content.types";
+// services/blogService.ts - Updated with proper types
+import { BlogAttributes, BlogResponse, Media } from "@/types/content.types";
 import { strapiService } from "@/lib/data/services/strapiClient";
-
-// Define BlogResponse type that includes id
-interface BlogResponse extends BlogAttributes {
-  id: number;
-}
 
 // Blog service
 export const blogService = {
   // Get all blog posts with optional filters, sorting, and pagination
-  getAll: async (params: any = {}): Promise<BlogResponse[]> => {
+  getAll: async (
+    params: Record<string, unknown> = {}
+  ): Promise<BlogResponse[]> => {
     try {
-      const queryParams = {
+      // Using collection method for consistent approach
+      const blogsCollection = strapiService.collection("blogs");
+
+      // Ensure populate parameter is properly typed
+      const queryParams: Record<string, unknown> = {
         ...params,
-        populate: params.populate || ["blogImage", "author"], // Ensure blogImage is populated
+        populate: params.populate || ["blogImage", "author"],
       };
 
-      const response = await strapiService.fetch<any>("blogs", {
-        params: queryParams,
-      });
+      // Use the collection's find method
+      const response = await blogsCollection.find(queryParams);
 
       if (!response.data || !Array.isArray(response.data)) {
         console.warn("No blog posts found or data is not an array");
         return [];
       }
 
-      return response.data.map((item: any) => ({
-        id: item.id,
-        ...item, // This includes all fields directly
-        blogImage: strapiService.media.getMediaUrl(item.blogImage),
-      }));
+      console.log("Fetched blog posts:", response.data);
+
+      // Transform the response to match our BlogResponse type
+      return response.data.map((item) => {
+        // Extract the base blog data
+        const blog: BlogResponse = {
+          id: item.id,
+          title: item.title || "",
+          summary: item.summary || "",
+          content: item.content || "",
+          category: item.category || "",
+          tags: item.tags || [],
+          state: item.state || "draft",
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          publishedAt: item.publishedAt,
+        };
+
+        // Handle author data if it exists
+        if (item.author) {
+          blog.author = {
+            id: item.author.id,
+            username: item.author.username || "Unknown",
+            email: item.author.email,
+          };
+        }
+
+        // Process the image data if it exists
+        if (item.blogImage) {
+          // Handle both direct and nested data structures
+          let imageUrl: string = "";
+
+          // For nested structure with data property
+          if (typeof item.blogImage.data !== "undefined") {
+            const data = item.blogImage.data;
+            if (data) {
+              imageUrl = strapiService.media.getMediaUrl(data);
+              blog.blogImage = {
+                id: data.id || 0,
+                url: imageUrl,
+                alternativeText: data.alternativeText,
+                width: data.width,
+                height: data.height,
+                formats: data.formats,
+              };
+            }
+          } else {
+            // Direct format - no nesting
+            imageUrl = strapiService.media.getMediaUrl(item.blogImage);
+            blog.blogImage = {
+              id: item.blogImage.id || 0,
+              url: imageUrl,
+              alternativeText: item.blogImage.alternativeText,
+              width: item.blogImage.width,
+              height: item.blogImage.height,
+              formats: item.blogImage.formats,
+            };
+          }
+        }
+
+        return blog;
+      });
     } catch (error) {
       console.error("Error fetching blog posts:", error);
       return [];
     }
   },
 
-  // Get only the current user's blog posts
-  getUserPosts: async (params: any = {}): Promise<BlogResponse[]> => {
-    try {
-      const queryParams = {
-        ...params,
-        populate: params.populate || ["blogImage"],
-        filters: {
-          ...params.filters,
-          "author.id": { $eq: "$currentUser" }, // This is a placeholder, the actual filter will be applied by the server
-        },
-      };
-
-      const response = await strapiService.fetch<any>("blogs/me", {
-        params: queryParams,
-      });
-
-      if (!response.data || !Array.isArray(response.data)) {
-        console.warn("No blog posts found for current user");
-        return [];
-      }
-
-      return response.data.map((item: any) => ({
-        id: item.id,
-        ...item,
-        blogImage: strapiService.media.getMediaUrl(item.blogImage),
-      }));
-    } catch (error) {
-      console.error("Error fetching user blog posts:", error);
-      return [];
-    }
-  },
-
   // Get media URL helper
-  getMediaUrl: (media: any) => {
+  getMediaUrl: (media: any): string => {
     return strapiService.media.getMediaUrl(media);
   },
 
   // Get a single blog post by ID
   getOne: async (
     id: number | string,
-    params: any = {}
+    params: Record<string, unknown> = {}
   ): Promise<BlogResponse | null> => {
     try {
-      const queryParams = {
+      const blogsCollection = strapiService.collection("blogs");
+
+      // Define query params
+      const queryParams: Record<string, unknown> = {
         ...params,
-        populate: params.populate || ["blogImage", "author"], // Ensure blogImage is populated
+        populate: params.populate || ["blogImage", "author"],
       };
 
-      const response = await strapiService.fetch<any>(`blogs/${id}`, {
-        params: queryParams,
-      });
+      // Use the collection's findOne method
+      const response = await blogsCollection.findOne(
+        id.toString(),
+        queryParams
+      );
 
       if (!response.data) return null;
 
-      // Handle flat structure (no attributes)
-      return {
+      // Create blog object with proper types
+      const blog: BlogResponse = {
         id: response.data.id,
-        ...response.data, // Include all fields directly
-        blogImage: strapiService.media.getMediaUrl(response.data.blogImage),
+        title: response.data.title || "",
+        summary: response.data.summary || "",
+        content: response.data.content || "",
+        category: response.data.category || "",
+        tags: response.data.tags || [],
+        state: response.data.state || "draft",
+        createdAt: response.data.createdAt,
+        updatedAt: response.data.updatedAt,
+        publishedAt: response.data.publishedAt,
       };
+
+      // Handle author data
+      if (response.data.author) {
+        blog.author = {
+          id: response.data.author.id,
+          username: response.data.author.username || "Unknown",
+          email: response.data.author.email,
+        };
+      }
+
+      // Process the image data if it exists
+      if (response.data.blogImage) {
+        let imageUrl: string = "";
+
+        // Handle nested structure
+        if (typeof response.data.blogImage.data !== "undefined") {
+          const data = response.data.blogImage.data;
+          if (data && data.attributes) {
+            imageUrl = strapiService.media.getMediaUrl(data);
+            blog.blogImage = {
+              id: data.id || 0,
+              url: imageUrl,
+              alternativeText: data.attributes.alternativeText,
+              width: data.attributes.width,
+              height: data.attributes.height,
+              formats: data.attributes.formats,
+            };
+          }
+        } else {
+          // Direct format - no nesting
+          imageUrl = strapiService.media.getMediaUrl(response.data.blogImage);
+          blog.blogImage = {
+            id: response.data.blogImage.id || 0,
+            url: imageUrl,
+            alternativeText: response.data.blogImage.alternativeText,
+            width: response.data.blogImage.width,
+            height: response.data.blogImage.height,
+            formats: response.data.blogImage.formats,
+          };
+        }
+      }
+
+      return blog;
     } catch (error) {
       console.error("Error fetching blog post:", error);
       return null;
@@ -120,24 +200,20 @@ export const blogService = {
         processedTags = data.tags;
       }
 
-      // Ensure all required fields are present with default values
+      // Prepare payload with proper typing
       const payload = {
-        title: data.title || "Untitled Blog Post",
-        summary: data.summary || "No summary provided",
-        content: data.content || "",
-        category: data.category || "Other",
-        tags: processedTags,
-        state: (data.state as "draft" | "published" | "archived") || "draft",
+        data: {
+          title: data.title || "Untitled Blog Post",
+          summary: data.summary || "No summary provided",
+          content: data.content || "",
+          category: data.category || "",
+          tags: processedTags,
+          state: data.state || "draft",
+        },
       };
 
-      console.log("[BlogService] Creating blog post with payload:", payload);
-
-      const response = await strapiService.fetch<any>("blogs", {
-        method: "POST",
-        body: { data: payload },
-      });
-
-      console.log("[BlogService] Create blog response:", response);
+      const blogsCollection = strapiService.collection("blogs");
+      const response = await blogsCollection.create(payload);
 
       if (!response || !response.data || !response.data.id) {
         throw new Error("Invalid response from server when creating blog post");
@@ -150,25 +226,28 @@ export const blogService = {
         await blogService.uploadBlogImage(blogId, blogImage);
       }
 
-      // If fetch fails, construct a valid BlogResponse from the payload
-      // but don't include blogImage since we can't create a valid Media object
-      const fallbackResponse: BlogResponse = {
-        id: blogId,
-        title: payload.title,
-        summary: payload.summary,
-        content: payload.content,
-        category: payload.category,
-        tags: payload.tags,
-        state: payload.state,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        // Don't include blogImage in the fallback response
-        // since we can't create a valid Media object with the required id
-      };
+      // Fetch and return the created blog post
+      const newBlog = await blogService.getOne(blogId);
+      if (!newBlog) {
+        // Create a fallback response if fetch fails
+        return {
+          id: blogId,
+          title: payload.data.title,
+          summary: payload.data.summary,
+          content: payload.data.content,
+          category: payload.data.category || "",
+          tags: processedTags,
+          state:
+            (payload.data.state as "draft" | "published" | "archived") ||
+            "draft",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+      }
 
-      return fallbackResponse;
+      return newBlog;
     } catch (error) {
-      console.error("[BlogService] Error creating blog post:", error);
+      console.error("Error creating blog post:", error);
       throw error;
     }
   },
@@ -181,19 +260,17 @@ export const blogService = {
   ): Promise<BlogResponse> => {
     try {
       // Process tags if they come as a comma-separated string
+      let updatedData = { ...data };
+
       if (typeof data.tags === "string") {
-        data.tags = data.tags.split(",").map((tag) => tag.trim());
+        updatedData.tags = data.tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter(Boolean);
       }
 
-      // Log the update payload for debugging
-      console.log(`Updating blog post ${id} with data:`, data);
-
-      const response = await strapiService.fetch<any>(`blogs/${id}`, {
-        method: "PUT",
-        body: { data },
-      });
-
-      console.log("Update response:", response);
+      const blogsCollection = strapiService.collection("blogs");
+      await blogsCollection.update(id.toString(), { data: updatedData });
 
       // Upload blog image if provided
       if (blogImage) {
@@ -215,10 +292,8 @@ export const blogService = {
   // Delete a blog post
   delete: async (id: string | number): Promise<boolean> => {
     try {
-      console.log(`Deleting blog post with ID: ${id}`);
-      await strapiService.fetch<any>(`blogs/${id}`, {
-        method: "DELETE",
-      });
+      const blogsCollection = strapiService.collection("blogs");
+      await blogsCollection.delete(id.toString());
       return true;
     } catch (error) {
       console.error("Error deleting blog post:", error);
@@ -232,20 +307,16 @@ export const blogService = {
     image: File
   ): Promise<void> => {
     try {
-      console.log(`Uploading image for blog post ${blogId}`);
-
       const formData = new FormData();
       formData.append("ref", "api::blog.blog");
       formData.append("refId", blogId.toString());
       formData.append("field", "blogImage");
       formData.append("files", image);
 
-      const response = await strapiService.fetch<any>("upload", {
+      await strapiService.fetch("upload", {
         method: "POST",
         body: formData,
       });
-
-      console.log("Image upload response:", response);
     } catch (error) {
       console.error("Error uploading blog image:", error);
       throw error;

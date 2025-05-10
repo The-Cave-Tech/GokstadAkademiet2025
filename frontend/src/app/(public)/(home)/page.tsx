@@ -7,8 +7,12 @@ import { eventsService } from "@/lib/data/services/eventService";
 import { projectService } from "@/lib/data/services/projectService";
 import ClientMessage from "@/components/ClientMessage";
 import { EventAttributes, ProjectAttributes } from "@/types/content.types";
-import { EventCard } from "@/components/dashboard/contentManager/EventCard";
-import ProjectCarousel from "@/components/ui/ProjectCarousel";
+import { UniversalCard } from "@/components/dashboard/contentManager/ContentCard";
+import {
+  adaptProjectToCardProps,
+  adaptEventToCardProps,
+} from "@/lib/adapters/cardAdapter";
+import { useRouter } from "next/navigation";
 
 // Interface that defines our component's data structure
 interface LandingPageData {
@@ -331,6 +335,7 @@ const getImageUrl = (mediaObject: any): string | null => {
 };
 
 export default function LandingPageContent() {
+  const router = useRouter();
   const [pageData, setPageData] = useState<LandingPageData | null>(null);
   const [events, setEvents] = useState<EventAttributes[]>([]);
   const [projects, setProjects] = useState<ProjectAttributes[]>([]);
@@ -353,6 +358,16 @@ export default function LandingPageContent() {
     hero: false,
     intro: false,
   });
+
+  // Handle project click
+  const handleProjectClick = (id: number) => {
+    router.push(`/aktiviteter/projects/${id}`);
+  };
+
+  // Handle event click
+  const handleEventClick = (id: number) => {
+    router.push(`/aktiviteter/events/${id}`);
+  };
 
   // Fetch landing page data
   useEffect(() => {
@@ -448,6 +463,7 @@ export default function LandingPageContent() {
         const eventsData = await eventsService.getAll({
           sort: ["startDate:asc"],
           populate: ["eventCardImage"],
+          limit: 3, // Limit to 3 events for the landing page
         });
         setEvents(eventsData);
         setErrors((prev) => ({ ...prev, events: null }));
@@ -473,6 +489,7 @@ export default function LandingPageContent() {
         const projectData = await projectService.getAll({
           sort: ["createdAt:desc"],
           populate: "*",
+          limit: 3, // Limit to 3 projects for the landing page
         });
         setProjects(projectData);
         setErrors((prev) => ({ ...prev, projects: null }));
@@ -629,9 +646,20 @@ export default function LandingPageContent() {
             </p>
           </div>
 
-          {/* Project Carousel Component */}
-          <div className="relative px-8">
-            <ProjectCarousel projects={projects} />
+          {/* Projects Grid using UniversalCard */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {projects.length > 0 ? (
+              projects.map((project) => (
+                <UniversalCard
+                  key={project.id}
+                  {...adaptProjectToCardProps(project, handleProjectClick)}
+                />
+              ))
+            ) : (
+              <div className="col-span-3 text-center py-10">
+                <p className="text-gray-500">Ingen prosjekter funnet</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -648,13 +676,19 @@ export default function LandingPageContent() {
             </p>
           </div>
 
-          <div className="flex flex-col items-center gap-4 max-w-[658px] mx-auto">
+          {/* Events Grid using UniversalCard */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {events.length > 0 ? (
-              events.map((event) => <EventCard key={event.id} event={event} />)
+              events.map((event) => (
+                <UniversalCard
+                  key={event.id}
+                  {...adaptEventToCardProps(event, handleEventClick)}
+                />
+              ))
             ) : (
-              <p className="text-center text-gray-500 w-full h-[76px] flex items-center justify-center border rounded-lg">
-                Ingen arrangementer funnet
-              </p>
+              <div className="col-span-3 text-center py-10">
+                <p className="text-gray-500">Ingen arrangementer funnet</p>
+              </div>
             )}
           </div>
         </div>

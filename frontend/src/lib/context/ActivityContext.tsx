@@ -1,210 +1,275 @@
+// lib/context/ActivityContext.tsx
 "use client";
-import React, { createContext, useContext, useReducer, useEffect } from "react";
-import { Project, Event } from "@/types/activity.types";
-import { projectService } from "@/lib/data/services/projectService";
+import React, { createContext, useReducer, useContext, useEffect } from "react";
+import { EventResponse, ProjectResponse } from "@/types/content.types";
 import { eventsService } from "@/lib/data/services/eventService";
-import { isDatePast } from "../utils/dateUtils";
+import { projectService } from "@/lib/data/services/projectService";
+import { isDatePast } from "@/lib/utils/dateUtils";
 
-// State interface
-interface ActivitiesState {
+// Define the state type
+interface ActivityState {
   activeTab: "projects" | "events";
-  searchQuery: string;
   filter: string;
-  projects: Project[];
-  events: Event[];
-  filteredProjects: Project[];
-  filteredEvents: Event[];
+  searchQuery: string;
+  projects: ProjectResponse[];
+  events: EventResponse[];
+  filteredProjects: ProjectResponse[];
+  filteredEvents: EventResponse[];
   isLoading: boolean;
   error: string | null;
 }
 
-// Action types
-type ActivitiesAction =
+// Define action types
+type ActivityAction =
   | { type: "SET_ACTIVE_TAB"; payload: "projects" | "events" }
-  | { type: "SET_SEARCH_QUERY"; payload: string }
   | { type: "SET_FILTER"; payload: string }
-  | { type: "SET_PROJECTS"; payload: Project[] }
-  | { type: "SET_EVENTS"; payload: Event[] }
-  | { type: "SET_FILTERED_PROJECTS"; payload: Project[] }
-  | { type: "SET_FILTERED_EVENTS"; payload: Event[] }
+  | { type: "SET_SEARCH_QUERY"; payload: string }
+  | { type: "SET_PROJECTS"; payload: ProjectResponse[] }
+  | { type: "SET_EVENTS"; payload: EventResponse[] }
   | { type: "SET_LOADING"; payload: boolean }
-  | { type: "SET_ERROR"; payload: string | null };
+  | { type: "SET_ERROR"; payload: string | null }
+  | { type: "FILTER_PROJECTS" }
+  | { type: "FILTER_EVENTS" };
 
-// Initial state
-const initialState: ActivitiesState = {
-  activeTab: "projects",
-  searchQuery: "",
-  filter: "all",
-  projects: [],
-  events: [],
-  filteredProjects: [],
-  filteredEvents: [],
-  isLoading: false,
-  error: null,
-};
+// Create the context
+const ActivityContext = createContext<{
+  state: ActivityState;
+  dispatch: React.Dispatch<ActivityAction>;
+}>({
+  state: {
+    activeTab: "projects",
+    filter: "all",
+    searchQuery: "",
+    projects: [],
+    events: [],
+    filteredProjects: [],
+    filteredEvents: [],
+    isLoading: false,
+    error: null,
+  },
+  dispatch: () => null,
+});
 
 // Reducer function
-const activitiesReducer = (
-  state: ActivitiesState,
-  action: ActivitiesAction
-): ActivitiesState => {
+const activityReducer = (
+  state: ActivityState,
+  action: ActivityAction
+): ActivityState => {
   switch (action.type) {
     case "SET_ACTIVE_TAB":
-      return { ...state, activeTab: action.payload };
-    case "SET_SEARCH_QUERY":
-      return { ...state, searchQuery: action.payload };
+      return {
+        ...state,
+        activeTab: action.payload,
+      };
     case "SET_FILTER":
-      return { ...state, filter: action.payload };
+      return {
+        ...state,
+        filter: action.payload,
+      };
+    case "SET_SEARCH_QUERY":
+      return {
+        ...state,
+        searchQuery: action.payload,
+      };
     case "SET_PROJECTS":
-      return { ...state, projects: action.payload };
+      return {
+        ...state,
+        projects: action.payload,
+        // Also update filtered projects
+        filteredProjects: filterProjects(
+          action.payload,
+          state.filter,
+          state.searchQuery
+        ),
+      };
     case "SET_EVENTS":
-      return { ...state, events: action.payload };
-    case "SET_FILTERED_PROJECTS":
-      return { ...state, filteredProjects: action.payload };
-    case "SET_FILTERED_EVENTS":
-      return { ...state, filteredEvents: action.payload };
+      return {
+        ...state,
+        events: action.payload,
+        // Also update filtered events
+        filteredEvents: filterEvents(
+          action.payload,
+          state.filter,
+          state.searchQuery
+        ),
+      };
     case "SET_LOADING":
-      return { ...state, isLoading: action.payload };
+      return {
+        ...state,
+        isLoading: action.payload,
+      };
     case "SET_ERROR":
-      return { ...state, error: action.payload };
+      return {
+        ...state,
+        error: action.payload,
+      };
+    case "FILTER_PROJECTS":
+      return {
+        ...state,
+        filteredProjects: filterProjects(
+          state.projects,
+          state.filter,
+          state.searchQuery
+        ),
+      };
+    case "FILTER_EVENTS":
+      return {
+        ...state,
+        filteredEvents: filterEvents(
+          state.events,
+          state.filter,
+          state.searchQuery
+        ),
+      };
     default:
       return state;
   }
 };
 
-// Context creation
-const ActivitiesContext = createContext<{
-  state: ActivitiesState;
-  dispatch: React.Dispatch<ActivitiesAction>;
-}>({
-  state: initialState,
-  dispatch: () => null,
-});
+// Helper function to filter projects
+const filterProjects = (
+  projects: ProjectResponse[],
+  filter: string,
+  searchQuery: string
+): ProjectResponse[] => {
+  // Filter by state
+  let filtered = projects;
+  if (filter !== "all") {
+    filtered = filtered.filter((project) => project.state === filter);
+  }
 
-// Provider component
+  // Filter by search query
+  if (searchQuery) {
+    const query = searchQuery.toLowerCase();
+    filtered = filtered.filter(
+      (project) =>
+        project.title.toLowerCase().includes(query) ||
+        (project.description &&
+          project.description.toLowerCase().includes(query)) ||
+        (project.category && project.category.toLowerCase().includes(query)) ||
+        (project.technologies &&
+          project.technologies.some((tech) =>
+            tech.toLowerCase().includes(query)
+          ))
+    );
+  }
+
+  return filtered;
+};
+
+// Helper function to filter events
+const filterEvents = (
+  events: EventResponse[],
+  filter: string,
+  searchQuery: string
+): EventResponse[] => {
+  // Filter by upcoming/past
+  let filtered = events;
+  if (filter === "upcoming") {
+    filtered = filtered.filter(
+      (event) => !event.startDate || !isDatePast(event.startDate)
+    );
+  } else if (filter === "past") {
+    filtered = filtered.filter(
+      (event) => event.startDate && isDatePast(event.startDate)
+    );
+  }
+
+  // Filter by search query
+  if (searchQuery) {
+    const query = searchQuery.toLowerCase();
+    filtered = filtered.filter(
+      (event) =>
+        event.title.toLowerCase().includes(query) ||
+        (event.description &&
+          event.description.toLowerCase().includes(query)) ||
+        (event.location && event.location.toLowerCase().includes(query))
+    );
+  }
+
+  return filtered;
+};
+
+// ActivitiesProvider component
 export const ActivitiesProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [state, dispatch] = useReducer(activitiesReducer, initialState);
+  const [state, dispatch] = useReducer(activityReducer, {
+    activeTab: "projects",
+    filter: "all",
+    searchQuery: "",
+    projects: [],
+    events: [],
+    filteredProjects: [],
+    filteredEvents: [],
+    isLoading: false,
+    error: null,
+  });
 
-  // Effect to fetch data when active tab changes
+  // Load projects when the provider mounts
   useEffect(() => {
-    const fetchData = async () => {
+    const loadProjects = async () => {
       dispatch({ type: "SET_LOADING", payload: true });
       dispatch({ type: "SET_ERROR", payload: null });
-
       try {
-        if (state.activeTab === "projects") {
-          // Only fetch projects data when activeTab is projects
-          // Using string format for sort parameter and simple populate instead of array
-          const data = await projectService.getAll({
-            sort: "createdAt:desc",
-          });
-          dispatch({ type: "SET_PROJECTS", payload: data });
-        } else if (state.activeTab === "events") {
-          // Only fetch events data when activeTab is events
-          const data = await eventsService.getAll({
-            sort: ["startDate:desc"],
-          });
-          dispatch({ type: "SET_EVENTS", payload: data });
-        }
-      } catch (err) {
-        console.error("Error fetching data:", err);
+        const data = await projectService.getAll();
+        dispatch({ type: "SET_PROJECTS", payload: data });
+      } catch (error) {
+        console.error("Error loading projects:", error);
         dispatch({
           type: "SET_ERROR",
-          payload: "Failed to load data. Please try again.",
+          payload: "Error loading projects. Please try again.",
         });
       } finally {
         dispatch({ type: "SET_LOADING", payload: false });
       }
     };
 
-    fetchData();
-  }, [state.activeTab]);
+    loadProjects();
+  }, []);
 
-  // Effect to filter projects when search query, filter, or projects change
+  // Load events when the provider mounts
   useEffect(() => {
-    if (state.activeTab === "projects") {
-      let filtered = state.projects;
-
-      // Apply search filter
-      if (state.searchQuery) {
-        filtered = filtered.filter(
-          (project) =>
-            project.title
-              .toLowerCase()
-              .includes(state.searchQuery.toLowerCase()) ||
-            (project.description &&
-              project.description
-                .toLowerCase()
-                .includes(state.searchQuery.toLowerCase()))
-        );
+    const loadEvents = async () => {
+      dispatch({ type: "SET_LOADING", payload: true });
+      dispatch({ type: "SET_ERROR", payload: null });
+      try {
+        const data = await eventsService.getAll();
+        dispatch({ type: "SET_EVENTS", payload: data });
+      } catch (error) {
+        console.error("Error loading events:", error);
+        dispatch({
+          type: "SET_ERROR",
+          payload: "Error loading events. Please try again.",
+        });
+      } finally {
+        dispatch({ type: "SET_LOADING", payload: false });
       }
+    };
 
-      // Apply category/status filters
-      if (state.filter !== "all") {
-        if (["planning", "in-progress", "completed"].includes(state.filter)) {
-          // Filter by status
-          filtered = filtered.filter(
-            (project) => project.state === state.filter
-          );
-        } else {
-          // Filter by category
-          filtered = filtered.filter(
-            (project) => project.category === state.filter
-          );
-        }
-      }
+    loadEvents();
+  }, []);
 
-      dispatch({ type: "SET_FILTERED_PROJECTS", payload: filtered });
-    }
-  }, [state.projects, state.searchQuery, state.filter, state.activeTab]);
-
-  // Effect to filter events when search query, filter, or events change
+  // Filter projects and events when filter or search query changes
   useEffect(() => {
-    if (state.activeTab === "events") {
-      let filtered = state.events;
+    dispatch({ type: "FILTER_PROJECTS" });
+  }, [state.filter, state.searchQuery, state.projects]);
 
-      // Apply search filter
-      if (state.searchQuery) {
-        filtered = filtered.filter(
-          (event) =>
-            event.title
-              .toLowerCase()
-              .includes(state.searchQuery.toLowerCase()) ||
-            (event.description &&
-              event.description
-                .toLowerCase()
-                .includes(state.searchQuery.toLowerCase()))
-        );
-      }
-
-      // Apply date-based filters
-      if (state.filter === "upcoming") {
-        filtered = filtered.filter(
-          (event) => event.startDate && !isDatePast(event.startDate)
-        );
-      } else if (state.filter === "past") {
-        filtered = filtered.filter(
-          (event) => event.startDate && isDatePast(event.startDate)
-        );
-      }
-
-      dispatch({ type: "SET_FILTERED_EVENTS", payload: filtered });
-    }
-  }, [state.events, state.searchQuery, state.filter, state.activeTab]);
+  useEffect(() => {
+    dispatch({ type: "FILTER_EVENTS" });
+  }, [state.filter, state.searchQuery, state.events]);
 
   return (
-    <ActivitiesContext.Provider value={{ state, dispatch }}>
+    <ActivityContext.Provider value={{ state, dispatch }}>
       {children}
-    </ActivitiesContext.Provider>
+    </ActivityContext.Provider>
   );
 };
 
-// Custom hook to use the context
+// useActivities hook
 export const useActivities = () => {
-  const context = useContext(ActivitiesContext);
-  if (!context) {
+  const context = useContext(ActivityContext);
+  if (context === undefined) {
     throw new Error("useActivities must be used within an ActivitiesProvider");
   }
   return context;

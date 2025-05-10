@@ -1,35 +1,26 @@
 import React from "react";
 import { Theme } from "@/styles/activityTheme";
 
+interface FilterOption {
+  value: string;
+  label: string;
+}
+
 interface FilterDropdownProps {
   filter: string;
   setFilter: (filter: string) => void;
-  activeTab: "projects" | "events";
+  options: FilterOption[];
+  ariaLabel?: string;
+  placeholder?: string;
 }
-
-// Filter options based on the active tab
-const PROJECT_FILTERS = [
-  { value: "all", label: "Alle prosjekter" },
-  { value: "planning", label: "Planlegger" },
-  { value: "in-progress", label: "Pågående" },
-  { value: "complete", label: "Fullført" },
-];
-
-const EVENT_FILTERS = [
-  { value: "all", label: "Alle arrangementer" },
-  { value: "upcoming", label: "Upcoming" },
-  { value: "past", label: "Past" },
-];
 
 export const FilterDropdown: React.FC<FilterDropdownProps> = ({
   filter,
   setFilter,
-  activeTab,
+  options,
+  ariaLabel = "Filter options",
+  placeholder,
 }) => {
-  // Determine which filter options to show based on the active tab
-  const filterOptions =
-    activeTab === "projects" ? PROJECT_FILTERS : EVENT_FILTERS;
-
   return (
     <div className="relative">
       <select
@@ -40,8 +31,14 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
           backgroundColor: "white",
           color: Theme.colors.text.primary,
         }}
+        aria-label={ariaLabel}
       >
-        {filterOptions.map((option) => (
+        {placeholder && (
+          <option value="" disabled>
+            {placeholder}
+          </option>
+        )}
+        {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
           </option>
@@ -53,6 +50,7 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          aria-hidden="true"
         >
           <path
             strokeLinecap="round"

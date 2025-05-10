@@ -3,10 +3,10 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ActivitiesLayout } from "@/components/layouts/ActivitiesLayout";
-import { EventCard } from "@/components/dashboard/contentManager/EventCard";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { useActivities } from "@/lib/context/ActivityContext";
+import { UniversalCard } from "@/components/dashboard/contentManager/ContentCard";
+import { adaptEventToCardProps } from "@/lib/adapters/cardAdapter";
 
 export default function EventsPage() {
   const router = useRouter();
@@ -17,14 +17,31 @@ export default function EventsPage() {
     dispatch({ type: "SET_ACTIVE_TAB", payload: "events" });
   }, [dispatch]);
 
+  // Handle event click
+  const handleEventClick = (id: number) => {
+    router.push(`/aktiviteter/events/${id}`);
+  };
+
+  // Handle tab change
+  const handleTabChange = (tab: "projects" | "events") => {
+    if (tab === "projects") {
+      router.push("/aktiviteter/projects");
+    }
+  };
+
   // Render content based on loading/error state
   const renderContent = () => {
     if (state.isLoading) {
-      return <LoadingSpinner />;
+      return <LoadingSpinner size="medium" />;
     }
 
     if (state.error) {
-      return <ErrorMessage message={state.error} />;
+      return (
+        <div className="text-center py-10 text-red-600">
+          <p className="text-xl font-medium">{state.error}</p>
+          <p className="mt-2">Prøv å laste siden på nytt.</p>
+        </div>
+      );
     }
 
     if (state.filteredEvents.length === 0) {
@@ -41,17 +58,13 @@ export default function EventsPage() {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {state.filteredEvents.map((event) => (
-          <EventCard key={event.id} event={event} />
+          <UniversalCard
+            key={event.id}
+            {...adaptEventToCardProps(event, handleEventClick)}
+          />
         ))}
       </div>
     );
-  };
-
-  // Handle tab change
-  const handleTabChange = (tab: "projects" | "events") => {
-    if (tab === "projects") {
-      router.push("/aktiviteter/projects");
-    }
   };
 
   return (
