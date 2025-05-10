@@ -178,7 +178,7 @@ export default function NettbutikkPage() {
 
   // Main render
   return (
-    <div className="container mx-auto px-4 py-8 ">
+    <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         {/* Header */}
         <h1 className="text-3xl text-center font-bold mb-6">Nettbutikk</h1>
@@ -202,13 +202,13 @@ export default function NettbutikkPage() {
             />
             <Button
               variant="outline"
-              className="h-12 w-12 rounded-full"
+              type="button"
               onClick={() => router.push("/nettbutikk/cart")}
             >
-              <PageIcons
+             <PageIcons
                 name="cart"
                 directory="shopIcons"
-                size={10}
+                size={37}
                 isDecorative={true}
               />
             </Button>
