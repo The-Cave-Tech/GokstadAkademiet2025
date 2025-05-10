@@ -64,6 +64,7 @@ export interface ProductAttributes extends BaseContent {
   title: string;
   description: string;
   price: number;
+  discountedPrice?: number;
   stock: number;
   category: string;
   productImage?: Media;

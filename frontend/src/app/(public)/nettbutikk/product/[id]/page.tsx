@@ -9,7 +9,7 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { ProductResponse } from "@/types/content.types";
 import { MdCategory, MdShoppingBasket } from "react-icons/md";
-import { FaStar, FaBoxOpen } from "react-icons/fa";
+import { FaStar, FaTag, FaBoxOpen } from "react-icons/fa";
 import Link from "next/link";
 import { formatPrice } from "@/lib/adapters/cardAdapter";
 
@@ -19,6 +19,7 @@ export default function ProductDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
+  const [relatedProducts, setRelatedProducts] = useState<ProductResponse[]>([]);
 
   // Get the ID from params
   const productId = params.id as string;
@@ -28,30 +29,32 @@ export default function ProductDetailPage() {
       if (!productId) return;
 
       setIsLoading(true);
+      setError(null);
 
       try {
-        let productData = null;
+        // First get all products
+        const allProducts = await productService.getAll();
 
-        try {
-          // Try to get the product directly first
-          productData = await productService.getOne(productId);
-        } catch (directError) {
-          console.error("Error fetching product directly:", directError);
+        // Find the specific product from the collection
+        const numericId = parseInt(productId, 10);
+        const foundProduct = allProducts.find((p) => p.id === numericId);
 
-          // If direct fetch fails, try to find from all products
-          const allProducts = await productService.getAll({
-            populate: "*",
-          });
-
-          // Find the product with matching id
-          productData = allProducts.find((p) => p.id.toString() === productId);
+        if (!foundProduct) {
+          throw new Error(`Product with ID ${productId} not found`);
         }
 
-        if (!productData) {
-          throw new Error("Product not found");
-        }
+        setProduct(foundProduct);
 
-        setProduct(productData);
+        // Find related products (same category)
+        if (foundProduct.category) {
+          const related = allProducts
+            .filter(
+              (p) =>
+                p.category === foundProduct.category && p.id !== foundProduct.id
+            )
+            .slice(0, 3); // Limit to 3 related products
+          setRelatedProducts(related);
+        }
       } catch (err) {
         console.error("Error fetching product details:", err);
         setError("Could not load product details. Please try again.");
@@ -90,9 +93,9 @@ export default function ProductDetailPage() {
   if (!product) return <ErrorMessage message="Product not found" />;
 
   // Calculate discount percentage if applicable
-  const discountPercentage = product.discountPrice
+  const discountPercentage = product.discountedPrice
     ? Math.round(
-        ((product.price - product.discountPrice) / product.price) * 100
+        ((product.price - product.discountedPrice) / product.price) * 100
       )
     : 0;
 
@@ -189,37 +192,16 @@ export default function ProductDetailPage() {
                         : "Ikke på lager"}
                     </span>
                   </li>
-                  {product.ratings && (
-                    <li className="flex items-center gap-2">
-                      <FaStar className="text-yellow-500" />
-                      <span>{product.ratings}/5 rating</span>
-                    </li>
-                  )}
-                  {product.tags && product.tags.length > 0 && (
-                    <li>
-                      <div className="text-gray-700 mb-1 mt-4">Tags:</div>
-                      <div className="flex flex-wrap gap-2 mt-1">
-                        {product.tags.map((tag, index) => (
-                          <span
-                            key={index}
-                            className="px-2 py-1 bg-gray-100 text-xs rounded-md text-gray-700"
-                          >
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-                    </li>
-                  )}
                 </ul>
               </div>
 
               {/* Price Section */}
               <div className="mt-8 pt-6 border-t border-gray-100">
                 <h4 className="font-medium text-gray-700 mb-2">Pris</h4>
-                {product.discountPrice ? (
+                {product.discountedPrice ? (
                   <div className="flex flex-col">
                     <span className="text-2xl font-bold text-green-600">
-                      {formatPrice(product.discountPrice)}
+                      {formatPrice(product.discountedPrice)}
                     </span>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-gray-500 line-through">
@@ -352,10 +334,83 @@ export default function ProductDetailPage() {
                         {product.stock > 0 ? "På lager" : "Ikke på lager"}
                       </td>
                     </tr>
+                    <tr className="border-b border-gray-200">
+                      <td className="py-3 text-gray-500 font-medium">Pris</td>
+                      <td className="py-3">
+                        {product.discountedPrice ? (
+                          <>
+                            <span className="text-green-600 font-medium">
+                              {formatPrice(product.discountedPrice)}
+                            </span>{" "}
+                            <span className="text-gray-500 line-through text-sm">
+                              {formatPrice(product.price)}
+                            </span>
+                          </>
+                        ) : (
+                          formatPrice(product.price)
+                        )}
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
             </div>
+
+            {/* Related Products section */}
+            {relatedProducts.length > 0 && (
+              <div className="mt-12 pt-8 border-t border-gray-200">
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                  Lignende produkter
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {relatedProducts.map((relatedProduct) => (
+                    <Link
+                      href={`/nettbutikk/product/${relatedProduct.id}`}
+                      key={relatedProduct.id}
+                      className="group"
+                    >
+                      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                        <div className="h-40 relative bg-gray-200">
+                          {relatedProduct.productImage?.url ? (
+                            <Image
+                              src={relatedProduct.productImage.url}
+                              alt={relatedProduct.title}
+                              fill
+                              className="object-cover group-hover:opacity-90 transition-opacity"
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center text-3xl font-bold text-gray-400">
+                              {relatedProduct.title.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-4">
+                          <h3 className="font-medium text-gray-800 group-hover:text-blue-600 transition-colors">
+                            {relatedProduct.title}
+                          </h3>
+                          <div className="mt-2">
+                            {relatedProduct.discountedPrice ? (
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-green-600">
+                                  {formatPrice(relatedProduct.discountedPrice)}
+                                </span>
+                                <span className="text-gray-500 line-through text-sm">
+                                  {formatPrice(relatedProduct.price)}
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="font-bold">
+                                {formatPrice(relatedProduct.price)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
