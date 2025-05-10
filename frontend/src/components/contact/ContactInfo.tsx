@@ -1,4 +1,4 @@
-// src/components/contact/ContactInfo.tsx - Updated
+// src/components/contact/ContactInfo.tsx - Updated with new styling
 import React from "react";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
@@ -22,21 +22,30 @@ export default async function ContactInfo() {
   }
 
   return (
-    <>
+    <div className="bg-white rounded-lg p-8 shadow-md">
+      <h2 className="text-2xl font-bold mb-8 text-gray-800 border-b pb-4">
+        Kontakt informasjon
+      </h2>
+
       {/* Address Section */}
-      <article className="flex mb-16">
-        <figure className="mr-6" aria-hidden="true">
+      <article className="flex items-start mb-10 group hover:bg-gray-50 p-4 rounded-lg transition-colors">
+        <figure
+          className="mr-6 bg-blue-100 p-3 rounded-full"
+          aria-hidden="true"
+        >
           <PageIcons
             name="location"
             directory="profileIcons"
-            size={94}
+            size={40}
             alt=""
-            className="w-24 h-24"
+            className="w-10 h-10"
           />
         </figure>
         <div>
-          <h2 className="text-xl font-medium mb-1">Adresse</h2>
-          <address className="text-lg not-italic">
+          <h3 className="text-xl font-medium mb-2 text-gray-800">
+            Besøksadresse
+          </h3>
+          <address className="text-lg not-italic text-gray-600">
             <span>
               {contactInfo.streetAddress || "Adresse ikke tilgjengelig"}
             </span>
@@ -49,23 +58,26 @@ export default async function ContactInfo() {
       </article>
 
       {/* Email Section */}
-      <article className="flex mb-16">
-        <figure className="mr-6" aria-hidden="true">
+      <article className="flex items-start group hover:bg-gray-50 p-4 rounded-lg transition-colors">
+        <figure
+          className="mr-6 bg-green-100 p-3 rounded-full"
+          aria-hidden="true"
+        >
           <PageIcons
             name="email"
             directory="profileIcons"
-            size={94}
+            size={40}
             alt=""
-            className="w-24 h-24"
+            className="w-10 h-10"
           />
         </figure>
         <div>
-          <h2 className="text-xl font-medium mb-1">E-post</h2>
-          <p className="text-lg">
+          <h3 className="text-xl font-medium mb-2 text-gray-800">E-post</h3>
+          <p className="text-lg text-gray-600">
             {contactInfo.email ? (
               <a
                 href={`mailto:${contactInfo.email}`}
-                className="hover:underline"
+                className="text-blue-600 hover:underline transition-colors"
                 aria-label={`Send e-post til ${contactInfo.email}`}
               >
                 {contactInfo.email}
@@ -76,6 +88,6 @@ export default async function ContactInfo() {
           </p>
         </div>
       </article>
-    </>
+    </div>
   );
 }
