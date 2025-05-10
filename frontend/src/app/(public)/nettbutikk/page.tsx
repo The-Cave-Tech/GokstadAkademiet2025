@@ -91,8 +91,9 @@ export default function NettbutikkPage() {
     setFilteredProducts(filtered);
   };
 
-  // Handle product click
+  // Handle product click - updated to ensure proper navigation
   const handleProductClick = (id: number) => {
+    console.log(`Navigating to product ${id}`);
     router.push(`/nettbutikk/product/${id}`);
   };
 
