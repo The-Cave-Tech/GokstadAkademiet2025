@@ -1,4 +1,4 @@
-// components/dashboard/adminPanel/AdminTable.tsx
+// This component is a generic admin table for displaying items with actions and loading/error states.
 import React, { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";

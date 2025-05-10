@@ -1,4 +1,3 @@
-// components/ui/UniversalCard.tsx
 import React, { ReactNode } from "react";
 import Image from "next/image";
 import { Theme } from "@/styles/activityTheme";
