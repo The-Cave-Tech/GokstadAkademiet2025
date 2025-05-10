@@ -1,4 +1,4 @@
-// src/lib/data/services/contactService.ts - Updated
+// src/lib/data/services/contactService.ts - Endelig løsning
 import { strapiService } from "./strapiClient";
 
 export interface ContactPageData {
@@ -14,7 +14,6 @@ export interface ContactSubmission {
   email: string;
   phoneNumber?: string;
   message: string;
-  createdAt?: string;
 }
 
 export const contactService = {
@@ -42,10 +41,23 @@ export const contactService = {
    */
   async submitContactForm(formData: ContactSubmission): Promise<any> {
     try {
+      // Opprett et objekt med valgfrie felter som kan håndtere dynamisk tildeling
+      const submissionData: Record<string, string> = {
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+      };
+
+      // Legg til telefonnummer kun hvis det finnes
+      if (formData.phoneNumber && formData.phoneNumber.trim() !== "") {
+        submissionData.phoneNumber = formData.phoneNumber;
+      }
+
+      // Sender med nødvendig data-wrapper
       return await strapiService.fetch("contact-submissions", {
         method: "POST",
         body: {
-          data: formData,
+          data: submissionData,
         },
       });
     } catch (error) {
