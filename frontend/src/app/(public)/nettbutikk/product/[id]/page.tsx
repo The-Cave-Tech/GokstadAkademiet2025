@@ -249,6 +249,7 @@ export default function ProductDetailPage() {
                       </button>
                     </div>
                   </div>
+                  {/* Add to Cart Button will be switched out with addToCart component to have same funksjonality on add button across detail and main page */}
                   <button className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
                     <MdShoppingBasket className="text-lg" />
                     <span>Legg i handlekurv</span>
