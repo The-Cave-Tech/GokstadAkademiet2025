@@ -37,9 +37,9 @@ export function AddToCartButton({
 
   // Variant styles
   const buttonStyles = {
-    primary: "bg-blue-600 hover:bg-blue-700 text-white",
-    secondary: "bg-gray-200 hover:bg-gray-300 text-gray-800",
-    minimal: "bg-transparent hover:bg-gray-100 text-gray-700",
+    primary: "bg-[#A67B5B] hover:bg-[#8C6A4E] text-white", // Light mellow brown
+    secondary: "bg-[#E6D3C6] hover:bg-[#D6C2B4] text-[#5C4433]", // Warm beige background with rich brown text
+    minimal: "bg-transparent hover:bg-[#F5ECE6] text-[#6B4F3B]", // Subtle and clean
   };
 
   return (
