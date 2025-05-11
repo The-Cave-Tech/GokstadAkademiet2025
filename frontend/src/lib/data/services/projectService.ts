@@ -1,4 +1,4 @@
-// services/projectService.ts
+// Updated projectService.ts following your current structure with Strapi v5 fixes
 import {
   ProjectAttributes,
   ProjectResponse,
@@ -130,6 +130,7 @@ export const projectService = {
       // Transform to match our ProjectResponse type without attributes nesting
       const project: ProjectResponse = {
         id: response.data.id,
+        documentId: response.data.documentId || undefined,
         title: response.data.title,
         description: response.data.description,
         content: response.data.content || "",
@@ -219,36 +220,54 @@ export const projectService = {
 
   // Create a new project
   create: async (
-    data: Partial<ProjectAttributes & { technologies?: string | string[] }>,
+    data: Partial<ProjectAttributes>,
     projectImage?: File | null
   ): Promise<ProjectResponse> => {
     try {
       // Process technologies if they come as a comma-separated string
+      let technologiesArray: string[] = [];
       if (typeof data.technologies === "string") {
-        data.technologies = data.technologies
+        technologiesArray = data.technologies
           .split(",")
           .map((tech) => tech.trim())
           .filter(Boolean);
+      } else if (Array.isArray(data.technologies)) {
+        technologiesArray = data.technologies;
       }
 
+      // Clean up the data object - remove any properties that shouldn't be sent to Strapi
+      const cleanData = { ...data };
+
+      // Remove properties that cause issues with Strapi v5
+      delete cleanData.id;
+      delete cleanData.documentId;
+      delete cleanData.createdAt;
+      delete cleanData.updatedAt;
+      delete cleanData.publishedAt;
+      delete cleanData.projectImage; // Will be handled separately
+
+      // Set the processed technologies array - ensure it's always an array for Strapi
+      cleanData.technologies = technologiesArray;
+
       // Ensure all required fields are present with default values
-      const payload = {
-        data: {
-          title: data.title || "Untitled Project",
-          description: data.description || "",
-          content: data.content || "",
-          state: data.state || "draft",
-          category: data.category || "Other",
-          technologies: data.technologies || [],
-          demoUrl: data.demoUrl,
-          githubUrl: data.githubUrl,
-        },
-      };
+      if (!cleanData.title) cleanData.title = "Untitled Project";
+      if (!cleanData.description) cleanData.description = "";
+      if (!cleanData.state) cleanData.state = "draft";
+      if (!cleanData.category) cleanData.category = "Other";
 
-      const projectsCollection = strapiService.collection("projects");
-      const response = await projectsCollection.create(payload);
+      // Create payload for Strapi - IMPORTANT: wrap in a data property for create
+      const payload = { data: cleanData };
 
-      if (!response || !response.data || !response.data.id) {
+      // Use the direct API call approach
+      const response = await strapiService.fetch<{ data?: { id?: number } }>(
+        "projects",
+        {
+          method: "POST",
+          body: payload,
+        }
+      );
+
+      if (!response?.data?.id) {
         throw new Error("Invalid response from server when creating project");
       }
 
@@ -265,14 +284,14 @@ export const projectService = {
         // Provide a fallback if fetch fails
         return {
           id: projectId,
-          title: payload.data.title,
-          description: payload.data.description,
-          content: payload.data.content,
-          state: payload.data.state,
-          category: payload.data.category,
-          technologies: payload.data.technologies,
-          demoUrl: payload.data.demoUrl || "",
-          githubUrl: payload.data.githubUrl || "",
+          title: cleanData.title as string,
+          description: cleanData.description as string,
+          content: cleanData.content || "",
+          state: cleanData.state as string,
+          category: cleanData.category as string,
+          technologies: technologiesArray,
+          demoUrl: (cleanData.demoUrl as string) || "",
+          githubUrl: (cleanData.githubUrl as string) || "",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
@@ -297,8 +316,50 @@ export const projectService = {
     projectImage?: File | null
   ): Promise<ProjectResponse> => {
     try {
+      // Determine if this is a documentId or a numeric ID
+      const isDocumentId = typeof id === "string" && id.length > 10;
+
+      // If it's not a documentId, try to find the actual documentId first
+      if (!isDocumentId) {
+        // Fetch all projects to find the matching one with its documentId
+        const allProjects = await projectService.getAll({});
+        const matchingProject = allProjects.find(
+          (project) => String(project.id) === String(id)
+        );
+
+        if (matchingProject && matchingProject.documentId) {
+          id = matchingProject.documentId;
+        }
+      }
+
+      // Clean up the data object - remove any properties that shouldn't be sent to Strapi
+      const cleanData = { ...data };
+
+      // Remove properties that cause issues with Strapi v5
+      delete cleanData.id;
+      delete cleanData.documentId;
+      delete cleanData.createdAt;
+      delete cleanData.updatedAt;
+      delete cleanData.publishedAt;
+      delete cleanData.projectImage; // Will be handled separately
+
+      // Process technologies if they're a comma-separated string
+      if (typeof cleanData.technologies === "string") {
+        cleanData.technologies = cleanData.technologies
+          .split(",")
+          .map((tech) => tech.trim())
+          .filter(Boolean);
+      } else if (
+        !Array.isArray(cleanData.technologies) &&
+        cleanData.technologies !== undefined
+      ) {
+        // If it's neither string nor array but is defined, convert to empty array
+        cleanData.technologies = [];
+      }
+
+      // IMPORTANT: DO NOT wrap cleanData in a data property for updates
       const projectsCollection = strapiService.collection("projects");
-      await projectsCollection.update(id.toString(), { data });
+      await projectsCollection.update(id.toString(), cleanData);
 
       // Upload project image if provided
       if (projectImage) {

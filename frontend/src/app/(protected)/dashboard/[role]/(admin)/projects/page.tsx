@@ -277,12 +277,31 @@ export default function ProjectsAdminPage() {
     {
       label: "Edit",
       color: "info",
-      href: (id) => `/admin/projects/${id}`,
+      href: (id) => {
+        // If this is a documentId, find the corresponding numeric id for the href
+        if (typeof id === "string" && id.length > 10) {
+          const project = projects.find((p) => p.documentId === id);
+          if (project) {
+            return `/dashboard/admin/projects/edit/${project.id}`;
+          }
+        }
+        return `/dashboard/admin/projects/edit/${id}`;
+      },
     },
     {
       label: "View",
       color: "success",
-      href: (id) => `/aktiviteter/projects/${id}`,
+      href: (id) => {
+        // For View button, always use the numeric ID
+        // If this is a documentId, find the corresponding numeric id
+        if (typeof id === "string" && id.length > 10) {
+          const project = projects.find((p) => p.documentId === id);
+          if (project) {
+            return `/aktiviteter/projects/${project.id}`;
+          }
+        }
+        return `/aktiviteter/projects/${id}`;
+      },
       external: true,
     },
   ];

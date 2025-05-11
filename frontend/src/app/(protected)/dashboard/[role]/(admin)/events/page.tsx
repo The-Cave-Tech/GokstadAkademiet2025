@@ -225,10 +225,10 @@ export default function EventsAdminPage() {
         if (typeof id === "string" && id.length > 10) {
           const event = events.find((e) => e.documentId === id);
           if (event) {
-            return `/admin/events/${event.id}`;
+            return `/dashboard/admin/events/edit/${event.id}`;
           }
         }
-        return `/admin/events/${id}`;
+        return `/dashboard/admin/events/edit/${id}`;
       },
     },
     {
