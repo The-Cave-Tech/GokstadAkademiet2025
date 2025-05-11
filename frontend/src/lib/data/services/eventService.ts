@@ -1,4 +1,4 @@
-// services/eventsService.ts - Updated for Strapi v5 and Next.js 15
+// Updated eventsService.ts following your current structure with Strapi v5 fixes
 import { EventAttributes, EventResponse, Media } from "@/types/content.types";
 import { strapiService } from "@/lib/data/services/strapiClient";
 
@@ -123,6 +123,7 @@ export const eventsService = {
       // Transform to match our EventResponse type without attributes nesting
       const event: EventResponse = {
         id: response.data.id,
+        documentId: response.data.documentId || "",
         title: response.data.title,
         description: response.data.description,
         content: response.data.content || "",
@@ -213,23 +214,30 @@ export const eventsService = {
         data.startDate = today.toISOString().split("T")[0]; // Format as YYYY-MM-DD
       }
 
-      // Create payload for Strapi
-      const payload = {
-        data: {
-          title: data.title || "Untitled Event",
-          description: data.description || "",
-          startDate: data.startDate,
-          endDate: data.endDate,
-          time: data.time,
-          location: data.location || "",
-          content: data.content || "",
-        },
-      };
+      // Clean up the data object - remove any properties that shouldn't be sent to Strapi
+      const cleanData = { ...data };
 
-      const eventsCollection = strapiService.collection("events");
-      const response = await eventsCollection.create(payload);
+      // Remove properties that cause issues with Strapi v5
+      delete cleanData.id;
+      delete cleanData.documentId;
+      delete cleanData.createdAt;
+      delete cleanData.updatedAt;
+      delete cleanData.publishedAt;
+      delete cleanData.eventCardImage; // Will be handled separately
 
-      if (!response || !response.data || !response.data.id) {
+      // Create payload for Strapi - IMPORTANT: wrap in a data property for create
+      const payload = { data: cleanData };
+
+      // Use the direct API call approach
+      const response = await strapiService.fetch<{ data?: { id?: number } }>(
+        "events",
+        {
+          method: "POST",
+          body: payload,
+        }
+      );
+
+      if (!response?.data?.id) {
         throw new Error("Invalid response from server when creating event");
       }
 
@@ -246,13 +254,13 @@ export const eventsService = {
         // Provide a fallback if fetch fails
         return {
           id: eventId,
-          title: payload.data.title,
-          description: payload.data.description,
-          content: payload.data.content || "",
-          startDate: payload.data.startDate,
-          endDate: payload.data.endDate,
-          time: payload.data.time,
-          location: payload.data.location,
+          title: cleanData.title as string,
+          description: cleanData.description as string,
+          content: cleanData.content || "",
+          startDate: cleanData.startDate as string,
+          endDate: cleanData.endDate as string,
+          time: cleanData.time as string,
+          location: cleanData.location as string,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
@@ -277,8 +285,45 @@ export const eventsService = {
     eventCardImage?: File | null
   ): Promise<EventResponse> => {
     try {
+      // Determine if this is a documentId or a numeric ID
+      const isDocumentId = typeof id === "string" && id.length > 10;
+
+      // If it's not a documentId, try to find the actual documentId first
+      if (!isDocumentId) {
+        // Fetch all events to find the matching one with its documentId
+        const allEvents = await eventsService.getAll({});
+        const matchingEvent = allEvents.find(
+          (event) => String(event.id) === String(id)
+        );
+
+        if (matchingEvent && matchingEvent.documentId) {
+          id = matchingEvent.documentId;
+        }
+      }
+
+      // Clean up the data object - remove any properties that shouldn't be sent to Strapi
+      const cleanData = { ...data };
+
+      // Remove properties that cause issues with Strapi v5
+      delete cleanData.id;
+      delete cleanData.documentId;
+      delete cleanData.createdAt;
+      delete cleanData.updatedAt;
+      delete cleanData.publishedAt;
+      delete cleanData.eventCardImage; // Will be handled separately
+
+      // Format time if needed
+      if (cleanData.time) {
+        const timeRegex = /^\d{2}:\d{2}:\d{2}\.\d{3}$/; // Matches HH:mm:ss.SSS
+        if (!timeRegex.test(cleanData.time)) {
+          const [hours, minutes] = cleanData.time.split(":");
+          cleanData.time = `${hours}:${minutes}:00.000`; // Format to HH:mm:ss.SSS
+        }
+      }
+
+      // IMPORTANT: DO NOT wrap cleanData in a data property for updates
       const eventsCollection = strapiService.collection("events");
-      await eventsCollection.update(id.toString(), { data });
+      await eventsCollection.update(id.toString(), cleanData);
 
       // Upload event image if provided
       if (eventCardImage) {
