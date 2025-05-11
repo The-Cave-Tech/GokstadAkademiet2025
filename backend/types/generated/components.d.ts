@@ -1,5 +1,46 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface AboutusGallery extends Struct.ComponentSchema {
+  collectionName: 'components_aboutus_galleries';
+  info: {
+    displayName: 'Gallery';
+  };
+  attributes: {
+    image: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+  };
+}
+
+export interface AboutusHistory extends Struct.ComponentSchema {
+  collectionName: 'components_aboutus_histories';
+  info: {
+    displayName: 'History';
+  };
+  attributes: {
+    Image: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+    Text: Schema.Attribute.Text;
+    Title: Schema.Attribute.String;
+  };
+}
+
+export interface AboutusTeamCard extends Struct.ComponentSchema {
+  collectionName: 'components_aboutus_team_cards';
+  info: {
+    displayName: 'TeamCard';
+  };
+  attributes: {
+    email: Schema.Attribute.Email;
+    Name: Schema.Attribute.String;
+    nickName: Schema.Attribute.String;
+    phoneNumber: Schema.Attribute.BigInteger;
+  };
+}
+
 export interface FooterOpeningHours extends Struct.ComponentSchema {
   collectionName: 'components_footer_opening_hours';
   info: {
@@ -158,6 +199,9 @@ export interface UserProfile extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'aboutus.gallery': AboutusGallery;
+      'aboutus.history': AboutusHistory;
+      'aboutus.team-card': AboutusTeamCard;
       'footer.opening-hours': FooterOpeningHours;
       'footer.social-links': FooterSocialLinks;
       'footer.social-media': FooterSocialMedia;
