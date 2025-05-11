@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_aboutus_team_cards",
+  "info": {
+    "displayName": "TeamCard"
+  },
+  "options": {},
+  "attributes": {
+    "Name": {
+      "type": "string"
+    },
+    "nickName": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email"
+    },
+    "phoneNumber": {
+      "type": "biginteger"
+    }
+  }
+}
