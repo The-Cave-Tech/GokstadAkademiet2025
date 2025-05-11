@@ -2,32 +2,8 @@
 import React, { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
-
-// Theme definition (imported from your theme file)
-export const Theme = {
-  colors: {
-    primary: "rgb(121, 85, 72)", // Brown
-    background: "rgb(245, 241, 237)", // Light beige
-    surface: "rgb(255, 253, 250)", // Creamy white
-    surfaceHover: "rgb(237, 231, 225)", // Light warm gray
-    text: {
-      primary: "rgb(62, 39, 35)", // Dark brown text
-      secondary: "rgb(97, 79, 75)", // Medium brown text
-      light: "rgb(145, 131, 127)", // Light brown text
-    },
-    divider: "rgb(225, 217, 209)", // Soft divider
-    error: {
-      background: "rgba(168, 77, 70, 0.1)",
-      text: "rgb(168, 77, 70)",
-      border: "rgb(168, 77, 70)",
-    },
-    success: {
-      background: "rgba(96, 125, 83, 0.1)",
-      text: "rgb(96, 125, 83)",
-      border: "rgb(96, 125, 83)",
-    },
-  },
-};
+import { AdminTableProps } from "@/types/content.types";
+import { Theme } from "@/styles/activityTheme";
 
 // Column configuration type
 export interface AdminColumn {
@@ -40,7 +16,7 @@ export interface AdminColumn {
 // Action button configuration type
 export interface AdminAction {
   label: string;
-  color: keyof typeof actionColors;
+  color: keyof typeof actionColors; // Ensure color is typed correctly
   href?: string | ((id: string | number) => string); // For links - can be string or function that returns string
   onClick?: (id: string | number) => void; // For buttons
   external?: boolean; // For opening links in new tab
@@ -70,28 +46,6 @@ const actionColors = {
     hover: "rgb(109, 76, 65)",
   },
 };
-
-export interface AdminTableProps {
-  title: string;
-  items: any[];
-  columns: AdminColumn[];
-  actions: AdminAction[];
-  isLoading: boolean;
-  error: string | null;
-  successMessage?: string | null;
-  emptyMessage?: {
-    title: string;
-    description: string;
-    icon?: ReactNode;
-  };
-  createButton?: {
-    label: string;
-    href: string;
-  };
-  getItemId: (item: any) => string | number; // Function to get item ID
-  imageKey?: string; // Key to access the image in items
-  getImageUrl?: (image: any) => string; // Function to get image URL
-}
 
 export const AdminTable: React.FC<AdminTableProps> = ({
   title,
@@ -403,8 +357,9 @@ export const AdminTable: React.FC<AdminTableProps> = ({
 
                               // Get colors for this action
                               const actionColor =
-                                actionColors[action.color] ||
-                                actionColors.primary;
+                                actionColors[
+                                  action.color as keyof typeof actionColors
+                                ] || actionColors.primary;
 
                               if (action.href) {
                                 return (

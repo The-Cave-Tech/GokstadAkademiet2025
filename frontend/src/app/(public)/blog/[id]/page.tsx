@@ -8,8 +8,7 @@ import { blogService } from "@/lib/data/services/blogService";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { BlogResponse } from "@/types/content.types";
-import { MdCategory, MdPerson, MdDateRange } from "react-icons/md";
-import Link from "next/link";
+import { MdCategory, MdDateRange } from "react-icons/md";
 import BackButton from "@/components/BackButton";
 import ProjectContent from "@/components/BlockRenderer";
 
@@ -81,26 +80,7 @@ export default function BlogDetailPage() {
     <div className="bg-white min-h-screen">
       {/* Back button */}
       <div className="max-w-6xl mx-auto px-4 pt-4">
-        <Link
-          href="/blog"
-          className="text-blue-600 hover:underline flex items-center gap-1"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          Tilbake til blogg
-        </Link>
+        <BackButton />
       </div>
 
       {/* Header/Banner Image */}

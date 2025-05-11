@@ -2,7 +2,7 @@
 // This file contains the adapter functions for different content types to convert them into a format suitable for the UniversalCard component.
 import { MdCategory, MdLocationOn, MdAccessTime } from "react-icons/md";
 import { AiOutlineTool } from "react-icons/ai";
-import { FaTag, FaBoxOpen, FaStar } from "react-icons/fa";
+import { FaTag, FaBoxOpen } from "react-icons/fa";
 import {
   BlogResponse,
   EventResponse,
@@ -10,11 +10,11 @@ import {
 } from "@/types/content.types";
 import { ProductResponse } from "@/types/content.types";
 import {
+  UniversalCardProps,
   Badge,
   DetailItem,
   Tag,
-  UniversalCardProps,
-} from "@/components/dashboard/contentManager/ContentCard";
+} from "@/types/universal.content.types";
 import { formatDate } from "@/lib/utils/eventUtils";
 import { isDatePast } from "@/lib/utils/dateUtils";
 import AddToCartButton from "@/components/ui/custom/AddToCartButton";

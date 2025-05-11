@@ -649,12 +649,14 @@ export default function LandingPageContent() {
           {/* Projects Grid using UniversalCard */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects.length > 0 ? (
-              projects.map((project) => (
-                <UniversalCard
-                  key={project.id}
-                  {...adaptProjectToCardProps(project, handleProjectClick)}
-                />
-              ))
+              projects
+                .slice(0, 3)
+                .map((project) => (
+                  <UniversalCard
+                    key={project.id}
+                    {...adaptProjectToCardProps(project, handleProjectClick)}
+                  />
+                ))
             ) : (
               <div className="col-span-3 text-center py-10">
                 <p className="text-gray-500">Ingen prosjekter funnet</p>
@@ -679,12 +681,14 @@ export default function LandingPageContent() {
           {/* Events Grid using UniversalCard */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {events.length > 0 ? (
-              events.map((event) => (
-                <UniversalCard
-                  key={event.id}
-                  {...adaptEventToCardProps(event, handleEventClick)}
-                />
-              ))
+              events
+                .slice(0, 3)
+                .map((event) => (
+                  <UniversalCard
+                    key={event.id}
+                    {...adaptEventToCardProps(event, handleEventClick)}
+                  />
+                ))
             ) : (
               <div className="col-span-3 text-center py-10">
                 <p className="text-gray-500">Ingen arrangementer funnet</p>

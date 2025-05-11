@@ -8,6 +8,7 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { EventResponse } from "@/types/content.types";
 import { MdLocationOn, MdAccessTime, MdEvent } from "react-icons/md";
+import BackButton from "@/components/BackButton";
 
 export default function EventDetailPage() {
   const params = useParams();
@@ -97,6 +98,7 @@ export default function EventDetailPage() {
 
   return (
     <div className="bg-white min-h-screen">
+      <BackButton />
       {/* Header/Banner Image */}
       <div className="w-full h-64 relative bg-gray-200">
         {event.eventCardImage?.url ? (
@@ -120,32 +122,6 @@ export default function EventDetailPage() {
           {/* Left Sidebar */}
           <div className="md:w-1/4">
             <div className="bg-white p-6 rounded-lg shadow-md">
-              {/* Event Icon and Name */}
-              <div className="flex flex-col items-center mb-6">
-                <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 mb-4 relative">
-                  {event.eventCardImage?.url ? (
-                    <Image
-                      src={event.eventCardImage.url}
-                      alt={event.title}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-3xl font-bold text-gray-400">
-                      {event.title.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                </div>
-                <h3 className="text-xl font-semibold text-center">
-                  {event.title}
-                </h3>
-                <p className="text-sm text-gray-500 mt-1">
-                  {event.documentId
-                    ? `ID: ${event.documentId}`
-                    : `ID: ${event.id}`}
-                </p>
-              </div>
-
               {/* Event Info */}
               <div className="mt-6">
                 <h4 className="font-medium text-gray-700 mb-2">

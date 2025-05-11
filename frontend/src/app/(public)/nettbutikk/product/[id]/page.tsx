@@ -9,7 +9,7 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { ProductResponse } from "@/types/content.types";
 import { MdCategory, MdShoppingBasket } from "react-icons/md";
-import { FaStar, FaTag, FaBoxOpen } from "react-icons/fa";
+import { FaBoxOpen } from "react-icons/fa";
 import Link from "next/link";
 import { formatPrice } from "@/lib/adapters/cardAdapter";
 import BackButton from "@/components/BackButton";

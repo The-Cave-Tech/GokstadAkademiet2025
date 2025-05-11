@@ -76,6 +76,11 @@ export default function ProjectDetailPage() {
 
   return (
     <div className="bg-white min-h-screen">
+      {/* Back button */}
+      <div className="max-w-6xl mx-auto px-4 pt-4">
+        <BackButton />
+      </div>
+
       {/* Header/Banner Image */}
       <div className="w-full h-64 relative bg-gray-200">
         {project.projectImage?.url ? (
@@ -101,24 +106,6 @@ export default function ProjectDetailPage() {
           {/* Left Sidebar */}
           <div className="md:w-1/4">
             <div className="bg-white p-6 rounded-lg shadow-md">
-              {/* Profile Image and Name */}
-              <div className="flex flex-col items-center mb-6">
-                <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 mb-4 relative">
-                  {/* Could be replaced with user profile image if added to ProjectResponse type */}
-                  <div className="absolute inset-0 flex items-center justify-center text-3xl font-bold text-gray-400">
-                    {project.title.charAt(0).toUpperCase()}
-                  </div>
-                </div>
-                <h3 className="text-xl font-semibold text-center">
-                  {project.title}
-                </h3>
-                <p className="text-sm text-gray-500 mt-1">
-                  {project.documentId
-                    ? `ID: ${project.documentId}`
-                    : `ID: ${project.id}`}
-                </p>
-              </div>
-
               {/* Project Info */}
               <div className="mt-6">
                 <h4 className="font-medium text-gray-700 mb-2">
@@ -225,26 +212,6 @@ export default function ProjectDetailPage() {
             <div className="prose max-w-none">
               <ProjectContent content={project.content} />
             </div>
-
-            {/* Technologies Detail Section */}
-            {project.technologies && project.technologies.length > 0 && (
-              <div className="mt-12 pt-8 border-t border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                  Teknologier og verktøy
-                </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                  {project.technologies.map((tech, index) => (
-                    <div
-                      key={index}
-                      className="bg-gray-50 p-4 rounded-lg flex flex-col items-center justify-center text-center"
-                    >
-                      <AiOutlineTool className="text-2xl text-gray-700 mb-2" />
-                      <span className="text-gray-800 font-medium">{tech}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>

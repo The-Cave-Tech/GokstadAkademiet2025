@@ -1,119 +1,35 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import Image from "next/image";
 import { Theme } from "@/styles/activityTheme";
-
-// Badge types for universal usage
-export interface Badge {
-  text: string;
-  type?:
-    | "primary"
-    | "success"
-    | "warning"
-    | "info"
-    | "danger"
-    | "neutral"
-    | string;
-  icon?: ReactNode;
-  customColor?: string;
-  customBgColor?: string;
-}
-
-// Tag types for universal usage
-export interface Tag {
-  text: string;
-  icon?: ReactNode;
-  prefix?: string;
-  customColor?: string;
-  customBgColor?: string;
-}
-
-// Detail item (used for metadata like date, location, etc.)
-export interface DetailItem {
-  text: string;
-  icon?: ReactNode;
-}
-
-// Universal card props
-export interface UniversalCardProps {
-  // Core content
-  title: string;
-  description?: string;
-
-  // Image options
-  image?: {
-    src: string;
-    alt?: string;
-    fallbackLetter?: boolean;
-    overlay?: ReactNode;
-    aspectRatio?: "square" | "video" | "auto" | number;
-  };
-
-  // Metadata and decorators
-  badges?: Badge[];
-  tags?: Tag[];
-  details?: DetailItem[];
-
-  // Action elements
-  actionButton?: {
-    text: string;
-    onClick?: (e: React.MouseEvent) => void;
-    isProduct?: boolean;
-  };
-
-  // Styling and layout
-  variant?: "vertical" | "horizontal";
-  size?: "small" | "medium" | "large";
-  hoverEffect?: boolean;
-
-  // Callback functions
-  onClick?: () => void;
-
-  // Additional props
-  className?: string;
-  headerSlot?: ReactNode;
-  footerSlot?: ReactNode;
-  cornerElement?: ReactNode;
-}
+import { Card, CardBody, CardFooter } from "@/components/ui/Card";
+import { UniversalCardProps } from "@/types/universal.content.types";
+import { Badge } from "@/types/universal.content.types";
 
 export const UniversalCard: React.FC<UniversalCardProps> = ({
-  // Core content
   title,
   description,
-
-  // Image options
   image,
-
-  // Metadata and decorators
   badges = [],
   tags = [],
   details = [],
-
-  // Action elements
   actionButton,
-
-  // Styling and layout
-  variant = "vertical",
   size = "medium",
   hoverEffect = true,
-
-  // Callback functions
   onClick,
-
-  // Additional props
   className = "",
   headerSlot,
   footerSlot,
   cornerElement,
 }) => {
-  // Size mapping for padding, font sizes, etc.
+  // Define size styles for different card sizes
   const sizeMap = {
     small: {
-      container: "p-2",
-      imageHeight: "h-32",
+      container: "p-3",
+      imageHeight: "h-40",
       title: "text-base",
-      description: "text-xs",
-      badges: "text-xs px-1.5 py-0.5",
-      tags: "text-xs px-1.5 py-0.5",
+      description: "text-sm",
+      badges: "text-xs px-2 py-1",
+      tags: "text-xs px-2 py-1",
       details: "text-xs",
     },
     medium: {
@@ -127,7 +43,7 @@ export const UniversalCard: React.FC<UniversalCardProps> = ({
     },
     large: {
       container: "p-5",
-      imageHeight: "h-64",
+      imageHeight: "h-56",
       title: "text-xl",
       description: "text-base",
       badges: "text-sm px-2.5 py-1.5",
@@ -136,10 +52,9 @@ export const UniversalCard: React.FC<UniversalCardProps> = ({
     },
   };
 
-  // Get style settings based on selected size
   const sizeStyle = sizeMap[size];
 
-  // Helper function to get badge background and text colors
+  // Helper function to get badge colors
   const getBadgeColors = (badge: Badge) => {
     if (badge.customColor && badge.customBgColor) {
       return {
@@ -187,15 +102,6 @@ export const UniversalCard: React.FC<UniversalCardProps> = ({
     }
   };
 
-  // Generate layout classes based on orientation
-  const layoutClasses =
-    variant === "horizontal" ? "flex flex-col sm:flex-row" : "flex flex-col";
-
-  // Generate hover effect classes if enabled
-  const hoverClasses = hoverEffect
-    ? "hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-    : "";
-
   // Handle card click
   const handleCardClick = () => {
     if (onClick) {
@@ -203,20 +109,15 @@ export const UniversalCard: React.FC<UniversalCardProps> = ({
     }
   };
 
-  // Calculate image width classes for horizontal layout
-  const imageWidthClasses =
-    variant === "horizontal" ? "w-full sm:w-2/5" : "w-full";
-
   return (
-    <article
-      className={`relative ${layoutClasses} rounded-lg shadow-md ${hoverClasses} ${onClick ? "cursor-pointer" : ""} overflow-hidden bg-white ${className}`}
-      style={{ border: `1px solid ${Theme.colors.divider}` }}
+    <Card
+      className={`relative ${hoverEffect ? "hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" : ""} ${onClick ? "cursor-pointer" : ""} ${className}`}
       onClick={handleCardClick}
       tabIndex={onClick ? 0 : undefined}
       role={onClick ? "button" : undefined}
       aria-label={onClick ? `View details of ${title}` : undefined}
     >
-      {/* Corner Element (like a status indicator) */}
+      {/* Corner Element */}
       {cornerElement && (
         <div className="absolute top-0 left-0 z-10">{cornerElement}</div>
       )}
@@ -224,125 +125,103 @@ export const UniversalCard: React.FC<UniversalCardProps> = ({
       {/* Image Section */}
       {image && (
         <div
-          className={`${imageWidthClasses} ${sizeStyle.imageHeight} relative overflow-hidden`}
+          className={`${sizeStyle.imageHeight} relative overflow-hidden rounded-t-lg`}
         >
           {image.src ? (
-            <div className="relative w-full h-full">
+            <>
               <Image
                 src={image.src}
                 alt={image.alt || title}
                 fill
-                sizes={
-                  variant === "horizontal"
-                    ? "(max-width: 640px) 100vw, 40vw"
-                    : "100vw"
-                }
+                sizes="100vw"
                 className="object-cover transition-transform duration-300 hover:scale-105"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  // If image fails to load, show first letter fallback if enabled
-                  if (image.fallbackLetter) {
-                    target.style.display = "none";
-                  }
-                }}
               />
-
-              {/* Image Overlay (like date indicator) */}
+              {/* Overlay for Date */}
               {image.overlay && (
-                <div className="absolute bottom-0 right-0 p-2 bg-black bg-opacity-70 text-white text-xs rounded-tl-md">
+                <div className="absolute bottom-0 left-0 w-full bg-black/50 text-white text-sm p-2">
                   {image.overlay}
                 </div>
               )}
-            </div>
+            </>
           ) : image.fallbackLetter ? (
-            // Fallback letter if no image or image fails to load
-            <div className="relative w-full h-full bg-gradient-to-r from-blue-100 to-blue-200 flex items-center justify-center">
-              <div className="text-3xl font-semibold text-blue-500">
-                {title.charAt(0).toUpperCase()}
-              </div>
+            <div className="flex items-center justify-center bg-gray-200 text-gray-700 text-3xl font-bold">
+              {title.charAt(0).toUpperCase()}
             </div>
           ) : null}
         </div>
       )}
 
-      {/* Content Section */}
-      <div
-        className={`${sizeStyle.container} flex flex-col flex-grow justify-between`}
-      >
-        {/* Header Section */}
-        <div>
-          {/* Custom Header Slot */}
-          {headerSlot}
+      <CardBody className="p-4">
+        {/* Header Slot */}
+        {headerSlot}
 
-          {/* Badges Row */}
-          {badges.length > 0 && (
-            <div className="mb-3 flex flex-wrap justify-between gap-2">
-              {badges.map((badge, index) => {
-                const badgeColors = getBadgeColors(badge);
-                return (
-                  <span
-                    key={index}
-                    className={`inline-flex items-center gap-1 rounded-md font-medium ${sizeStyle.badges}`}
-                    style={badgeColors}
-                  >
-                    {badge.icon && <span className="mr-1">{badge.icon}</span>}
-                    {badge.text}
-                  </span>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Title */}
-          <h3
-            className={`${sizeStyle.title} font-semibold mb-2 line-clamp-2`}
-            style={{ color: Theme.colors.text.primary }}
-          >
-            {title}
-          </h3>
-
-          {/* Description */}
-          {description && (
-            <p
-              className={`${sizeStyle.description} mb-4 line-clamp-3`}
-              style={{ color: Theme.colors.text.secondary }}
-            >
-              {description}
-            </p>
-          )}
-        </div>
-
-        {/* Tags Section */}
-        {tags.length > 0 && (
-          <div className="mt-auto mb-3">
-            <div className="flex flex-wrap gap-1">
-              {tags.map((tag, index) => (
+        {/* Badges */}
+        {badges.length > 0 && (
+          <div className="mb-3 flex flex-wrap gap-2">
+            {badges.map((badge, index) => {
+              const badgeColors = getBadgeColors(badge);
+              return (
                 <span
                   key={index}
-                  className={`inline-flex items-center gap-1 rounded-full ${sizeStyle.tags}`}
-                  style={{
-                    backgroundColor: tag.customBgColor || Theme.colors.divider,
-                    color: tag.customColor || Theme.colors.text.primary,
-                  }}
+                  className={`inline-flex items-center gap-1 rounded-md font-medium ${sizeStyle.badges}`}
+                  style={badgeColors}
                 >
-                  {tag.icon && <span>{tag.icon}</span>}
-                  {tag.prefix && <span>{tag.prefix}</span>}
-                  {tag.text}
+                  {badge.icon && <span className="mr-1">{badge.icon}</span>}
+                  {badge.text}
                 </span>
-              ))}
-            </div>
+              );
+            })}
           </div>
         )}
 
-        {/* Details Section (location, time, etc) */}
-        {details.length > 0 && (
-          <div className="mt-4">
-            <div className="flex flex-wrap gap-y-2 gap-x-4">
+        {/* Title */}
+        <h3
+          className={`${sizeStyle.title} font-semibold mb-2 line-clamp-2`}
+          style={{ color: Theme.colors.text.primary }}
+        >
+          {title}
+        </h3>
+
+        {/* Description */}
+        {description && (
+          <p
+            className={`${sizeStyle.description} mb-4 line-clamp-3`}
+            style={{ color: Theme.colors.text.secondary }}
+          >
+            {description}
+          </p>
+        )}
+
+        {/* Tags */}
+        {tags.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {tags.map((tag, index) => (
+              <span
+                key={index}
+                className={`inline-flex items-center gap-1 rounded-full ${sizeStyle.tags}`}
+                style={{
+                  backgroundColor: tag.customBgColor || Theme.colors.divider,
+                  color: tag.customColor || Theme.colors.text.primary,
+                }}
+              >
+                {tag.icon && <span>{tag.icon}</span>}
+                {tag.prefix && <span>{tag.prefix}</span>}
+                {tag.text}
+              </span>
+            ))}
+          </div>
+        )}
+      </CardBody>
+
+      {/* Footer */}
+      {(details.length > 0 || actionButton) && (
+        <CardFooter className="p-4 border-t border-gray-200">
+          {/* Details */}
+          {details.length > 0 && (
+            <div className="flex flex-wrap gap-4">
               {details.map((detail, index) => (
                 <div key={index} className="flex items-center">
-                  {detail.icon && (
-                    <span className="mr-2 flex-shrink-0">{detail.icon}</span>
-                  )}
+                  {detail.icon && <span className="mr-2">{detail.icon}</span>}
                   <span
                     className={`truncate max-w-xs ${sizeStyle.details}`}
                     style={{ color: Theme.colors.text.secondary }}
@@ -351,34 +230,30 @@ export const UniversalCard: React.FC<UniversalCardProps> = ({
                   </span>
                 </div>
               ))}
-
-              {/* Action Button */}
-              {actionButton && (
-                <div className="ml-auto flex items-center">
-                  <span
-                    className={`whitespace-nowrap text-xs py-1.5 px-3 rounded-full`}
-                    style={{
-                      backgroundColor: `${Theme.colors.primary}20`,
-                      color: Theme.colors.primary,
-                    }}
-                    onClick={(e) => {
-                      if (actionButton.onClick) {
-                        e.stopPropagation();
-                        actionButton.onClick(e);
-                      }
-                    }}
-                  >
-                    {actionButton.text}
-                  </span>
-                </div>
-              )}
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Footer Slot */}
-        {footerSlot}
-      </div>
-    </article>
+          {/* Action Button */}
+          {actionButton && (
+            <button
+              className="ml-auto text-xs py-1.5 px-3 rounded-full"
+              style={{
+                backgroundColor: `${Theme.colors.primary}20`,
+                color: Theme.colors.primary,
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                actionButton.onClick?.(e);
+              }}
+            >
+              {actionButton.text}
+            </button>
+          )}
+        </CardFooter>
+      )}
+
+      {/* Footer Slot */}
+      {footerSlot}
+    </Card>
   );
 };

@@ -7,9 +7,13 @@ import { UniversalCard } from "@/components/dashboard/contentManager/ContentCard
 import { blogService } from "@/lib/data/services/blogService";
 import { adaptBlogToCardProps } from "@/lib/adapters/cardAdapter";
 import { BlogResponse } from "@/types/content.types";
+import { SearchBar } from "@/components/ui/SearchBar";
+import { FilterDropdown } from "@/components/ui/FilterDropdown";
 
 export default function BlogPage() {
   const router = useRouter();
+
+  // State variables
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [blogPosts, setBlogPosts] = useState<BlogResponse[]>([]);
@@ -25,12 +29,12 @@ export default function BlogPage() {
     loadBlogPosts();
   }, []);
 
-  // Apply filters when posts, search, or filter changes
+  // Apply filters when posts, search query, or filter changes
   useEffect(() => {
     applyFilters();
   }, [blogPosts, searchQuery, filter]);
 
-  // Load blog posts from API using the collection approach
+  // Fetch blog posts from the API
   const loadBlogPosts = async () => {
     setIsLoading(true);
     try {
@@ -39,48 +43,38 @@ export default function BlogPage() {
         populate: ["blogImage", "author"],
       });
 
-      console.log(`Found ${data.length} blog posts`);
-
       setBlogPosts(data);
       setFilteredBlogPosts(data); // Initially show all posts
 
-      // Extract categories for filter dropdown
+      // Extract unique categories for the filter dropdown
       const uniqueCategories = Array.from(
-        new Set(
-          data.filter((post) => post.category).map((post) => post.category)
-        )
+        new Set(data.map((post) => post.category).filter(Boolean))
       ) as string[];
       setCategories(uniqueCategories);
 
       setError(null);
     } catch (err) {
-      console.error("Error in loadBlogPosts:", err);
-      setError("An error occurred while loading blog posts");
+      console.error("Error loading blog posts:", err);
+      setError("An error occurred while loading blog posts.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Apply filters to blog posts
+  // Apply search and category filters
   const applyFilters = () => {
-    if (!blogPosts || blogPosts.length === 0) {
-      return;
-    }
+    if (!blogPosts || blogPosts.length === 0) return;
 
     let filtered = [...blogPosts];
 
-    // Only show published posts if state is available
-    // filtered = filtered.filter(post => post.state === "published");
-
-    // Apply search filter
+    // Apply search query filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
         (post) =>
-          (post.title && post.title.toLowerCase().includes(query)) ||
-          (post.summary && post.summary.toLowerCase().includes(query)) ||
-          (post.content &&
-            typeof post.content === "string" &&
+          post.title?.toLowerCase().includes(query) ||
+          post.summary?.toLowerCase().includes(query) ||
+          (typeof post.content === "string" &&
             post.content.toLowerCase().includes(query))
       );
     }
@@ -98,13 +92,13 @@ export default function BlogPage() {
     router.push(`/blog/${id}`);
   };
 
-  // Clear filters
+  // Clear search and category filters
   const clearFilters = () => {
     setSearchQuery("");
     setFilter(null);
   };
 
-  // Render content based on loading/error state
+  // Render content based on loading, error, or filtered results
   const renderContent = () => {
     if (isLoading) {
       return <LoadingSpinner size="medium" />;
@@ -114,7 +108,7 @@ export default function BlogPage() {
       return (
         <div className="text-center py-10 text-red-600">
           <p className="text-xl font-medium">{error}</p>
-          <p className="mt-2">Prøv å laste siden på nytt.</p>
+          <p className="mt-2">Please try reloading the page.</p>
         </div>
       );
     }
@@ -123,15 +117,17 @@ export default function BlogPage() {
       return (
         <div className="text-center py-10">
           <h3 className="text-xl font-medium text-gray-700">
-            Ingen blogginnlegg funnet
+            No blog posts found
           </h3>
-          <p className="mt-2 text-gray-500">Prøv å justere søk eller filter</p>
+          <p className="mt-2 text-gray-500">
+            Try adjusting your search or filter.
+          </p>
           {(searchQuery || filter) && (
             <button
               onClick={clearFilters}
               className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             >
-              Fjern filtre
+              Clear Filters
             </button>
           )}
         </div>
@@ -151,7 +147,7 @@ export default function BlogPage() {
                 key={post.id}
                 className="p-4 border rounded-md bg-red-50 text-red-500"
               >
-                Feil ved visning av innlegg: {post.title}
+                Error displaying post: {post.title}
               </div>
             );
           }
@@ -164,49 +160,46 @@ export default function BlogPage() {
   return (
     <div className="bg-white min-h-screen">
       <div className="container mx-auto px-4 py-8">
+        {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-            <h1 className="text-3xl font-bold">Blogg</h1>
-
+            <h1 className="text-3xl font-bold">Blog</h1>
             <div className="flex flex-col sm:flex-row gap-2 mt-4 md:mt-0">
               <span className="text-gray-500 self-center">
                 {filteredBlogPosts.length}{" "}
-                {filteredBlogPosts.length === 1 ? "innlegg" : "innlegg"} funnet
+                {filteredBlogPosts.length === 1 ? "post" : "posts"} found
               </span>
             </div>
           </div>
 
           {/* Search and Filter Bar */}
           <div className="flex flex-col sm:flex-row gap-4 mb-6 bg-gray-50 p-4 rounded-lg">
-            <input
-              type="text"
-              placeholder="Søk i blogginnlegg..."
-              className="flex-grow px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+            <SearchBar
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              placeholder="Search blog posts..."
+              className="flex-grow"
             />
 
-            <select
-              className="sm:w-1/3 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={filter || ""}
-              onChange={(e) =>
-                setFilter(e.target.value === "" ? null : e.target.value)
-              }
-            >
-              <option value="">Alle kategorier</option>
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
+            <FilterDropdown
+              filter={filter || ""}
+              setFilter={(value) => setFilter(value === "" ? null : value)}
+              options={[
+                { value: "", label: "All Categories" },
+                ...categories.map((category) => ({
+                  value: category,
+                  label: category,
+                })),
+              ]}
+              placeholder="Select category"
+            />
 
             {(searchQuery || filter) && (
               <button
                 onClick={clearFilters}
                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
               >
-                Nullstill
+                Clear
               </button>
             )}
           </div>
