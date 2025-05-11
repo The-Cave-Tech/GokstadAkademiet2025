@@ -32,6 +32,7 @@ export const eventsService = {
         // Extract the base event data directly without attributes nesting
         const event: EventResponse = {
           id: item.id,
+          documentId: item.documentId || "",
           title: item.title,
           description: item.description,
           content: item.content || "",
@@ -301,18 +302,20 @@ export const eventsService = {
     }
   },
 
-  // Delete an event
   delete: async (id: string | number): Promise<boolean> => {
     try {
+      // Convert to string for consistency with Strapi API
+      const stringId = String(id);
+
       const eventsCollection = strapiService.collection("events");
-      await eventsCollection.delete(id.toString());
+
+      // Attempt deletion
+      await eventsCollection.delete(stringId);
       return true;
     } catch (error) {
       console.error(
         "Error deleting event:",
-        new Error(
-          `Failed to delete event: ${error instanceof Error ? error.message : String(error)}`
-        )
+        `Failed to delete event: ${error instanceof Error ? error.message : String(error)}`
       );
       return false;
     }

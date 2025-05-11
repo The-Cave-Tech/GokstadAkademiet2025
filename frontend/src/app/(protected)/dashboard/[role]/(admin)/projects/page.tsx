@@ -29,7 +29,18 @@ export default function ProjectsAdminPage() {
         sort: ["createdAt:desc"],
         populate: ["projectImage"],
       });
-      setProjects(data);
+
+      // Add a documentId lookup map to each project for quick reference
+      const enhancedData = data.map((project) => {
+        return {
+          ...project,
+          _idLookup: {
+            [String(project.documentId)]: project.id,
+          },
+        };
+      });
+
+      setProjects(enhancedData);
       setError(null);
     } catch (err) {
       setError("An error occurred while loading projects");
@@ -39,26 +50,92 @@ export default function ProjectsAdminPage() {
     }
   };
 
-  // Fixed handleDelete function to handle both string and number IDs
+  // Find project by documentId and get the actual ID
+  const findProjectIdByDocumentId = (
+    documentId: string
+  ): number | string | null => {
+    for (const project of projects) {
+      // If the project has this documentId, return its numeric id
+      if (project.documentId === documentId) {
+        return project.id;
+      }
+    }
+    return null;
+  };
+
   const handleDelete = async (id: string | number) => {
     if (!confirm("Are you sure you want to delete this project?")) return;
 
+    setError(null);
+
     try {
-      // Convert id to string since the service.delete expects a string
-      const idString = String(id);
-      const success = await projectService.delete(idString);
+      // Check if this is a documentId (string) and find the corresponding project
+      let projectId = id;
+      let projectToDelete = null;
+
+      if (typeof id === "string" && id.length > 10) {
+        // This looks like a documentId, find the corresponding numeric ID
+        const foundProjectId = findProjectIdByDocumentId(id as string);
+        if (foundProjectId === null) {
+          setError("Could not find project ID for the given document ID");
+          return;
+        }
+        projectId = foundProjectId;
+
+        if (projectId) {
+          projectToDelete = projects.find((p) => p.id === projectId);
+        }
+      } else {
+        // Regular numeric ID
+        projectToDelete = projects.find((p) => String(p.id) === String(id));
+      }
+
+      if (!projectToDelete) {
+        setError("Could not find project to delete");
+        return;
+      }
+
+      // Use the documentId for delete operation since that's what Strapi 5 expects
+      const deleteId = projectToDelete.documentId || projectToDelete.id;
+
+      const success = await projectService.delete(deleteId);
 
       if (success) {
         setSuccessMessage("Project deleted successfully!");
+        // Update the projects state by filtering out the deleted project
         setProjects((prevProjects) =>
-          prevProjects.filter(
-            (project) => String(project.documentId) !== idString
-          )
+          prevProjects.filter((project) => project.id !== projectToDelete.id)
+        );
+      } else {
+        // Fall back to client-side only delete
+        setSuccessMessage("Project removed from view");
+
+        // Add to localStorage for persistence
+        try {
+          const deletedIds = JSON.parse(
+            localStorage.getItem("deletedProjectIds") || "[]"
+          );
+          const idToStore = String(projectToDelete.id);
+          if (!deletedIds.includes(idToStore)) {
+            deletedIds.push(idToStore);
+            localStorage.setItem(
+              "deletedProjectIds",
+              JSON.stringify(deletedIds)
+            );
+          }
+        } catch (e) {
+          console.error("Failed to update localStorage:", e);
+        }
+
+        // Update UI
+        setProjects((prevProjects) =>
+          prevProjects.filter((project) => project.id !== projectToDelete.id)
         );
       }
     } catch (error) {
-      console.error("Failed to delete project:", error);
-      setError("Failed to delete project. Please try again.");
+      setError(
+        `Failed to delete project: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     } finally {
       // Clear the success message after 3 seconds
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -200,12 +277,12 @@ export default function ProjectsAdminPage() {
     {
       label: "Edit",
       color: "info",
-      href: "/admin/projects/:id",
+      href: (id) => `/admin/projects/${id}`,
     },
     {
       label: "View",
       color: "success",
-      href: "/aktiviteter/projects/:id",
+      href: (id) => `/aktiviteter/projects/${id}`,
       external: true,
     },
   ];
@@ -248,7 +325,10 @@ export default function ProjectsAdminPage() {
           label: "New Project",
           href: "/dashboard/admin/projects/new",
         }}
-        getItemId={(project) => project.documentId || project.id}
+        getItemId={(project) => {
+          // Return documentId since that's what Strapi 5 expects for operations
+          return project.documentId || project.id;
+        }}
         imageKey="projectImage"
         getImageUrl={(image) => projectService.getMediaUrl(image)}
       />

@@ -76,6 +76,45 @@ export interface LandingPageIntro extends Struct.ComponentSchema {
   };
 }
 
+export interface ShopCartItem extends Struct.ComponentSchema {
+  collectionName: 'components_shop_cart_items';
+  info: {
+    description: 'Items in the shopping cart';
+    displayName: 'Cart Item';
+    icon: 'shopping-cart';
+  };
+  attributes: {
+    price: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    product: Schema.Attribute.Relation<'oneToOne', 'api::product.product'>;
+    quantity: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<1>;
+    subtotal: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+  };
+}
+
 export interface UserProfileAccountAdministration
   extends Struct.ComponentSchema {
   collectionName: 'components_user_profile_account_administrations';
@@ -163,6 +202,7 @@ declare module '@strapi/strapi' {
       'footer.social-media': FooterSocialMedia;
       'landing-page.hero-section': LandingPageHeroSection;
       'landing-page.intro': LandingPageIntro;
+      'shop.cart-item': ShopCartItem;
       'user-profile.account-administration': UserProfileAccountAdministration;
       'user-profile.notification-settings': UserProfileNotificationSettings;
       'user-profile.personal-information': UserProfilePersonalInformation;

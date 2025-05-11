@@ -438,6 +438,42 @@ export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiCartCart extends Struct.CollectionTypeSchema {
+  collectionName: 'carts';
+  info: {
+    description: 'Shopping cart for users';
+    displayName: 'Cart';
+    pluralName: 'carts';
+    singularName: 'cart';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    items: Schema.Attribute.Component<'shop.cart-item', true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::cart.cart'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    subtotal: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<0>;
+    total: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<0>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiContactPageContactPage extends Struct.SingleTypeSchema {
   collectionName: 'contact_pages';
   info: {
@@ -507,7 +543,7 @@ export interface ApiEventEvent extends Struct.CollectionTypeSchema {
   collectionName: 'events';
   info: {
     description: '';
-    displayName: 'event';
+    displayName: 'Event';
     pluralName: 'events';
     singularName: 'event';
   };
@@ -1269,6 +1305,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::auth-setting.auth-setting': ApiAuthSettingAuthSetting;
       'api::blog.blog': ApiBlogBlog;
+      'api::cart.cart': ApiCartCart;
       'api::contact-page.contact-page': ApiContactPageContactPage;
       'api::contact-submission.contact-submission': ApiContactSubmissionContactSubmission;
       'api::event.event': ApiEventEvent;
