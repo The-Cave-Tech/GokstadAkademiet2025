@@ -2,8 +2,8 @@ export default ({ env }) => ({
   "users-permissions": {
     config: {
       jwt: {
-       /*  expiresIn: "7h", */
-        expiresIn: "6m",
+        expiresIn: "7h",
+        /* expiresIn: "6m", */
       },
     },
   },
