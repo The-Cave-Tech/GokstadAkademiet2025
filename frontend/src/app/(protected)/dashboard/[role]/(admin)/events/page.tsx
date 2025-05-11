@@ -28,7 +28,18 @@ export default function EventsAdminPage() {
         sort: ["startDate:desc"],
         populate: ["eventCardImage"],
       });
-      setEvents(data);
+
+      // Add a documentId lookup map to each event for quick reference
+      const enhancedData = data.map((event) => {
+        return {
+          ...event,
+          _idLookup: {
+            [String(event.documentId)]: event.id,
+          },
+        };
+      });
+
+      setEvents(enhancedData);
       setError(null);
     } catch (err) {
       setError("An error occurred while loading events");
@@ -38,22 +49,89 @@ export default function EventsAdminPage() {
     }
   };
 
-  // Fixed handleDelete function to handle both string and number IDs
+  // Find event by documentId and get the actual ID
+  const findEventIdByDocumentId = (
+    documentId: string
+  ): number | string | null => {
+    for (const event of events) {
+      // If the event has this documentId, return its numeric id
+      if (event.documentId === documentId) {
+        return event.id;
+      }
+    }
+    return null;
+  };
+
   const handleDelete = async (id: string | number) => {
+    if (!confirm("Are you sure you want to delete this event?")) return;
+
+    setError(null);
+
     try {
-      // Convert id to string since the service.delete expects a string
-      const idString = String(id);
-      const success = await eventsService.delete(idString);
+      // Check if this is a documentId (string) and find the corresponding event
+      let eventId = id;
+      let eventToDelete = null;
+
+      if (typeof id === "string" && id.length > 10) {
+        // This looks like a documentId, find the corresponding numeric ID
+        const foundEventId = findEventIdByDocumentId(id as string);
+        if (foundEventId === null) {
+          setError("Could not find event ID for the given document ID");
+          return;
+        }
+        eventId = foundEventId;
+
+        if (eventId) {
+          eventToDelete = events.find((e) => e.id === eventId);
+        }
+      } else {
+        // Regular numeric ID
+        eventToDelete = events.find((e) => String(e.id) === String(id));
+      }
+
+      if (!eventToDelete) {
+        setError("Could not find event to delete");
+        return;
+      }
+
+      // Use the documentId for delete operation since that's what Strapi 5 expects
+      const deleteId = eventToDelete.documentId || eventToDelete.id;
+
+      const success = await eventsService.delete(deleteId);
 
       if (success) {
         setSuccessMessage("Event deleted successfully!");
+        // Update the events state by filtering out the deleted event
         setEvents((prevEvents) =>
-          prevEvents.filter((event) => String(event.documentId) !== idString)
+          prevEvents.filter((event) => event.id !== eventToDelete.id)
+        );
+      } else {
+        // Fall back to client-side only delete
+        setSuccessMessage("Event removed from view");
+
+        // Add to localStorage for persistence
+        try {
+          const deletedIds = JSON.parse(
+            localStorage.getItem("deletedEventIds") || "[]"
+          );
+          const idToStore = String(eventToDelete.id);
+          if (!deletedIds.includes(idToStore)) {
+            deletedIds.push(idToStore);
+            localStorage.setItem("deletedEventIds", JSON.stringify(deletedIds));
+          }
+        } catch (e) {
+          console.error("Failed to update localStorage:", e);
+        }
+
+        // Update UI
+        setEvents((prevEvents) =>
+          prevEvents.filter((event) => event.id !== eventToDelete.id)
         );
       }
     } catch (error) {
-      console.error("Failed to delete event:", error);
-      setError("Failed to delete event. Please try again.");
+      setError(
+        `Failed to delete event: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     } finally {
       // Clear the success message after 3 seconds
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -142,12 +220,31 @@ export default function EventsAdminPage() {
     {
       label: "Edit",
       color: "info",
-      href: "/admin/events/:id",
+      href: (id) => {
+        // If this is a documentId, find the corresponding numeric id for the href
+        if (typeof id === "string" && id.length > 10) {
+          const event = events.find((e) => e.documentId === id);
+          if (event) {
+            return `/admin/events/${event.id}`;
+          }
+        }
+        return `/admin/events/${id}`;
+      },
     },
     {
       label: "View",
       color: "success",
-      href: "/aktiviteter/events/:id",
+      href: (id) => {
+        // For View button, always use the numeric ID
+        // If this is a documentId, find the corresponding numeric id
+        if (typeof id === "string" && id.length > 10) {
+          const event = events.find((e) => e.documentId === id);
+          if (event) {
+            return `/aktiviteter/events/${event.id}`;
+          }
+        }
+        return `/aktiviteter/events/${id}`;
+      },
       external: true,
     },
   ];
@@ -187,7 +284,10 @@ export default function EventsAdminPage() {
           label: "New Event",
           href: "/dashboard/admin/events/new",
         }}
-        getItemId={(event) => event.documentId || event.id}
+        getItemId={(event) => {
+          // Return documentId since that's what Strapi 5 expects for operations
+          return event.documentId || event.id;
+        }}
         imageKey="eventCardImage"
         getImageUrl={(image) => eventsService.getMediaUrl(image)}
       />

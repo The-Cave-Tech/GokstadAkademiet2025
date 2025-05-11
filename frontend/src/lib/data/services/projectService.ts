@@ -31,13 +31,14 @@ export const projectService = {
         );
       }
 
-      console.log("Fetched projects:", response.data);
-
       // Transform the response to match our ProjectResponse type
+      // Ensure we preserve documentId if it exists
       return response.data.map((item) => {
         // Extract the base project data directly without attributes nesting
         const project: ProjectResponse = {
           id: item.id,
+          // Explicitly preserve documentId if it exists
+          documentId: item.documentId || undefined,
           title: item.title,
           description: item.description,
           content: item.content || "",
@@ -321,18 +322,20 @@ export const projectService = {
     }
   },
 
-  // Delete a project
   delete: async (id: string | number): Promise<boolean> => {
     try {
+      // Convert to string for consistency
+      const stringId = String(id);
+
       const projectsCollection = strapiService.collection("projects");
-      await projectsCollection.delete(id.toString());
+
+      // Attempt deletion
+      await projectsCollection.delete(stringId);
       return true;
     } catch (error) {
       console.error(
         "Error deleting project:",
-        new Error(
-          `Failed to delete project: ${error instanceof Error ? error.message : String(error)}`
-        )
+        `Failed to delete project: ${error instanceof Error ? error.message : String(error)}`
       );
       return false;
     }
