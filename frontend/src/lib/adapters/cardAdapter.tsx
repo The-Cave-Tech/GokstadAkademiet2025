@@ -229,17 +229,11 @@ export const adaptProjectToCardProps = (
           }
         : null,
     ].filter(Boolean) as Badge[],
-    tags: Array.isArray(project.technologies)
-      ? project.technologies.map((tech) => ({
-          text: tech,
-          icon: <AiOutlineTool className="w-3 h-3" />,
-        }))
-      : typeof project.technologies === "string"
-        ? project.technologies.split(",").map((tech) => ({
-            text: tech.trim(),
-            icon: <AiOutlineTool className="w-3 h-3" />,
-          }))
-        : [],
+    tags:
+      project.technologies?.map((tech) => ({
+        text: tech,
+        icon: <AiOutlineTool className="w-3 h-3" />,
+      })) || [],
     onClick: onCardClick ? () => onCardClick(project.id) : undefined,
     variant: "vertical",
     size: "medium",

@@ -193,23 +193,6 @@ export const projectService = {
     }
   },
 
-  getProjectById: async (
-    id: number | string,
-    params: Record<string, unknown> = {}
-  ) => {
-    try {
-      return await projectService.getOne(id, params);
-    } catch (error) {
-      console.error(
-        "Error in getProjectById:",
-        new Error(
-          `Failed to get project by ID ${id}: ${error instanceof Error ? error.message : String(error)}`
-        )
-      );
-      throw error;
-    }
-  },
-
   // Helper method to get media URL (for backward compatibility)
   getMediaUrl: (media: Media | Record<string, unknown>) => {
     return strapiService.media.getMediaUrl(media);

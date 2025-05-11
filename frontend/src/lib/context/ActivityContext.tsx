@@ -141,19 +141,17 @@ const filterProjects = (
   // Filter by search query
   if (searchQuery) {
     const query = searchQuery.toLowerCase();
-    filtered = filtered.filter((project) => {
-      const technologiesMatch =
-        Array.isArray(project.technologies) &&
-        project.technologies.some((tech) => tech.toLowerCase().includes(query));
-
-      return (
+    filtered = filtered.filter(
+      (project) =>
         project.title.toLowerCase().includes(query) ||
         (project.description &&
           project.description.toLowerCase().includes(query)) ||
         (project.category && project.category.toLowerCase().includes(query)) ||
-        technologiesMatch
-      );
-    });
+        (project.technologies &&
+          project.technologies.some((tech) =>
+            tech.toLowerCase().includes(query)
+          ))
+    );
   }
 
   return filtered;

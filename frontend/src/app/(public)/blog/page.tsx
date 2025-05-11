@@ -18,6 +18,7 @@ export default function BlogPage() {
   );
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filter, setFilter] = useState<string | null>(null);
+  const [categories, setCategories] = useState<string[]>([]);
 
   // Fetch blog posts on component mount
   useEffect(() => {
@@ -38,20 +39,19 @@ export default function BlogPage() {
         populate: ["blogImage", "author"],
       });
 
-      console.log("Successfully fetched blog posts:", data);
-
-      // Log post count to check if we have posts
-      if (data && data.length > 0) {
-        console.log(`Found ${data.length} blog posts`);
-
-        // Dump first post for debugging
-        console.log("First post details:", JSON.stringify(data[0], null, 2));
-      } else {
-        console.log("No blog posts returned from API");
-      }
+      console.log(`Found ${data.length} blog posts`);
 
       setBlogPosts(data);
       setFilteredBlogPosts(data); // Initially show all posts
+
+      // Extract categories for filter dropdown
+      const uniqueCategories = Array.from(
+        new Set(
+          data.filter((post) => post.category).map((post) => post.category)
+        )
+      ) as string[];
+      setCategories(uniqueCategories);
+
       setError(null);
     } catch (err) {
       console.error("Error in loadBlogPosts:", err);
@@ -64,17 +64,13 @@ export default function BlogPage() {
   // Apply filters to blog posts
   const applyFilters = () => {
     if (!blogPosts || blogPosts.length === 0) {
-      console.log("No blog posts to filter");
       return;
     }
 
-    console.log(`Filtering ${blogPosts.length} blog posts...`);
     let filtered = [...blogPosts];
 
-    // For debugging, don't filter by state initially
-    // so we can see if there are any posts at all
+    // Only show published posts if state is available
     // filtered = filtered.filter(post => post.state === "published");
-    console.log(`After published filter: ${filtered.length} posts`);
 
     // Apply search filter
     if (searchQuery) {
@@ -83,18 +79,17 @@ export default function BlogPage() {
         (post) =>
           (post.title && post.title.toLowerCase().includes(query)) ||
           (post.summary && post.summary.toLowerCase().includes(query)) ||
-          (post.content && post.content.toLowerCase().includes(query))
+          (post.content &&
+            typeof post.content === "string" &&
+            post.content.toLowerCase().includes(query))
       );
-      console.log(`After search filter: ${filtered.length} posts`);
     }
 
     // Apply category filter
     if (filter) {
       filtered = filtered.filter((post) => post.category === filter);
-      console.log(`After category filter: ${filtered.length} posts`);
     }
 
-    console.log(`Setting ${filtered.length} filtered posts`);
     setFilteredBlogPosts(filtered);
   };
 
@@ -103,27 +98,14 @@ export default function BlogPage() {
     router.push(`/blog/${id}`);
   };
 
-  // Get unique categories
-  const getCategories = () => {
-    if (!blogPosts || blogPosts.length === 0) return [];
-
-    const categories = new Set<string>();
-    blogPosts.forEach((post) => {
-      if (post.category) {
-        categories.add(post.category);
-      }
-    });
-    return Array.from(categories);
+  // Clear filters
+  const clearFilters = () => {
+    setSearchQuery("");
+    setFilter(null);
   };
 
   // Render content based on loading/error state
   const renderContent = () => {
-    console.log("Rendering content with:", {
-      isLoading,
-      error,
-      filteredPostsLength: filteredBlogPosts?.length || 0,
-    });
-
     if (isLoading) {
       return <LoadingSpinner size="medium" />;
     }
@@ -132,7 +114,7 @@ export default function BlogPage() {
       return (
         <div className="text-center py-10 text-red-600">
           <p className="text-xl font-medium">{error}</p>
-          <p className="mt-2">Try refreshing the page.</p>
+          <p className="mt-2">Prøv å laste siden på nytt.</p>
         </div>
       );
     }
@@ -141,11 +123,17 @@ export default function BlogPage() {
       return (
         <div className="text-center py-10">
           <h3 className="text-xl font-medium text-gray-700">
-            No blog posts found
+            Ingen blogginnlegg funnet
           </h3>
-          <p className="mt-2 text-gray-500">
-            Try adjusting your search or filter
-          </p>
+          <p className="mt-2 text-gray-500">Prøv å justere søk eller filter</p>
+          {(searchQuery || filter) && (
+            <button
+              onClick={clearFilters}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Fjern filtre
+            </button>
+          )}
         </div>
       );
     }
@@ -153,12 +141,8 @@ export default function BlogPage() {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredBlogPosts.map((post) => {
-          console.log(`Rendering post ID: ${post.id}, Title: ${post.title}`);
-
           try {
             const cardProps = adaptBlogToCardProps(post, handleBlogClick);
-            console.log("Card props:", cardProps);
-
             return <UniversalCard key={post.id} {...cardProps} />;
           } catch (error) {
             console.error(`Error rendering post ${post.id}:`, error);
@@ -167,7 +151,7 @@ export default function BlogPage() {
                 key={post.id}
                 className="p-4 border rounded-md bg-red-50 text-red-500"
               >
-                Error rendering post: {post.title}
+                Feil ved visning av innlegg: {post.title}
               </div>
             );
           }
@@ -178,39 +162,59 @@ export default function BlogPage() {
 
   // Main render
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-6">Blog</h1>
+    <div className="bg-white min-h-screen">
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+            <h1 className="text-3xl font-bold">Blogg</h1>
 
-        {/* Search and Filter Bar */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <input
-            type="text"
-            placeholder="Search blog posts..."
-            className="flex-grow px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+            <div className="flex flex-col sm:flex-row gap-2 mt-4 md:mt-0">
+              <span className="text-gray-500 self-center">
+                {filteredBlogPosts.length}{" "}
+                {filteredBlogPosts.length === 1 ? "innlegg" : "innlegg"} funnet
+              </span>
+            </div>
+          </div>
 
-          <select
-            className="sm:w-1/3 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-            value={filter || ""}
-            onChange={(e) =>
-              setFilter(e.target.value === "" ? null : e.target.value)
-            }
-          >
-            <option value="">All Categories</option>
-            {getCategories().map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
+          {/* Search and Filter Bar */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-6 bg-gray-50 p-4 rounded-lg">
+            <input
+              type="text"
+              placeholder="Søk i blogginnlegg..."
+              className="flex-grow px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+
+            <select
+              className="sm:w-1/3 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={filter || ""}
+              onChange={(e) =>
+                setFilter(e.target.value === "" ? null : e.target.value)
+              }
+            >
+              <option value="">Alle kategorier</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+
+            {(searchQuery || filter) && (
+              <button
+                onClick={clearFilters}
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+              >
+                Nullstill
+              </button>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Content */}
-      {renderContent()}
+        {/* Content */}
+        {renderContent()}
+      </div>
     </div>
   );
 }

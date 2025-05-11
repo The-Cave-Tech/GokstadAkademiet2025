@@ -38,7 +38,7 @@ export interface ProjectAttributes extends BaseContent {
   projectImage?: Media;
   state?: string;
   category?: string;
-  technologies?: string[] | string;
+  technologies?: string[];
   demoUrl?: string;
   githubUrl?: string;
 }
