@@ -87,7 +87,7 @@ export default function DashboardMenu() {
             <Link key={item.href} href={item.href} className="no-underline">
               <Card className="relative flex flex-col shadow-md p-4 h-full bg-background rounded-lg">
                 <CardHeader>
-                  <h3 className="text-sub-section-title-small font-semibold">{item.title}</h3>
+                  <h3 className="text-dashboard-header text-typographyPrimary font-semibold">{item.title}</h3>
                 </CardHeader>
                 <CardBody>
                   <p className="text-body-small text-typographySecondary">{item.desc}</p>
@@ -110,7 +110,7 @@ export default function DashboardMenu() {
               <Link key={item.href} href={item.href} className="no-underline">
                 <Card className="relative flex flex-col shadow-md p-4 h-full bg-background rounded-lg">
                   <CardHeader>
-                    <h3 className="text-sub-section-title-small font-semibold">{item.title}</h3>
+                    <h3 className="text-dashboard-header text-typographyPrimary font-semibold">{item.title}</h3>
                   </CardHeader>
                   <CardBody>
                     <p className="text-body-small text-typographySecondary">{item.desc}</p>

@@ -25,6 +25,7 @@ const config = {
         "btn-cta-big": "var(--btn-cta-big)",
         "btn-cta-medium": "var(--btn-cta-medium)",
         "btn-cta-small": "var(--btn-cta-small)",
+        "dashboard-header": "var(--dashboard-header)",
       },
 
       fontFamily: {
