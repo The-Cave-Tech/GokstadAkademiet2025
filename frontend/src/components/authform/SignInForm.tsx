@@ -73,18 +73,18 @@ export function SignInForm() {
     setIsSubmitting(false);
   }, [formState, setIsAuthenticated, refreshAuthStatus, handleSuccessfulAuth]);
 
-  const inputClass = "w-full p-2 mt-1 border border-gray-300 rounded-md";
-  const labelClass = "text-base font-roboto font-normal text-gray-700";
+  const inputClass = "w-full p-2 mt-1 border border-grayed rounded-md";
+  const labelClass = "text-body-small font-roboto font-normal text-typographyPrimary";
 
   return (
     <section className="auth-card-section flex items-center justify-center min-h-[calc(100vh-64px)] mt-16">
       <Card className="max-w-md mx-auto">
         <CardHeader>
           <section className="flex flex-col items-center gap-4">
-            <h1 className="text-xl font-semibold">Logg Inn</h1>
+            <h1 className="text-section-title-small font-semibold">Logg Inn</h1>
             <SiteLogo
               className="/* Dark mode støtte */"
-              style={{ width: "90px", height: "45px" }}
+              style={{ width: "auto", height: "45px" }}
             />
           </section>
         </CardHeader>
@@ -92,7 +92,7 @@ export function SignInForm() {
         <CardBody>
           <form action={formAction} onSubmit={() => setIsSubmitting(true)}>
             {formState.strapiErrors?.message && (
-              <p className="text-red-500 text-center text-xs sm:text-sm font-medium animate-fade-in">
+              <p className="text-danger text-center text-captions-big sm:text-body-small font-medium animate-fade-in">
                 {formState.strapiErrors?.message}
               </p>
             )}
@@ -156,7 +156,7 @@ export function SignInForm() {
             </fieldset>
 
             <div className="flex justify-end items-center my-4">
-              <Link href="/forgot-password" className="text-sm text-blue-500 hover:underline">
+              <Link href="/forgot-password" className="text-body-small text-standard hover:text-standard-hover hover:underline">
                 Glemt passord?
               </Link>
             </div>
@@ -164,14 +164,14 @@ export function SignInForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
+              className="w-full bg-standard text-background p-2 rounded-md hover:bg-standard-hover-dark"
             >
               {isSubmitting ? "Logger inn..." : "Logg inn"}
             </button>
 
-            <div className="flex gap-1 mt-4 text-center text-sm text-gray-700">
+            <div className="flex gap-1 mt-4 text-center text-body-small text-typographyPrimary">
               <p>Har du ikke en konto?</p>
-              <Link href="/signup" className="text-blue-500 hover:underline">
+              <Link href="/signup" className="text-standard hover:text-standard-hover hover:underline">
                 Registrer deg
               </Link>
             </div>
@@ -180,10 +180,10 @@ export function SignInForm() {
 
         <CardFooter>
           <div className="mt-4">
-            <section className="flex gap-1 mt-4 text-center items-center text-sm text-gray-700">
-              <hr className="flex-grow border-t-2 border-gray-700" />
-              <span className="mx-4 text-sm text-gray-700">Eller</span>
-              <hr className="flex-grow border-t-2 border-gray-700" />
+            <section className="flex gap-1 mt-4 text-center items-center text-body-small text-typigraphyPrimary">
+              <hr className="flex-grow border-t-2 border-grayed" />
+              <span className="mx-4 text-body-small text-typigraphyPrimary">Eller</span>
+              <hr className="flex-grow border-t-2 border-grayed" />
             </section>
 
             <ul className="mt-4 flex flex-col gap-2">
@@ -192,7 +192,7 @@ export function SignInForm() {
                   <button 
                     type="button" 
                     onClick={() => handleSocialLogin(provider)}
-                    className="flex justify-center border w-full gap-2 rounded-lg p-2 hover:bg-gray-300"
+                    className="flex justify-center border w-full gap-2 rounded-lg p-2 hover:bg-grayed"
                   >
                     <PageIcons
                       name={src}
@@ -201,7 +201,7 @@ export function SignInForm() {
                       alt={`${text} logo`}
                       className="w-6 h-6"
                     />
-                    <span className="text-gray-900 dark:text-white">
+                    <span className="text-typographyPrimary dark:text-TypographyPrimaryWH">
                       Logg inn med {text}
                     </span>
                   </button>

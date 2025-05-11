@@ -116,7 +116,7 @@ export function DeleteAccountModal({
       <div ref={modalRef} className="w-full max-w-[600px] mx-4 my-8">
         <Card className="w-full shadow-xl rounded-lg border">
           <CardHeader className="px-6 py-4 border-b border-gray-200">
-            <h2 id="delete-account-modal-title" className="text-xl font-semibold text-gray-900">
+            <h2 id="delete-account-modal-title" className="text-sub-section-title-small font-semibold text-typographyPrimary">
               Bekreft sletting av konto
             </h2>
           </CardHeader>
@@ -134,8 +134,8 @@ export function DeleteAccountModal({
             )}
 
             <div className="space-y-6">
-              <div className="text-gray-700">
-                <p className="text-base">
+              <div className="text-typographyPrimary">
+                <p className="text-body-small">
                   {isOAuthUser 
                     ? `Vil du bekrefte at du ønsker å slette kontoen din (${currentEmail})?` 
                     : `For å bekrefte at du ønsker å slette kontoen din (${currentEmail}), vennligst skriv inn passordet ditt.`
@@ -146,14 +146,14 @@ export function DeleteAccountModal({
               <div className="space-y-4">
                 {!isOAuthUser && (
                   <div className="space-y-2">
-                    <label htmlFor="current-password" className="block text-gray-700 font-medium">
+                    <label htmlFor="current-password" className="block text-typographyPrimary font-medium">
                       Passord
                     </label>
                     <input
                       ref={inputRef}
                       id="current-password"
                       type="password"
-                      className="w-full rounded-md border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full rounded-md border border-gray-300 p-3 focus:border-standard focus:outline-none focus:ring-2 focus:ring-standard"
                       value={currentPassword}
                       onChange={handlePasswordChange}
                       placeholder="Skriv inn passordet for kontoen din"
