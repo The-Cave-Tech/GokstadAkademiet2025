@@ -668,6 +668,49 @@ export interface ApiLandingPageLandingPage extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
+  collectionName: 'orders';
+  info: {
+    description: 'Kundebestillinger';
+    displayName: 'Order';
+    pluralName: 'orders';
+    singularName: 'order';
+  };
+  options: {
+    comment: '';
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    items: Schema.Attribute.JSON;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::order.order'> &
+      Schema.Attribute.Private;
+    notes: Schema.Attribute.Text;
+    orderNumber: Schema.Attribute.String;
+    paymentDetails: Schema.Attribute.JSON;
+    paymentMethod: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    shipping: Schema.Attribute.Decimal;
+    shippingInfo: Schema.Attribute.JSON;
+    status: Schema.Attribute.Enumeration<
+      ['pending', 'processing', 'shipped', 'delivered', 'canceled', 'completed']
+    > &
+      Schema.Attribute.DefaultTo<'pending'>;
+    subtotal: Schema.Attribute.Decimal;
+    total: Schema.Attribute.Decimal;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiProductProduct extends Struct.CollectionTypeSchema {
   collectionName: 'products';
   info: {
@@ -1269,6 +1312,7 @@ export interface PluginUsersPermissionsUser
       'plugin::users-permissions.user'
     > &
       Schema.Attribute.Private;
+    orders: Schema.Attribute.Relation<'oneToMany', 'api::order.order'>;
     password: Schema.Attribute.Password &
       Schema.Attribute.Private &
       Schema.Attribute.SetMinMaxLength<{
@@ -1316,6 +1360,7 @@ declare module '@strapi/strapi' {
       'api::footer.footer': ApiFooterFooter;
       'api::global-setting.global-setting': ApiGlobalSettingGlobalSetting;
       'api::landing-page.landing-page': ApiLandingPageLandingPage;
+      'api::order.order': ApiOrderOrder;
       'api::product.product': ApiProductProduct;
       'api::project.project': ApiProjectProject;
       'api::user-profile.user-profile': ApiUserProfileUserProfile;

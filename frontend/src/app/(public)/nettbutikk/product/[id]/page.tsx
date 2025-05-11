@@ -13,9 +13,11 @@ import { FaStar, FaTag, FaBoxOpen } from "react-icons/fa";
 import Link from "next/link";
 import { formatPrice } from "@/lib/adapters/cardAdapter";
 import BackButton from "@/components/BackButton";
+import { useCart } from "@/lib/context/shopContext";
 
 export default function ProductDetailPage() {
   const params = useParams();
+  const { addToCart } = useCart();
   const [product, setProduct] = useState<ProductResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -86,6 +88,18 @@ export default function ProductDetailPage() {
   const decrementQuantity = () => {
     if (quantity > 1) {
       setQuantity(quantity - 1);
+    }
+  };
+  
+  // Handle add to cart
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart({
+        id: product.id,
+        title: product.title,
+        price: product.discountedPrice || product.price,
+        image: product.productImage?.url,
+      }, quantity);
     }
   };
 
@@ -212,8 +226,11 @@ export default function ProductDetailPage() {
                       </button>
                     </div>
                   </div>
-                  {/* Add to Cart Button will be switched out with addToCart component to have same funksjonality on add button across detail and main page */}
-                  <button className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                  {/* Add to Cart Button */}
+                  <button 
+                    onClick={handleAddToCart}
+                    className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                  >
                     <MdShoppingBasket className="text-lg" />
                     <span>Legg i handlekurv</span>
                   </button>

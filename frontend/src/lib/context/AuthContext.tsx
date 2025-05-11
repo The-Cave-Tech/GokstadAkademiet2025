@@ -58,8 +58,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const handleSuccessfulAuth = () => {
     console.log("[AuthContext] Håndterer vellykket autentisering");
-    refreshAuthStatus();
-    router.push("/");
+    // Sjekk om vi har en redirect-parameter i URL-en
+    const url = new URL(window.location.href);
+    const redirectPath = url.searchParams.get('redirect');
+    
+    if (redirectPath) {
+      router.push(redirectPath);
+    } else {
+      // Din eksisterende logikk for standard-redirect
+      router.push('/dashboard');
+    }
   };
 
   const refreshAuthStatus = async () => {

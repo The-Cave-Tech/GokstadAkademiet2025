@@ -25,7 +25,7 @@ export default function NettbutikkPage() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filter, setFilter] = useState<string>("");
 
-  // Fetch products on component mount
+  // Load products on component mount
   useEffect(() => {
     loadProducts();
   }, []);
@@ -39,7 +39,7 @@ export default function NettbutikkPage() {
   const loadProducts = async () => {
     setIsLoading(true);
     try {
-      // Try to fetch from the API, but use mock data if it fails
+      // Fetch from the API, but use mock data if it fails
       let data: ProductResponse[] = [];
 
       try {
@@ -74,7 +74,7 @@ export default function NettbutikkPage() {
     console.log(`Filtering ${products.length} products...`);
     let filtered = [...products];
 
-    // Apply search filter
+    // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
@@ -85,7 +85,7 @@ export default function NettbutikkPage() {
       );
     }
 
-    // Apply category filter
+    // Category filter
     if (filter) {
       filtered = filtered.filter((product) => product.category === filter);
     }
@@ -108,9 +108,6 @@ export default function NettbutikkPage() {
         price: product.price,
         image: product.productImage?.url,
       });
-
-      // Show feedback to user
-      alert(`${product.title} er lagt til i handlekurven!`);
     }
   };
 
@@ -204,7 +201,7 @@ export default function NettbutikkPage() {
         <h1 className="text-3xl text-center font-bold mb-6">Nettbutikk</h1>
 
         {/* Search and Filter Bar */}
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 ">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
           <SearchBar
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}

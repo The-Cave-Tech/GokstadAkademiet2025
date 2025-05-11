@@ -44,6 +44,61 @@ export default factories.createCoreController('api::cart.cart', ({ strapi }) => 
   },
 
   /**
+   * Get cart with detailed product information
+   */
+  async getCart(ctx) {
+    const { user } = ctx.state;
+    
+    if (!user) {
+      return ctx.unauthorized('Du må være logget inn for å se handlekurven');
+    }
+    
+    try {
+      // Finn brukerens handlekurv
+      let cart = await strapi.db.query('api::cart.cart').findOne({
+        where: { user: user.id },
+        populate: ['items', 'items.product', 'items.product.productImage']
+      });
+      
+      if (!cart) {
+        // Opprett en tom handlekurv hvis den ikke finnes
+        cart = await strapi.entityService.create('api::cart.cart', {
+          data: {
+            items: [],
+            subtotal: 0,
+            total: 0,
+            user: user.id
+          }
+        });
+      }
+      
+      // Filtrer ut elementer med ugyldige produkter og oppdater subtotaler
+      const validItems = cart.items.filter(item => item.product != null);
+      
+      // Hvis det var noen ugyldige elementer, oppdater handlekurven
+      if (validItems.length !== cart.items.length) {
+        const subtotal = validItems.reduce((sum, item) => sum + item.subtotal, 0);
+        
+        await strapi.entityService.update('api::cart.cart', cart.id, {
+          data: {
+            items: validItems,
+            subtotal: subtotal,
+            total: subtotal
+          }
+        });
+        
+        cart.items = validItems;
+        cart.subtotal = subtotal;
+        cart.total = subtotal;
+      }
+      
+      return cart;
+    } catch (err) {
+      return ctx.badRequest('Kunne ikke hente handlekurven', { error: err.message });
+    }
+  },
+
+  /**
    * Add an item to the cart
    */
   async addItem(ctx) {
