@@ -78,60 +78,51 @@ export default function DashboardMenu() {
   const filteredBaseMenuItems = baseMenuItems;
 
   return (
-    <section className="mx-auto p-4 w-full flex flex-col items-center gap-5">
-      <div className="flex items-center w-full pb-5">
-        <div className="flex-grow border-t-4 border-green-400"></div>
-        <span className="flex-shrink mx-4 text-red-900">Bruker Panel</span>
-        <div className="flex-grow border-t-4 border-green-400"></div>
+    <section className="mx-auto w-full max-w-6xl px-4 py-8 space-y-10">
+      {/* Bruker Panel */}
+      <div>
+        <h2 className="text-section-title-small font-semibold text-typographyPrimary mb-4 text-center sm:text-left">Bruker Panel</h2>
+        <div className="grid grid-cols-1 bg-secondary rounded-lg p-lg sm:grid-cols-2 gap-6">
+          {baseMenuItems.map((item) => (
+            <Link key={item.href} href={item.href} className="no-underline">
+              <Card className="relative flex flex-col shadow-md p-4 h-full bg-background rounded-lg">
+                <CardHeader>
+                  <h3 className="text-sub-section-title-small font-semibold">{item.title}</h3>
+                </CardHeader>
+                <CardBody>
+                  <p className="text-body-small text-typographySecondary">{item.desc}</p>
+                </CardBody>
+                <CardFooter>
+                  <aside className="absolute bottom-4 right-4 text-typographySecondary text-body-small">→</aside>
+                </CardFooter>
+              </Card>
+            </Link>
+          ))}
+        </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {filteredBaseMenuItems.map((item) => (
-          <Link key={item.href} href={item.href} className="no-underline">
-            <Card className="relative flex flex-col bg-cyan-200 shadow-lg shadow-cyan-500/50 p-4 max-w-[350px] h-full">
-              <CardHeader>
-                <h1 className="text-left">{item.title}</h1>
-              </CardHeader>
-              <CardBody>
-                <p className="text-left">{item.desc}</p>
-              </CardBody>
-              <CardFooter>
-                <aside className="absolute bottom-5 right-5 text-gray-500 text-sm">
-                  →
-                </aside>
-              </CardFooter>
-            </Card>
-          </Link>
-        ))}
-      </div>
+
+      {/* Admin Panel */}
       {isAdmin && (
-        <section className="w-full">
-          <div className="flex py-5 items-center w-full">
-            <div className="flex-grow border-t-4 border-green-400"></div>
-            <span className="flex-shrink mx-4 text-red-900">Admin Panel</span>
-            <div className="flex-grow border-t-4 border-green-400"></div>
+        <div>
+          <h2 className="text-section-title-small font-semibold text-danger mb-4 text-center sm:text-left">Admin Panel</h2>
+          <div className="grid grid-cols-1 bg-secondary rounded-lg p-lg sm:grid-cols-2 gap-6">
+            {adminItems.map((item) => (
+              <Link key={item.href} href={item.href} className="no-underline">
+                <Card className="relative flex flex-col shadow-md p-4 h-full bg-background rounded-lg">
+                  <CardHeader>
+                    <h3 className="text-sub-section-title-small font-semibold">{item.title}</h3>
+                  </CardHeader>
+                  <CardBody>
+                    <p className="text-body-small text-typographySecondary">{item.desc}</p>
+                  </CardBody>
+                  <CardFooter>
+                    <aside className="absolute bottom-4 right-4 text-typographySecondary text-body-small">→</aside>
+                  </CardFooter>
+                </Card>
+              </Link>
+            ))}
           </div>
-          <article className="mx-auto p-4 grid justify-center">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {adminItems.map((item) => (
-                <Link key={item.href} href={item.href} className="no-underline">
-                  <Card className="relative flex flex-col bg-cyan-200 shadow-lg shadow-cyan-500/50 p-4 h-full">
-                    <CardHeader>
-                      <h1 className="text-left">{item.title}</h1>
-                    </CardHeader>
-                    <CardBody>
-                      <p className="text-left">{item.desc}</p>
-                    </CardBody>
-                    <CardFooter>
-                      <aside className="absolute bottom-5 right-5 text-gray-500 text-sm">
-                        →
-                      </aside>
-                    </CardFooter>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          </article>
-        </section>
+        </div>
       )}
     </section>
   );
