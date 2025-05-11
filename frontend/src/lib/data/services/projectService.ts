@@ -139,9 +139,6 @@ export const projectService = {
         technologies: response.data.technologies || [],
         demoUrl: response.data.demoUrl || "",
         githubUrl: response.data.githubUrl || "",
-        createdAt: response.data.createdAt,
-        updatedAt: response.data.updatedAt,
-        publishedAt: response.data.publishedAt,
       };
 
       // Process the image data if it exists
@@ -218,7 +215,7 @@ export const projectService = {
     return strapiService.media.getMediaUrl(media);
   },
 
-  // Create a new project
+  // Create a new project - with TypeScript-safe implementation
   create: async (
     data: Partial<ProjectAttributes>,
     projectImage?: File | null
@@ -226,13 +223,17 @@ export const projectService = {
     try {
       // Process technologies if they come as a comma-separated string
       let technologiesArray: string[] = [];
-      if (typeof data.technologies === "string") {
-        technologiesArray = data.technologies
-          .split(",")
-          .map((tech) => tech.trim())
-          .filter(Boolean);
-      } else if (Array.isArray(data.technologies)) {
-        technologiesArray = data.technologies;
+
+      // Check if technologies exists before testing its type
+      if (data.technologies !== undefined) {
+        if (typeof data.technologies === "string") {
+          technologiesArray = data.technologies
+            .split(",")
+            .map((tech: string) => tech.trim())
+            .filter(Boolean);
+        } else if (Array.isArray(data.technologies)) {
+          technologiesArray = data.technologies;
+        }
       }
 
       // Clean up the data object - remove any properties that shouldn't be sent to Strapi
@@ -292,8 +293,6 @@ export const projectService = {
           technologies: technologiesArray,
           demoUrl: (cleanData.demoUrl as string) || "",
           githubUrl: (cleanData.githubUrl as string) || "",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
         };
       }
 
@@ -309,7 +308,7 @@ export const projectService = {
     }
   },
 
-  // Update an existing project
+  // Update an existing project - with TypeScript-safe implementation
   update: async (
     id: string | number,
     data: Partial<ProjectAttributes>,
@@ -344,17 +343,16 @@ export const projectService = {
       delete cleanData.projectImage; // Will be handled separately
 
       // Process technologies if they're a comma-separated string
-      if (typeof cleanData.technologies === "string") {
-        cleanData.technologies = cleanData.technologies
-          .split(",")
-          .map((tech) => tech.trim())
-          .filter(Boolean);
-      } else if (
-        !Array.isArray(cleanData.technologies) &&
-        cleanData.technologies !== undefined
-      ) {
-        // If it's neither string nor array but is defined, convert to empty array
-        cleanData.technologies = [];
+      if (cleanData.technologies !== undefined) {
+        if (typeof cleanData.technologies === "string") {
+          cleanData.technologies = cleanData.technologies
+            .split(",")
+            .map((tech: string) => tech.trim())
+            .filter(Boolean);
+        } else if (!Array.isArray(cleanData.technologies)) {
+          // If it's neither string nor array but is defined, delete it
+          delete cleanData.technologies;
+        }
       }
 
       // IMPORTANT: DO NOT wrap cleanData in a data property for updates
