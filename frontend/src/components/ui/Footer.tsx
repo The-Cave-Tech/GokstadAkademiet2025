@@ -156,6 +156,7 @@ export default function Footer() {
           </h3>
           <ul className="space-y-1 sm:space-y-2">
             {[
+              { name: "Aktiviteter", href: "/aktiviteter" },
               { name: "Nettbutikk", href: "/shop" },
               { name: "Blogg", href: "/blog" },
               { name: "Om oss", href: "/about-us" },
