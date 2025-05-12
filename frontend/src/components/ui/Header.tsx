@@ -7,7 +7,10 @@ import Image from "next/image";
 import { SiteLogo } from "@/components/ui/SiteLogo";
 import { LogoutButton } from "@/components/LogoutButton";
 import { useAuth } from "@/lib/context/AuthContext";
-import { getUserProfile, getUserCredentials } from "@/lib/data/services/userProfile";
+import {
+  getUserProfile,
+  getUserCredentials,
+} from "@/lib/data/services/userProfile";
 import { getProfileImageUrl } from "@/lib/data/services/profileSections/publicProfileService";
 
 export const Header = () => {
@@ -101,10 +104,13 @@ export const Header = () => {
   };
 
   // Get profile image with fallback
-  const profileImageUrl = profileData ? getProfileImageUrl(profileData) : "/profileIcons/avatar-default.svg";
+  const profileImageUrl = profileData
+    ? getProfileImageUrl(profileData)
+    : "/profileIcons/avatar-default.svg";
 
   // Get display name with fallback
-  const displayName = profileData?.publicProfile?.displayName || username || "BrukerNavn";
+  const displayName =
+    profileData?.publicProfile?.displayName || username || "BrukerNavn";
 
   // Navigation items
   const navItems = [
@@ -125,13 +131,13 @@ export const Header = () => {
 
   return (
     <>
-      <header className="fixed top-0 w-full z-50 bg-[#e5d1c5] shadow">
+      <header className="fixed top-0 w-full z-50 bg-primary shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex-shrink-0">
               <Link href="/">
-                <SiteLogo style={{ width: "90px", height: "45px" }} />
+                <SiteLogo style={{ width: "auto", height: "45px" }} />
               </Link>
             </div>
 
@@ -204,7 +210,10 @@ export const Header = () => {
 
                       {/* Handlekurv - disabled if already on cart page */}
                       {pathname === "/nettbutikk/cart" ? (
-                        <div className="block px-4 py-2 text-sm text-gray-400 cursor-default" data-dropdown="true">
+                        <div
+                          className="block px-4 py-2 text-sm text-gray-400 cursor-default"
+                          data-dropdown="true"
+                        >
                           Handlekurv
                         </div>
                       ) : (
@@ -219,7 +228,10 @@ export const Header = () => {
 
                       {/* Min side - disabled when on dashboard */}
                       {isDashboard ? (
-                        <div className="block px-4 py-2 text-sm text-gray-400 cursor-default" data-dropdown="true">
+                        <div
+                          className="block px-4 py-2 text-sm text-gray-400 cursor-default"
+                          data-dropdown="true"
+                        >
                           Min side
                         </div>
                       ) : (
@@ -232,14 +244,20 @@ export const Header = () => {
                         </Link>
                       )}
 
-                      <div className="border-t border-gray-200 pt-1" data-dropdown="true">
+                      <div
+                        className="border-t border-gray-200 pt-1"
+                        data-dropdown="true"
+                      >
                         <LogoutButton className="block w-full text-left px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600" />
                       </div>
                     </div>
                   )}
                 </div>
               ) : (
-                <Link href="/signin" className="flex items-center space-x-1 text-gray-800">
+                <Link
+                  href="/signin"
+                  className="flex items-center space-x-1 text-gray-800"
+                >
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -277,7 +295,12 @@ export const Header = () => {
                     viewBox="0 0 24 24"
                     stroke="currentColor"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 ) : (
                   <svg
@@ -287,7 +310,12 @@ export const Header = () => {
                     viewBox="0 0 24 24"
                     stroke="currentColor"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
                   </svg>
                 )}
               </button>
@@ -304,9 +332,17 @@ export const Header = () => {
                 <div className="px-3 py-2 border-b border-gray-200 mb-2">
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden">
-                      <Image src={profileImageUrl} alt="Profilbilde" width={32} height={32} className="object-cover" />
+                      <Image
+                        src={profileImageUrl}
+                        alt="Profilbilde"
+                        width={32}
+                        height={32}
+                        className="object-cover"
+                      />
                     </div>
-                    <span className="font-medium text-gray-800">{displayName}</span>
+                    <span className="font-medium text-gray-800">
+                      {displayName}
+                    </span>
                   </div>
                 </div>
               )}
@@ -327,7 +363,9 @@ export const Header = () => {
               {/* Min side - disabled when on dashboard */}
               {isAuthenticated &&
                 (isDashboard ? (
-                  <div className="block px-3 py-2 text-gray-400 rounded cursor-default bg-gray-50">Min side</div>
+                  <div className="block px-3 py-2 text-gray-400 rounded cursor-default bg-gray-50">
+                    Min side
+                  </div>
                 ) : (
                   <Link
                     href="/dashboard"
