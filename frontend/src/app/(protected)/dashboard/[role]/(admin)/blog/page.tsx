@@ -167,20 +167,10 @@ export default function BlogAdminPage() {
   // Define actions for the admin table
   const actions: AdminAction[] = [
     {
-      label: "Delete",
-      color: "error",
-      onClick: handleDelete,
-    },
-    {
       label: "Archive",
       color: "warning",
       onClick: handleArchive,
       showCondition: (post) => post.state !== "archived",
-    },
-    {
-      label: "Edit",
-      color: "info",
-      href: "/admin/blog/:id",
     },
     {
       label: "View",

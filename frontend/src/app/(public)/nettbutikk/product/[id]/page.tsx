@@ -49,10 +49,7 @@ export default function ProductDetailPage() {
         // Find related products (same category)
         if (foundProduct.category) {
           const related = allProducts
-            .filter(
-              (p) =>
-                p.category === foundProduct.category && p.id !== foundProduct.id
-            )
+            .filter((p) => p.category === foundProduct.category && p.id !== foundProduct.id)
             .slice(0, 3); // Limit to 3 related products
           setRelatedProducts(related);
         }
@@ -95,9 +92,7 @@ export default function ProductDetailPage() {
 
   // Calculate discount percentage if applicable
   const discountPercentage = product.discountedPrice
-    ? Math.round(
-        ((product.price - product.discountedPrice) / product.price) * 100
-      )
+    ? Math.round(((product.price - product.discountedPrice) / product.price) * 100)
     : 0;
 
   return (
@@ -113,35 +108,23 @@ export default function ProductDetailPage() {
           {/* Left Sidebar - Product Info */}
           <div className="md:w-1/4">
             <div className="bg-white p-6 rounded-lg shadow-md">
-              {/* Product Image and Name */}
-              <div className="flex flex-col items-center mb-6">
-                <div className="w-32 h-32 rounded-lg overflow-hidden bg-gray-200 mb-4 relative">
-                  {product.productImage?.url ? (
-                    <Image
-                      src={product.productImage.url}
-                      alt={product.title}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-3xl font-bold text-gray-400">
-                      {product.title.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                </div>
-                <h3 className="text-xl font-semibold text-center">
-                  {product.title}
-                </h3>
-                <p className="text-sm text-gray-500 mt-1">
-                  {`ID: ${product.id}`}
-                </p>
+              {/* Product Image Banner */}
+              <div className="w-full h-40 rounded-lg overflow-hidden bg-gray-200 mb-6 relative">
+                {product.productImage?.url ? (
+                  <Image src={product.productImage.url} alt={product.title} fill className="object-cover" />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center text-3xl font-bold text-gray-400">
+                    {product.title.charAt(0).toUpperCase()}
+                  </div>
+                )}
               </div>
+
+              {/* Product Name */}
+              <h3 className="text-xl font-semibold text-center">{product.title}</h3>
 
               {/* Product Info */}
               <div className="mt-6">
-                <h4 className="font-medium text-gray-700 mb-2">
-                  Produktinformasjon
-                </h4>
+                <h4 className="font-medium text-gray-700 mb-2">Produktinformasjon</h4>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-center gap-2">
                     <MdCategory className="text-gray-500" />
@@ -149,11 +132,7 @@ export default function ProductDetailPage() {
                   </li>
                   <li className="flex items-center gap-2">
                     <FaBoxOpen className="text-gray-500" />
-                    <span>
-                      {product.stock > 0
-                        ? `${product.stock} på lager`
-                        : "Ikke på lager"}
-                    </span>
+                    <span>{product.stock > 0 ? `${product.stock} på lager` : "Ikke på lager"}</span>
                   </li>
                 </ul>
               </div>
@@ -163,22 +142,16 @@ export default function ProductDetailPage() {
                 <h4 className="font-medium text-gray-700 mb-2">Pris</h4>
                 {product.discountedPrice ? (
                   <div className="flex flex-col">
-                    <span className="text-2xl font-bold text-green-600">
-                      {formatPrice(product.discountedPrice)}
-                    </span>
+                    <span className="text-2xl font-bold text-green-600">{formatPrice(product.discountedPrice)}</span>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-gray-500 line-through">
-                        {formatPrice(product.price)}
-                      </span>
+                      <span className="text-gray-500 line-through">{formatPrice(product.price)}</span>
                       <span className="bg-red-100 text-red-600 px-2 py-0.5 rounded text-xs">
                         {discountPercentage}% RABATT
                       </span>
                     </div>
                   </div>
                 ) : (
-                  <span className="text-2xl font-bold text-gray-800">
-                    {formatPrice(product.price)}
-                  </span>
+                  <span className="text-2xl font-bold text-gray-800">{formatPrice(product.price)}</span>
                 )}
               </div>
 
@@ -212,7 +185,6 @@ export default function ProductDetailPage() {
                       </button>
                     </div>
                   </div>
-                  {/* Add to Cart Button will be switched out with addToCart component to have same funksjonality on add button across detail and main page */}
                   <button className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
                     <MdShoppingBasket className="text-lg" />
                     <span>Legg i handlekurv</span>
@@ -222,15 +194,9 @@ export default function ProductDetailPage() {
 
               {/* Product Metadata */}
               <div className="mt-8 pt-6 border-t border-gray-100 text-xs text-gray-500 space-y-1">
-                {product.publishedAt && (
-                  <p>Publisert: {formatDate(product.publishedAt)}</p>
-                )}
-                {product.createdAt && (
-                  <p>Opprettet: {formatDate(product.createdAt)}</p>
-                )}
-                {product.updatedAt && (
-                  <p>Sist oppdatert: {formatDate(product.updatedAt)}</p>
-                )}
+                {product.publishedAt && <p>Publisert: {formatDate(product.publishedAt)}</p>}
+                {product.createdAt && <p>Opprettet: {formatDate(product.createdAt)}</p>}
+                {product.updatedAt && <p>Sist oppdatert: {formatDate(product.updatedAt)}</p>}
               </div>
             </div>
           </div>
@@ -239,9 +205,7 @@ export default function ProductDetailPage() {
           <div className="md:w-3/4">
             {/* Product Title and Header */}
             <div className="border-b border-gray-200 pb-4 mb-6">
-              <h1 className="text-3xl font-bold text-gray-800">
-                {product.title}
-              </h1>
+              <h1 className="text-3xl font-bold text-gray-800">{product.title}</h1>
               <div className="text-sm text-red-500 mt-2 tracking-wider uppercase">
                 PRODUKT • {product.category || "UKATEGORISERT"} •{" "}
                 {formatDate(product.publishedAt || product.createdAt || "")}
@@ -268,47 +232,31 @@ export default function ProductDetailPage() {
                 <h2 className="text-xl font-semibold text-gray-800 mb-3 border-l-4 border-blue-500 pl-3">
                   Produktbeskrivelse
                 </h2>
-                <p className="text-gray-700 leading-relaxed">
-                  {product.description}
-                </p>
+                <p className="text-gray-700 leading-relaxed">{product.description}</p>
               </div>
             )}
 
             {/* Specifications Section */}
             <div className="mt-12 pt-8 border-t border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                Spesifikasjoner
-              </h2>
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">Spesifikasjoner</h2>
               <div className="bg-gray-50 p-6 rounded-lg">
                 <table className="w-full">
                   <tbody>
                     <tr className="border-b border-gray-200">
-                      <td className="py-3 text-gray-500 font-medium">
-                        Kategori
-                      </td>
-                      <td className="py-3">
-                        {product.category || "Ikke spesifisert"}
-                      </td>
+                      <td className="py-3 text-gray-500 font-medium">Kategori</td>
+                      <td className="py-3">{product.category || "Ikke spesifisert"}</td>
                     </tr>
                     <tr className="border-b border-gray-200">
-                      <td className="py-3 text-gray-500 font-medium">
-                        Tilgjengelighet
-                      </td>
-                      <td className="py-3">
-                        {product.stock > 0 ? "På lager" : "Ikke på lager"}
-                      </td>
+                      <td className="py-3 text-gray-500 font-medium">Tilgjengelighet</td>
+                      <td className="py-3">{product.stock > 0 ? "På lager" : "Ikke på lager"}</td>
                     </tr>
                     <tr className="border-b border-gray-200">
                       <td className="py-3 text-gray-500 font-medium">Pris</td>
                       <td className="py-3">
                         {product.discountedPrice ? (
                           <>
-                            <span className="text-green-600 font-medium">
-                              {formatPrice(product.discountedPrice)}
-                            </span>{" "}
-                            <span className="text-gray-500 line-through text-sm">
-                              {formatPrice(product.price)}
-                            </span>
+                            <span className="text-green-600 font-medium">{formatPrice(product.discountedPrice)}</span>{" "}
+                            <span className="text-gray-500 line-through text-sm">{formatPrice(product.price)}</span>
                           </>
                         ) : (
                           formatPrice(product.price)
@@ -323,16 +271,10 @@ export default function ProductDetailPage() {
             {/* Related Products section */}
             {relatedProducts.length > 0 && (
               <div className="mt-12 pt-8 border-t border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                  Lignende produkter
-                </h2>
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">Lignende produkter</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {relatedProducts.map((relatedProduct) => (
-                    <Link
-                      href={`/nettbutikk/product/${relatedProduct.id}`}
-                      key={relatedProduct.id}
-                      className="group"
-                    >
+                    <Link href={`/nettbutikk/product/${relatedProduct.id}`} key={relatedProduct.id} className="group">
                       <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                         <div className="h-40 relative bg-gray-200">
                           {relatedProduct.productImage?.url ? (
@@ -363,9 +305,7 @@ export default function ProductDetailPage() {
                                 </span>
                               </div>
                             ) : (
-                              <span className="font-bold">
-                                {formatPrice(relatedProduct.price)}
-                              </span>
+                              <span className="font-bold">{formatPrice(relatedProduct.price)}</span>
                             )}
                           </div>
                         </div>

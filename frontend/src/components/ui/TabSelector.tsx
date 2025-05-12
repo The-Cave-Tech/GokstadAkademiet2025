@@ -36,8 +36,7 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
   const sizeClass = sizeMap[size];
 
   // Layout classes based on orientation
-  const containerClass =
-    orientation === "horizontal" ? "flex" : "flex flex-col";
+  const containerClass = orientation === "horizontal" ? "flex" : "flex flex-col";
 
   const fullWidthClass = fullWidth ? "w-full" : "";
 
@@ -69,10 +68,8 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
               backgroundColor: isActive ? Theme.colors.primary : "transparent",
               color: isActive ? "white" : Theme.colors.text.primary,
               // Remove double borders between tabs
-              ...(orientation === "horizontal" &&
-                !isFirst && { marginLeft: "-1px" }),
-              ...(orientation === "vertical" &&
-                !isFirst && { marginTop: "-1px" }),
+              ...(orientation === "horizontal" && !isFirst && { marginLeft: "-1px" }),
+              ...(orientation === "vertical" && !isFirst && { marginTop: "-1px" }),
               position: "relative", // For z-index to work
               zIndex: isActive ? 1 : 0, // Active tab appears above others
             }}

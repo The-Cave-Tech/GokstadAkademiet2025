@@ -195,14 +195,7 @@ export default function NettbutikkPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-            <h1 className="text-3xl font-bold">Nettbutikk</h1>
-            <div className="flex flex-col sm:flex-row gap-2 mt-4 md:mt-0">
-              <span className="text-gray-500 self-center">
-                {filteredProducts.length} {filteredProducts.length === 1 ? "produkt" : "produkter"} funnet
-              </span>
-            </div>
-          </div>
+          <h1 className="text-3xl font-bold text-center mb-10">Nettbutikk</h1>
 
           {/* Search, Filter, and Sort Bar */}
           <div className="flex flex-col sm:flex-row gap-4 mb-6 bg-gray-50 p-4 rounded-lg">

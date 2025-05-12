@@ -17,9 +17,6 @@
     "description": {
       "type": "text"
     },
-    "content": {
-      "type": "blocks"
-    },
     "startDate": {
       "type": "date"
     },
@@ -42,6 +39,9 @@
         "videos",
         "audios"
       ]
+    },
+    "content": {
+      "type": "richtext"
     }
   }
 }

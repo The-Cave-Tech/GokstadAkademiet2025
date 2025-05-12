@@ -42,16 +42,6 @@ export default function DashboardMenu() {
 
   const adminItems = [
     {
-      href: "/dashboard/admin/users",
-      title: "Administrer brukere",
-      desc: "Se, legge til, arkivere brukere",
-    },
-    {
-      href: "/dashboard/admin/sponsors",
-      title: "Våre sponsorer",
-      desc: "Se, legg til kontakt info til sponsorer",
-    },
-    {
       href: "/dashboard/admin/events",
       title: "Administrer Eventer",
       desc: "Se, legg til, endre eventer",
@@ -67,7 +57,7 @@ export default function DashboardMenu() {
       desc: "Se alle blogger og slett",
     },
     {
-      href: "/dashboard/admin/nets",
+      href: "/dashboard/admin/nettbutikk",
       title: "Nettbutikk",
       desc: "Administrer nettbutikk",
     },
@@ -81,7 +71,9 @@ export default function DashboardMenu() {
     <section className="mx-auto w-full max-w-6xl px-4 py-8 space-y-10">
       {/* Bruker Panel */}
       <div>
-        <h2 className="text-section-title-small font-semibold text-typographyPrimary mb-4 text-center sm:text-left">Bruker Panel</h2>
+        <h2 className="text-section-title-small font-semibold text-typographyPrimary mb-4 text-center sm:text-left">
+          Bruker Panel
+        </h2>
         <div className="grid grid-cols-1 bg-secondary rounded-lg p-lg sm:grid-cols-2 gap-6">
           {baseMenuItems.map((item) => (
             <Link key={item.href} href={item.href} className="no-underline">
@@ -104,7 +96,9 @@ export default function DashboardMenu() {
       {/* Admin Panel */}
       {isAdmin && (
         <div>
-          <h2 className="text-section-title-small font-semibold text-danger mb-4 text-center sm:text-left">Admin Panel</h2>
+          <h2 className="text-section-title-small font-semibold text-danger mb-4 text-center sm:text-left">
+            Admin Panel
+          </h2>
           <div className="grid grid-cols-1 bg-secondary rounded-lg p-lg sm:grid-cols-2 gap-6">
             {adminItems.map((item) => (
               <Link key={item.href} href={item.href} className="no-underline">

@@ -74,11 +74,6 @@ export default function ProjectDetailPage() {
 
   return (
     <div className="bg-white min-h-screen">
-      {/* Back button */}
-      <div className="max-w-6xl mx-auto px-4 pt-4">
-        <BackButton />
-      </div>
-
       {/* Header/Banner Image */}
       <div className="w-full h-64 relative bg-gray-200">
         {project.projectImage?.url ? (
@@ -88,6 +83,11 @@ export default function ProjectDetailPage() {
             <h1 className="text-3xl font-bold text-gray-700">{project.title}</h1>
           </div>
         )}
+      </div>
+
+      {/* Back button */}
+      <div className="max-w-6xl mx-auto px-4 pt-4">
+        <BackButton />
       </div>
 
       {/* Main Content Container */}
