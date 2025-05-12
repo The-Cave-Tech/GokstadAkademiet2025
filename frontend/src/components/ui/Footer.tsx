@@ -4,7 +4,7 @@ import React, { useEffect, useState, ReactElement } from "react";
 import Link from "next/link";
 import { strapiService } from "@/lib/data/services/strapiClient";
 import { SiteLogo } from "./SiteLogo";
-import { FaFacebookF, FaInstagram } from "react-icons/fa";
+import { FaInstagram } from "react-icons/fa";
 
 interface SocialMediaBase {
   id: string;
@@ -21,15 +21,11 @@ interface SocialMediaBase {
   };
 }
 
-interface FacebookItem extends SocialMediaBase {
-  type: "facebook";
-}
-
 interface InstagramItem extends SocialMediaBase {
   type: "instagram";
 }
 
-type SocialMediaItem = FacebookItem | InstagramItem;
+type SocialMediaItem = InstagramItem;
 
 interface OpeningHourItem {
   id: string;
@@ -67,18 +63,8 @@ export default function Footer() {
   const [currentYear, setCurrentYear] = useState<number | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const getSocialMediaInfo = (
-    item: FacebookItem | InstagramItem
-  ): SocialMediaInfo => {
+  const getSocialMediaInfo = (item: InstagramItem): SocialMediaInfo => {
     const safeUrl = typeof item.url === "string" ? item.url : "";
-
-    if (item.type === "facebook") {
-      return {
-        name: "Facebook",
-        url: safeUrl,
-        icon: <FaFacebookF size={24} className="mr-2" />,
-      };
-    }
 
     if (item.type === "instagram") {
       return {
@@ -89,13 +75,6 @@ export default function Footer() {
     }
 
     const url = safeUrl.toLowerCase();
-    if (url.includes("facebook")) {
-      return {
-        name: "Facebook",
-        url: safeUrl,
-        icon: <FaFacebookF size={24} className="mr-2" />,
-      };
-    }
     if (url.includes("instagram")) {
       return {
         name: "Instagram",
@@ -130,18 +109,7 @@ export default function Footer() {
 
           const socialItems: SocialMediaItem[] = [];
 
-          const fb = data.data.faceBook || data.data.attributes?.faceBook;
           const ig = data.data.instaGram || data.data.attributes?.instaGram;
-
-          if (fb) {
-            if (Array.isArray(fb)) {
-              fb.forEach((item: any) =>
-                socialItems.push({ ...item, type: "facebook" })
-              );
-            } else {
-              socialItems.push({ ...fb, type: "facebook" });
-            }
-          }
 
           if (ig) {
             if (Array.isArray(ig)) {

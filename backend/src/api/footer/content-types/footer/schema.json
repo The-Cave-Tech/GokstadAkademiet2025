@@ -16,12 +16,6 @@
       "repeatable": true,
       "component": "footer.opening-hours"
     },
-    "faceBook": {
-      "displayName": "socialMedia",
-      "type": "component",
-      "repeatable": false,
-      "component": "footer.social-media"
-    },
     "instaGram": {
       "displayName": "socialLinks",
       "type": "component",
