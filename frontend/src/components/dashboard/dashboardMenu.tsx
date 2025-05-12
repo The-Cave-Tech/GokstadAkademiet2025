@@ -57,7 +57,7 @@ export default function DashboardMenu() {
       desc: "Se alle blogger og slett",
     },
     {
-      href: "/dashboard/admin/nettbutikk",
+      href: `${process.env.NEXT_PUBLIC_STRAPI_STORE_URL}/content-manager/collection-types/api::product.product`,
       title: "Nettbutikk",
       desc: "Administrer nettbutikk",
     },
