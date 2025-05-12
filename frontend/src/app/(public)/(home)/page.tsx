@@ -13,6 +13,7 @@ import {
   adaptEventToCardProps,
 } from "@/lib/adapters/cardAdapter";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 // Interface that defines our component's data structure
 interface LandingPageData {
@@ -640,7 +641,11 @@ export default function LandingPageContent() {
       <section className="py-20 px-4 bg-gradient-to-b from-secondary to-secondary/70">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Prosjekter</h2>
+            <Link href="/aktiviteter/projects">
+              <h2 className="text-3xl sm:text-4xl hover:underline font-bold mb-4 cursor-pointer">
+                Prosjekter
+              </h2>
+            </Link>
             <p className="text-lg text-gray-700 max-w-2xl mx-auto">
               Se våre nyeste og pågående prosjekter
             </p>
@@ -668,9 +673,11 @@ export default function LandingPageContent() {
       <section className="py-20 px-4 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              Arrangementer
-            </h2>
+            <Link href="/aktiviteter/events">
+              <h2 className="text-3xl sm:text-4xl hover:underline font-bold mb-4 cursor-pointer">
+                Arrangementer
+              </h2>
+            </Link>
             <p className="text-lg text-gray-700 max-w-2xl mx-auto">
               Se våre kommende arrangementer
             </p>
