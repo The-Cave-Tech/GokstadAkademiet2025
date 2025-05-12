@@ -22,12 +22,6 @@
       "type": "component",
       "repeatable": true,
       "component": "aboutus.team-card"
-    },
-    "gallery": {
-      "displayName": "Gallery",
-      "type": "component",
-      "repeatable": true,
-      "component": "aboutus.gallery"
     }
   }
 }

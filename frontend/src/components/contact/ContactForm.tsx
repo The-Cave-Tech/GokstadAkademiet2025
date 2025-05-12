@@ -1,4 +1,4 @@
-// src/components/contact/ContactForm.tsx - Endelig løsning
+// src/components/contact/ContactForm.tsx
 "use client";
 
 import React, { useState, useEffect, useTransition } from "react";
@@ -119,18 +119,11 @@ export default function ContactForm() {
     try {
       const validatedData = contactFormSchema.parse(formData);
 
-      // Legg til mottakerinformasjon i meldingsteksten
-      const enhancedMessage = `${validatedData.message}\n\n---\nMeldingen skal sendes til: aslan.khatuev@outlook.com`;
-
       startTransition(async () => {
         try {
-          // Send skjemaet med oppdatert melding
-          await contactService.submitContactForm({
-            name: validatedData.name,
-            email: validatedData.email,
-            phoneNumber: validatedData.phoneNumber,
-            message: enhancedMessage,
-          });
+          // Submit to Strapi using the service
+          // Removed createdAt as it's not in the ContactSubmission type
+          await contactService.submitContactForm(validatedData);
 
           // Show success message
           setSuccess(true);
@@ -213,7 +206,7 @@ export default function ContactForm() {
               htmlFor="name"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Navn
+              Navn<span className="text-red-600">*</span>
             </label>
             <input
               type="text"
@@ -249,7 +242,7 @@ export default function ContactForm() {
               htmlFor="phoneNumber"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Telefonnummer
+              Telefonnummer<span className="text-red-600">*</span>
             </label>
             <input
               type="tel"
@@ -284,7 +277,7 @@ export default function ContactForm() {
             htmlFor="email"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            E-post adresse
+            E-post adresse<span className="text-red-600">*</span>
           </label>
           <input
             type="email"
@@ -320,7 +313,7 @@ export default function ContactForm() {
             htmlFor="message"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Beskrivelse
+            Beskrivelse<span className="text-red-600">*</span>
           </label>
           <textarea
             id="message"
