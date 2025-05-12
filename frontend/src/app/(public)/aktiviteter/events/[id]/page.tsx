@@ -8,6 +8,8 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { EventResponse } from "@/types/content.types";
 import { MdLocationOn, MdAccessTime, MdEvent } from "react-icons/md";
+import BackButton from "@/components/BackButton";
+import ReactMarkdown from "react-markdown";
 
 export default function EventDetailPage() {
   const params = useParams();
@@ -97,16 +99,11 @@ export default function EventDetailPage() {
 
   return (
     <div className="bg-white min-h-screen">
+      <BackButton />
       {/* Header/Banner Image */}
       <div className="w-full h-64 relative bg-gray-200">
         {event.eventCardImage?.url ? (
-          <Image
-            src={event.eventCardImage.url}
-            alt={event.title}
-            fill
-            className="object-cover"
-            priority
-          />
+          <Image src={event.eventCardImage.url} alt={event.title} fill className="object-cover" priority />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-blue-50 to-blue-100">
             <h1 className="text-3xl font-bold text-gray-700">{event.title}</h1>
@@ -120,46 +117,16 @@ export default function EventDetailPage() {
           {/* Left Sidebar */}
           <div className="md:w-1/4">
             <div className="bg-white p-6 rounded-lg shadow-md">
-              {/* Event Icon and Name */}
-              <div className="flex flex-col items-center mb-6">
-                <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 mb-4 relative">
-                  {event.eventCardImage?.url ? (
-                    <Image
-                      src={event.eventCardImage.url}
-                      alt={event.title}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-3xl font-bold text-gray-400">
-                      {event.title.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                </div>
-                <h3 className="text-xl font-semibold text-center">
-                  {event.title}
-                </h3>
-                <p className="text-sm text-gray-500 mt-1">
-                  {event.documentId
-                    ? `ID: ${event.documentId}`
-                    : `ID: ${event.id}`}
-                </p>
-              </div>
-
               {/* Event Info */}
               <div className="mt-6">
-                <h4 className="font-medium text-gray-700 mb-2">
-                  Arrangement info
-                </h4>
+                <h4 className="font-medium text-gray-700 mb-2">Arrangement info</h4>
                 <ul className="space-y-2 text-sm">
                   {/* Date */}
                   <li className="flex items-center gap-2">
                     <MdEvent className="text-gray-500" />
                     <span>
                       {formatDate(event.startDate || "")}
-                      {event.endDate &&
-                        event.endDate !== event.startDate &&
-                        ` - ${formatDate(event.endDate)}`}
+                      {event.endDate && event.endDate !== event.startDate && ` - ${formatDate(event.endDate)}`}
                     </span>
                   </li>
 
@@ -193,15 +160,9 @@ export default function EventDetailPage() {
 
               {/* Event Metadata */}
               <div className="mt-8 pt-6 border-t border-gray-100 text-xs text-gray-500 space-y-1">
-                {event.publishedAt && (
-                  <p>Publisert: {formatDate(event.publishedAt)}</p>
-                )}
-                {event.createdAt && (
-                  <p>Opprettet: {formatDate(event.createdAt)}</p>
-                )}
-                {event.updatedAt && (
-                  <p>Sist oppdatert: {formatDate(event.updatedAt)}</p>
-                )}
+                {event.publishedAt && <p>Publisert: {formatDate(event.publishedAt)}</p>}
+                {event.createdAt && <p>Opprettet: {formatDate(event.createdAt)}</p>}
+                {event.updatedAt && <p>Sist oppdatert: {formatDate(event.updatedAt)}</p>}
               </div>
             </div>
           </div>
@@ -210,12 +171,9 @@ export default function EventDetailPage() {
           <div className="md:w-3/4">
             {/* Event Title and Header */}
             <div className="border-b border-gray-200 pb-4 mb-6">
-              <h1 className="text-3xl font-bold text-gray-800">
-                {event.title}
-              </h1>
+              <h1 className="text-3xl font-bold text-gray-800">{event.title}</h1>
               <div className="text-sm text-red-500 mt-2 tracking-wider uppercase">
-                ARRANGEMENT •{" "}
-                {formatDate(event.publishedAt || event.createdAt || "")}
+                ARRANGEMENT • {formatDate(event.publishedAt || event.createdAt || "")}
               </div>
             </div>
 
@@ -225,32 +183,26 @@ export default function EventDetailPage() {
                 <h2 className="text-xl font-semibold text-gray-800 mb-3 border-l-4 border-red-500 pl-3">
                   Om Arrangementet
                 </h2>
-                <p className="text-gray-700 leading-relaxed">
-                  {event.description}
-                </p>
+                <p className="text-gray-700 leading-relaxed">{event.description}</p>
               </div>
             )}
 
-            {/* Event Content */}
-            {event.content && (
-              <div className="prose max-w-none">
-                <div dangerouslySetInnerHTML={{ __html: event.content }} />
-              </div>
-            )}
+            <div className="prose max-w-none">
+              {event.content ? (
+                <ReactMarkdown>{event.content}</ReactMarkdown>
+              ) : (
+                <p>Ingen innhold tilgjengelig for dette eventet.</p>
+              )}
+            </div>
 
             {/* Registration Section */}
             <div className="mt-12 pt-8 border-t border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                Påmelding
-              </h2>
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">Påmelding</h2>
               <div className="bg-blue-50 p-5 rounded-lg">
-                <h3 className="text-lg font-medium text-blue-800">
-                  Vil du delta?
-                </h3>
+                <h3 className="text-lg font-medium text-blue-800">Vil du delta?</h3>
                 <p className="mt-2 text-sm text-blue-600">
-                  For å melde deg på dette arrangementet, vennligst ta kontakt
-                  med oss via skjemaet nedenfor eller bruk kontaktinformasjonen
-                  til høyre.
+                  For å melde deg på dette arrangementet, vennligst ta kontakt med oss via skjemaet nedenfor eller bruk
+                  kontaktinformasjonen til høyre.
                 </p>
                 <button
                   className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"

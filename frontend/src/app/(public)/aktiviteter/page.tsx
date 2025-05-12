@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 export default function ActivitiesRedirectPage() {
   const router = useRouter();
@@ -13,7 +14,7 @@ export default function ActivitiesRedirectPage() {
 
   return (
     <div className="flex justify-center items-center min-h-screen">
-      <p>Redirecting...</p>
+      <LoadingSpinner className="w-16 h-16" />
     </div>
   );
 }

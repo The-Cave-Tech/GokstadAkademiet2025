@@ -47,9 +47,7 @@ export default function EventsPage() {
     if (state.filteredEvents.length === 0) {
       return (
         <div className="text-center py-10">
-          <h3 className="text-xl font-medium text-gray-700">
-            Ingen arrangementer funnet
-          </h3>
+          <h3 className="text-xl font-medium text-gray-700">Ingen arrangementer funnet</h3>
           <p className="mt-2 text-gray-500">Prøv å justere søk eller filter</p>
         </div>
       );
@@ -58,10 +56,7 @@ export default function EventsPage() {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {state.filteredEvents.map((event) => (
-          <UniversalCard
-            key={event.id}
-            {...adaptEventToCardProps(event, handleEventClick)}
-          />
+          <UniversalCard key={event.id} {...adaptEventToCardProps(event, handleEventClick)} />
         ))}
       </div>
     );
@@ -72,13 +67,11 @@ export default function EventsPage() {
       activeTab="events"
       onTabAction={handleTabChange}
       searchQuery={state.searchQuery}
-      onSearchAction={(query) =>
-        dispatch({ type: "SET_SEARCH_QUERY", payload: query })
-      }
+      onSearchAction={(query) => dispatch({ type: "SET_SEARCH_QUERY", payload: query })}
       filter={state.filter}
-      onFilterAction={(filter) =>
-        dispatch({ type: "SET_FILTER", payload: filter })
-      }
+      onFilterAction={(filter) => dispatch({ type: "SET_FILTER", payload: filter })}
+      sort={state.sort}
+      onSortAction={(sort) => dispatch({ type: "SET_SORT", payload: sort })}
     >
       {renderContent()}
     </ActivitiesLayout>

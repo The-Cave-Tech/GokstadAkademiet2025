@@ -15,5 +15,10 @@ export const Theme = {
       text: "rgb(168, 77, 70)",
       border: "rgb(168, 77, 70)",
     },
+    success: {
+      background: "rgba(96, 125, 83, 0.1)",
+      text: "rgb(96, 125, 83)",
+      border: "rgb(96, 125, 83)",
+    },
   },
 };

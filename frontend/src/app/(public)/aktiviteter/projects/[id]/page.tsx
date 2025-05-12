@@ -9,8 +9,8 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { ProjectResponse } from "@/types/content.types";
 import { AiOutlineTool, AiOutlineGithub, AiOutlineLink } from "react-icons/ai";
 import { MdCategory } from "react-icons/md";
-import ProjectContent from "@/components/BlockRenderer";
 import BackButton from "@/components/BackButton";
+import ReactMarkdown from "react-markdown";
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -49,9 +49,7 @@ export default function ProjectDetailPage() {
 
         // If still not found, try finding by string ID
         if (!targetProject) {
-          targetProject = allProjects.find(
-            (p) => p.id.toString() === projectId
-          );
+          targetProject = allProjects.find((p) => p.id.toString() === projectId);
         }
 
         if (!targetProject) {
@@ -76,21 +74,18 @@ export default function ProjectDetailPage() {
 
   return (
     <div className="bg-white min-h-screen">
+      {/* Back button */}
+      <div className="max-w-6xl mx-auto px-4 pt-4">
+        <BackButton />
+      </div>
+
       {/* Header/Banner Image */}
       <div className="w-full h-64 relative bg-gray-200">
         {project.projectImage?.url ? (
-          <Image
-            src={project.projectImage.url}
-            alt={project.title}
-            fill
-            className="object-cover"
-            priority
-          />
+          <Image src={project.projectImage.url} alt={project.title} fill className="object-cover" priority />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-blue-50 to-blue-100">
-            <h1 className="text-3xl font-bold text-gray-700">
-              {project.title}
-            </h1>
+            <h1 className="text-3xl font-bold text-gray-700">{project.title}</h1>
           </div>
         )}
       </div>
@@ -101,51 +96,24 @@ export default function ProjectDetailPage() {
           {/* Left Sidebar */}
           <div className="md:w-1/4">
             <div className="bg-white p-6 rounded-lg shadow-md">
-              {/* Profile Image and Name */}
-              <div className="flex flex-col items-center mb-6">
-                <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 mb-4 relative">
-                  {/* Could be replaced with user profile image if added to ProjectResponse type */}
-                  <div className="absolute inset-0 flex items-center justify-center text-3xl font-bold text-gray-400">
-                    {project.title.charAt(0).toUpperCase()}
-                  </div>
-                </div>
-                <h3 className="text-xl font-semibold text-center">
-                  {project.title}
-                </h3>
-                <p className="text-sm text-gray-500 mt-1">
-                  {project.documentId
-                    ? `ID: ${project.documentId}`
-                    : `ID: ${project.id}`}
-                </p>
-              </div>
-
               {/* Project Info */}
               <div className="mt-6">
-                <h4 className="font-medium text-gray-700 mb-2">
-                  Prosjekt info
-                </h4>
+                <h4 className="font-medium text-gray-700 mb-2">Prosjekt info</h4>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-center gap-2">
                     <MdCategory className="text-gray-500" />
                     <span>{project.category || "Ikke kategorisert"}</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span
-                      className={`inline-block w-3 h-3 rounded-full ${getStateColor(project.state || "")}`}
-                    ></span>
+                    <span className={`inline-block w-3 h-3 rounded-full ${getStateColor(project.state || "")}`}></span>
                     <span>{getStateText(project.state || "")}</span>
                   </li>
                   {project.technologies && project.technologies.length > 0 && (
                     <li>
-                      <div className="text-gray-700 mb-1 mt-4">
-                        Teknologier:
-                      </div>
+                      <div className="text-gray-700 mb-1 mt-4">Teknologier:</div>
                       <div className="flex flex-wrap gap-2 mt-1">
                         {project.technologies.map((tech, index) => (
-                          <span
-                            key={index}
-                            className="px-2 py-1 bg-gray-100 text-xs rounded-md text-gray-700"
-                          >
+                          <span key={index} className="px-2 py-1 bg-gray-100 text-xs rounded-md text-gray-700">
                             {tech}
                           </span>
                         ))}
@@ -183,15 +151,9 @@ export default function ProjectDetailPage() {
 
               {/* Project Metadata */}
               <div className="mt-8 pt-6 border-t border-gray-100 text-xs text-gray-500 space-y-1">
-                {project.publishedAt && (
-                  <p>Publisert: {formatDate(project.publishedAt)}</p>
-                )}
-                {project.createdAt && (
-                  <p>Opprettet: {formatDate(project.createdAt)}</p>
-                )}
-                {project.updatedAt && (
-                  <p>Sist oppdatert: {formatDate(project.updatedAt)}</p>
-                )}
+                {project.publishedAt && <p>Publisert: {formatDate(project.publishedAt)}</p>}
+                {project.createdAt && <p>Opprettet: {formatDate(project.createdAt)}</p>}
+                {project.updatedAt && <p>Sist oppdatert: {formatDate(project.updatedAt)}</p>}
               </div>
             </div>
           </div>
@@ -200,9 +162,7 @@ export default function ProjectDetailPage() {
           <div className="md:w-3/4">
             {/* Project Title and Header */}
             <div className="border-b border-gray-200 pb-4 mb-6">
-              <h1 className="text-3xl font-bold text-gray-800">
-                {project.title}
-              </h1>
+              <h1 className="text-3xl font-bold text-gray-800">{project.title}</h1>
               <div className="text-sm text-red-500 mt-2 tracking-wider uppercase">
                 PROSJEKT • {project.category || "UKATEGORISERT"} •{" "}
                 {formatDate(project.publishedAt || project.createdAt || "")}
@@ -215,36 +175,18 @@ export default function ProjectDetailPage() {
                 <h2 className="text-xl font-semibold text-gray-800 mb-3 border-l-4 border-red-500 pl-3">
                   Om Prosjektet
                 </h2>
-                <p className="text-gray-700 leading-relaxed">
-                  {project.description}
-                </p>
+                <p className="text-gray-700 leading-relaxed">{project.description}</p>
               </div>
             )}
 
-            {/* Project Content using Strapi Blocks Renderer */}
+            {/* Project Content using Markdown Renderer */}
             <div className="prose max-w-none">
-              <ProjectContent content={project.content} />
+              {project.content ? (
+                <ReactMarkdown>{project.content}</ReactMarkdown>
+              ) : (
+                <p>Ingen innhold tilgjengelig for dette prosjektet.</p>
+              )}
             </div>
-
-            {/* Technologies Detail Section */}
-            {project.technologies && project.technologies.length > 0 && (
-              <div className="mt-12 pt-8 border-t border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                  Teknologier og verktøy
-                </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                  {project.technologies.map((tech, index) => (
-                    <div
-                      key={index}
-                      className="bg-gray-50 p-4 rounded-lg flex flex-col items-center justify-center text-center"
-                    >
-                      <AiOutlineTool className="text-2xl text-gray-700 mb-2" />
-                      <span className="text-gray-800 font-medium">{tech}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>

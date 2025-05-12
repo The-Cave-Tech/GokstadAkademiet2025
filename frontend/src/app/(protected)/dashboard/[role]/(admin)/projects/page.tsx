@@ -4,11 +4,7 @@ import React, { useState, useEffect } from "react";
 import { projectService } from "@/lib/data/services/projectService";
 import { formatDate } from "@/lib/utils/eventUtils";
 import BackButton from "@/components/BackButton";
-import {
-  AdminTable,
-  AdminColumn,
-  AdminAction,
-} from "@/components/dashboard/contentManager/AdminContentTable";
+import { AdminTable, AdminColumn, AdminAction } from "@/components/dashboard/contentManager/AdminContentTable";
 import { MdCategory } from "react-icons/md";
 import { Theme } from "@/styles/activityTheme";
 
@@ -25,10 +21,7 @@ export default function ProjectsAdminPage() {
   const loadProjects = async () => {
     setIsLoading(true);
     try {
-      const data = await projectService.getAll({
-        sort: ["createdAt:desc"],
-        populate: ["projectImage"],
-      });
+      const data = await projectService.getAll();
 
       // Add a documentId lookup map to each project for quick reference
       const enhancedData = data.map((project) => {
@@ -51,9 +44,7 @@ export default function ProjectsAdminPage() {
   };
 
   // Find project by documentId and get the actual ID
-  const findProjectIdByDocumentId = (
-    documentId: string
-  ): number | string | null => {
+  const findProjectIdByDocumentId = (documentId: string): number | string | null => {
     for (const project of projects) {
       // If the project has this documentId, return its numeric id
       if (project.documentId === documentId) {
@@ -103,39 +94,28 @@ export default function ProjectsAdminPage() {
       if (success) {
         setSuccessMessage("Project deleted successfully!");
         // Update the projects state by filtering out the deleted project
-        setProjects((prevProjects) =>
-          prevProjects.filter((project) => project.id !== projectToDelete.id)
-        );
+        setProjects((prevProjects) => prevProjects.filter((project) => project.id !== projectToDelete.id));
       } else {
         // Fall back to client-side only delete
         setSuccessMessage("Project removed from view");
 
         // Add to localStorage for persistence
         try {
-          const deletedIds = JSON.parse(
-            localStorage.getItem("deletedProjectIds") || "[]"
-          );
+          const deletedIds = JSON.parse(localStorage.getItem("deletedProjectIds") || "[]");
           const idToStore = String(projectToDelete.id);
           if (!deletedIds.includes(idToStore)) {
             deletedIds.push(idToStore);
-            localStorage.setItem(
-              "deletedProjectIds",
-              JSON.stringify(deletedIds)
-            );
+            localStorage.setItem("deletedProjectIds", JSON.stringify(deletedIds));
           }
         } catch (e) {
           console.error("Failed to update localStorage:", e);
         }
 
         // Update UI
-        setProjects((prevProjects) =>
-          prevProjects.filter((project) => project.id !== projectToDelete.id)
-        );
+        setProjects((prevProjects) => prevProjects.filter((project) => project.id !== projectToDelete.id));
       }
     } catch (error) {
-      setError(
-        `Failed to delete project: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
+      setError(`Failed to delete project: ${error instanceof Error ? error.message : "Unknown error"}`);
     } finally {
       // Clear the success message after 3 seconds
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -180,11 +160,7 @@ export default function ProjectsAdminPage() {
       render: (project) => (
         <div>
           <div className="font-medium">{project.title}</div>
-          {project.description && (
-            <div className="mt-1 truncate max-w-xs text-gray-600">
-              {project.description}
-            </div>
-          )}
+          {project.description && <div className="mt-1 truncate max-w-xs text-gray-600">{project.description}</div>}
         </div>
       ),
     },
@@ -222,20 +198,13 @@ export default function ProjectsAdminPage() {
 
         return (
           <div className="flex flex-wrap gap-1">
-            {project.technologies
-              .slice(0, 3)
-              .map((tech: string, index: number) => (
-                <span
-                  key={index}
-                  className="inline-block px-2 py-1 text-xs rounded-md bg-gray-100 text-gray-700"
-                >
-                  {tech}
-                </span>
-              ))}
-            {project.technologies.length > 3 && (
-              <span className="text-xs text-gray-500 self-center">
-                +{project.technologies.length - 3} more
+            {project.technologies.slice(0, 3).map((tech: string, index: number) => (
+              <span key={index} className="inline-block px-2 py-1 text-xs rounded-md bg-gray-100 text-gray-700">
+                {tech}
               </span>
+            ))}
+            {project.technologies.length > 3 && (
+              <span className="text-xs text-gray-500 self-center">+{project.technologies.length - 3} more</span>
             )}
           </div>
         );
@@ -307,10 +276,7 @@ export default function ProjectsAdminPage() {
   ];
 
   return (
-    <section
-      className="p-4 bg-white shadow-md rounded-lg"
-      style={{ backgroundColor: Theme.colors.background }}
-    >
+    <section className="p-4 bg-white shadow-md rounded-lg" style={{ backgroundColor: Theme.colors.background }}>
       <BackButton />
       <AdminTable
         title="Manage Projects"

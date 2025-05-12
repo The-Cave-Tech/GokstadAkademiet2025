@@ -4,11 +4,7 @@ import React, { useState, useEffect } from "react";
 import { eventsService } from "@/lib/data/services/eventService";
 import { formatDate } from "@/lib/utils/eventUtils";
 import BackButton from "@/components/BackButton";
-import {
-  AdminTable,
-  AdminColumn,
-  AdminAction,
-} from "@/components/dashboard/contentManager/AdminContentTable";
+import { AdminTable, AdminColumn, AdminAction } from "@/components/dashboard/contentManager/AdminContentTable";
 import { MdLocationOn, MdCalendarToday, MdAccessTime } from "react-icons/md";
 
 export default function EventsAdminPage() {
@@ -24,10 +20,7 @@ export default function EventsAdminPage() {
   const loadEvents = async () => {
     setIsLoading(true);
     try {
-      const data = await eventsService.getAll({
-        sort: ["startDate:desc"],
-        populate: ["eventCardImage"],
-      });
+      const data = await eventsService.getAll();
 
       // Add a documentId lookup map to each event for quick reference
       const enhancedData = data.map((event) => {
@@ -50,9 +43,7 @@ export default function EventsAdminPage() {
   };
 
   // Find event by documentId and get the actual ID
-  const findEventIdByDocumentId = (
-    documentId: string
-  ): number | string | null => {
+  const findEventIdByDocumentId = (documentId: string): number | string | null => {
     for (const event of events) {
       // If the event has this documentId, return its numeric id
       if (event.documentId === documentId) {
@@ -102,18 +93,14 @@ export default function EventsAdminPage() {
       if (success) {
         setSuccessMessage("Event deleted successfully!");
         // Update the events state by filtering out the deleted event
-        setEvents((prevEvents) =>
-          prevEvents.filter((event) => event.id !== eventToDelete.id)
-        );
+        setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventToDelete.id));
       } else {
         // Fall back to client-side only delete
         setSuccessMessage("Event removed from view");
 
         // Add to localStorage for persistence
         try {
-          const deletedIds = JSON.parse(
-            localStorage.getItem("deletedEventIds") || "[]"
-          );
+          const deletedIds = JSON.parse(localStorage.getItem("deletedEventIds") || "[]");
           const idToStore = String(eventToDelete.id);
           if (!deletedIds.includes(idToStore)) {
             deletedIds.push(idToStore);
@@ -124,14 +111,10 @@ export default function EventsAdminPage() {
         }
 
         // Update UI
-        setEvents((prevEvents) =>
-          prevEvents.filter((event) => event.id !== eventToDelete.id)
-        );
+        setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventToDelete.id));
       }
     } catch (error) {
-      setError(
-        `Failed to delete event: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
+      setError(`Failed to delete event: ${error instanceof Error ? error.message : "Unknown error"}`);
     } finally {
       // Clear the success message after 3 seconds
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -159,11 +142,7 @@ export default function EventsAdminPage() {
       render: (event) => (
         <div>
           <div className="font-medium">{event.title}</div>
-          {event.description && (
-            <div className="mt-1 truncate max-w-xs text-gray-600">
-              {event.description}
-            </div>
-          )}
+          {event.description && <div className="mt-1 truncate max-w-xs text-gray-600">{event.description}</div>}
         </div>
       ),
     },
@@ -178,9 +157,7 @@ export default function EventsAdminPage() {
             <span>{formatDate(event.startDate)}</span>
           </div>
           {event.endDate && event.endDate !== event.startDate && (
-            <div className="mt-1 ml-5.5 text-gray-600">
-              to {formatDate(event.endDate)}
-            </div>
+            <div className="mt-1 ml-5.5 text-gray-600">to {formatDate(event.endDate)}</div>
           )}
           {event.time && (
             <div className="mt-1 flex items-center text-gray-600">

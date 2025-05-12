@@ -1,43 +1,28 @@
 // Updated projectService.ts following your current structure with Strapi v5 fixes
-import {
-  ProjectAttributes,
-  ProjectResponse,
-  Media,
-} from "@/types/content.types";
+import { ProjectAttributes, ProjectResponse, Media } from "@/types/content.types";
 import { strapiService } from "@/lib/data/services/strapiClient";
 
 // Projects service
 export const projectService = {
   // Get all projects with optional filters, sorting, and pagination
-  getAll: async (
-    params: Record<string, unknown> = {}
-  ): Promise<ProjectResponse[]> => {
+  getAll: async (params: Record<string, unknown> = {}): Promise<ProjectResponse[]> => {
     try {
-      // Using collection method for consistent approach
-      const projectsCollection = strapiService.collection("projects");
-
-      // Ensure populate parameter is properly typed
+      // Add default sorting to show the most recently created projects first
       const queryParams: Record<string, unknown> = {
         ...params,
         populate: params.populate || ["projectImage"], // Ensure projectImage is populated
       };
 
-      // Use the collection's find method
+      const projectsCollection = strapiService.collection("projects");
       const response = await projectsCollection.find(queryParams);
 
       if (!response.data || !Array.isArray(response.data)) {
-        throw new Error(
-          "Invalid response format: No projects found or data is not an array"
-        );
+        throw new Error("Invalid response format: No projects found or data is not an array");
       }
 
-      // Transform the response to match our ProjectResponse type
-      // Ensure we preserve documentId if it exists
       return response.data.map((item) => {
-        // Extract the base project data directly without attributes nesting
         const project: ProjectResponse = {
           id: item.id,
-          // Explicitly preserve documentId if it exists
           documentId: item.documentId || undefined,
           title: item.title,
           description: item.description,
@@ -52,42 +37,16 @@ export const projectService = {
           publishedAt: item.publishedAt,
         };
 
-        // Process the image data if it exists
         if (item.projectImage) {
-          // Handle both direct and nested data structures
-          let imageUrl: string;
-
-          // For Strapi v5
-          if (typeof item.projectImage.data !== "undefined") {
-            // This means we're dealing with the original nested structure
-            const data = item.projectImage.data;
-
-            if (data) {
-              // Structure with attributes (old format)
-              imageUrl = strapiService.media.getMediaUrl(data);
-
-              project.projectImage = {
-                id: data.id || 0,
-                url: imageUrl,
-                alternativeText: data.alternativeText,
-                width: data.width,
-                height: data.height,
-                formats: data.formats,
-              };
-            }
-          } else {
-            // Direct format - no nesting
-            imageUrl = strapiService.media.getMediaUrl(item.projectImage);
-
-            project.projectImage = {
-              id: item.projectImage.id || 0,
-              url: imageUrl,
-              alternativeText: item.projectImage.alternativeText,
-              width: item.projectImage.width,
-              height: item.projectImage.height,
-              formats: item.projectImage.formats,
-            };
-          }
+          const imageUrl = strapiService.media.getMediaUrl(item.projectImage);
+          project.projectImage = {
+            id: item.projectImage.id || 0,
+            url: imageUrl,
+            alternativeText: item.projectImage.alternativeText,
+            width: item.projectImage.width,
+            height: item.projectImage.height,
+            formats: item.projectImage.formats,
+          };
         }
 
         return project;
@@ -95,19 +54,14 @@ export const projectService = {
     } catch (error) {
       console.error(
         "Error fetching projects:",
-        new Error(
-          `Failed to retrieve projects: ${error instanceof Error ? error.message : String(error)}`
-        )
+        new Error(`Failed to retrieve projects: ${error instanceof Error ? error.message : String(error)}`)
       );
       return [];
     }
   },
 
   // Get a single project by ID
-  getOne: async (
-    id: string | number,
-    params: Record<string, unknown> = {}
-  ): Promise<ProjectResponse | null> => {
+  getOne: async (id: string | number, params: Record<string, unknown> = {}): Promise<ProjectResponse | null> => {
     try {
       const projectsCollection = strapiService.collection("projects");
 
@@ -118,10 +72,7 @@ export const projectService = {
       };
 
       // Use the collection's findOne method
-      const response = await projectsCollection.findOne(
-        id.toString(),
-        queryParams
-      );
+      const response = await projectsCollection.findOne(id.toString(), queryParams);
 
       if (!response.data) {
         throw new Error(`Project with ID ${id} not found`);
@@ -166,9 +117,7 @@ export const projectService = {
           }
         } else {
           // Direct format - no nesting
-          imageUrl = strapiService.media.getMediaUrl(
-            response.data.projectImage
-          );
+          imageUrl = strapiService.media.getMediaUrl(response.data.projectImage);
 
           project.projectImage = {
             id: response.data.projectImage.id || 0,
@@ -185,9 +134,7 @@ export const projectService = {
     } catch (error) {
       console.error(
         "Error fetching project:",
-        new Error(
-          `Failed to retrieve project: ${error instanceof Error ? error.message : String(error)}`
-        )
+        new Error(`Failed to retrieve project: ${error instanceof Error ? error.message : String(error)}`)
       );
       return null;
     }
@@ -199,10 +146,7 @@ export const projectService = {
   },
 
   // Create a new project - with TypeScript-safe implementation
-  create: async (
-    data: Partial<ProjectAttributes>,
-    projectImage?: File | null
-  ): Promise<ProjectResponse> => {
+  create: async (data: Partial<ProjectAttributes>, projectImage?: File | null): Promise<ProjectResponse> => {
     try {
       // Process technologies if they come as a comma-separated string
       let technologiesArray: string[] = [];
@@ -243,13 +187,10 @@ export const projectService = {
       const payload = { data: cleanData };
 
       // Use the direct API call approach
-      const response = await strapiService.fetch<{ data?: { id?: number } }>(
-        "projects",
-        {
-          method: "POST",
-          body: payload,
-        }
-      );
+      const response = await strapiService.fetch<{ data?: { id?: number } }>("projects", {
+        method: "POST",
+        body: payload,
+      });
 
       if (!response?.data?.id) {
         throw new Error("Invalid response from server when creating project");
@@ -283,9 +224,7 @@ export const projectService = {
     } catch (error) {
       console.error(
         "Error creating project:",
-        new Error(
-          `Failed to create project: ${error instanceof Error ? error.message : String(error)}`
-        )
+        new Error(`Failed to create project: ${error instanceof Error ? error.message : String(error)}`)
       );
       throw error;
     }
@@ -305,9 +244,7 @@ export const projectService = {
       if (!isDocumentId) {
         // Fetch all projects to find the matching one with its documentId
         const allProjects = await projectService.getAll({});
-        const matchingProject = allProjects.find(
-          (project) => String(project.id) === String(id)
-        );
+        const matchingProject = allProjects.find((project) => String(project.id) === String(id));
 
         if (matchingProject && matchingProject.documentId) {
           id = matchingProject.documentId;
@@ -356,9 +293,7 @@ export const projectService = {
     } catch (error) {
       console.error(
         "Error updating project:",
-        new Error(
-          `Failed to update project: ${error instanceof Error ? error.message : String(error)}`
-        )
+        new Error(`Failed to update project: ${error instanceof Error ? error.message : String(error)}`)
       );
       throw error;
     }
@@ -384,10 +319,7 @@ export const projectService = {
   },
 
   // Upload project image
-  uploadProjectImage: async (
-    projectId: number | string,
-    image: File
-  ): Promise<void> => {
+  uploadProjectImage: async (projectId: number | string, image: File): Promise<void> => {
     try {
       const formData = new FormData();
       formData.append("ref", "api::project.project");
@@ -402,9 +334,7 @@ export const projectService = {
     } catch (error) {
       console.error(
         "Error uploading project image:",
-        new Error(
-          `Failed to upload image: ${error instanceof Error ? error.message : String(error)}`
-        )
+        new Error(`Failed to upload image: ${error instanceof Error ? error.message : String(error)}`)
       );
       throw error;
     }

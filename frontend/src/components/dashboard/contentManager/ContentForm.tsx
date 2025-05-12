@@ -3,26 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import TipTapEditor from "@/components/ui/TipTapEditor";
-
-export interface ContentFormProps {
-  event?: Event;
-  onSave: (data: any, image?: File | null) => Promise<void>;
-  onCancel: () => void;
-  isLoading: boolean;
-  config: {
-    type: "event" | "project" | "blog"; // Determines the type of content
-    fields: Array<{
-      name: string;
-      label: string;
-      type: string;
-      required?: boolean;
-      options?: string[]; // For dropdowns like state
-    }>;
-    getImageUrl?: (item: any) => string; // Function to get the image URL
-    imageName?: string; // Label for the image field
-  };
-  data?: any; // Existing data for editing (optional)
-}
+import { ContentFormProps } from "@/types/content.types";
 
 const ContentForm: React.FC<ContentFormProps> = ({
   onSave,

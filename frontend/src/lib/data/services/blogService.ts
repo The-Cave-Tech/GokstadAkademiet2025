@@ -5,9 +5,7 @@ import { strapiService } from "@/lib/data/services/strapiClient";
 // Blog service
 export const blogService = {
   // Get all blog posts with optional filters, sorting, and pagination
-  getAll: async (
-    params: Record<string, unknown> = {}
-  ): Promise<BlogResponse[]> => {
+  getAll: async (params: Record<string, unknown> = {}): Promise<BlogResponse[]> => {
     try {
       // Using collection method for consistent approach
       const blogsCollection = strapiService.collection("blogs");
@@ -15,7 +13,7 @@ export const blogService = {
       // Ensure populate parameter is properly typed
       const queryParams: Record<string, unknown> = {
         ...params,
-        populate: params.populate || ["blogImage", "author"],
+        populate: ["blogImage", "author"],
       };
 
       // Use the collection's find method
@@ -100,10 +98,7 @@ export const blogService = {
   },
 
   // Get a single blog post by ID
-  getOne: async (
-    id: number | string,
-    params: Record<string, unknown> = {}
-  ): Promise<BlogResponse | null> => {
+  getOne: async (id: number | string, params: Record<string, unknown> = {}): Promise<BlogResponse | null> => {
     try {
       const blogsCollection = strapiService.collection("blogs");
 
@@ -114,10 +109,7 @@ export const blogService = {
       };
 
       // Use the collection's findOne method
-      const response = await blogsCollection.findOne(
-        id.toString(),
-        queryParams
-      );
+      const response = await blogsCollection.findOne(id.toString(), queryParams);
 
       if (!response.data) return null;
 
@@ -184,10 +176,7 @@ export const blogService = {
   },
 
   // Create a new blog post
-  create: async (
-    data: Partial<BlogAttributes>,
-    blogImage?: File | null
-  ): Promise<BlogResponse> => {
+  create: async (data: Partial<BlogAttributes>, blogImage?: File | null): Promise<BlogResponse> => {
     try {
       // Process tags if they come as a comma-separated string
       let processedTags: string[] = [];
@@ -237,9 +226,7 @@ export const blogService = {
           content: payload.data.content,
           category: payload.data.category || "",
           tags: processedTags,
-          state:
-            (payload.data.state as "draft" | "published" | "archived") ||
-            "draft",
+          state: (payload.data.state as "draft" | "published" | "archived") || "draft",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
@@ -302,10 +289,7 @@ export const blogService = {
   },
 
   // Upload blog image
-  uploadBlogImage: async (
-    blogId: number | string,
-    image: File
-  ): Promise<void> => {
+  uploadBlogImage: async (blogId: number | string, image: File): Promise<void> => {
     try {
       const formData = new FormData();
       formData.append("ref", "api::blog.blog");
