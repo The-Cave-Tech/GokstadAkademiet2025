@@ -665,6 +665,14 @@ export default function LandingPageContent() {
                 <p className="text-gray-500">Ingen prosjekter funnet</p>
               </div>
             )}
+            <div className="col-span-full w-full">
+              <Link
+                href="/aktiviteter/projects"
+                className=" block text-right hover:underline text-sm"
+              >
+                Gå til prosjekter →
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -697,6 +705,14 @@ export default function LandingPageContent() {
                 <p className="text-gray-500">Ingen arrangementer funnet</p>
               </div>
             )}
+            <div className="col-span-full w-full">
+              <Link
+                href="/aktiviteter/events"
+                className=" block text-right hover:underline text-sm"
+              >
+                Gå til arrangementer →
+              </Link>
+            </div>
           </div>
         </div>
       </section>
