@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -7,20 +7,23 @@ import Image from "next/image";
 import { SiteLogo } from "@/components/ui/SiteLogo";
 import { LogoutButton } from "@/components/LogoutButton";
 import { useAuth } from "@/lib/context/AuthContext";
-import { getUserProfile, getUserCredentials } from "@/lib/data/services/userProfile";
+import {
+  getUserProfile,
+  getUserCredentials,
+} from "@/lib/data/services/userProfile";
 import { getProfileImageUrl } from "@/lib/data/services/profileSections/publicProfileService";
 
 export const Header = () => {
   // State for UI controls
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [profileDropdown, setProfileDropdown] = useState(false);
-  
+
   // State for user data
   const [profileData, setProfileData] = useState<any>(null);
   const [username, setUsername] = useState("");
-  
+
   // Auth context
-  const { isAuthenticated} = useAuth();
+  const { isAuthenticated } = useAuth();
   const pathname = usePathname();
 
   // Check if we're on dashboard page
@@ -29,15 +32,15 @@ export const Header = () => {
   // Fetch user profile data whenever auth state changes
   useEffect(() => {
     let isMounted = true;
-    
+
     const fetchProfileData = async () => {
       if (!isAuthenticated) return;
-      
+
       try {
         // Then fetch user data
         const credentials = await getUserCredentials();
         const profile = await getUserProfile();
-        
+
         // Only update state if component is still mounted
         if (isMounted) {
           setUsername(credentials.username);
@@ -47,9 +50,9 @@ export const Header = () => {
         console.error("Failed to fetch profile data:", error);
       }
     };
-    
+
     fetchProfileData();
-    
+
     return () => {
       isMounted = false;
     };
@@ -66,15 +69,15 @@ export const Header = () => {
     const handleClickOutside = (e) => {
       if (profileDropdown) {
         const target = e.target;
-        if (!target.closest('[data-dropdown]')) {
+        if (!target.closest("[data-dropdown]")) {
           setProfileDropdown(false);
         }
       }
     };
 
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
   }, [profileDropdown]);
 
@@ -90,7 +93,7 @@ export const Header = () => {
       try {
         const credentials = await getUserCredentials();
         const profile = await getUserProfile();
-        
+
         setUsername(credentials.username);
         setProfileData(profile);
       } catch (error) {
@@ -101,12 +104,13 @@ export const Header = () => {
   };
 
   // Get profile image with fallback
-  const profileImageUrl = profileData 
-    ? getProfileImageUrl(profileData) 
+  const profileImageUrl = profileData
+    ? getProfileImageUrl(profileData)
     : "/profileIcons/avatar-default.svg";
-  
+
   // Get display name with fallback
-  const displayName = profileData?.publicProfile?.displayName || username || "BrukerNavn";
+  const displayName =
+    profileData?.publicProfile?.displayName || username || "BrukerNavn";
 
   // Navigation items
   const navItems = [
@@ -114,7 +118,7 @@ export const Header = () => {
     { name: "Nettbutikk", href: "/nettbutikk" },
     { name: "Blogg", href: "/blogg" },
     { name: "Om oss", href: "/om-oss" },
-    { name: "Kontakt oss", href: "/kontakt-oss" }
+    { name: "Kontakt oss", href: "/kontakt-oss" },
   ];
 
   // Check if a route is active
@@ -163,29 +167,65 @@ export const Header = () => {
                     aria-label="Åpne brukermeny"
                     data-dropdown="true"
                   >
-                      <Image
-                        src={profileImageUrl}
-                        alt="Profilbilde"
-                        width={34}
-                        height={34}
-                        className="object-cover w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden"
+                    <Image
+                      src={profileImageUrl}
+                      alt="Profilbilde"
+                      width={34}
+                      height={34}
+                      className="object-cover w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden"
+                      data-dropdown="true"
+                    />
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                      data-dropdown="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
                         data-dropdown="true"
-                      />
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" data-dropdown="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" data-dropdown="true"></path>
+                      ></path>
                     </svg>
                   </button>
 
                   {/* Profile Dropdown */}
                   {profileDropdown && (
-                    <div 
+                    <div
                       className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200"
                       data-dropdown="true"
                     >
-                      <div className="px-4 py-2 text-gray-800 border-b border-gray-200 flex items-center gap-2" data-dropdown="true">
-                        <span className="truncate" data-dropdown="true">{displayName}</span>
+                      <div
+                        className="px-4 py-2 text-gray-800 border-b border-gray-200 flex items-center gap-2"
+                        data-dropdown="true"
+                      >
+                        <span className="truncate" data-dropdown="true">
+                          {displayName}
+                        </span>
                       </div>
-                      
+
+                      {/* Handlekurv - disabled if already on cart page */}
+                      {pathname === "/nettbutikk/cart" ? (
+                        <div
+                          className="block px-4 py-2 text-sm text-gray-400 cursor-default"
+                          data-dropdown="true"
+                        >
+                          Handlekurv
+                        </div>
+                      ) : (
+                        <Link
+                          href="/nettbutikk/cart"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          data-dropdown="true"
+                        >
+                          Handlekurv
+                        </Link>
+                      )}
+
                       {/* Min side - disabled when on dashboard */}
                       {isDashboard ? (
                         <div
@@ -203,8 +243,11 @@ export const Header = () => {
                           Min side
                         </Link>
                       )}
-                      
-                      <div className="border-t border-gray-200 pt-1" data-dropdown="true">
+
+                      <div
+                        className="border-t border-gray-200 pt-1"
+                        data-dropdown="true"
+                      >
                         <LogoutButton className="block w-full text-left px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600" />
                       </div>
                     </div>
@@ -215,8 +258,19 @@ export const Header = () => {
                   href="/signin"
                   className="flex items-center space-x-1 text-gray-800"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    ></path>
                   </svg>
                   <span>Logg inn</span>
                 </Link>
@@ -234,12 +288,34 @@ export const Header = () => {
               >
                 <span className="sr-only">Åpne meny</span>
                 {isMenuOpen ? (
-                  <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="block h-6 w-6"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 ) : (
-                  <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <svg
+                    className="block h-6 w-6"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
                   </svg>
                 )}
               </button>
@@ -264,7 +340,9 @@ export const Header = () => {
                         className="object-cover"
                       />
                     </div>
-                    <span className="font-medium text-gray-800">{displayName}</span>
+                    <span className="font-medium text-gray-800">
+                      {displayName}
+                    </span>
                   </div>
                 </div>
               )}
@@ -283,11 +361,9 @@ export const Header = () => {
               ))}
 
               {/* Min side - disabled when on dashboard */}
-              {isAuthenticated && (
-                isDashboard ? (
-                  <div
-                    className="block px-3 py-2 text-gray-400 rounded cursor-default bg-gray-50"
-                  >
+              {isAuthenticated &&
+                (isDashboard ? (
+                  <div className="block px-3 py-2 text-gray-400 rounded cursor-default bg-gray-50">
                     Min side
                   </div>
                 ) : (
@@ -297,8 +373,7 @@ export const Header = () => {
                   >
                     Min side
                   </Link>
-                )
-              )}
+                ))}
 
               {/* Login/Logout button */}
               {isAuthenticated ? (
