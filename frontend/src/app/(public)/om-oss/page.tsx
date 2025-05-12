@@ -27,7 +27,7 @@ export default function AboutUsPage() {
       {/* Header for Om oss-siden */}
       <div className="bg-indigo-700 text-white py-12">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Om Oss</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Om oss</h1>
           <p className="text-xl max-w-3xl mx-auto">
             Bli bedre kjent med selskapet vårt, vår historie, og menneskene som
             gjør det mulig.
