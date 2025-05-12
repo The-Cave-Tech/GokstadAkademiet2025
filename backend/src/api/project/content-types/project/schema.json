@@ -49,7 +49,14 @@
       "type": "string"
     },
     "category": {
-      "type": "string"
+      "type": "enumeration",
+      "enum": [
+        "Frontend",
+        "Backend",
+        "DevOps",
+        "Design",
+        "Printing "
+      ]
     }
   }
 }
