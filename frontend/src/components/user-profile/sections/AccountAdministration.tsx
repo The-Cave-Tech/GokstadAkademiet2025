@@ -134,17 +134,17 @@ export function AccountAdministration() {
           </figcaption>
         </figure>
         <div>
-          <h2 className="text-base font-medium text-gray-900">
+          <h2 className="text-body-small font-medium text-typographyPrimary">
             Kontoadministrasjon
           </h2>
-          <p className="text-sm text-gray-600">Faresone</p>
+          <p className="text-sm text-grayed">Faresone</p>
         </div>
       </CardHeader>
 
       <CardBody className="pt-5 px-4 rounded-md">
         <div className="space-y-6">
           <div className="space-y-4">
-            <p className="text-base text-gray-800">
+            <p className="text-body-small text-typographyPrimary">
               Sletting av kontoen er permanent og kan ikke angres. All din data
               vil bli slettet, inkludert personlig informasjon, reservasjoner og
               favoritter.

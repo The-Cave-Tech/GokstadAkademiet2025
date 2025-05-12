@@ -232,7 +232,7 @@ export default function NettbutikkPage() {
               ariaLabel="Sort products"
               placeholder="Sorter etter"
             />
-            <CartIcon />
+            <CartIcon className="ml-4" />
           </div>
         </div>
 

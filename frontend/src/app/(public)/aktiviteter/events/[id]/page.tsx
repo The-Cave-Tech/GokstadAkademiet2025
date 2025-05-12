@@ -99,7 +99,6 @@ export default function EventDetailPage() {
 
   return (
     <div className="bg-white min-h-screen">
-      <BackButton />
       {/* Header/Banner Image */}
       <div className="w-full h-64 relative bg-gray-200">
         {event.eventCardImage?.url ? (
@@ -109,6 +108,11 @@ export default function EventDetailPage() {
             <h1 className="text-3xl font-bold text-gray-700">{event.title}</h1>
           </div>
         )}
+      </div>
+
+      {/* Back button */}
+      <div className="max-w-6xl mx-auto px-4 pt-4">
+        <BackButton />
       </div>
 
       {/* Main Content Container */}

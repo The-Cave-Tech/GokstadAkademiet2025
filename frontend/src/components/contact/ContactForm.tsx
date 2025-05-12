@@ -8,6 +8,10 @@ import {
   getUserCredentials,
   getUserProfile,
 } from "@/lib/data/services/userProfile";
+import {
+  getUserCredentials,
+  getUserProfile,
+} from "@/lib/data/services/userProfile";
 import { contactService } from "@/lib/data/services/contactService";
 import { Button } from "@/components/ui/custom/Button";
 import PageIcons from "@/components/ui/custom/PageIcons";
@@ -27,7 +31,9 @@ export default function ContactForm() {
     email: "",
     phoneNumber: "",
     message: "",
+    message: "",
   });
+
 
   const [validationErrors, setValidationErrors] = useState<{
     [key in keyof ContactFormData]?: string;
@@ -67,10 +73,14 @@ export default function ContactForm() {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
 
     // Clear validation error when field is edited
     if (validationErrors[name as keyof ContactFormData]) {
+      setValidationErrors((prev) => ({
       setValidationErrors((prev) => ({
         ...prev,
         [name]: undefined,
@@ -79,6 +89,7 @@ export default function ContactForm() {
 
     setFormData((prev) => ({
       ...prev,
+      [name]: value,
       [name]: value,
     }));
   };
@@ -119,14 +130,18 @@ export default function ContactForm() {
     try {
       const validatedData = contactFormSchema.parse(formData);
 
+
       startTransition(async () => {
         try {
           // Submit to Strapi using the service
-          // Removed createdAt as it's not in the ContactSubmission type
-          await contactService.submitContactForm(validatedData);
+          await contactService.submitContactForm({
+            ...validatedData,
+            createdAt: new Date().toISOString(),
+          });
 
           // Show success message
           setSuccess(true);
+
 
           // Reset form
           setFormData({
@@ -134,10 +149,15 @@ export default function ContactForm() {
             email: "",
             phoneNumber: "",
             message: "",
+            message: "",
           });
+
 
           // Redirect with success message after a short delay
           setTimeout(() => {
+            router.push(
+              "/kontakt-oss?message=Takk for din henvendelse! Vi vil kontakte deg så snart som mulig."
+            );
             router.push(
               "/kontakt-oss?message=Takk for din henvendelse! Vi vil kontakte deg så snart som mulig."
             );
@@ -147,11 +167,16 @@ export default function ContactForm() {
           setGeneralError(
             "Det oppstod en feil ved sending av skjema. Vennligst prøv igjen senere."
           );
+          setGeneralError(
+            "Det oppstod en feil ved sending av skjema. Vennligst prøv igjen senere."
+          );
         }
       });
     } catch (error) {
       if (error instanceof ZodError) {
         // Map Zod errors to form fields
+        const errors: { [key in keyof ContactFormData]?: string } = {};
+        error.errors.forEach((err) => {
         const errors: { [key in keyof ContactFormData]?: string } = {};
         error.errors.forEach((err) => {
           const field = err.path[0] as keyof ContactFormData;
@@ -175,6 +200,12 @@ export default function ContactForm() {
           <p>
             Vi har mottatt meldingen din og vil kontakte deg så snart som mulig.
           </p>
+          <h3 className="text-xl font-medium mb-2">
+            Takk for din henvendelse!
+          </h3>
+          <p>
+            Vi har mottatt meldingen din og vil kontakte deg så snart som mulig.
+          </p>
         </div>
       </div>
     );
@@ -191,9 +222,22 @@ export default function ContactForm() {
             alt=""
             className="mt-0.5 mr-2 flex-shrink-0"
           />
+          <PageIcons
+            name="warning"
+            directory="profileIcons"
+            size={20}
+            alt=""
+            className="mt-0.5 mr-2 flex-shrink-0"
+          />
           <p>{generalError}</p>
         </div>
       )}
+
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-6"
+        aria-label="Kontaktskjema"
+      >
 
       <form
         onSubmit={handleSubmit}
@@ -207,6 +251,12 @@ export default function ContactForm() {
               className="block text-sm font-medium text-gray-700 mb-1"
             >
               Navn<span className="text-red-600">*</span>
+            </label>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Navn<span className="text-danger">*</span>
             </label>
             <input
               type="text"
@@ -223,9 +273,17 @@ export default function ContactForm() {
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 focus:ring-blue-500"
               } focus:outline-none focus:ring-2 bg-white`}
+              className={`w-full px-4 py-3 rounded-md border ${
+                validationErrors.name
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-blue-500"
+              } focus:outline-none focus:ring-2 bg-white`}
               autoComplete="name"
               aria-required="true"
               aria-invalid={!!validationErrors.name}
+              aria-describedby={
+                validationErrors.name ? "name-error" : undefined
+              }
               aria-describedby={
                 validationErrors.name ? "name-error" : undefined
               }
@@ -234,8 +292,12 @@ export default function ContactForm() {
               <p id="name-error" className="mt-1 text-sm text-red-600">
                 {validationErrors.name}
               </p>
+              <p id="name-error" className="mt-1 text-sm text-red-600">
+                {validationErrors.name}
+              </p>
             )}
           </div>
+
 
           <div>
             <label
@@ -258,8 +320,16 @@ export default function ContactForm() {
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 focus:ring-blue-500"
               } focus:outline-none focus:ring-2 bg-white`}
+              className={`w-full px-4 py-3 rounded-md border ${
+                validationErrors.phoneNumber
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-blue-500"
+              } focus:outline-none focus:ring-2 bg-white`}
               autoComplete="tel"
               aria-invalid={!!validationErrors.phoneNumber}
+              aria-describedby={
+                validationErrors.phoneNumber ? "phoneNumber-error" : undefined
+              }
               aria-describedby={
                 validationErrors.phoneNumber ? "phoneNumber-error" : undefined
               }
@@ -268,9 +338,13 @@ export default function ContactForm() {
               <p id="phoneNumber-error" className="mt-1 text-sm text-red-600">
                 {validationErrors.phoneNumber}
               </p>
+              <p id="phoneNumber-error" className="mt-1 text-sm text-red-600">
+                {validationErrors.phoneNumber}
+              </p>
             )}
           </div>
         </div>
+
 
         <div>
           <label
@@ -305,8 +379,12 @@ export default function ContactForm() {
             <p id="email-error" className="mt-1 text-sm text-red-600">
               {validationErrors.email}
             </p>
+            <p id="email-error" className="mt-1 text-sm text-red-600">
+              {validationErrors.email}
+            </p>
           )}
         </div>
+
 
         <div>
           <label

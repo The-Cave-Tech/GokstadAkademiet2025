@@ -92,8 +92,8 @@ export const ActivitiesLayout: React.FC<ActivitiesLayoutProps> = ({
               <SearchBar
                 searchQuery={searchQuery}
                 setSearchQuery={onSearchAction}
-                placeholder={activeTab === "projects" ? "Søk i prosjekter" : "Søk i arrangementer"}
-                ariaLabel={`Søk i ${activeTab === "projects" ? "prosjekter" : "arrangementer"}`}
+                placeholder={activeTab === "projects" ? "Søk etter prosjekter" : "Søk etter arrangementer"}
+                ariaLabel={`Søk etter ${activeTab === "projects" ? "prosjekter" : "arrangementer"}`}
               />
 
               <div className="flex flex-row gap-4">

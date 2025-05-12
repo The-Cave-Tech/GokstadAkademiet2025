@@ -187,157 +187,171 @@ export function PublicProfile({ profile, onProfileUpdate, refreshProfile }: Publ
 
   const buttonState = isSaving ? "loading" : isEditing ? "save" : "edit";
 
-  return (
-    <Card className="w-full bg-profile-background p-2">
-      <CardHeader className="flex items-center gap-3 rounded-md">
-        <figure className="w-profile-icon-container h-profile-icon-container rounded-full bg-profile-profileIcons flex items-center justify-center">
-          <PageIcons name="eye" directory="profileIcons" size={24} alt="Offentlig profil" />
-        </figure>
-        <div>
-          <h2 className="text-base font-medium text-gray-900">Offentlig profil</h2>
-          <p className="text-sm text-gray-600">Dine opplysninger som er synlig for alle</p>
-        </div>
-      </CardHeader>
+return (
+  <Card className="w-full bg-secondary shadow-elevation">
+    <CardHeader className="flex items-center gap-3 rounded-t-md bg-primary p-4">
+      <figure className="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+        <PageIcons name="eye" directory="profileIcons" size={24} alt="Offentlig profil" className="text-typographyPrimaryWH" />
+        <figcaption className="sr-only">Ikon for offentlig profil</figcaption>
+      </figure>
+      <div>
+        <h2 className="text-section-title-small font-medium text-typographyPrimaryWH">
+          Offentlig profil
+        </h2>
+        <p className="text-body-small text-typographyPrimaryWH opacity-90">
+          Dine opplysninger som er synlig for alle
+        </p>
+      </div>
+    </CardHeader>
 
-      <CardBody className="py-5 px-4 rounded-md">
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start">
-            <PageIcons name="warning" directory="profileIcons" size={20} alt="" className="mt-0.5 mr-2 flex-shrink-0" />
-            <span>{error}</span>
-          </div>
-        )}
+    <CardBody className="pt-6 px-6 pb-6 rounded-md">
+      {error && (
+        <div className="mb-6 p-4 bg-danger bg-opacity-10 border border-danger border-opacity-20 text-danger rounded-md flex items-start">
+          <PageIcons name="warning" directory="profileIcons" size={20} alt="" className="mt-0.5 mr-3 flex-shrink-0" />
+          <span className="text-body-small">{error}</span>
+        </div>
+      )}
+      
+      <div className="grid grid-cols-1 md:grid-cols-[auto,1fr] gap-8 md:gap-10 items-start">
+        <div className="justify-self-center md:justify-self-start">
+          <ProfileImageUploader
+            profile={profile}
+            onImageUpdate={onProfileUpdate}
+            refreshProfile={refreshProfile}
+          />
+        </div>
+
+        <div className="flex flex-col space-y-6">
+          <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+            <div className="mb-6">
+              <label htmlFor="displayName" className="block text-sub-section-title-small font-medium text-typographyPrimary mb-2">
+                Visningsnavn
+              </label>
+              <input
+                id="displayName"
+                name="displayName"
+                type="text"
+                readOnly={!isEditing}
+                value={displayName}
+                onChange={handleDisplayNameChange}
+                placeholder="Skriv inn visningsnavn"
+                aria-describedby="displayName-description"
+                className={`w-full px-4 py-2 rounded-md shadow-sm border ${
+                  isEditing 
+                    ? "bg-white border-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" 
+                    : "bg-secondary border-gray-300"
+                } text-body-small text-typographyPrimary transition-all duration-200`}
+              />
+              <ZodErrors
+                error={profileFieldError(
+                  validationErrors,
+                  null,
+                  "displayName"
+                )}
+              />
+            </div>
+
+            <div className="mb-6">
+              <label htmlFor="biography" className="block text-sub-section-title-small font-medium text-typographyPrimary mb-2">
+                Biografi
+              </label>
+              <textarea
+                id="biography"
+                name="biography"
+                readOnly={!isEditing}
+                rows={4}
+                placeholder="Skriv om deg selv"
+                value={biography}
+                onChange={handleBiographyChange}
+                aria-describedby="biography-description"
+                maxLength={256}
+                className={`w-full px-4 py-2 rounded-md shadow-sm border ${
+                  isEditing 
+                    ? "bg-white border-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" 
+                    : "bg-secondary border-gray-300"
+                } text-body-small text-typographyPrimary transition-all duration-200`}
+              />
+              <ZodErrors
+                error={profileFieldError(
+                  validationErrors,
+                  null,
+                  "biography"
+                )}
+              />
+              <div className="text-captions-small text-typographySecondary text-right mt-1">
+                {biography.length}/256 tegn
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-4">
+              {isEditing && (
+                <Button
+                  variant="secondary"
+                  onClick={handleCancel}
+                  disabled={isSaving}
+                  ariaLabel="Avbryt redigering"
+                  type="button"
+                  className="text-btn-cta-medium"
+                >
+                  Avbryt
+                </Button>
+              )}
+              <Button
+                variant="change"
+                changeState={buttonState}
+                onClick={handleSave}
+                disabled={isSaving}
+                ariaLabel={isEditing ? "Lagre offentlig profil" : "Endre offentlig profil"}
+                type="button"
+                className="text-btn-cta-medium"
+              />
+            </div>
+          </form>
+        </div>
+      </div>
+    </CardBody>
+
+    <CardFooter className="flex justify-center border-t border-gray-300 px-6 py-6">
+      <div className="space-y-4 w-full max-w-3xl">
+        <div>
+          <h3 className="text-sub-section-title-big font-medium text-typographyPrimary">Kontaktinformasjon</h3>
+          <p className="text-body-small text-typographySecondary mt-1">Dine opplysninger som er synlig for alle</p>
+        </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-[auto,1fr] gap-6 md:gap-10 items-start">
-          <div className="justify-self-center md:justify-self-start">
-            <ProfileImageUploader
-              profile={profile}
-              onImageUpdate={onProfileUpdate}
-              refreshProfile={refreshProfile} // Added missing prop
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+          <div className="flex items-center justify-between sm:justify-start sm:space-x-3">
+            <label htmlFor="showEmail" className="text-body-small font-medium text-typographyPrimary">
+              E-post
+            </label>
+            <ToggleSwitch
+              enabled={contactInfo.showEmail}
+              onChange={handleToggleChange("showEmail")}
+              isLoading={fieldLoadingStates.showEmail}
             />
           </div>
-
-          <div className="flex flex-col space-y-4">
-            <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
-              <div className="mb-4">
-                <label htmlFor="displayName" className="block p-1 font-medium text-gray-700 leading-6">
-                  Visningsnavn
-                </label>
-                <input
-                  id="displayName"
-                  name="displayName"
-                  type="text"
-                  readOnly={!isEditing}
-                  value={displayName}
-                  onChange={handleDisplayNameChange}
-                  placeholder="Skriv inn visningsnavn"
-                  aria-describedby="displayName-description"
-                  className={`w-full px-4 py-2 rounded-md shadow-sm border border-gray-300 focus:outline-none ${
-                    isEditing ? "bg-white" : "bg-gray-100"
-                  }`}
-                />
-                <ZodErrors
-                  error={profileFieldError(
-                    validationErrors,
-                    null,
-                    "displayName"
-                  )}
-                />
-              </div>
-
-              <div className="mb-4">
-                <label htmlFor="biography" className="block mb-1 font-medium text-gray-700 leading-6">
-                  Biografi
-                </label>
-                <textarea
-                  id="biography"
-                  name="biography"
-                  readOnly={!isEditing}
-                  rows={4}
-                  placeholder="Skriv om deg selv"
-                  value={biography}
-                  onChange={handleBiographyChange}
-                  aria-describedby="biography-description"
-                  maxLength={256}
-                  className={`w-full px-4 py-2 rounded-md shadow-sm border border-gray-300 focus:outline-none ${
-                    isEditing ? "bg-white" : "bg-gray-100"
-                  }`}
-                />
-                <ZodErrors
-                  error={profileFieldError(
-                    validationErrors,
-                    null,
-                    "biography"
-                  )}
-                />
-                <div className="text-xs text-gray-500 text-right">
-                  {biography.length}/256 tegn
-                </div>
-              </div>
-
-              <div className="flex justify-end space-x-2">
-                {isEditing && (
-                  <Button
-                    variant="secondary"
-                    onClick={handleCancel}
-                    disabled={isSaving}
-                    ariaLabel="Avbryt redigering"
-                    type="button"
-                  >
-                    Avbryt
-                  </Button>
-                )}
-                <Button
-                  variant="change"
-                  changeState={buttonState}
-                  onClick={handleSave}
-                  disabled={isSaving}
-                  ariaLabel={isEditing ? "Lagre offentlig profil" : "Endre offentlig profil"}
-                  type="button"
-                />
-              </div>
-            </form>
+          <div className="flex items-center justify-between sm:justify-start sm:space-x-3">
+            <label htmlFor="showPhone" className="text-body-small font-medium text-typographyPrimary">
+              Telefonnummer
+            </label>
+            <ToggleSwitch
+              enabled={contactInfo.showPhone}
+              onChange={handleToggleChange("showPhone")}
+              isLoading={fieldLoadingStates.showPhone}
+            />
+          </div>
+          <div className="flex items-center justify-between sm:justify-start sm:space-x-3">
+            <label htmlFor="showAddress" className="text-body-small font-medium text-typographyPrimary">
+              Adresse
+            </label>
+            <ToggleSwitch
+              enabled={contactInfo.showAddress}
+              onChange={handleToggleChange("showAddress")}
+              isLoading={fieldLoadingStates.showAddress}
+            />
           </div>
         </div>
-      </CardBody>
-
-      <CardFooter className="flex justify-center border-t border-gray-350 px-3 sm:p-6">
-        <div className="space-y-1 w-full max-w-3xl">
-          <h3 className="text-lg font-medium text-gray-600">Kontaktinformasjon</h3>
-          <p className="text-sm text-gray-600">Dine opplysninger som er synlig for alle</p>
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <div className="flex items-center justify-between sm:justify-start sm:space-x-2">
-              <label htmlFor="showEmail" className="text-sm font-medium text-gray-600">
-                E-post
-              </label>
-              <ToggleSwitch
-                enabled={contactInfo.showEmail}
-                onChange={handleToggleChange("showEmail")}
-                isLoading={fieldLoadingStates.showEmail}
-              />
-            </div>
-            <div className="flex items-center justify-between sm:justify-start sm:space-x-2">
-              <label htmlFor="showPhone" className="text-sm font-medium text-gray-600">
-                Telefonnummer
-              </label>
-              <ToggleSwitch
-                enabled={contactInfo.showPhone}
-                onChange={handleToggleChange("showPhone")}
-                isLoading={fieldLoadingStates.showPhone}
-              />
-            </div>
-            <div className="flex items-center justify-between sm:justify-start sm:space-x-2">
-              <label htmlFor="showAddress" className="text-sm font-medium text-gray-600">
-                Adresse
-              </label>
-              <ToggleSwitch
-                enabled={contactInfo.showAddress}
-                onChange={handleToggleChange("showAddress")}
-                isLoading={fieldLoadingStates.showAddress}
-              />
-            </div>
-          </div>
-        </div>
-      </CardFooter>
-    </Card>
-  );
+      </div>
+    </CardFooter>
+  </Card>
+);
 }

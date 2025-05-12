@@ -76,11 +76,6 @@ export default function BlogDetailPage() {
 
   return (
     <div className="bg-white min-h-screen">
-      {/* Back button */}
-      <div className="max-w-6xl mx-auto px-4 pt-4">
-        <BackButton />
-      </div>
-
       {/* Header/Banner Image */}
       <div className="w-full h-64 relative bg-gray-200 mt-4">
         {blogPost.blogImage?.url ? (
@@ -90,6 +85,11 @@ export default function BlogDetailPage() {
             <h1 className="text-3xl font-bold text-gray-700">{blogPost.title}</h1>
           </div>
         )}
+      </div>
+
+      {/* Back button */}
+      <div className="max-w-6xl mx-auto px-4 pt-4">
+        <BackButton />
       </div>
 
       {/* Main Content Container */}

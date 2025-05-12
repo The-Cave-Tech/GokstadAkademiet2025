@@ -12,32 +12,45 @@ import { PasswordChangeModal } from "../modals/PasswordChangeModal";
 import { getUserCredentials } from "@/lib/data/services/userProfile";
 import { handleStrapiError } from "@/lib/utils/serverAction-errorHandler";
 import { useAuth } from "@/lib/context/AuthContext";
-import { getProviderDisplayName, getProviderLoginUrl } from "@/types/userProfile.types";
-import { requestUsernameChange, changeUsername, requestEmailChange, 
-  verifyEmailChange, changePassword, resendUsernameVerification, resendEmailVerification 
+import {
+  getProviderDisplayName,
+  getProviderLoginUrl,
+} from "@/types/userProfile.types";
+import {
+  requestUsernameChange,
+  changeUsername,
+  requestEmailChange,
+  verifyEmailChange,
+  changePassword,
+  resendUsernameVerification,
+  resendEmailVerification,
 } from "@/lib/data/services/profileSections/credentialsService";
 
 export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
   const { authProvider, refreshAuthStatus } = useAuth();
-  const isOAuthUser = authProvider && authProvider !== 'local';
-  
-  // State
-  const [userData, setUserData] = useState<UserCredentials>({ username: "", email: "", password: "•••••••" });
+  const isOAuthUser = authProvider && authProvider !== "local";
+
+  const [userData, setUserData] = useState<UserCredentials>({
+    username: "",
+    email: "",
+    password: "•••••••",
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [modalType, setModalType] = useState<ModalType>(null);
   const [isModalLoading, setIsModalLoading] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
-  const [pendingData, setPendingData] = useState<{ type: "username" | "email" | null; value: string }>({ type: null, value: "" });
+  const [pendingData, setPendingData] = useState<{
+    type: "username" | "email" | null;
+    value: string;
+  }>({ type: null, value: "" });
 
-  // Hent oppdatert autentiseringsstatus og brukerdata
   useEffect(() => {
     refreshAuthStatus().then(() => {
       loadUserData();
     });
   }, [refreshAuthStatus]);
-  
-  // Separat funksjon for lasting av brukerdata
+
   const loadUserData = async () => {
     try {
       setLoading(true);
@@ -45,7 +58,7 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
       setUserData({
         username: credentials.username,
         email: credentials.email,
-        password: "•••••••", 
+        password: "•••••••",
       });
       setError(null);
     } catch (err) {
@@ -56,7 +69,6 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
     }
   };
 
-  // Modal handlers
   const handleOpenModal = (fieldName: ModalType) => setModalType(fieldName);
   const handleCloseModal = () => {
     setModalType(null);
@@ -64,18 +76,19 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
     setPendingData({ type: null, value: "" });
   };
 
-  // Update handlers
   const handleUsernameUpdate = async (newUsername: string, password: string) => {
     try {
       setIsModalLoading(true);
       const response = await requestUsernameChange(newUsername, password);
-      
+
       if (response.success) {
         setPendingData({ type: "username", value: newUsername });
         setModalType(null);
         setShowVerificationModal(true);
       } else {
-        throw new Error(response.message || "Kunne ikke sende forespørsel om brukernavn-endring");
+        throw new Error(
+          response.message || "Kunne ikke sende forespørsel om brukernavn-endring"
+        );
       }
     } catch (error) {
       console.error("Feil ved forespørsel om brukernavn-endring:", error);
@@ -88,22 +101,24 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
   const handleEmailUpdate = async (newEmail: string, password: string) => {
     try {
       setIsModalLoading(true);
-      
-      // Refresh auth status før endring for å sikre at vi har oppdatert informasjon
       await refreshAuthStatus();
-      
-      if (authProvider && authProvider !== 'local') {
-        throw new Error(`Du må endre e-post hos ${getProviderDisplayName(authProvider)}`);
+
+      if (authProvider && authProvider !== "local") {
+        throw new Error(
+          `Du må endre e-post hos ${getProviderDisplayName(authProvider)}`
+        );
       }
-      
+
       const response = await requestEmailChange(newEmail, password);
-      
+
       if (response.success) {
         setPendingData({ type: "email", value: newEmail });
         setModalType(null);
         setShowVerificationModal(true);
       } else {
-        throw new Error(response.message || "Kunne ikke sende forespørsel om e-post-endring");
+        throw new Error(
+          response.message || "Kunne ikke sende forespørsel om e-post-endring"
+        );
       }
     } catch (error) {
       console.error("Feil ved forespørsel om e-post-endring:", error);
@@ -113,21 +128,24 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
     }
   };
 
-  const handlePasswordUpdate = async (currentPassword: string, newPassword: string) => {
+  const handlePasswordUpdate = async (
+    currentPassword: string,
+    newPassword: string
+  ) => {
     try {
       setIsModalLoading(true);
-      
-      // Refresh auth status før endring for å sikre at vi har oppdatert informasjon
       await refreshAuthStatus();
-      
-      if (authProvider && authProvider !== 'local') {
-        throw new Error(`Du må endre passord hos ${getProviderDisplayName(authProvider)}`);
+
+      if (authProvider && authProvider !== "local") {
+        throw new Error(
+          `Du må endre passord hos ${getProviderDisplayName(authProvider)}`
+        );
       }
-      
+
       const response = await changePassword(currentPassword, newPassword);
-      
+
       if (response.success) {
-        setUserData(prev => ({ ...prev, password: "•••••••" }));
+        setUserData((prev) => ({ ...prev, password: "•••••••" }));
         await refreshProfile();
         handleCloseModal();
       } else {
@@ -144,23 +162,27 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
   const handleVerification = async (verificationCode: string) => {
     try {
       setIsModalLoading(true);
-      
+
       if (pendingData.type === "username" && pendingData.value) {
         const response = await changeUsername(pendingData.value, verificationCode);
         if (response.success) {
-          setUserData(prev => ({ ...prev, username: response.username }));
+          setUserData((prev) => ({ ...prev, username: response.username }));
         } else {
-          throw new Error(response.message || "Kunne ikke verifisere brukernavn-endring");
+          throw new Error(
+            response.message || "Kunne ikke verifisere brukernavn-endring"
+          );
         }
       } else if (pendingData.type === "email") {
         const response = await verifyEmailChange(verificationCode);
         if (response.success) {
-          setUserData(prev => ({ ...prev, email: response.email }));
+          setUserData((prev) => ({ ...prev, email: response.email }));
         } else {
-          throw new Error(response.message || "Kunne ikke verifisere e-post-endring");
+          throw new Error(
+            response.message || "Kunne ikke verifisere e-post-endring"
+          );
         }
       }
-      
+
       await refreshProfile();
       handleCloseModal();
     } catch (error) {
@@ -174,9 +196,8 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
   const handleResendVerificationCode = async () => {
     try {
       setIsModalLoading(true);
-      
-      let response: { success: boolean; message?: string };
-      
+
+      let response;
       if (pendingData.type === "username") {
         response = await resendUsernameVerification();
       } else if (pendingData.type === "email") {
@@ -184,11 +205,11 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
       } else {
         response = { success: false, message: "Ingen aktiv verifisering funnet" };
       }
-      
+
       if (!response.success) {
         throw new Error(response.message || "Kunne ikke sende ny kode");
       }
-      
+
       return true;
     } catch (error) {
       console.error("Feil ved sending av ny kode:", error);
@@ -198,46 +219,28 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
     }
   };
 
-  // Loading and error states
-  if (loading) {
-    return (
-      <Card className="w-full bg-[rgb(245,238,231)]">
-        <CardBody>
-          <div className="flex justify-center items-center p-8">
-            <span className="text-gray-600">Laster påloggingsinformasjon...</span>
-          </div>
-        </CardBody>
-      </Card>
-    );
-  }
-
-  if (error) {
-    return (
-      <Card className="w-full bg-[rgb(245,238,231)]">
-        <CardBody>
-          <div className="flex justify-center items-center p-8">
-            <span className="text-red-600">{error}</span>
-          </div>
-        </CardBody>
-      </Card>
-    );
-  }
-
-  // UI Components
-  const InfoField = ({ label, value, fieldType }: { label: string; value: string; fieldType: ModalType }) => (
+  const InfoField = ({
+    label,
+    value,
+    fieldType,
+  }: {
+    label: string;
+    value: string;
+    fieldType: ModalType;
+  }) => (
     <div className="flex flex-col">
-      <dt className="text-gray-700 font-medium mb-2">{label}</dt>
+      <dt className="text-typographyPrimary font-medium mb-sm text-body-small">{label}</dt>
       <dd className="flex items-center">
         <span
           id={`${fieldType}-value`}
-          className={`flex-grow bg-white p-3 rounded-md border border-gray-200 shadow-sm h-12 flex items-center ${fieldType === "password" ? "font-mono" : ""}`}
+          className={`flex-grow bg-background px-md py-sm rounded-md border border-grayed shadow-elevation h-12 flex items-center text-body-small ${fieldType === "password" ? "font-mono" : ""}`}
           aria-live="polite"
         >
           {value}
         </span>
-        <div className="ml-3">
+        <div className="ml-md">
           {isOAuthUser && (fieldType === "email" || fieldType === "password" || fieldType === "username") ? (
-            <div className="p-2 bg-gray-100 rounded-full text-xs text-gray-500 flex items-center justify-center">
+            <div className="p-sm bg-grayed/10 rounded-full text-captions-small text-grayed flex items-center justify-center">
               <PageIcons name="lock" directory="profileIcons" size={18} alt="Låst" />
             </div>
           ) : (
@@ -255,18 +258,32 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
     </div>
   );
 
+  if (loading || error) {
+    return (
+      <section className="w-full max-w-[600px] mx-auto px-md py-lg">
+        <Card className="w-full bg-secondary shadow-elevation rounded-lg">
+          <CardBody>
+            <div className="flex justify-center items-center p-lg text-body-small text-typographyPrimary">
+              {error ? <span className="text-danger">{error}</span> : "Laster påloggingsinformasjon..."}
+            </div>
+          </CardBody>
+        </Card>
+      </section>
+    );
+  }
+
   return (
-    <section aria-labelledby="login-info-heading" className="w-full max-w-[600px] mx-auto">
-      <Card className="w-full bg-[rgb(245,238,231)]">
-        <CardHeader className="flex items-center gap-3 rounded-md">
-          <figure className="w-10 h-10 rounded-full bg-[#d1d1d1] flex items-center justify-center" aria-hidden="true">
+    <section aria-labelledby="login-info-heading" className="w-full max-w-[600px] mx-auto px-md py-lg">
+      <Card className="w-full bg-secondary shadow-elevation rounded-lg">
+        <CardHeader className="flex items-center gap-md rounded-md">
+          <figure className="w-10 h-10 rounded-full bg-grayed flex items-center justify-center" aria-hidden="true">
             <PageIcons name="key" directory="profileIcons" size={24} alt="Påloggingsinformasjon" />
           </figure>
           <div>
-            <h2 id="login-info-heading" className="text-base font-medium text-gray-900">
+            <h2 id="login-info-heading" className="text-sub-section-title-small font-medium text-typographyPrimary">
               Påloggingsinformasjon
             </h2>
-            <p className="text-sm text-gray-600">
+            <p className="text-captions-big text-typographySecondary mt-sm">
               Brukes for å logge inn på kontoen din
             </p>
           </div>
@@ -274,26 +291,27 @@ export function LoginInfoManage({ refreshProfile }: LoginInfoManageProps) {
 
         <CardBody className="rounded-md">
           {isOAuthUser && (
-            <div className="mb-2 p-4 bg-blue-50 border border-blue-200 rounded-md">
-              <h3 className="text-base font-medium text-blue-800 flex items-center">
+            <div className="mb-md p-md bg-standard/10 border border-standard rounded-md">
+              <h3 className="text-body-small font-medium text-standard-hover-dark flex items-center">
                 Du er logget inn via {getProviderDisplayName(authProvider)}
               </h3>
-              <p className="mt-2 text-sm text-blue-600">
+              <p className="mt-sm text-captions-big text-standard">
                 For å endre brukernavn eller e-post:{" "}
-                <a href={getProviderLoginUrl(authProvider as string)} 
-                  target="_blank" 
+                <a
+                  href={getProviderLoginUrl(authProvider as string)}
+                  target="_blank"
                   rel="noopener noreferrer"
-                  className="underline hover:text-blue-800">
+                  className="underline hover:text-standard-hover-dark"
+                >
                   Gå til {getProviderDisplayName(authProvider)}
                 </a>
               </p>
             </div>
           )}
 
-          <dl className="space-y-4">
+          <dl className="space-y-md">
             <InfoField label="Brukernavn" value={userData.username} fieldType="username" />
             <InfoField label="E-post" value={userData.email} fieldType="email" />
-            {/* Skjul passordfeltet helt for OAuth-brukere */}
             {!isOAuthUser && (
               <InfoField label="Passord" value={userData.password} fieldType="password" />
             )}
