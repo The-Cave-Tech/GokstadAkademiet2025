@@ -136,7 +136,6 @@ export function PersonalInfo({ profile, refreshProfile }: PersonalInfoProps) {
         city: personalInfo.city || ""
       };
       
-      console.log("Formatted birth date for display:", birthDateFormatted);
       setFormValues(newValues);
       setOriginalValues({...newValues});
     }
@@ -228,7 +227,7 @@ export function PersonalInfo({ profile, refreshProfile }: PersonalInfoProps) {
       setIsEditing(false);
     } catch (error) {
       console.error("Feil ved lagring av profil:", error);
-      setError("Det oppst jogadores en feil ved lagring av profilen din");
+      setError("Det oppstod en feil ved lagring av profilen din");
     } finally {
       setIsSaving(false);
     }
@@ -253,15 +252,17 @@ export function PersonalInfo({ profile, refreshProfile }: PersonalInfoProps) {
       readOnly: !isEditing,
       value: formValues[id],
       'aria-describedby': `${id}-description`,
-      className: `w-full px-4 py-2 rounded-md shadow-sm border border-gray-300 focus:outline-none ${
-        isEditing ? "bg-white" : "bg-gray-100"
-      }`
+      className: `w-full px-4 py-2 rounded-md shadow-sm border ${
+        isEditing 
+          ? "bg-white border-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" 
+          : "bg-secondary border-gray-300"
+      } text-body-small text-typographyPrimary transition-all duration-200`
     };
 
     return (
-      <div key={id}>
-        <label htmlFor={id} className="block mb-1 font-medium text-gray-700">
-          {label} {required && <span className="text-red-500" aria-hidden="true">*</span>}
+      <div key={id} className="space-y-2">
+        <label htmlFor={id} className="block text-sub-section-title-small font-medium text-typographyPrimary">
+          {label} {required && <span className="text-danger" aria-hidden="true">*</span>}
         </label>
         
         {type === 'select' ? (
@@ -271,6 +272,7 @@ export function PersonalInfo({ profile, refreshProfile }: PersonalInfoProps) {
               disabled={!isEditing}
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) => 
                 handleInputChange(id, e.target.value)}
+              className={`${commonProps.className} appearance-none`}
             >
               <option value="">Velg {label.toLowerCase()}</option>
               {options?.map(option => (
@@ -357,45 +359,45 @@ export function PersonalInfo({ profile, refreshProfile }: PersonalInfoProps) {
   };
 
   return (
-    <Card className="w-full bg-[rgb(245,238,231)]">
-      <CardHeader className="flex items-center gap-3 rounded-md">
-        <figure className="w-10 h-10 rounded-full bg-[#d1d1d1] flex items-center justify-center">
-          <PageIcons name="lock" directory="profileIcons" size={24} alt="Private opplysninger" />
+    <Card className="w-full bg-secondary shadow-elevation">
+      <CardHeader className="flex items-center gap-3 rounded-t-md bg-primary p-4">
+        <figure className="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+          <PageIcons name="lock" directory="profileIcons" size={24} alt="Private opplysninger" className="text-typographyPrimaryWH" />
           <figcaption className="sr-only">Ikon for private opplysninger</figcaption>
         </figure>
         <div>
-          <h2 className="text-base font-medium text-gray-900">
+          <h2 className="text-section-title-small font-medium text-typographyPrimaryWH">
             Personlig informasjon
           </h2>
-          <p className="text-sm text-gray-600">
+          <p className="text-body-small text-typographyPrimaryWH opacity-90">
             Dine private opplysninger
           </p>
         </div>
       </CardHeader>
 
-      <CardBody className="pt-5 px-4 rounded-md">
+      <CardBody className="pt-6 px-6 pb-6 rounded-b-md">
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start">
-            <PageIcons name="warning" directory="profileIcons" size={20} alt="" className="mt-0.5 mr-2 flex-shrink-0" />
-            <span>{error}</span>
+          <div className="mb-6 p-4 bg-danger bg-opacity-10 border border-danger border-opacity-20 text-danger rounded-md flex items-start">
+            <PageIcons name="warning" directory="profileIcons" size={20} alt="" className="mt-0.5 mr-3 flex-shrink-0" />
+            <span className="text-body-small">{error}</span>
           </div>
         )}
         
-        <form className="flex flex-col space-y-6" onSubmit={(e) => e.preventDefault()}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="space-y-4">
+        <form className="flex flex-col space-y-8" onSubmit={(e) => e.preventDefault()}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-6">
               {renderField(fieldConfigs[0])} 
               {renderField(fieldConfigs[1])} 
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-6">
               {renderField(fieldConfigs[2])} 
               {renderField(fieldConfigs[3])} 
             </div>
           </div>
        
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="space-y-4 sm:col-span-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-6 md:col-span-1">
               {renderField(fieldConfigs[4])} 
               
               <div className="grid grid-cols-2 gap-4">
@@ -410,7 +412,7 @@ export function PersonalInfo({ profile, refreshProfile }: PersonalInfoProps) {
           </div>
 
           {/* Action buttons */}
-          <div className="pt-4 flex justify-end space-x-2">
+          <div className="pt-6 flex justify-end space-x-4">
             {isEditing && (
               <Button
                 variant="secondary"
@@ -418,6 +420,7 @@ export function PersonalInfo({ profile, refreshProfile }: PersonalInfoProps) {
                 disabled={isSaving}
                 ariaLabel="Avbryt redigering"
                 type="button"
+                className="text-btn-cta-medium"
               >
                 Avbryt
               </Button>
@@ -429,6 +432,7 @@ export function PersonalInfo({ profile, refreshProfile }: PersonalInfoProps) {
               disabled={isSaving}
               ariaLabel={isEditing ? "Lagre personlig informasjon" : "Endre personlig informasjon"}
               type="button"
+              className="text-btn-cta-medium"
             />
           </div>
         </form>

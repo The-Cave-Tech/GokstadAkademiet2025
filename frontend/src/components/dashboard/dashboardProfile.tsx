@@ -18,11 +18,11 @@ export default function DashboardProfile() {
   }
 
   if (error || !profile) {
-    return <div className="text-red-500 p-8">{error || "Ingen profildata funnet"}</div>;
+    return <div className="text-danger p-8">{error || "Ingen profildata funnet"}</div>;
   }
 
   return (
-    <section className="w-full max-w-7xl mx-auto">
+    <section className="w-full max-w-6xl mx-auto">
       <ProfileDisplayCard
         profile={profile}
         size="lg"

@@ -25,6 +25,7 @@ const config = {
         "btn-cta-big": "var(--btn-cta-big)",
         "btn-cta-medium": "var(--btn-cta-medium)",
         "btn-cta-small": "var(--btn-cta-small)",
+        "dashboard-header": "var(--dashboard-header)",
       },
 
       fontFamily: {
@@ -38,6 +39,21 @@ const config = {
       colors: {
         'zodValidation': '#b41400',
         background: "var(--background)",
+        grayed: "var(--grayed)",
+        primary: "var(--color-primary)",
+        secondary: "var(--color-secondary)",
+        card: "var(--color-card)",
+        danger: "var(--danger)",
+        "danger-hover": "var(--danger-hover)",
+        standard: "var(--standard)",
+        "standard-hover": "var(--standard-hover)",
+        "standard-hover-dark": "var(--standard-hover-dark)",
+        success: "var(--success)",
+        "success-hover": "var(--success-hover)",
+        typographyPrimary: "var(--typography-primary)",
+        typographyPrimaryHover: "var(--typography-primary-hover)",
+        typographyPrimaryWH: "var(--typography-primary-white)",
+        typographySecondary: "var(--typography-secondary)",
         profile: {
           background: "var(--profile-background)",
           warningBg: "var(--profile-warning-bg)",
@@ -60,6 +76,13 @@ const config = {
           buttonBorder: "var(--profile-button-border)",
         },
       },
+      boxShadow: {
+        elevation: "var(--shadow-elevation)",
+        sm: "0 1px 2px rgba(0, 0, 0, 0.05)",
+        md: "0 4px 6px rgba(0, 0, 0, 0.1)",
+        lg: "0 10px 15px rgba(0, 0, 0, 0.1)",
+      },
+
       spacing: {
         'profile-spacing-sm': "var(--profile-spacing-sm)",
         'profile-spacing-md': "var(--profile-spacing-md)",
@@ -72,7 +95,11 @@ const config = {
         'profile-margin-md': "var(--profile-margin-md)",
         'profile-margin-lg': "var(--profile-margin-lg)",
         'profile-margin-button': "var(--profile-margin-button)",
+        sm: "var(--spacing-sm)",
+        md: "var(--spacing-md)",
+        lg: "var(--spacing-lg)",
       },
+
       width: {
         'profile-icon-container': "var(--profile-icon-container)",
         'profile-button-sm': "var(--profile-button-sm)",

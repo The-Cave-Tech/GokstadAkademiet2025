@@ -278,21 +278,21 @@ export function AccountDeletionVerificationModal({
                       "deletionReason"
                     )}
                   />
-                  <div className="text-xs text-gray-500 text-right">
+                  <div className="text-captions-small text-typographyPrimary text-right">
                   {deletionReason.length}/256 tegn
                 </div>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-captions-big text-typographyPrimary">
                     Din tilbakemelding blir sendt til vårt team på e-post (maad1006@gmail.com), 
                     men vil ikke bli lagret i systemet ettersom kontoen din slettes umiddelbart.
                   </p>
                 </div>
                 
                 <div className="flex items-center">
-                  <p className="text-gray-700">Har du ikke mottatt e-posten?</p>
+                  <p className="text-typographyPrimary">Har du ikke mottatt e-posten?</p>
                   <button
                     type="button"
                     onClick={handleResendCode}
-                    className={`ml-2 text-blue-600 hover:text-blue-800 font-medium focus:outline-none ${
+                    className={`ml-2 text-standard hover:text-standard-hover-dark font-medium focus:outline-none ${
                       resendDisabled ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                     disabled={isLoading || resendDisabled}

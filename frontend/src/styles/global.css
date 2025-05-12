@@ -7,6 +7,39 @@
   --color-secondary: #f5ebe0; /* Background for text or dropdowns */
   --color-card: #846267; /* Cards for projects||products */
   --background: #ffffff;
+  --grayed: #9fa8ac;
+  --typography-primary: #252525; /* Text color */
+  --typography-primary-hover: #464646; /* Text color */
+  --typography-primary-white: #ffffff; /* Text color */
+  --typography-secondary: #6a6a6a; /* Text color for dark mode */
+  --danger: #DC2626; /* Text color for error messages */
+  --danger-hover: #ff4848; /* Text hover color for error messages */
+  --success: #16A34A; /*color for success */
+  --success-hover: #32c468; /* hover color for success */
+  --standard: #3B82F6; /* color for standard btn/messages */
+  --standard-hover: #5894f6; /* hover color for standard btn/messages */
+  --standard-hover-dark: #326ed0; /* dark hover color for standard btn/messages */
+  
+
+  /* box shadow */
+  --shadow-elevation: 0px 4px 10px rgba(0, 0, 0, 0.1);
+
+  /* Avstander */
+  --spacing-sm: 0.25rem; /* Liten avstand (space-y-1, mb-1) */
+  --spacing-md: 1rem; /* Middels avstand (space-y-4, gap-4) */
+  --spacing-lg: 1.5rem; /* Stor avstand (space-y-6, gap-6) */
+  --spacing-xl: 2rem; /* Ekstra stor avstand (space-y-8) */
+  --padding-sm: 0.5rem; /* Liten padding (p-2, px-3) */
+  --padding-md: 1rem; /* Middels padding (px-4 py-2) */
+  --padding-lg: 1.5rem; /* Stor padding (p-6) */
+  --margin-sm: 0.25rem; /* Liten margin (mb-1) */
+  --margin-md: 0.5rem; /* Middels margin (mb-2) */
+  --margin-lg: 1rem; /* Stor margin (mb-4) */
+  --margin-button: 0.75rem; /* Knapp margin (ml-3) */
+
+
+  /* Desktop dashboard header */
+  --dashboard-header: 20px; /* Desktop small */
 
   /* Main title sizes for desktop */
   --main-title-big: 64px; /* Desktop big */
@@ -21,6 +54,7 @@
   /* sub section title sizes for desktop */
   --sub-section-title-big: 24px; /* Desktop big */
   --sub-section-title-small: 20px; /* Desktop small */
+  
 
   /*  body text sizes for desktop */
   --body-text-big: 18px; /* Desktop big */
@@ -38,6 +72,11 @@
 
 @media (max-width: 1024px) {
   :root {
+
+    /* Desktop dashboard header */
+  --dashboard-header: 18px; /* Desktop small */
+
+
     /* Main title sizes for tablets */
     --main-title-big: 40px; /* Tablet big */
     --main-title-medium: 32px; /* Tablet medium */
@@ -69,6 +108,10 @@
 
 @media (max-width: 639px) {
   :root {
+
+    /* Desktop dashboard header */
+  --dashboard-header: 18px; /* Desktop small */
+
     /* Main title sizes for phones */
     --main-title-big: 32px; /* Phone big */
     --main-title-medium: 28px; /* Phone medium */
