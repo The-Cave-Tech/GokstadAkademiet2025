@@ -33,7 +33,7 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
   const labelId = `${id}-label`;
 
   return (
-    <div className={`relative ${className}`}>
+    <section className={`relative ${className}`}>
       {label && (
         <label id={labelId} htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
           {label}
@@ -60,6 +60,6 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
           </svg>
         </div>
       </div>
-    </div>
+    </section>
   );
 };

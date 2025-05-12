@@ -41,7 +41,7 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
   const fullWidthClass = fullWidth ? "w-full" : "";
 
   return (
-    <div className={`${containerClass} ${className} ${fullWidthClass}`}>
+    <section className={`${containerClass} ${className} ${fullWidthClass}`}>
       {tabs.map((tab, index) => {
         const isFirst = index === 0;
         const isLast = index === tabs.length - 1;
@@ -80,6 +80,6 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
           </button>
         );
       })}
-    </div>
+    </section>
   );
 };

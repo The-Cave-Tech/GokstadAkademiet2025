@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ActivitiesLayout } from "@/components/layouts/ActivitiesLayout";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useActivities } from "@/lib/context/ActivityContext";
-import { UniversalCard } from "@/components/dashboard/contentManager/ContentCard";
+import { UniversalContentCard } from "@/components/dashboard/contentManager/ContentCard";
 import { adaptEventToCardProps } from "@/lib/adapters/cardAdapter";
 
 export default function EventsPage() {
@@ -56,7 +56,7 @@ export default function EventsPage() {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {state.filteredEvents.map((event) => (
-          <UniversalCard key={event.id} {...adaptEventToCardProps(event, handleEventClick)} />
+          <UniversalContentCard key={event.id} {...adaptEventToCardProps(event, handleEventClick)} />
         ))}
       </div>
     );

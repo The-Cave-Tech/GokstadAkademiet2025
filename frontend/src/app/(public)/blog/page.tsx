@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { UniversalCard } from "@/components/dashboard/contentManager/ContentCard";
+import { UniversalContentCard } from "@/components/dashboard/contentManager/ContentCard";
 import { blogService } from "@/lib/data/services/blogService";
 import { adaptBlogToCardProps } from "@/lib/adapters/cardAdapter";
 import { BlogResponse } from "@/types/content.types";
@@ -184,7 +184,7 @@ export default function BlogPage() {
         {filteredBlogPosts.map((post) => {
           try {
             const cardProps = adaptBlogToCardProps(post, handleBlogClick);
-            return <UniversalCard key={post.id} {...cardProps} />;
+            return <UniversalContentCard key={post.id} {...cardProps} />;
           } catch (error) {
             console.error(`Error rendering post ${post.id}:`, error);
             return (

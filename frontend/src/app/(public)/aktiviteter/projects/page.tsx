@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ActivitiesLayout } from "@/components/layouts/ActivitiesLayout";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useActivities } from "@/lib/context/ActivityContext";
-import { UniversalCard } from "@/components/dashboard/contentManager/ContentCard";
+import { UniversalContentCard } from "@/components/dashboard/contentManager/ContentCard";
 import { adaptProjectToCardProps } from "@/lib/adapters/cardAdapter";
 
 export default function ProjectsPage() {
@@ -56,7 +56,7 @@ export default function ProjectsPage() {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {state.filteredProjects.map((project) => (
-          <UniversalCard key={project.id} {...adaptProjectToCardProps(project, handleProjectClick)} />
+          <UniversalContentCard key={project.id} {...adaptProjectToCardProps(project, handleProjectClick)} />
         ))}
       </div>
     );

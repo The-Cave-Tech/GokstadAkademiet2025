@@ -5,6 +5,7 @@ import Image from "next/image";
 import TipTapEditor from "@/components/ui/TipTapEditor";
 import { ContentFormProps } from "@/types/content.types";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { DatePicker } from "@/components/ui/custom/DatePciker"; // Import the custom DatePicker
 
 const ContentForm: React.FC<ContentFormProps> = ({ onSave, onCancel, isLoading, config, data, event }) => {
   const [formData, setFormData] = useState<any>({});
@@ -71,6 +72,21 @@ const ContentForm: React.FC<ContentFormProps> = ({ onSave, onCancel, isLoading, 
       setErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors["content"];
+        return newErrors;
+      });
+    }
+  };
+
+  // Handle date changes from the DatePicker
+  const handleDateChange = (name: string, value: string) => {
+    setFormData((prev: typeof formData) => ({ ...prev, [name]: value }));
+    markAsTouched(name);
+
+    // Clear error when field is edited
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
         return newErrors;
       });
     }
@@ -204,7 +220,7 @@ const ContentForm: React.FC<ContentFormProps> = ({ onSave, onCancel, isLoading, 
       </div>
 
       {config.fields.map((field) => (
-        <div key={field.name}>
+        <section key={field.name}>
           <label
             className="block text-sm font-medium mb-1"
             htmlFor={getFieldId(field.name)}
@@ -277,23 +293,20 @@ const ContentForm: React.FC<ContentFormProps> = ({ onSave, onCancel, isLoading, 
               ))}
             </select>
           ) : field.type === "date" ? (
-            <input
-              type="date"
+            <DatePicker
               id={getFieldId(field.name)}
               name={field.name}
               value={formData[field.name] || ""}
-              onChange={handleChange}
-              onBlur={handleBlur}
+              onChange={(value) => handleDateChange(field.name, value)}
+              onBlur={() => markAsTouched(field.name)}
+              placeholder={`Select ${field.label}`}
+              required={field.required}
               className={`w-full border rounded-md px-3 py-2 ${
                 errors[field.name] && touchedFields[field.name]
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 focus:ring-blue-500"
               }`}
-              disabled={isLoading}
-              required={field.required}
-              aria-invalid={!!errors[field.name] && touchedFields[field.name]}
               aria-describedby={errors[field.name] && touchedFields[field.name] ? getErrorId(field.name) : undefined}
-              aria-labelledby={`${getFieldId(field.name)}-label`}
             />
           ) : field.type === "time" ? (
             <input
@@ -339,11 +352,11 @@ const ContentForm: React.FC<ContentFormProps> = ({ onSave, onCancel, isLoading, 
               {errors[field.name]}
             </p>
           )}
-        </div>
+        </section>
       ))}
 
       {/* Image Upload */}
-      <div>
+      <section>
         <label className="block text-sm font-medium mb-1" htmlFor="image-upload">
           {config.imageName || "Image"}
         </label>
@@ -373,10 +386,10 @@ const ContentForm: React.FC<ContentFormProps> = ({ onSave, onCancel, isLoading, 
             </div>
           </div>
         )}
-      </div>
+      </section>
 
       {/* Action buttons */}
-      <div className="flex justify-end gap-3 pt-4">
+      <section className="flex justify-end gap-3 pt-4">
         <button
           type="button"
           onClick={onCancel}
@@ -411,10 +424,10 @@ const ContentForm: React.FC<ContentFormProps> = ({ onSave, onCancel, isLoading, 
               <span className="sr-only">Please wait while the form is being submitted</span>
             </>
           ) : (
-            "Save"
+            "Create"
           )}
         </button>
-      </div>
+      </section>
     </form>
   );
 };

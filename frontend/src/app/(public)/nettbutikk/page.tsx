@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { UniversalCard } from "@/components/dashboard/contentManager/ContentCard";
+import { UniversalContentCard } from "@/components/dashboard/contentManager/ContentCard";
 import { productService } from "@/lib/data/services/productService";
 import { adaptProductToCardProps } from "@/lib/adapters/cardAdapter";
 import { ProductResponse } from "@/types/content.types";
@@ -175,7 +175,7 @@ export default function NettbutikkPage() {
         {filteredProducts.map((product) => {
           try {
             const cardProps = adaptProductToCardProps(product, handleProductClick, handleAddToCart);
-            return <UniversalCard key={product.id} {...cardProps} />;
+            return <UniversalContentCard key={product.id} {...cardProps} />;
           } catch (error) {
             console.error(`Error rendering product ${product.id}:`, error);
             return (
@@ -189,16 +189,15 @@ export default function NettbutikkPage() {
     );
   };
 
-  // Main render
   return (
-    <div className="bg-white min-h-screen">
+    <main className="bg-white min-h-screen">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
+        <header className="mb-8">
           <h1 className="text-3xl font-bold text-center mb-10">Nettbutikk</h1>
 
           {/* Search, Filter, and Sort Bar */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-6 bg-gray-50 p-4 rounded-lg">
+          <section className="flex flex-col sm:flex-row gap-4 mb-6 bg-gray-50 p-4 rounded-lg">
             <SearchBar
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
@@ -221,12 +220,12 @@ export default function NettbutikkPage() {
               placeholder="Sorter etter"
             />
             <CartIcon className="ml-4" />
-          </div>
-        </div>
+          </section>
+        </header>
 
         {/* Content */}
-        {renderContent()}
+        <section>{renderContent()}</section>
       </div>
-    </div>
+    </main>
   );
 }

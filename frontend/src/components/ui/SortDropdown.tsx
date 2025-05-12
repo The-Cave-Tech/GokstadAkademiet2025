@@ -23,7 +23,7 @@ export const SortDropdown: React.FC<SortDropdownProps> = ({
   placeholder,
 }) => {
   return (
-    <div className="relative">
+    <section className="relative">
       <select
         value={sort}
         onChange={(e) => setSort(e.target.value)}
@@ -50,6 +50,6 @@ export const SortDropdown: React.FC<SortDropdownProps> = ({
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
         </svg>
       </div>
-    </div>
+    </section>
   );
 };

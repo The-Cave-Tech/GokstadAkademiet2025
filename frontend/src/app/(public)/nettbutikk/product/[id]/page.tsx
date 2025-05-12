@@ -10,12 +10,14 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { ProductResponse } from "@/types/content.types";
 import { MdCategory, MdShoppingBasket } from "react-icons/md";
 import { FaBoxOpen } from "react-icons/fa";
-import Link from "next/link";
+import { useCart } from "@/lib/context/shopContext";
 import { formatPrice } from "@/lib/adapters/cardAdapter";
 import BackButton from "@/components/BackButton";
+import PageIcons from "@/components/ui/custom/PageIcons";
 
 export default function ProductDetailPage() {
   const params = useParams();
+  const { addToCart } = useCart(); // Use the cart context
   const [product, setProduct] = useState<ProductResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -83,6 +85,20 @@ export default function ProductDetailPage() {
   const decrementQuantity = () => {
     if (quantity > 1) {
       setQuantity(quantity - 1);
+    }
+  };
+
+  // Handle add to cart
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart({
+        id: product.id,
+        title: product.title,
+        price: product.discountedPrice || product.price,
+        image: product.productImage?.url,
+      });
+
+      alert(`${product.title} er lagt til i handlekurven!`);
     }
   };
 
@@ -182,9 +198,11 @@ export default function ProductDetailPage() {
                       </button>
                     </div>
                   </div>
-                  <button className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
-                    <MdShoppingBasket className="text-lg" />
-                    <span>Legg i handlekurv</span>
+                  <button
+                    onClick={handleAddToCart}
+                    className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <PageIcons name="cart" directory="shopIcons" size={24} alt="Handlekurv" />
                   </button>
                 </section>
               )}
@@ -211,38 +229,6 @@ export default function ProductDetailPage() {
                 <p className="text-gray-700 leading-relaxed">{product.description}</p>
               </section>
             )}
-
-            {/* Specifications Section */}
-            <section className="mt-12 pt-8 border-t border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Spesifikasjoner</h2>
-              <div className="bg-gray-50 p-6 rounded-lg">
-                <table className="w-full">
-                  <tbody>
-                    <tr className="border-b border-gray-200">
-                      <td className="py-3 text-gray-500 font-medium">Kategori</td>
-                      <td className="py-3">{product.category || "Ikke spesifisert"}</td>
-                    </tr>
-                    <tr className="border-b border-gray-200">
-                      <td className="py-3 text-gray-500 font-medium">Tilgjengelighet</td>
-                      <td className="py-3">{product.stock > 0 ? "På lager" : "Ikke på lager"}</td>
-                    </tr>
-                    <tr className="border-b border-gray-200">
-                      <td className="py-3 text-gray-500 font-medium">Pris</td>
-                      <td className="py-3">
-                        {product.discountedPrice ? (
-                          <>
-                            <span className="text-green-600 font-medium">{formatPrice(product.discountedPrice)}</span>{" "}
-                            <span className="text-gray-500 line-through text-sm">{formatPrice(product.price)}</span>
-                          </>
-                        ) : (
-                          formatPrice(product.price)
-                        )}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </section>
           </section>
         </div>
       </div>

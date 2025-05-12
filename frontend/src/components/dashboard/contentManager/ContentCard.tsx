@@ -5,7 +5,7 @@ import { Card, CardBody, CardFooter } from "@/components/ui/Card";
 import { UniversalCardProps } from "@/types/universal.content.types";
 import { Badge } from "@/types/universal.content.types";
 
-export const UniversalCard: React.FC<UniversalCardProps> = ({
+export const UniversalContentCard: React.FC<UniversalCardProps> = ({
   title,
   description,
   image,
