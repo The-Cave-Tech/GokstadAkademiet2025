@@ -1,0 +1,282 @@
+// src/app/(public)/nettbutikk/checkout/confirmation/page.tsx
+"use client";
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/context/AuthContext';
+import { useCart } from '@/lib/context/shopContext';
+import { useCheckout } from '@/lib/context/CheckoutContext';
+import { Card, CardHeader, CardBody, CardFooter } from '@/components/ui/Card';
+import { Button } from '@/components/ui/custom/Button';
+import PageIcons from '@/components/ui/custom/PageIcons';
+import { ErrorMessage } from '@/components/ui/ErrorMessage';
+import { formatPrice } from '@/lib/adapters/cardAdapter';
+import CheckoutSteps from '@/components/checkout/CheckoutSteps';
+import OrderSummary from '@/components/checkout/OrderSummary';
+import LoadingCheckout from '@/components/checkout/LoadingCheckout';
+
+export default function ConfirmationPage() {
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
+  const { cart, clearCart } = useCart();
+  const { 
+    shippingInfo, 
+    paymentMethod, 
+    cardInfo, 
+    acceptTerms, 
+    setAcceptTerms,
+    validateTerms
+  } = useCheckout();
+  
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    const checkRequirements = async () => {
+      try {
+        // Check if user is authenticated
+        if (!isAuthenticated) {
+          router.push(`/signin?redirect=${encodeURIComponent("/nettbutikk/checkout/confirmation")}&message=Du må være logget inn for å få tilgang til utsjekk.`);
+          return;
+        }
+        
+        // Check if cart has items
+        if (!cart?.items || cart.items.length === 0) {
+          router.push('/nettbutikk/cart');
+          return;
+        }
+        
+        // Check if shipping info is provided
+        if (!shippingInfo.fullName || !shippingInfo.address || !shippingInfo.postalCode || !shippingInfo.city || !shippingInfo.email) {
+          router.push('/nettbutikk/checkout/shipping');
+          return;
+        }
+        
+        // Check if payment method is selected
+        if (!paymentMethod) {
+          router.push('/nettbutikk/checkout/payment');
+          return;
+        }
+        
+        // If payment method is card, check if card info is provided
+        if (paymentMethod === 'card' && (!cardInfo.cardNumber || !cardInfo.cardHolder || !cardInfo.expiryDate || !cardInfo.cvv)) {
+          router.push('/nettbutikk/checkout/payment');
+          return;
+        }
+      } catch (err) {
+        console.error('Error checking checkout requirements:', err);
+        setError('Det oppstod en feil ved lasting av utsjekksinformasjon');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    checkRequirements();
+  }, [isAuthenticated, router, cart, shippingInfo, paymentMethod, cardInfo]);
+  
+  const handlePlaceOrder = async () => {
+    if (!validateTerms()) {
+      setError('Du må akseptere vilkårene for å fortsette');
+      return;
+    }
+    
+    setIsSubmitting(true);
+    setError(null);
+    
+    try {
+      // Her ville du normalt sende bestillingen til API-et
+      // Simuler API-kall med en timeout
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Tøm handlekurven
+      await clearCart();
+      
+      // Redirect til en ordrebekreftelses-side
+      router.push('/nettbutikk/order-confirmation');
+      
+    } catch (err) {
+      console.error('Error placing order:', err);
+      setError('Kunne ikke fullføre bestillingen. Vennligst prøv igjen.');
+      setIsSubmitting(false);
+    }
+  };
+  
+  const prevStep = () => {
+    router.push('/nettbutikk/checkout/payment');
+  };
+  
+  if (isLoading) {
+    return <LoadingCheckout />;
+  }
+  
+  return (
+    <main className="container mx-auto px-4 py-8">
+      <Card className="mb-4">
+        <CardBody className="p-0">
+          <Button 
+            variant="outline" 
+            onClick={prevStep} 
+            className="flex items-center gap-2"
+            ariaLabel="Tilbake til betaling"
+          >
+            <PageIcons name="arrow-left" directory="shopIcons" size={18} alt="" />
+            <span>Tilbake til betaling</span>
+          </Button>
+        </CardBody>
+      </Card>
+      
+      <Card>
+        <CardHeader>
+          <h1 className="text-3xl font-bold text-center">Bekreft bestilling</h1>
+          <CheckoutSteps currentStep={3} />
+        </CardHeader>
+        
+        <CardBody>
+          {error && <ErrorMessage message={error}/>}
+          
+          <div className="flex flex-col md:flex-row gap-8">
+            <div className="md:w-2/3">
+              <Card>
+                <CardHeader>
+                  <h2 className="text-xl font-semibold">Gjennomgang av bestilling</h2>
+                </CardHeader>
+                
+                <CardBody className="space-y-6">
+                  {/* Produkter */}
+                  <section aria-labelledby="products-heading">
+                    <h3 id="products-heading" className="font-medium mb-3">Produkter</h3>
+                    <div className="border rounded-md overflow-hidden">
+                      <table className="min-w-full" aria-describedby="products-heading">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Produkt
+                            </th>
+                            <th scope="col" className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Antall
+                            </th>
+                            <th scope="col" className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Sum
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {cart?.items?.map((item, index) => (
+                            <tr key={index}>
+                              <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800">
+                                {item.title}
+                              </td>
+                              <td className="px-4 py-4 whitespace-nowrap text-sm text-center text-gray-800">
+                                {item.quantity}
+                              </td>
+                              <td className="px-4 py-4 whitespace-nowrap text-sm text-right text-gray-800">
+                                {formatPrice(item.price * item.quantity)}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Leveringsinformasjon */}
+                    <section aria-labelledby="shipping-heading">
+                      <h3 id="shipping-heading" className="font-medium mb-3">Leveringsinformasjon</h3>
+                      <div className="bg-gray-50 border rounded-md p-4">
+                        <address className="not-italic text-gray-700">
+                          <strong>{shippingInfo.fullName}</strong><br />
+                          {shippingInfo.address}<br />
+                          {shippingInfo.postalCode} {shippingInfo.city}<br />
+                          {shippingInfo.email}<br />
+                          {shippingInfo.phone && <>{shippingInfo.phone}</>}
+                        </address>
+                      </div>
+                    </section>
+                    
+                    {/* Betalingsinformasjon */}
+                    <section aria-labelledby="payment-heading">
+                      <h3 id="payment-heading" className="font-medium mb-3">Betalingsinformasjon</h3>
+                      <div className="bg-gray-50 border rounded-md p-4">
+                        <p className="text-gray-700">
+                          <strong>Betalingsmetode:</strong><br />
+                          {paymentMethod === 'card' && (
+                            <>
+                              Kredittkort (xxxx xxxx xxxx {cardInfo.cardNumber.slice(-4)})<br />
+                              Utløpsdato: {cardInfo.expiryDate}
+                            </>
+                          )}
+                          {paymentMethod === 'vipps' && 'Vipps'}
+                          {paymentMethod === 'invoice' && 'Faktura (14 dagers betalingsfrist)'}
+                        </p>
+                      </div>
+                    </section>
+                  </div>
+                  
+                  {/* Vilkår og betingelser */}
+                  <section aria-labelledby="terms-heading" className="pt-4 border-t">
+                    <h3 id="terms-heading" className="sr-only">Vilkår og betingelser</h3>
+                    <label className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        id="terms"
+                        checked={acceptTerms}
+                        onChange={(e) => setAcceptTerms(e.target.checked)}
+                        className="h-4 w-4 text-blue-600"
+                        required
+                        aria-required="true"
+                      />
+                      <span className="text-sm text-gray-700">
+                        Jeg godtar <Link href="/vilkår" className="text-blue-600 hover:underline">vilkår og betingelser</Link> for kjøp
+                      </span>
+                    </label>
+                  </section>
+                </CardBody>
+              </Card>
+            </div>
+            
+            <div className="md:w-1/3">
+              <OrderSummary 
+                shippingInfo={shippingInfo}
+                paymentMethod={paymentMethod}
+                paymentDetails={cardInfo}
+                showShippingDetails={true}
+                showPaymentDetails={true}
+                showShippingInfo={true}
+              />
+            </div>
+          </div>
+        </CardBody>
+        
+        <CardFooter className="flex justify-between items-center">
+          <Button 
+            variant="outline"
+            onClick={prevStep}
+            ariaLabel="Tilbake til betaling"
+          >
+            Tilbake til betaling
+          </Button>
+          
+          <Button
+            variant="primary"
+            onClick={handlePlaceOrder}
+            disabled={isSubmitting || !acceptTerms}
+            className="bg-green-600 hover:bg-green-700"
+            ariaLabel="Bekreft og betal"
+          >
+            {isSubmitting ? (
+              <span className="flex items-center">
+                <PageIcons name="loading" directory="profileIcons" size={20} alt="" className="animate-spin mr-2" />
+                Behandler...
+              </span>
+            ) : (
+              'Bekreft og betal'
+            )}
+          </Button>
+        </CardFooter>
+      </Card>
+    </main>
+  );
+}
