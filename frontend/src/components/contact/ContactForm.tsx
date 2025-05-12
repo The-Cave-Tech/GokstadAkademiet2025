@@ -1,13 +1,9 @@
 // src/components/contact/ContactForm.tsx
 "use client";
 
-import React, { useState, useEffect, useTransition } from "react";
+import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/AuthContext";
-import {
-  getUserCredentials,
-  getUserProfile,
-} from "@/lib/data/services/userProfile";
 import { contactService } from "@/lib/data/services/contactService";
 import { Button } from "@/components/ui/custom/Button";
 import PageIcons from "@/components/ui/custom/PageIcons";
@@ -34,35 +30,6 @@ export default function ContactForm() {
   }>({});
   const [success, setSuccess] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
-  const [isLoadingUserData, setIsLoadingUserData] = useState(false);
-
-  // Load user data if authenticated
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (!isAuthenticated) return;
-
-      try {
-        setIsLoadingUserData(true);
-        const credentials = await getUserCredentials();
-        const profile = await getUserProfile();
-
-        // Update form with user data
-        setFormData((prev) => ({
-          ...prev,
-          name:
-            profile.personalInformation?.fullName || credentials.username || "",
-          email: credentials.email || "",
-          phoneNumber: profile.personalInformation?.phoneNumber || "",
-        }));
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-      } finally {
-        setIsLoadingUserData(false);
-      }
-    };
-
-    fetchUserData();
-  }, [isAuthenticated]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -122,7 +89,6 @@ export default function ContactForm() {
       startTransition(async () => {
         try {
           // Submit to Strapi using the service
-          // Removed createdAt as it's not in the ContactSubmission type
           await contactService.submitContactForm(validatedData);
 
           // Show success message
@@ -217,7 +183,7 @@ export default function ContactForm() {
               onBlur={handleBlur}
               placeholder="Navn"
               required
-              disabled={isPending || isLoadingUserData}
+              disabled={isPending}
               className={`w-full px-4 py-3 rounded-md border ${
                 validationErrors.name
                   ? "border-red-500 focus:ring-red-500"
@@ -252,7 +218,7 @@ export default function ContactForm() {
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="Telefonnummer"
-              disabled={isPending || isLoadingUserData}
+              disabled={isPending}
               className={`w-full px-4 py-3 rounded-md border ${
                 validationErrors.phoneNumber
                   ? "border-red-500 focus:ring-red-500"
@@ -288,7 +254,7 @@ export default function ContactForm() {
             onBlur={handleBlur}
             placeholder="E-post adresse"
             required
-            disabled={isPending || isLoadingUserData}
+            disabled={isPending}
             className={`w-full px-4 py-3 rounded-md border ${
               validationErrors.email
                 ? "border-red-500 focus:ring-red-500"
