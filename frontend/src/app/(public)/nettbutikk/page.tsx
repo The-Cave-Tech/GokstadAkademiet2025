@@ -227,6 +227,7 @@ export default function NettbutikkPage() {
               ariaLabel="Sort products"
               placeholder="Sorter etter"
             />
+            <CartIcon className="ml-4" />
           </div>
         </div>
 
