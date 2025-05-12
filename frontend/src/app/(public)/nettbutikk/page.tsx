@@ -43,6 +43,7 @@ export default function NettbutikkPage() {
   // Apply filters and sorting when products, search query, filter, or sort changes
   useEffect(() => {
     applyFiltersAndSorting();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [products, searchQuery, filter, sort]);
 
   // Fetch products from the API
@@ -205,9 +206,6 @@ export default function NettbutikkPage() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
             <h1 className="text-3xl font-bold">Nettbutikk</h1>
             <div className="flex flex-col sm:flex-row gap-2 mt-4 md:mt-0">
-              <span className="text-gray-500 self-center">
-                {filteredProducts.length} {filteredProducts.length === 1 ? "produkt" : "produkter"} funnet
-              </span>
             </div>
           </div>
 
@@ -234,6 +232,7 @@ export default function NettbutikkPage() {
               ariaLabel="Sort products"
               placeholder="Sorter etter"
             />
+            <CartIcon />
           </div>
         </div>
 
