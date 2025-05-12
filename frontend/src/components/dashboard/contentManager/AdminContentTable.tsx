@@ -28,22 +28,27 @@ const actionColors = {
   error: {
     bg: "rgb(168, 77, 70)",
     hover: "rgb(150, 69, 63)",
+    text: "white", // Ensure text has enough contrast
   },
   warning: {
     bg: "rgb(190, 142, 79)",
     hover: "rgb(171, 128, 71)",
+    text: "white", // Ensure text has enough contrast
   },
   info: {
     bg: "rgb(84, 110, 122)",
     hover: "rgb(75, 99, 110)",
+    text: "white", // Ensure text has enough contrast
   },
   success: {
     bg: "rgb(96, 125, 83)",
     hover: "rgb(85, 111, 74)",
+    text: "white", // Ensure text has enough contrast
   },
   primary: {
     bg: Theme.colors.primary,
     hover: "rgb(109, 76, 65)",
+    text: "white", // Ensure text has enough contrast
   },
 };
 
@@ -65,16 +70,18 @@ export const AdminTable: React.FC<AdminTableProps> = ({
   getImageUrl,
 }) => {
   return (
-    <div className="min-h-screen p-6 sm:p-8 md:p-10">
+    <main className="min-h-screen p-6 sm:p-8 md:p-10">
       {/* Success Message */}
       {successMessage && (
-        <div
+        <section
           className="px-4 py-3 mb-6 rounded-md"
           style={{
             backgroundColor: Theme.colors.success.background,
             color: Theme.colors.success.text,
             border: `1px solid ${Theme.colors.success.border}`,
           }}
+          aria-live="polite"
+          role="status"
         >
           <div className="flex items-center">
             <svg
@@ -82,6 +89,7 @@ export const AdminTable: React.FC<AdminTableProps> = ({
               className="h-5 w-5 mr-2"
               viewBox="0 0 20 20"
               fill="currentColor"
+              aria-hidden="true"
             >
               <path
                 fillRule="evenodd"
@@ -91,18 +99,20 @@ export const AdminTable: React.FC<AdminTableProps> = ({
             </svg>
             <span>{successMessage}</span>
           </div>
-        </div>
+        </section>
       )}
 
       {/* Error Message */}
       {error && (
-        <div
+        <section
           className="px-4 py-3 mb-6 rounded-md"
           style={{
             backgroundColor: Theme.colors.error.background,
             color: Theme.colors.error.text,
             border: `1px solid ${Theme.colors.error.border}`,
           }}
+          aria-live="assertive"
+          role="alert"
         >
           <div className="flex items-center">
             <svg
@@ -110,6 +120,7 @@ export const AdminTable: React.FC<AdminTableProps> = ({
               className="h-5 w-5 mr-2"
               viewBox="0 0 20 20"
               fill="currentColor"
+              aria-hidden="true"
             >
               <path
                 fillRule="evenodd"
@@ -119,19 +130,16 @@ export const AdminTable: React.FC<AdminTableProps> = ({
             </svg>
             <span>{error}</span>
           </div>
-        </div>
+        </section>
       )}
 
       {/* Card Container */}
-      <div
+      <section
         className="max-w-7xl mx-auto rounded-xl shadow-lg overflow-hidden"
         style={{ backgroundColor: Theme.colors.surface }}
       >
         {/* Header */}
-        <div
-          className="px-6 py-5 sm:px-8 sm:py-6"
-          style={{ backgroundColor: Theme.colors.primary, color: "white" }}
-        >
+        <header className="px-6 py-5 sm:px-8 sm:py-6" style={{ backgroundColor: Theme.colors.primary, color: "white" }}>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h1 className="text-2xl sm:text-3xl font-bold">{title}</h1>
             {createButton && (
@@ -142,26 +150,21 @@ export const AdminTable: React.FC<AdminTableProps> = ({
                   backgroundColor: "rgba(255, 255, 255, 0.15)",
                   color: "white",
                 }}
-                onMouseOver={(e) =>
-                  (e.currentTarget.style.backgroundColor =
-                    "rgba(255, 255, 255, 0.25)")
-                }
-                onMouseOut={(e) =>
-                  (e.currentTarget.style.backgroundColor =
-                    "rgba(255, 255, 255, 0.15)")
-                }
+                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.25)")}
+                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.15)")}
+                aria-label={`Create a new ${title.toLowerCase()}`}
               >
                 + {createButton.label}
               </Link>
             )}
           </div>
-        </div>
+        </header>
 
         {/* Content Area */}
         <div className="p-6 sm:p-8">
           {/* Loading Spinner */}
           {isLoading ? (
-            <div className="flex justify-center my-16">
+            <div className="flex justify-center my-16" role="status" aria-live="polite">
               <div
                 className="animate-spin rounded-full h-12 w-12"
                 style={{
@@ -170,13 +173,16 @@ export const AdminTable: React.FC<AdminTableProps> = ({
                   borderColor: Theme.colors.divider,
                   borderTopColor: Theme.colors.primary,
                 }}
+                aria-hidden="true"
               ></div>
+              <span className="sr-only">Loading...</span>
             </div>
           ) : items.length === 0 ? (
             // No Items Found
-            <div
+            <section
               className="text-center my-16 p-8 rounded-lg"
               style={{ backgroundColor: "rgba(121, 85, 72, 0.1)" }}
+              aria-label="No items found"
             >
               {emptyMessage.icon || (
                 <svg
@@ -186,6 +192,7 @@ export const AdminTable: React.FC<AdminTableProps> = ({
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                   style={{ color: Theme.colors.text.light }}
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"
@@ -195,19 +202,13 @@ export const AdminTable: React.FC<AdminTableProps> = ({
                   />
                 </svg>
               )}
-              <p
-                className="text-lg font-medium"
-                style={{ color: Theme.colors.text.primary }}
-              >
+              <h2 className="text-lg font-medium" style={{ color: Theme.colors.text.primary }}>
                 {emptyMessage.title}
-              </p>
-              <p
-                className="mt-2"
-                style={{ color: Theme.colors.text.secondary }}
-              >
+              </h2>
+              <p className="mt-2" style={{ color: Theme.colors.text.secondary }}>
                 {emptyMessage.description}
               </p>
-            </div>
+            </section>
           ) : (
             // Items Table
             <div className="overflow-x-auto">
@@ -218,7 +219,10 @@ export const AdminTable: React.FC<AdminTableProps> = ({
                   borderSpacing: "0 0",
                   borderColor: Theme.colors.divider,
                 }}
+                aria-label={`${title} table`}
+                role="grid"
               >
+                <caption className="sr-only">{title} - list of items</caption>
                 <thead>
                   <tr>
                     {/* First column for image if imageKey provided */}
@@ -230,6 +234,7 @@ export const AdminTable: React.FC<AdminTableProps> = ({
                           color: Theme.colors.text.primary,
                           width: "80px",
                         }}
+                        scope="col"
                       >
                         Image
                       </th>
@@ -247,6 +252,7 @@ export const AdminTable: React.FC<AdminTableProps> = ({
                           color: Theme.colors.text.primary,
                           width: column.width,
                         }}
+                        scope="col"
                       >
                         {column.header}
                       </th>
@@ -260,6 +266,7 @@ export const AdminTable: React.FC<AdminTableProps> = ({
                           backgroundColor: "rgba(121, 85, 72, 0.1)",
                           color: Theme.colors.text.primary,
                         }}
+                        scope="col"
                       >
                         Actions
                       </th>
@@ -278,20 +285,12 @@ export const AdminTable: React.FC<AdminTableProps> = ({
                       key={getItemId(item)}
                       className="transition-colors duration-150 ease-in-out"
                       style={{
-                        backgroundColor:
-                          index % 2 === 0
-                            ? "transparent"
-                            : "rgba(121, 85, 72, 0.05)",
+                        backgroundColor: index % 2 === 0 ? "transparent" : "rgba(121, 85, 72, 0.05)",
                       }}
-                      onMouseOver={(e) =>
-                        (e.currentTarget.style.backgroundColor =
-                          Theme.colors.surfaceHover)
-                      }
+                      onMouseOver={(e) => (e.currentTarget.style.backgroundColor = Theme.colors.surfaceHover)}
                       onMouseOut={(e) =>
                         (e.currentTarget.style.backgroundColor =
-                          index % 2 === 0
-                            ? "transparent"
-                            : "rgba(121, 85, 72, 0.05)")
+                          index % 2 === 0 ? "transparent" : "rgba(121, 85, 72, 0.05)")
                       }
                     >
                       {/* Image Cell */}
@@ -301,7 +300,7 @@ export const AdminTable: React.FC<AdminTableProps> = ({
                             <div className="relative h-16 w-16 rounded-md overflow-hidden shadow">
                               <Image
                                 src={getImageUrl(item[imageKey])}
-                                alt={item.title || "Image"}
+                                alt={item.title || "Item image"}
                                 fill
                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                 priority
@@ -312,6 +311,7 @@ export const AdminTable: React.FC<AdminTableProps> = ({
                             <div
                               className="h-16 w-16 rounded-md flex items-center justify-center"
                               style={{ backgroundColor: Theme.colors.divider }}
+                              aria-hidden="true"
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -336,30 +336,23 @@ export const AdminTable: React.FC<AdminTableProps> = ({
                       {/* Dynamic content cells */}
                       {columns.map((column) => (
                         <td key={column.key} className="px-4 py-4">
-                          {column.render
-                            ? column.render(item, index)
-                            : item[column.key] || "-"}
+                          {column.render ? column.render(item, index) : item[column.key] || "-"}
                         </td>
                       ))}
 
                       {/* Actions Cell */}
                       {actions.length > 0 && (
                         <td className="px-4 py-4 whitespace-nowrap">
-                          <div className="flex space-x-2">
+                          <div className="flex space-x-2" role="group" aria-label="Item actions">
                             {actions.map((action, actionIndex) => {
                               // Skip rendering if condition is provided and is false
-                              if (
-                                action.showCondition &&
-                                !action.showCondition(item)
-                              ) {
+                              if (action.showCondition && !action.showCondition(item)) {
                                 return null;
                               }
 
                               // Get colors for this action
                               const actionColor =
-                                actionColors[
-                                  action.color as keyof typeof actionColors
-                                ] || actionColors.primary;
+                                actionColors[action.color as keyof typeof actionColors] || actionColors.primary;
 
                               if (action.href) {
                                 return (
@@ -367,32 +360,19 @@ export const AdminTable: React.FC<AdminTableProps> = ({
                                     key={actionIndex}
                                     href={
                                       typeof action.href === "function"
-                                        ? (
-                                            action.href as (
-                                              id: string | number
-                                            ) => string
-                                          )(getItemId(item))
-                                        : (action.href as string).replace(
-                                            ":id",
-                                            String(getItemId(item))
-                                          )
+                                        ? (action.href as (id: string | number) => string)(getItemId(item))
+                                        : (action.href as string).replace(":id", String(getItemId(item)))
                                     }
-                                    target={
-                                      action.external ? "_blank" : undefined
-                                    }
+                                    target={action.external ? "_blank" : undefined}
+                                    rel={action.external ? "noopener noreferrer" : undefined}
                                     className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-150 ease-in-out"
                                     style={{
                                       backgroundColor: actionColor.bg,
-                                      color: "white",
+                                      color: actionColor.text,
                                     }}
-                                    onMouseOver={(e) =>
-                                      (e.currentTarget.style.backgroundColor =
-                                        actionColor.hover)
-                                    }
-                                    onMouseOut={(e) =>
-                                      (e.currentTarget.style.backgroundColor =
-                                        actionColor.bg)
-                                    }
+                                    onMouseOver={(e) => (e.currentTarget.style.backgroundColor = actionColor.hover)}
+                                    onMouseOut={(e) => (e.currentTarget.style.backgroundColor = actionColor.bg)}
+                                    aria-label={`${action.label} ${item.title || "this item"}`}
                                   >
                                     {action.label}
                                   </Link>
@@ -401,22 +381,15 @@ export const AdminTable: React.FC<AdminTableProps> = ({
                                 return (
                                   <button
                                     key={actionIndex}
-                                    onClick={() =>
-                                      action.onClick!(getItemId(item))
-                                    }
+                                    onClick={() => action.onClick!(getItemId(item))}
                                     className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-150 ease-in-out"
                                     style={{
                                       backgroundColor: actionColor.bg,
-                                      color: "white",
+                                      color: actionColor.text,
                                     }}
-                                    onMouseOver={(e) =>
-                                      (e.currentTarget.style.backgroundColor =
-                                        actionColor.hover)
-                                    }
-                                    onMouseOut={(e) =>
-                                      (e.currentTarget.style.backgroundColor =
-                                        actionColor.bg)
-                                    }
+                                    onMouseOver={(e) => (e.currentTarget.style.backgroundColor = actionColor.hover)}
+                                    onMouseOut={(e) => (e.currentTarget.style.backgroundColor = actionColor.bg)}
+                                    aria-label={`${action.label} ${item.title || "this item"}`}
                                   >
                                     {action.label}
                                   </button>
@@ -434,7 +407,7 @@ export const AdminTable: React.FC<AdminTableProps> = ({
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 };

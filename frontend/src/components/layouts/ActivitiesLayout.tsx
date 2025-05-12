@@ -45,7 +45,6 @@ interface ActivitiesLayoutProps {
   onSearchAction: (query: string) => void;
   filter: string;
   onFilterAction: (filter: string) => void;
-  // Add new sort props
   sort: string;
   onSortAction: (sort: string) => void;
 }
@@ -59,7 +58,7 @@ export const ActivitiesLayout: React.FC<ActivitiesLayoutProps> = ({
   filter,
   onFilterAction,
   sort,
-  onSortAction, // Add new sort props
+  onSortAction,
 }) => {
   // Get the appropriate filter options based on active tab
   const filterOptions = activeTab === "projects" ? PROJECT_FILTERS : EVENT_FILTERS;
@@ -69,26 +68,28 @@ export const ActivitiesLayout: React.FC<ActivitiesLayoutProps> = ({
 
   // Create a type-safe adapter for the tab action
   const handleTabChange = (tabId: string) => {
-    // Type assertion here is safe because we know tabId will only be from TAB_OPTIONS
     onTabAction(tabId as "projects" | "events");
   };
 
   return (
-    <div className="bg-background min-h-screen p-6 sm:p-8 md:p-10">
-      <h2 className="text-3xl sm:text-4xl font-bold mb-12 text-center">Aktiviteter</h2>
+    <main className="bg-background min-h-screen p-6 sm:p-8 md:p-10">
+      <header>
+        <h2 className="text-3xl sm:text-4xl font-bold mb-12 text-center">Aktiviteter</h2>
+      </header>
       <div
         className="max-w-7xl mx-auto rounded-xl shadow-lg overflow-hidden"
         style={{ backgroundColor: Theme.colors.surface }}
       >
         {/* Header */}
-        <div className="text-profile-text px-6 py-5 sm:px-8 sm:py-6">
-          <div className="flex flex-col sm:flex-row justify-between items-center">
-            {/* Navigation Tabs - Using Universal TabSelector with adapter function */}
-            <TabSelector tabs={TAB_OPTIONS} activeTab={activeTab} setActiveTab={handleTabChange} size="medium" />
+        <header className="text-profile-text px-6 py-5 sm:px-8 sm:py-6">
+          <section className="flex flex-col sm:flex-row justify-between items-center">
+            {/* Navigation Tabs */}
+            <nav>
+              <TabSelector tabs={TAB_OPTIONS} activeTab={activeTab} setActiveTab={handleTabChange} size="medium" />
+            </nav>
 
             {/* Search, Filter, and Sort */}
-            <div className="flex flex-col text-black sm:flex-row items-center gap-4 mt-4 sm:mt-0">
-              {/* Universal SearchBar */}
+            <section className="flex flex-col text-black sm:flex-row items-center gap-4 mt-4 sm:mt-0">
               <SearchBar
                 searchQuery={searchQuery}
                 setSearchQuery={onSearchAction}
@@ -97,7 +98,6 @@ export const ActivitiesLayout: React.FC<ActivitiesLayoutProps> = ({
               />
 
               <div className="flex flex-row gap-4">
-                {/* Universal FilterDropdown */}
                 <FilterDropdown
                   filter={filter}
                   setFilter={onFilterAction}
@@ -105,7 +105,6 @@ export const ActivitiesLayout: React.FC<ActivitiesLayoutProps> = ({
                   ariaLabel={`Filtrer ${activeTab === "projects" ? "prosjekter" : "arrangementer"}`}
                 />
 
-                {/* SortDropdown */}
                 <SortDropdown
                   sort={sort}
                   setSort={onSortAction}
@@ -114,13 +113,13 @@ export const ActivitiesLayout: React.FC<ActivitiesLayoutProps> = ({
                   placeholder="Sorter etter"
                 />
               </div>
-            </div>
-          </div>
-        </div>
+            </section>
+          </section>
+        </header>
 
         {/* Content */}
-        <div className="p-6 sm:p-8">{children}</div>
+        <section className="p-6 sm:p-8">{children}</section>
       </div>
-    </div>
+    </main>
   );
 };

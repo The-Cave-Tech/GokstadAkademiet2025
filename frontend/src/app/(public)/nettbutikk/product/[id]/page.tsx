@@ -96,7 +96,7 @@ export default function ProductDetailPage() {
     : 0;
 
   return (
-    <div className="bg-white min-h-screen">
+    <main className="bg-white min-h-screen">
       {/* Back button */}
       <div className="max-w-6xl mx-auto px-4 pt-4">
         <BackButton />
@@ -105,8 +105,8 @@ export default function ProductDetailPage() {
       {/* Main Content Container */}
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row gap-8">
-          {/* Left Sidebar - Product Info */}
-          <div className="md:w-1/4">
+          {/* Sidebar */}
+          <aside className="md:w-1/4">
             <div className="bg-white p-6 rounded-lg shadow-md">
               {/* Product Image Banner */}
               <div className="w-full h-40 rounded-lg overflow-hidden bg-gray-200 mb-6 relative">
@@ -119,11 +119,8 @@ export default function ProductDetailPage() {
                 )}
               </div>
 
-              {/* Product Name */}
-              <h3 className="text-xl font-semibold text-center">{product.title}</h3>
-
               {/* Product Info */}
-              <div className="mt-6">
+              <section>
                 <h4 className="font-medium text-gray-700 mb-2">Produktinformasjon</h4>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-center gap-2">
@@ -135,10 +132,10 @@ export default function ProductDetailPage() {
                     <span>{product.stock > 0 ? `${product.stock} på lager` : "Ikke på lager"}</span>
                   </li>
                 </ul>
-              </div>
+              </section>
 
               {/* Price Section */}
-              <div className="mt-8 pt-6 border-t border-gray-100">
+              <section className="mt-8 pt-6 border-t border-gray-100">
                 <h4 className="font-medium text-gray-700 mb-2">Pris</h4>
                 {product.discountedPrice ? (
                   <div className="flex flex-col">
@@ -153,11 +150,11 @@ export default function ProductDetailPage() {
                 ) : (
                   <span className="text-2xl font-bold text-gray-800">{formatPrice(product.price)}</span>
                 )}
-              </div>
+              </section>
 
               {/* Add to Cart Section */}
               {product.stock > 0 && (
-                <div className="mt-6">
+                <section className="mt-6">
                   <div className="flex items-center gap-2 mb-4">
                     <span className="text-gray-700">Antall:</span>
                     <div className="flex border border-gray-300 rounded">
@@ -189,55 +186,34 @@ export default function ProductDetailPage() {
                     <MdShoppingBasket className="text-lg" />
                     <span>Legg i handlekurv</span>
                   </button>
-                </div>
+                </section>
               )}
-
-              {/* Product Metadata */}
-              <div className="mt-8 pt-6 border-t border-gray-100 text-xs text-gray-500 space-y-1">
-                {product.publishedAt && <p>Publisert: {formatDate(product.publishedAt)}</p>}
-                {product.createdAt && <p>Opprettet: {formatDate(product.createdAt)}</p>}
-                {product.updatedAt && <p>Sist oppdatert: {formatDate(product.updatedAt)}</p>}
-              </div>
             </div>
-          </div>
+          </aside>
 
           {/* Main Content Area */}
-          <div className="md:w-3/4">
+          <section className="md:w-3/4">
             {/* Product Title and Header */}
-            <div className="border-b border-gray-200 pb-4 mb-6">
+            <header className="border-b border-gray-200 pb-4 mb-6">
               <h1 className="text-3xl font-bold text-gray-800">{product.title}</h1>
               <div className="text-sm text-red-500 mt-2 tracking-wider uppercase">
                 PRODUKT • {product.category || "UKATEGORISERT"} •{" "}
                 {formatDate(product.publishedAt || product.createdAt || "")}
               </div>
-            </div>
-
-            {/* Product Status Banner */}
-            {product.stock <= 0 && (
-              <div className="bg-red-100 text-red-700 px-4 py-3 rounded-md mb-6 flex items-center gap-2">
-                <FaBoxOpen />
-                <span>Dette produktet er midlertidig utsolgt</span>
-              </div>
-            )}
-            {product.stock <= 5 && product.stock > 0 && (
-              <div className="bg-yellow-100 text-yellow-700 px-4 py-3 rounded-md mb-6 flex items-center gap-2">
-                <FaBoxOpen />
-                <span>Kun {product.stock} igjen på lager!</span>
-              </div>
-            )}
+            </header>
 
             {/* Product Description */}
             {product.description && (
-              <div className="mb-8">
+              <section className="mb-8">
                 <h2 className="text-xl font-semibold text-gray-800 mb-3 border-l-4 border-blue-500 pl-3">
                   Produktbeskrivelse
                 </h2>
                 <p className="text-gray-700 leading-relaxed">{product.description}</p>
-              </div>
+              </section>
             )}
 
             {/* Specifications Section */}
-            <div className="mt-12 pt-8 border-t border-gray-200">
+            <section className="mt-12 pt-8 border-t border-gray-200">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">Spesifikasjoner</h2>
               <div className="bg-gray-50 p-6 rounded-lg">
                 <table className="w-full">
@@ -266,59 +242,11 @@ export default function ProductDetailPage() {
                   </tbody>
                 </table>
               </div>
-            </div>
-
-            {/* Related Products section */}
-            {relatedProducts.length > 0 && (
-              <div className="mt-12 pt-8 border-t border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">Lignende produkter</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {relatedProducts.map((relatedProduct) => (
-                    <Link href={`/nettbutikk/product/${relatedProduct.id}`} key={relatedProduct.id} className="group">
-                      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                        <div className="h-40 relative bg-gray-200">
-                          {relatedProduct.productImage?.url ? (
-                            <Image
-                              src={relatedProduct.productImage.url}
-                              alt={relatedProduct.title}
-                              fill
-                              className="object-cover group-hover:opacity-90 transition-opacity"
-                            />
-                          ) : (
-                            <div className="absolute inset-0 flex items-center justify-center text-3xl font-bold text-gray-400">
-                              {relatedProduct.title.charAt(0).toUpperCase()}
-                            </div>
-                          )}
-                        </div>
-                        <div className="p-4">
-                          <h3 className="font-medium text-gray-800 group-hover:text-blue-600 transition-colors">
-                            {relatedProduct.title}
-                          </h3>
-                          <div className="mt-2">
-                            {relatedProduct.discountedPrice ? (
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-green-600">
-                                  {formatPrice(relatedProduct.discountedPrice)}
-                                </span>
-                                <span className="text-gray-500 line-through text-sm">
-                                  {formatPrice(relatedProduct.price)}
-                                </span>
-                              </div>
-                            ) : (
-                              <span className="font-bold">{formatPrice(relatedProduct.price)}</span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+            </section>
+          </section>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 

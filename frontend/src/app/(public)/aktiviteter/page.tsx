@@ -13,8 +13,8 @@ export default function ActivitiesRedirectPage() {
   }, [router]);
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
+    <section className="flex justify-center items-center min-h-screen">
       <LoadingSpinner className="w-16 h-16" />
-    </div>
+    </section>
   );
 }

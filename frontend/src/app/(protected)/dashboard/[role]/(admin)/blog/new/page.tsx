@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import ContentForm from "@/components/layouts/dashboard/contentManager/ContentForm";
+import ContentForm from "@/components/dashboard/contentManager/ContentForm";
 import { blogService } from "@/lib/data/services/blogService";
 import { useRouter } from "next/navigation";
 
@@ -33,26 +33,18 @@ const NewBlogPostPage = () => {
   };
 
   return (
-    <div
-      className="min-h-screen p-6 sm:p-8 md:p-10"
-      style={{ backgroundColor: colors.background }}
-    >
-      <div
+    <section className="min-h-screen p-6 sm:p-8 md:p-10" style={{ backgroundColor: colors.background }}>
+      <section
         className="max-w-4xl mx-auto rounded-xl shadow-lg overflow-hidden"
         style={{ backgroundColor: colors.surface }}
       >
         {/* Header */}
-        <div
-          className="px-6 py-5 sm:px-8 sm:py-6"
-          style={{ backgroundColor: colors.primary, color: "white" }}
-        >
-          <h1 className="text-2xl sm:text-3xl font-bold">
-            Create New Blog Post
-          </h1>
-        </div>
+        <header className="px-6 py-5 sm:px-8 sm:py-6" style={{ backgroundColor: colors.primary, color: "white" }}>
+          <h1 className="text-2xl sm:text-3xl font-bold">Create New Blog Post</h1>
+        </header>
 
         {/* Form */}
-        <div className="p-6 sm:p-8">
+        <section className="p-6 sm:p-8">
           <ContentForm
             onSave={handleSave}
             onCancel={handleCancel}
@@ -71,14 +63,7 @@ const NewBlogPostPage = () => {
                   name: "category",
                   label: "Category",
                   type: "select",
-                  options: [
-                    "Technology",
-                    "Events",
-                    "News",
-                    "Tutorial",
-                    "Opinion",
-                    "Other",
-                  ],
+                  options: ["Technology", "Events", "News", "Tutorial", "Opinion", "Other"],
                   required: true,
                 },
                 { name: "tags", label: "Tags (comma separated)", type: "text" },
@@ -100,9 +85,9 @@ const NewBlogPostPage = () => {
               imageName: "Blog Cover Image",
             }}
           />
-        </div>
-      </div>
-    </div>
+        </section>
+      </section>
+    </section>
   );
 };
 

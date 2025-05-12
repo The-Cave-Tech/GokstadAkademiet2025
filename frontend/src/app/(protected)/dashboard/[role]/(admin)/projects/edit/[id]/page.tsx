@@ -6,6 +6,7 @@ import { projectService } from "@/lib/data/services/projectService";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import BackButton from "@/components/BackButton";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 const colors = {
   primary: "rgb(121, 85, 72)", // Brown
@@ -67,15 +68,13 @@ const EditProjectPage = () => {
           technologies: Array.isArray(projectData.technologies)
             ? projectData.technologies.join(", ")
             : typeof projectData.technologies === "string"
-              ? projectData.technologies
-              : "",
+            ? projectData.technologies
+            : "",
         };
 
         setProject(formattedProject);
       } catch (err) {
-        setError(
-          `Failed to load project: ${err instanceof Error ? err.message : "Unknown error"}`
-        );
+        setError(`Failed to load project: ${err instanceof Error ? err.message : "Unknown error"}`);
         console.error("Error loading project:", err);
       } finally {
         setIsLoading(false);
@@ -92,9 +91,7 @@ const EditProjectPage = () => {
       await projectService.update(idToUse, data, image);
       router.push("/dashboard/admin/projects");
     } catch (err) {
-      setError(
-        `Failed to update project: ${err instanceof Error ? err.message : "Unknown error"}`
-      );
+      setError(`Failed to update project: ${err instanceof Error ? err.message : "Unknown error"}`);
       console.error("Error updating project:", err);
     }
   };
@@ -105,14 +102,8 @@ const EditProjectPage = () => {
 
   if (error) {
     return (
-      <div
-        className="min-h-screen p-6 sm:p-8 md:p-10"
-        style={{ backgroundColor: colors.background }}
-      >
-        <div
-          className="max-w-4xl mx-auto p-6 rounded-xl shadow-lg"
-          style={{ backgroundColor: colors.surface }}
-        >
+      <section className="min-h-screen p-6 sm:p-8 md:p-10" style={{ backgroundColor: colors.background }}>
+        <section className="max-w-4xl mx-auto p-6 rounded-xl shadow-lg" style={{ backgroundColor: colors.surface }}>
           <BackButton />
           <div className="p-4 my-4 rounded-md bg-red-50 border border-red-200 text-red-700">
             <p>{error}</p>
@@ -123,41 +114,27 @@ const EditProjectPage = () => {
           >
             Return to Projects List
           </button>
-        </div>
-      </div>
+        </section>
+      </section>
     );
   }
 
   return (
-    <div
-      className="min-h-screen p-6 sm:p-8 md:p-10"
-      style={{ backgroundColor: colors.background }}
-    >
-      <div
+    <section className="min-h-screen p-6 sm:p-8 md:p-10" style={{ backgroundColor: colors.background }}>
+      <section
         className="max-w-4xl mx-auto rounded-xl shadow-lg overflow-hidden"
         style={{ backgroundColor: colors.surface }}
       >
         {/* Header */}
-        <div
-          className="px-6 py-5 sm:px-8 sm:py-6"
-          style={{ backgroundColor: colors.primary, color: "white" }}
-        >
+        <div className="px-6 py-5 sm:px-8 sm:py-6" style={{ backgroundColor: colors.primary, color: "white" }}>
           <h1 className="text-2xl sm:text-3xl font-bold">Edit Project</h1>
         </div>
 
         {/* Form */}
-        <div className="p-6 sm:p-8">
+        <section className="p-6 sm:p-8">
           {isLoading ? (
             <div className="flex justify-center my-16">
-              <div
-                className="animate-spin rounded-full h-12 w-12"
-                style={{
-                  borderWidth: "3px",
-                  borderStyle: "solid",
-                  borderColor: "rgb(225, 217, 209)",
-                  borderTopColor: colors.primary,
-                }}
-              ></div>
+              <LoadingSpinner size="large" />
             </div>
           ) : (
             <ContentForm
@@ -201,9 +178,9 @@ const EditProjectPage = () => {
               data={project}
             />
           )}
-        </div>
-      </div>
-    </div>
+        </section>
+      </section>
+    </section>
   );
 };
 

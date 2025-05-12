@@ -31,6 +31,7 @@ export default function BlogPage() {
   const [filter, setFilter] = useState<string | null>(null);
   const [sort, setSort] = useState<string>("newest"); // Default sort by newest
   const [categories, setCategories] = useState<string[]>([]);
+  const [announceFilterChange, setAnnounceFilterChange] = useState<string | null>(null);
 
   // Fetch blog posts on component mount
   useEffect(() => {
@@ -41,6 +42,15 @@ export default function BlogPage() {
   useEffect(() => {
     applyFiltersAndSort();
   }, [blogPosts, searchQuery, filter, sort]);
+
+  // Create announcement for screen readers when filters change
+  useEffect(() => {
+    if (filteredBlogPosts.length > 0) {
+      setAnnounceFilterChange(`Showing ${filteredBlogPosts.length} blog posts`);
+    } else if (filteredBlogPosts.length === 0 && !isLoading) {
+      setAnnounceFilterChange("No blog posts match your current filters.");
+    }
+  }, [filteredBlogPosts, isLoading]);
 
   // Fetch blog posts from the API
   const loadBlogPosts = async () => {
@@ -141,7 +151,7 @@ export default function BlogPage() {
 
     if (error) {
       return (
-        <div className="text-center py-10 text-red-600">
+        <div className="text-center py-10 text-red-600" role="alert">
           <p className="text-xl font-medium">{error}</p>
           <p className="mt-2">Please try reloading the page.</p>
         </div>
@@ -150,15 +160,27 @@ export default function BlogPage() {
 
     if (!filteredBlogPosts || filteredBlogPosts.length === 0) {
       return (
-        <div className="text-center py-10">
-          <h3 className="text-xl font-medium text-gray-700">No blog posts found</h3>
+        <div className="text-center py-10" role="status">
+          <h2 className="text-xl font-medium text-gray-700">No blog posts found</h2>
           <p className="mt-2 text-gray-500">Try adjusting your search or filter.</p>
+          <button
+            onClick={clearFilters}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            aria-label="Clear all filters"
+          >
+            Clear filters
+          </button>
         </div>
       );
     }
 
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <section
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+        role="feed"
+        aria-busy={isLoading}
+        aria-label="Blog posts grid"
+      >
         {filteredBlogPosts.map((post) => {
           try {
             const cardProps = adaptBlogToCardProps(post, handleBlogClick);
@@ -166,31 +188,40 @@ export default function BlogPage() {
           } catch (error) {
             console.error(`Error rendering post ${post.id}:`, error);
             return (
-              <div key={post.id} className="p-4 border rounded-md bg-red-50 text-red-500">
+              <div key={post.id} className="p-4 border rounded-md bg-red-50 text-red-500" role="alert">
                 Error displaying post: {post.title}
               </div>
             );
           }
         })}
-      </div>
+      </section>
     );
   };
 
   // Main render
   return (
-    <div className="bg-white min-h-screen">
-      <div className="container mx-auto px-4 py-8">
+    <main className="bg-white min-h-screen">
+      {/* Skip navigation link for keyboard users */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:border focus:border-blue-500 focus:text-blue-600 focus:rounded"
+      >
+        Skip to main content
+      </a>
+
+      <section className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-center mb-10">Blogg</h1>
+        <header className="mb-8">
+          <h1 className="text-3xl font-bold text-center mb-10">Blog</h1>
 
           {/* Search, Filter, and Sort Bar */}
           <div className="flex flex-col sm:flex-row gap-4 mb-6 bg-gray-50 p-4 rounded-lg">
             <SearchBar
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
-              placeholder="Søk etter blogg..."
+              placeholder="Search blog posts..."
               className="flex-grow"
+              ariaLabel="Search blog posts"
             />
 
             <FilterDropdown
@@ -203,6 +234,7 @@ export default function BlogPage() {
                   label: category,
                 })),
               ]}
+              ariaLabel="Filter by category"
             />
 
             <SortDropdown
@@ -213,11 +245,18 @@ export default function BlogPage() {
               placeholder="Sort by"
             />
           </div>
-        </div>
 
-        {/* Content */}
-        {renderContent()}
-      </div>
-    </div>
+          {/* Live region for announcing filter changes to screen readers */}
+          <div className="sr-only" aria-live="polite" role="status">
+            {announceFilterChange}
+          </div>
+        </header>
+
+        {/* Main content */}
+        <section>
+          <div>{renderContent()}</div>
+        </section>
+      </section>
+    </main>
   );
 }

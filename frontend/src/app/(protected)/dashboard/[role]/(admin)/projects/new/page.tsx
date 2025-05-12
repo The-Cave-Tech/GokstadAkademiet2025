@@ -32,24 +32,19 @@ const NewProjectPage = () => {
   };
 
   return (
-    <div
-      className="min-h-screen p-6 sm:p-8 md:p-10"
-      style={{ backgroundColor: colors.background }}
-    >
-      <div
+    <section className="min-h-screen p-6 sm:p-8 md:p-10" style={{ backgroundColor: colors.background }}>
+      <section
+        // Main container for the form
         className="max-w-4xl mx-auto rounded-xl shadow-lg overflow-hidden"
         style={{ backgroundColor: colors.surface }}
       >
         {/* Header */}
-        <div
-          className="px-6 py-5 sm:px-8 sm:py-6"
-          style={{ backgroundColor: colors.primary, color: "white" }}
-        >
+        <header className="px-6 py-5 sm:px-8 sm:py-6" style={{ backgroundColor: colors.primary, color: "white" }}>
           <h1 className="text-2xl sm:text-3xl font-bold">Create New Project</h1>
-        </div>
+        </header>
 
         {/* Form */}
-        <div className="p-6 sm:p-8">
+        <section className="p-6 sm:p-8">
           <ContentForm
             onSave={handleSave}
             onCancel={handleCancel}
@@ -80,9 +75,9 @@ const NewProjectPage = () => {
               imageName: "Project Image",
             }}
           />
-        </div>
-      </div>
-    </div>
+        </section>
+      </section>
+    </section>
   );
 };
 

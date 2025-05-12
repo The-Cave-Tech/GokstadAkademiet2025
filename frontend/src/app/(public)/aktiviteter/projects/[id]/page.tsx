@@ -73,7 +73,7 @@ export default function ProjectDetailPage() {
   if (!project) return <ErrorMessage message="Project not found" />;
 
   return (
-    <div className="bg-white min-h-screen">
+    <main className="bg-white min-h-screen">
       {/* Header/Banner Image */}
       <div className="w-full h-64 relative bg-gray-200">
         {project.projectImage?.url ? (
@@ -91,10 +91,10 @@ export default function ProjectDetailPage() {
       </div>
 
       {/* Main Content Container */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row gap-8">
+      <section className="max-w-6xl mx-auto px-4 py-8">
+        <section className="flex flex-col md:flex-row gap-8">
           {/* Left Sidebar */}
-          <div className="md:w-1/4">
+          <section className="md:w-1/4">
             <div className="bg-white p-6 rounded-lg shadow-md">
               {/* Project Info */}
               <div className="mt-6">
@@ -156,10 +156,10 @@ export default function ProjectDetailPage() {
                 {project.updatedAt && <p>Sist oppdatert: {formatDate(project.updatedAt)}</p>}
               </div>
             </div>
-          </div>
+          </section>
 
           {/* Main Content Area */}
-          <div className="md:w-3/4">
+          <section className="md:w-3/4">
             {/* Project Title and Header */}
             <div className="border-b border-gray-200 pb-4 mb-6">
               <h1 className="text-3xl font-bold text-gray-800">{project.title}</h1>
@@ -187,10 +187,10 @@ export default function ProjectDetailPage() {
                 <p>Ingen innhold tilgjengelig for dette prosjektet.</p>
               )}
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          </section>
+        </section>
+      </section>
+    </main>
   );
 }
 

@@ -6,6 +6,7 @@ import { eventsService } from "@/lib/data/services/eventService";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import BackButton from "@/components/BackButton";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 const colors = {
   primary: "rgb(121, 85, 72)", // Brown
@@ -41,8 +42,7 @@ const EditEventPage = () => {
         // Find the event with matching ID
         const matchingEvent = allEvents.find(
           (e) =>
-            e.id.toString() === eventId.toString() ||
-            (e.documentId && e.documentId.toString() === eventId.toString())
+            e.id.toString() === eventId.toString() || (e.documentId && e.documentId.toString() === eventId.toString())
         );
 
         if (!matchingEvent) {
@@ -63,9 +63,7 @@ const EditEventPage = () => {
 
         setEvent(eventData);
       } catch (err) {
-        setError(
-          `Failed to load event: ${err instanceof Error ? err.message : "Unknown error"}`
-        );
+        setError(`Failed to load event: ${err instanceof Error ? err.message : "Unknown error"}`);
         console.error("Error loading event:", err);
       } finally {
         setIsLoading(false);
@@ -82,9 +80,7 @@ const EditEventPage = () => {
       await eventsService.update(idToUse, data, image);
       router.push("/dashboard/admin/events");
     } catch (err) {
-      setError(
-        `Failed to update event: ${err instanceof Error ? err.message : "Unknown error"}`
-      );
+      setError(`Failed to update event: ${err instanceof Error ? err.message : "Unknown error"}`);
       console.error("Error updating event:", err);
     }
   };
@@ -95,14 +91,8 @@ const EditEventPage = () => {
 
   if (error) {
     return (
-      <div
-        className="min-h-screen p-6 sm:p-8 md:p-10"
-        style={{ backgroundColor: colors.background }}
-      >
-        <div
-          className="max-w-4xl mx-auto p-6 rounded-xl shadow-lg"
-          style={{ backgroundColor: colors.surface }}
-        >
+      <section className="min-h-screen p-6 sm:p-8 md:p-10" style={{ backgroundColor: colors.background }}>
+        <section className="max-w-4xl mx-auto p-6 rounded-xl shadow-lg" style={{ backgroundColor: colors.surface }}>
           <BackButton />
           <div className="p-4 my-4 rounded-md bg-red-50 border border-red-200 text-red-700">
             <p>{error}</p>
@@ -113,41 +103,27 @@ const EditEventPage = () => {
           >
             Return to Events List
           </button>
-        </div>
-      </div>
+        </section>
+      </section>
     );
   }
 
   return (
-    <div
-      className="min-h-screen p-6 sm:p-8 md:p-10"
-      style={{ backgroundColor: colors.background }}
-    >
-      <div
+    <section className="min-h-screen p-6 sm:p-8 md:p-10" style={{ backgroundColor: colors.background }}>
+      <section
         className="max-w-4xl mx-auto rounded-xl shadow-lg overflow-hidden"
         style={{ backgroundColor: colors.surface }}
       >
         {/* Header */}
-        <div
-          className="px-6 py-5 sm:px-8 sm:py-6"
-          style={{ backgroundColor: colors.primary, color: "white" }}
-        >
+        <header className="px-6 py-5 sm:px-8 sm:py-6" style={{ backgroundColor: colors.primary, color: "white" }}>
           <h1 className="text-2xl sm:text-3xl font-bold">Edit Event</h1>
-        </div>
+        </header>
 
         {/* Form */}
-        <div className="p-6 sm:p-8">
+        <section className="p-6 sm:p-8">
           {isLoading ? (
             <div className="flex justify-center my-16">
-              <div
-                className="animate-spin rounded-full h-12 w-12"
-                style={{
-                  borderWidth: "3px",
-                  borderStyle: "solid",
-                  borderColor: "rgb(225, 217, 209)",
-                  borderTopColor: colors.primary,
-                }}
-              ></div>
+              <LoadingSpinner size="large" />
             </div>
           ) : (
             <ContentForm
@@ -185,9 +161,9 @@ const EditEventPage = () => {
               data={event}
             />
           )}
-        </div>
-      </div>
-    </div>
+        </section>
+      </section>
+    </section>
   );
 };
 

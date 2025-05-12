@@ -54,7 +54,7 @@ export const UniversalCard: React.FC<UniversalCardProps> = ({
 
   const sizeStyle = sizeMap[size];
 
-  // Helper function to get badge colors
+  // Helper function to get badge colors with contrast check
   const getBadgeColors = (badge: Badge) => {
     if (badge.customColor && badge.customBgColor) {
       return {
@@ -63,6 +63,7 @@ export const UniversalCard: React.FC<UniversalCardProps> = ({
       };
     }
 
+    // Enhanced contrast colors
     switch (badge.type) {
       case "primary":
         return {
@@ -71,28 +72,28 @@ export const UniversalCard: React.FC<UniversalCardProps> = ({
         };
       case "success":
         return {
-          backgroundColor: "bg-green-100",
-          color: "text-green-800",
+          backgroundColor: "rgb(235, 247, 237)",
+          color: "rgb(30, 90, 40)", // Darker green for better contrast
         };
       case "warning":
         return {
-          backgroundColor: "bg-yellow-100",
-          color: "text-yellow-800",
+          backgroundColor: "rgb(254, 243, 199)",
+          color: "rgb(146, 64, 14)", // Darker yellow/amber for better contrast
         };
       case "danger":
         return {
-          backgroundColor: "bg-red-100",
-          color: "text-red-800",
+          backgroundColor: "rgb(254, 226, 226)",
+          color: "rgb(153, 27, 27)", // Darker red for better contrast
         };
       case "info":
         return {
-          backgroundColor: "bg-blue-100",
-          color: "text-blue-800",
+          backgroundColor: "rgb(219, 234, 254)",
+          color: "rgb(30, 64, 175)", // Darker blue for better contrast
         };
       case "neutral":
         return {
-          backgroundColor: "bg-gray-100",
-          color: "text-gray-800",
+          backgroundColor: "rgb(243, 244, 246)",
+          color: "rgb(55, 65, 81)", // Darker gray for better contrast
         };
       default:
         return {
@@ -109,49 +110,64 @@ export const UniversalCard: React.FC<UniversalCardProps> = ({
     }
   };
 
+  // Handle keyboard interactions
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (onClick && (e.key === "Enter" || e.key === " ")) {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
   return (
-    <Card
-      className={`relative ${hoverEffect ? "hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" : ""} ${onClick ? "cursor-pointer" : ""} ${className}`}
+    <section
+      className={`relative ${
+        hoverEffect ? "hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" : ""
+      } ${onClick ? "cursor-pointer" : ""} ${className}`}
       onClick={handleCardClick}
+      onKeyDown={handleKeyDown}
       tabIndex={onClick ? 0 : undefined}
       role={onClick ? "button" : undefined}
       aria-label={onClick ? `View details of ${title}` : undefined}
     >
       {/* Corner Element */}
       {cornerElement && (
-        <div className="absolute top-0 left-0 z-10">{cornerElement}</div>
+        <div className="absolute top-0 left-0 z-10" aria-hidden="true">
+          {cornerElement}
+        </div>
       )}
 
       {/* Image Section */}
       {image && (
-        <div
-          className={`${sizeStyle.imageHeight} relative overflow-hidden rounded-t-lg`}
-        >
+        <figure className={`${sizeStyle.imageHeight} relative overflow-hidden rounded-t-lg`}>
           {image.src ? (
             <>
               <Image
                 src={image.src}
-                alt={image.alt || title}
+                alt={image.alt || title || "Card image"}
                 fill
                 sizes="100vw"
                 className="object-cover transition-transform duration-300 hover:scale-105"
+                loading="lazy"
               />
               {/* Overlay for Date */}
               {image.overlay && (
-                <div className="absolute bottom-0 left-0 w-full bg-black/50 text-white text-sm p-2">
+                <figcaption className="absolute bottom-0 left-0 w-full bg-black/50 text-white text-sm p-2">
                   {image.overlay}
-                </div>
+                </figcaption>
               )}
             </>
           ) : image.fallbackLetter ? (
-            <div className="flex items-center justify-center bg-gray-200 text-gray-700 text-3xl font-bold">
+            <div
+              className="flex items-center justify-center bg-gray-200 text-gray-700 text-3xl font-bold h-full w-full"
+              aria-hidden="true"
+            >
               {title.charAt(0).toUpperCase()}
             </div>
           ) : null}
-        </div>
+        </figure>
       )}
 
-      <CardBody className="p-4">
+      <div className="p-4">
         {/* Header Slot */}
         {headerSlot}
 
@@ -166,7 +182,11 @@ export const UniversalCard: React.FC<UniversalCardProps> = ({
                   className={`inline-flex items-center gap-1 rounded-md font-medium ${sizeStyle.badges}`}
                   style={badgeColors}
                 >
-                  {badge.icon && <span className="mr-1">{badge.icon}</span>}
+                  {badge.icon && (
+                    <span className="mr-1" aria-hidden="true">
+                      {badge.icon}
+                    </span>
+                  )}
                   {badge.text}
                 </span>
               );
@@ -175,19 +195,16 @@ export const UniversalCard: React.FC<UniversalCardProps> = ({
         )}
 
         {/* Title */}
-        <h3
+        <h2
           className={`${sizeStyle.title} font-semibold mb-2 line-clamp-2`}
           style={{ color: Theme.colors.text.primary }}
         >
           {title}
-        </h3>
+        </h2>
 
         {/* Description */}
         {description && (
-          <p
-            className={`${sizeStyle.description} mb-4 line-clamp-3`}
-            style={{ color: Theme.colors.text.secondary }}
-          >
+          <p className={`${sizeStyle.description} mb-4 line-clamp-3`} style={{ color: Theme.colors.text.secondary }}>
             {description}
           </p>
         )}
@@ -204,24 +221,28 @@ export const UniversalCard: React.FC<UniversalCardProps> = ({
                   color: tag.customColor || Theme.colors.text.primary,
                 }}
               >
-                {tag.icon && <span>{tag.icon}</span>}
+                {tag.icon && <span aria-hidden="true">{tag.icon}</span>}
                 {tag.prefix && <span>{tag.prefix}</span>}
                 {tag.text}
               </span>
             ))}
           </div>
         )}
-      </CardBody>
+      </div>
 
       {/* Footer */}
       {(details.length > 0 || actionButton) && (
-        <CardFooter className="p-4 border-t border-gray-200">
+        <footer className="p-4 border-t border-gray-200">
           {/* Details */}
           {details.length > 0 && (
             <div className="flex flex-wrap gap-4">
               {details.map((detail, index) => (
                 <div key={index} className="flex items-center">
-                  {detail.icon && <span className="mr-2">{detail.icon}</span>}
+                  {detail.icon && (
+                    <span className="mr-2" aria-hidden="true">
+                      {detail.icon}
+                    </span>
+                  )}
                   <span
                     className={`truncate max-w-xs ${sizeStyle.details}`}
                     style={{ color: Theme.colors.text.secondary }}
@@ -245,15 +266,16 @@ export const UniversalCard: React.FC<UniversalCardProps> = ({
                 e.stopPropagation();
                 actionButton.onClick?.(e);
               }}
+              aria-label={actionButton.text}
             >
               {actionButton.text}
             </button>
           )}
-        </CardFooter>
+        </footer>
       )}
 
       {/* Footer Slot */}
       {footerSlot}
-    </Card>
+    </section>
   );
 };
