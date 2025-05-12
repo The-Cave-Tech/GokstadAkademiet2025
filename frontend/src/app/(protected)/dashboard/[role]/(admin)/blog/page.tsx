@@ -4,11 +4,7 @@ import React, { useState, useEffect } from "react";
 import { blogService } from "@/lib/data/services/blogService";
 import { formatDate } from "@/lib/utils/eventUtils";
 import BackButton from "@/components/BackButton";
-import {
-  AdminTable,
-  AdminColumn,
-  AdminAction,
-} from "@/components/dashboard/contentManager/AdminContentTable";
+import { AdminTable, AdminColumn, AdminAction } from "@/components/dashboard/contentManager/AdminContentTable";
 import { MdPerson } from "react-icons/md";
 
 export default function BlogAdminPage() {
@@ -24,10 +20,7 @@ export default function BlogAdminPage() {
   const loadBlogPosts = async () => {
     setIsLoading(true);
     try {
-      const data = await blogService.getAll({
-        sort: ["createdAt:desc"],
-        populate: ["blogImage", "author"],
-      });
+      const data = await blogService.getAll();
       setBlogPosts(data);
       setError(null);
     } catch (err) {
@@ -46,9 +39,7 @@ export default function BlogAdminPage() {
 
       if (success) {
         setSuccessMessage("Blog post deleted successfully!");
-        setBlogPosts((prevBlogPosts) =>
-          prevBlogPosts.filter((post) => String(post.documentId) !== idString)
-        );
+        setBlogPosts((prevBlogPosts) => prevBlogPosts.filter((post) => String(post.documentId) !== idString));
       }
     } catch (error) {
       console.error("Failed to delete blog post:", error);
@@ -84,11 +75,7 @@ export default function BlogAdminPage() {
       render: (post) => (
         <div>
           <div className="font-medium">{post.title}</div>
-          {post.summary && (
-            <div className="mt-1 truncate max-w-xs text-gray-600">
-              {post.summary}
-            </div>
-          )}
+          {post.summary && <div className="mt-1 truncate max-w-xs text-gray-600">{post.summary}</div>}
         </div>
       ),
     },
@@ -135,9 +122,7 @@ export default function BlogAdminPage() {
 
         // Ensure state is a valid key, otherwise use default
         const state = post.state || "draft";
-        const stateKey = (
-          Object.keys(stateColors).includes(state) ? state : "default"
-        ) as StateColorKey;
+        const stateKey = (Object.keys(stateColors).includes(state) ? state : "default") as StateColorKey;
         const colors = stateColors[stateKey];
 
         return (

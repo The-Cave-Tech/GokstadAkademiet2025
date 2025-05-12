@@ -24,6 +24,7 @@ export interface EventAttributes extends BaseContent {
   description: string;
   content?: string;
   startDate?: string;
+  category?: string;
   endDate?: string;
   time?: string;
   location?: string;

@@ -11,6 +11,7 @@ interface ActivityState {
   activeTab: "projects" | "events";
   filter: string;
   searchQuery: string;
+  sort: string; // Added sort field
   projects: ProjectResponse[];
   events: EventResponse[];
   filteredProjects: ProjectResponse[];
@@ -24,6 +25,7 @@ type ActivityAction =
   | { type: "SET_ACTIVE_TAB"; payload: "projects" | "events" }
   | { type: "SET_FILTER"; payload: string }
   | { type: "SET_SEARCH_QUERY"; payload: string }
+  | { type: "SET_SORT"; payload: string } // Added SET_SORT action
   | { type: "SET_PROJECTS"; payload: ProjectResponse[] }
   | { type: "SET_EVENTS"; payload: EventResponse[] }
   | { type: "SET_LOADING"; payload: boolean }
@@ -40,6 +42,7 @@ const ActivityContext = createContext<{
     activeTab: "projects",
     filter: "all",
     searchQuery: "",
+    sort: "newest", // Default sort value
     projects: [],
     events: [],
     filteredProjects: [],
@@ -51,10 +54,7 @@ const ActivityContext = createContext<{
 });
 
 // Reducer function
-const activityReducer = (
-  state: ActivityState,
-  action: ActivityAction
-): ActivityState => {
+const activityReducer = (state: ActivityState, action: ActivityAction): ActivityState => {
   switch (action.type) {
     case "SET_ACTIVE_TAB":
       return {
@@ -71,27 +71,24 @@ const activityReducer = (
         ...state,
         searchQuery: action.payload,
       };
+    case "SET_SORT": // Added SET_SORT case
+      return {
+        ...state,
+        sort: action.payload,
+      };
     case "SET_PROJECTS":
       return {
         ...state,
         projects: action.payload,
         // Also update filtered projects
-        filteredProjects: filterProjects(
-          action.payload,
-          state.filter,
-          state.searchQuery
-        ),
+        filteredProjects: filterAndSortProjects(action.payload, state.filter, state.searchQuery, state.sort),
       };
     case "SET_EVENTS":
       return {
         ...state,
         events: action.payload,
         // Also update filtered events
-        filteredEvents: filterEvents(
-          action.payload,
-          state.filter,
-          state.searchQuery
-        ),
+        filteredEvents: filterAndSortEvents(action.payload, state.filter, state.searchQuery, state.sort),
       };
     case "SET_LOADING":
       return {
@@ -106,31 +103,60 @@ const activityReducer = (
     case "FILTER_PROJECTS":
       return {
         ...state,
-        filteredProjects: filterProjects(
-          state.projects,
-          state.filter,
-          state.searchQuery
-        ),
+        filteredProjects: filterAndSortProjects(state.projects, state.filter, state.searchQuery, state.sort),
       };
     case "FILTER_EVENTS":
       return {
         ...state,
-        filteredEvents: filterEvents(
-          state.events,
-          state.filter,
-          state.searchQuery
-        ),
+        filteredEvents: filterAndSortEvents(state.events, state.filter, state.searchQuery, state.sort),
       };
     default:
       return state;
   }
 };
 
-// Helper function to filter projects
-const filterProjects = (
+// Helper function to sort items
+const sortItems = <T extends { createdAt?: string; publishedAt?: string; title: string; startDate?: string }>(
+  items: T[],
+  sort: string
+): T[] => {
+  const sortedItems = [...items];
+
+  switch (sort) {
+    case "newest":
+      return sortedItems.sort((a, b) => {
+        const dateA = a.publishedAt || a.createdAt || "";
+        const dateB = b.publishedAt || b.createdAt || "";
+        return new Date(dateB).getTime() - new Date(dateA).getTime();
+      });
+    case "oldest":
+      return sortedItems.sort((a, b) => {
+        const dateA = a.publishedAt || a.createdAt || "";
+        const dateB = b.publishedAt || b.createdAt || "";
+        return new Date(dateA).getTime() - new Date(dateB).getTime();
+      });
+    case "alphabetical":
+      return sortedItems.sort((a, b) => a.title.localeCompare(b.title));
+    case "reverseAlphabetical":
+      return sortedItems.sort((a, b) => b.title.localeCompare(a.title));
+    case "upcoming":
+      // For events with dates, sort by upcoming date
+      return sortedItems.sort((a, b) => {
+        if (!a.startDate) return 1;
+        if (!b.startDate) return -1;
+        return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+      });
+    default:
+      return sortedItems;
+  }
+};
+
+// Helper function to filter and sort projects
+const filterAndSortProjects = (
   projects: ProjectResponse[],
   filter: string,
-  searchQuery: string
+  searchQuery: string,
+  sort: string
 ): ProjectResponse[] => {
   // Filter by state
   let filtered = projects;
@@ -144,35 +170,29 @@ const filterProjects = (
     filtered = filtered.filter(
       (project) =>
         project.title.toLowerCase().includes(query) ||
-        (project.description &&
-          project.description.toLowerCase().includes(query)) ||
+        (project.description && project.description.toLowerCase().includes(query)) ||
         (project.category && project.category.toLowerCase().includes(query)) ||
-        (project.technologies &&
-          project.technologies.some((tech) =>
-            tech.toLowerCase().includes(query)
-          ))
+        (project.technologies && project.technologies.some((tech) => tech.toLowerCase().includes(query)))
     );
   }
 
-  return filtered;
+  // Sort the results
+  return sortItems(filtered, sort);
 };
 
-// Helper function to filter events
-const filterEvents = (
+// Helper function to filter and sort events
+const filterAndSortEvents = (
   events: EventResponse[],
   filter: string,
-  searchQuery: string
+  searchQuery: string,
+  sort: string
 ): EventResponse[] => {
   // Filter by upcoming/past
   let filtered = events;
   if (filter === "upcoming") {
-    filtered = filtered.filter(
-      (event) => !event.startDate || !isDatePast(event.startDate)
-    );
+    filtered = filtered.filter((event) => !event.startDate || !isDatePast(event.startDate));
   } else if (filter === "past") {
-    filtered = filtered.filter(
-      (event) => event.startDate && isDatePast(event.startDate)
-    );
+    filtered = filtered.filter((event) => event.startDate && isDatePast(event.startDate));
   }
 
   // Filter by search query
@@ -181,23 +201,22 @@ const filterEvents = (
     filtered = filtered.filter(
       (event) =>
         event.title.toLowerCase().includes(query) ||
-        (event.description &&
-          event.description.toLowerCase().includes(query)) ||
+        (event.description && event.description.toLowerCase().includes(query)) ||
         (event.location && event.location.toLowerCase().includes(query))
     );
   }
 
-  return filtered;
+  // Sort the results
+  return sortItems(filtered, sort);
 };
 
 // ActivitiesProvider component
-export const ActivitiesProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const ActivitiesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(activityReducer, {
     activeTab: "projects",
     filter: "all",
     searchQuery: "",
+    sort: "newest", // Default sort value
     projects: [],
     events: [],
     filteredProjects: [],
@@ -250,20 +269,16 @@ export const ActivitiesProvider: React.FC<{ children: React.ReactNode }> = ({
     loadEvents();
   }, []);
 
-  // Filter projects and events when filter or search query changes
+  // Filter projects and events when filter, search query, or sort changes
   useEffect(() => {
     dispatch({ type: "FILTER_PROJECTS" });
-  }, [state.filter, state.searchQuery, state.projects]);
+  }, [state.filter, state.searchQuery, state.sort, state.projects]);
 
   useEffect(() => {
     dispatch({ type: "FILTER_EVENTS" });
-  }, [state.filter, state.searchQuery, state.events]);
+  }, [state.filter, state.searchQuery, state.sort, state.events]);
 
-  return (
-    <ActivityContext.Provider value={{ state, dispatch }}>
-      {children}
-    </ActivityContext.Provider>
-  );
+  return <ActivityContext.Provider value={{ state, dispatch }}>{children}</ActivityContext.Provider>;
 };
 
 // useActivities hook

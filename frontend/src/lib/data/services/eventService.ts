@@ -5,9 +5,7 @@ import { strapiService } from "@/lib/data/services/strapiClient";
 // Events service
 export const eventsService = {
   // Get all events with optional filters, sorting, and pagination
-  getAll: async (
-    params: Record<string, unknown> = {}
-  ): Promise<EventResponse[]> => {
+  getAll: async (params: Record<string, unknown> = {}): Promise<EventResponse[]> => {
     try {
       // Using collection method for consistent approach
       const eventsCollection = strapiService.collection("events");
@@ -22,9 +20,7 @@ export const eventsService = {
       const response = await eventsCollection.find(queryParams);
 
       if (!response.data || !Array.isArray(response.data)) {
-        throw new Error(
-          "Invalid response format: No events found or data is not an array"
-        );
+        throw new Error("Invalid response format: No events found or data is not an array");
       }
 
       // Transform the response to match our EventResponse type
@@ -88,19 +84,14 @@ export const eventsService = {
     } catch (error) {
       console.error(
         "Error fetching events:",
-        new Error(
-          `Failed to retrieve events: ${error instanceof Error ? error.message : String(error)}`
-        )
+        new Error(`Failed to retrieve events: ${error instanceof Error ? error.message : String(error)}`)
       );
       return [];
     }
   },
 
   // Get a single event by ID
-  getOne: async (
-    id: string | number,
-    params: Record<string, unknown> = {}
-  ): Promise<EventResponse | null> => {
+  getOne: async (id: string | number, params: Record<string, unknown> = {}): Promise<EventResponse | null> => {
     try {
       const eventsCollection = strapiService.collection("events");
 
@@ -111,10 +102,7 @@ export const eventsService = {
       };
 
       // Use the collection's findOne method
-      const response = await eventsCollection.findOne(
-        id.toString(),
-        queryParams
-      );
+      const response = await eventsCollection.findOne(id.toString(), queryParams);
 
       if (!response.data) {
         throw new Error(`Event with ID ${id} not found`);
@@ -161,9 +149,7 @@ export const eventsService = {
           }
         } else {
           // Direct format - no nesting
-          imageUrl = strapiService.media.getMediaUrl(
-            response.data.eventCardImage
-          );
+          imageUrl = strapiService.media.getMediaUrl(response.data.eventCardImage);
 
           event.eventCardImage = {
             id: response.data.eventCardImage.id || 0,
@@ -180,9 +166,7 @@ export const eventsService = {
     } catch (error) {
       console.error(
         "Error fetching event:",
-        new Error(
-          `Failed to retrieve event: ${error instanceof Error ? error.message : String(error)}`
-        )
+        new Error(`Failed to retrieve event: ${error instanceof Error ? error.message : String(error)}`)
       );
       return null;
     }
@@ -194,10 +178,7 @@ export const eventsService = {
   },
 
   // Create a new event
-  create: async (
-    data: Partial<EventAttributes>,
-    eventCardImage?: File | null
-  ): Promise<EventResponse> => {
+  create: async (data: Partial<EventAttributes>, eventCardImage?: File | null): Promise<EventResponse> => {
     try {
       // Format time if provided
       if (data.time) {
@@ -229,13 +210,10 @@ export const eventsService = {
       const payload = { data: cleanData };
 
       // Use the direct API call approach
-      const response = await strapiService.fetch<{ data?: { id?: number } }>(
-        "events",
-        {
-          method: "POST",
-          body: payload,
-        }
-      );
+      const response = await strapiService.fetch<{ data?: { id?: number } }>("events", {
+        method: "POST",
+        body: payload,
+      });
 
       if (!response?.data?.id) {
         throw new Error("Invalid response from server when creating event");
@@ -270,9 +248,7 @@ export const eventsService = {
     } catch (error) {
       console.error(
         "Error creating event:",
-        new Error(
-          `Failed to create event: ${error instanceof Error ? error.message : String(error)}`
-        )
+        new Error(`Failed to create event: ${error instanceof Error ? error.message : String(error)}`)
       );
       throw error;
     }
@@ -292,9 +268,7 @@ export const eventsService = {
       if (!isDocumentId) {
         // Fetch all events to find the matching one with its documentId
         const allEvents = await eventsService.getAll({});
-        const matchingEvent = allEvents.find(
-          (event) => String(event.id) === String(id)
-        );
+        const matchingEvent = allEvents.find((event) => String(event.id) === String(id));
 
         if (matchingEvent && matchingEvent.documentId) {
           id = matchingEvent.documentId;
@@ -339,9 +313,7 @@ export const eventsService = {
     } catch (error) {
       console.error(
         "Error updating event:",
-        new Error(
-          `Failed to update event: ${error instanceof Error ? error.message : String(error)}`
-        )
+        new Error(`Failed to update event: ${error instanceof Error ? error.message : String(error)}`)
       );
       throw error;
     }
@@ -367,10 +339,7 @@ export const eventsService = {
   },
 
   // Upload event image
-  uploadEventImage: async (
-    eventId: number | string,
-    image: File
-  ): Promise<void> => {
+  uploadEventImage: async (eventId: number | string, image: File): Promise<void> => {
     try {
       const formData = new FormData();
       formData.append("ref", "api::event.event");
@@ -385,9 +354,7 @@ export const eventsService = {
     } catch (error) {
       console.error(
         "Error uploading event image:",
-        new Error(
-          `Failed to upload image: ${error instanceof Error ? error.message : String(error)}`
-        )
+        new Error(`Failed to upload image: ${error instanceof Error ? error.message : String(error)}`)
       );
       throw error;
     }

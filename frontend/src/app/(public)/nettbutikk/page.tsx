@@ -10,78 +10,72 @@ import { adaptProductToCardProps } from "@/lib/adapters/cardAdapter";
 import { ProductResponse } from "@/types/content.types";
 import { SearchBar } from "@/components/ui/SearchBar";
 import { FilterDropdown } from "@/components/ui/FilterDropdown";
+import { SortDropdown, SortOption } from "@/components/ui/SortDropdown";
 import CartIcon from "@/components/ui/CartIcon";
 import { useCart } from "@/lib/context/shopContext";
+
+// Define sort options for products
+const PRODUCT_SORT_OPTIONS: SortOption[] = [
+  { value: "newest", label: "Nyeste først" },
+  { value: "oldest", label: "Eldste først" },
+  { value: "alphabetical", label: "A til Å" },
+  { value: "reverseAlphabetical", label: "Å til A" },
+];
 
 export default function NettbutikkPage() {
   const router = useRouter();
   const { addToCart } = useCart();
+
+  // State variables
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [products, setProducts] = useState<ProductResponse[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<ProductResponse[]>(
-    []
-  );
+  const [filteredProducts, setFilteredProducts] = useState<ProductResponse[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filter, setFilter] = useState<string>("");
+  const [sort, setSort] = useState<string>("newest"); // Default sort by newest
 
   // Fetch products on component mount
   useEffect(() => {
     loadProducts();
   }, []);
 
-  // Apply filters when products, search, or filter changes
+  // Apply filters and sorting when products, search query, filter, or sort changes
   useEffect(() => {
-    applyFilters();
-  }, [products, searchQuery, filter]);
+    applyFiltersAndSorting();
+  }, [products, searchQuery, filter, sort]);
 
-  // Load products from API using the collection approach
+  // Fetch products from the API
   const loadProducts = async () => {
     setIsLoading(true);
     try {
-      // Try to fetch from the API, but use mock data if it fails
-      let data: ProductResponse[] = [];
-
-      try {
-        data = await productService.getAll({
-          sort: ["createdAt:desc"],
-          populate: ["productImage"],
-        });
-
-        console.log("Successfully fetched products:", data);
-      } catch (e) {
-        console.error("Error fetching from API, using mock data:", e);
-      }
+      const data = await productService.getAll({
+        sort: ["createdAt:desc"],
+        populate: ["productImage"],
+      });
 
       setProducts(data);
       setFilteredProducts(data); // Initially show all products
       setError(null);
     } catch (err) {
-      console.error("Error in loadProducts:", err);
-      setError("An error occurred while loading products");
+      console.error("Error loading products:", err);
+      setError("An error occurred while loading products.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Apply filters to products
-  const applyFilters = () => {
-    if (!products || products.length === 0) {
-      console.log("No products to filter");
-      return;
-    }
+  // Apply search, category filters, and sorting
+  const applyFiltersAndSorting = () => {
+    if (!products || products.length === 0) return;
 
-    console.log(`Filtering ${products.length} products...`);
     let filtered = [...products];
 
-    // Apply search filter
+    // Apply search query filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
-        (product) =>
-          (product.title && product.title.toLowerCase().includes(query)) ||
-          (product.description &&
-            product.description.toLowerCase().includes(query))
+        (product) => product.title?.toLowerCase().includes(query) || product.description?.toLowerCase().includes(query)
       );
     }
 
@@ -89,12 +83,31 @@ export default function NettbutikkPage() {
     if (filter) {
       filtered = filtered.filter((product) => product.category === filter);
     }
+
+    // Apply sorting
+    if (sort === "newest") {
+      filtered = filtered.sort(
+        (a, b) =>
+          new Date(b.createdAt || "1970-01-01T00:00:00Z").getTime() -
+          new Date(a.createdAt || "1970-01-01T00:00:00Z").getTime()
+      );
+    } else if (sort === "oldest") {
+      filtered = filtered.sort(
+        (a, b) =>
+          new Date(a.createdAt || "1970-01-01T00:00:00Z").getTime() -
+          new Date(b.createdAt || "1970-01-01T00:00:00Z").getTime()
+      );
+    } else if (sort === "alphabetical") {
+      filtered = filtered.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sort === "reverseAlphabetical") {
+      filtered = filtered.sort((a, b) => b.title.localeCompare(a.title));
+    }
+
     setFilteredProducts(filtered);
   };
 
-  // Handle product click - updated to ensure proper navigation
+  // Handle product click
   const handleProductClick = (id: number) => {
-    console.log(`Navigating to product ${id}`);
     router.push(`/nettbutikk/product/${id}`);
   };
 
@@ -109,15 +122,13 @@ export default function NettbutikkPage() {
         image: product.productImage?.url,
       });
 
-      // Show feedback to user
       alert(`${product.title} er lagt til i handlekurven!`);
     }
   };
 
   // Get unique categories for filter options
   const getCategoryOptions = () => {
-    if (!products || products.length === 0)
-      return [{ value: "", label: "Alle kategorier" }];
+    if (!products || products.length === 0) return [{ value: "", label: "Alle kategorier" }];
 
     const categories = new Set<string>();
     products.forEach((product) => {
@@ -133,11 +144,6 @@ export default function NettbutikkPage() {
         label: category,
       })),
     ];
-  };
-
-  // Handle search
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
   };
 
   // Render content based on loading/error state
@@ -158,12 +164,8 @@ export default function NettbutikkPage() {
     if (!filteredProducts || filteredProducts.length === 0) {
       return (
         <div className="text-center py-10">
-          <h3 className="text-xl font-medium text-gray-700">
-            Ingen produkter funnet
-          </h3>
-          <p className="mt-2 text-gray-500">
-            Prøv å justere søket eller filteret
-          </p>
+          <h3 className="text-xl font-medium text-gray-700">Ingen produkter funnet</h3>
+          <p className="mt-2 text-gray-500">Prøv å justere søket eller filteret</p>
         </div>
       );
     }
@@ -172,21 +174,12 @@ export default function NettbutikkPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredProducts.map((product) => {
           try {
-            // Pass both handleProductClick and handleAddToCart to the adapter
-            const cardProps = adaptProductToCardProps(
-              product,
-              handleProductClick,
-              handleAddToCart
-            );
-
+            const cardProps = adaptProductToCardProps(product, handleProductClick, handleAddToCart);
             return <UniversalCard key={product.id} {...cardProps} />;
           } catch (error) {
             console.error(`Error rendering product ${product.id}:`, error);
             return (
-              <div
-                key={product.id}
-                className="p-4 border rounded-md bg-red-50 text-red-500"
-              >
+              <div key={product.id} className="p-4 border rounded-md bg-red-50 text-red-500">
                 Error rendering product: {product.title}
               </div>
             );
@@ -198,35 +191,48 @@ export default function NettbutikkPage() {
 
   // Main render
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
+    <div className="bg-white min-h-screen">
+      <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <h1 className="text-3xl text-center font-bold mb-6">Nettbutikk</h1>
+        <div className="mb-8">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+            <h1 className="text-3xl font-bold">Nettbutikk</h1>
+            <div className="flex flex-col sm:flex-row gap-2 mt-4 md:mt-0">
+              <span className="text-gray-500 self-center">
+                {filteredProducts.length} {filteredProducts.length === 1 ? "produkt" : "produkter"} funnet
+              </span>
+            </div>
+          </div>
 
-        {/* Search and Filter Bar */}
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 ">
-          <SearchBar
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            placeholder="Søk etter produkter..."
-            onSearch={handleSearch}
-            className="w-full sm:w-auto"
-          />
-          <div className="flex items-center gap-4">
+          {/* Search, Filter, and Sort Bar */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-6 bg-gray-50 p-4 rounded-lg">
+            <SearchBar
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              placeholder="Søk etter produkter..."
+              className="flex-grow"
+            />
+
             <FilterDropdown
               filter={filter}
               setFilter={setFilter}
               options={getCategoryOptions()}
               ariaLabel="Filter by category"
-              placeholder="Velg kategori"
             />
-            <CartIcon />
+
+            <SortDropdown
+              sort={sort}
+              setSort={setSort}
+              options={PRODUCT_SORT_OPTIONS}
+              ariaLabel="Sort products"
+              placeholder="Sorter etter"
+            />
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      {renderContent()}
+        {/* Content */}
+        {renderContent()}
+      </div>
     </div>
   );
 }

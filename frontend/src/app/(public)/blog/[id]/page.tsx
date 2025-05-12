@@ -176,12 +176,13 @@ export default function BlogDetailPage() {
               </div>
             )}
 
-            {/* Blog Content */}
-            {blogPost.content && (
-              <div className="mb-8 prose max-w-none">
+            <div className="prose max-w-none">
+              {blogPost.content ? (
                 <ReactMarkdown>{blogPost.content}</ReactMarkdown>
-              </div>
-            )}
+              ) : (
+                <p>Ingen innhold tilgjengelig for dette prosjektet.</p>
+              )}
+            </div>
 
             {/* Related Posts Section */}
             {relatedPosts.length > 0 && (

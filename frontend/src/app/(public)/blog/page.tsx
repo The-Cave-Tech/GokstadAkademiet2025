@@ -9,6 +9,15 @@ import { adaptBlogToCardProps } from "@/lib/adapters/cardAdapter";
 import { BlogResponse } from "@/types/content.types";
 import { SearchBar } from "@/components/ui/SearchBar";
 import { FilterDropdown } from "@/components/ui/FilterDropdown";
+import { SortDropdown, SortOption } from "@/components/ui/SortDropdown";
+
+// Define sort options for blog
+const BLOG_SORT_OPTIONS: SortOption[] = [
+  { value: "newest", label: "Nyeste først" },
+  { value: "oldest", label: "Eldste først" },
+  { value: "alphabetical", label: "A til Å" },
+  { value: "reverseAlphabetical", label: "Å til A" },
+];
 
 export default function BlogPage() {
   const router = useRouter();
@@ -17,11 +26,10 @@ export default function BlogPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [blogPosts, setBlogPosts] = useState<BlogResponse[]>([]);
-  const [filteredBlogPosts, setFilteredBlogPosts] = useState<BlogResponse[]>(
-    []
-  );
+  const [filteredBlogPosts, setFilteredBlogPosts] = useState<BlogResponse[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filter, setFilter] = useState<string | null>(null);
+  const [sort, setSort] = useState<string>("newest"); // Default sort by newest
   const [categories, setCategories] = useState<string[]>([]);
 
   // Fetch blog posts on component mount
@@ -29,10 +37,10 @@ export default function BlogPage() {
     loadBlogPosts();
   }, []);
 
-  // Apply filters when posts, search query, or filter changes
+  // Apply filters and sorting when posts, search query, filter, or sort changes
   useEffect(() => {
-    applyFilters();
-  }, [blogPosts, searchQuery, filter]);
+    applyFiltersAndSort();
+  }, [blogPosts, searchQuery, filter, sort]);
 
   // Fetch blog posts from the API
   const loadBlogPosts = async () => {
@@ -47,9 +55,7 @@ export default function BlogPage() {
       setFilteredBlogPosts(data); // Initially show all posts
 
       // Extract unique categories for the filter dropdown
-      const uniqueCategories = Array.from(
-        new Set(data.map((post) => post.category).filter(Boolean))
-      ) as string[];
+      const uniqueCategories = Array.from(new Set(data.map((post) => post.category).filter(Boolean))) as string[];
       setCategories(uniqueCategories);
 
       setError(null);
@@ -61,8 +67,34 @@ export default function BlogPage() {
     }
   };
 
-  // Apply search and category filters
-  const applyFilters = () => {
+  // Helper function to sort blog posts
+  const sortBlogPosts = (posts: BlogResponse[], sortOption: string): BlogResponse[] => {
+    const sortedPosts = [...posts];
+
+    switch (sortOption) {
+      case "newest":
+        return sortedPosts.sort((a, b) => {
+          const dateA = a.publishedAt || a.createdAt || "";
+          const dateB = b.publishedAt || b.createdAt || "";
+          return new Date(dateB).getTime() - new Date(dateA).getTime();
+        });
+      case "oldest":
+        return sortedPosts.sort((a, b) => {
+          const dateA = a.publishedAt || a.createdAt || "";
+          const dateB = b.publishedAt || b.createdAt || "";
+          return new Date(dateA).getTime() - new Date(dateB).getTime();
+        });
+      case "alphabetical":
+        return sortedPosts.sort((a, b) => a.title.localeCompare(b.title));
+      case "reverseAlphabetical":
+        return sortedPosts.sort((a, b) => b.title.localeCompare(a.title));
+      default:
+        return sortedPosts;
+    }
+  };
+
+  // Apply filters and sort
+  const applyFiltersAndSort = () => {
     if (!blogPosts || blogPosts.length === 0) return;
 
     let filtered = [...blogPosts];
@@ -74,8 +106,7 @@ export default function BlogPage() {
         (post) =>
           post.title?.toLowerCase().includes(query) ||
           post.summary?.toLowerCase().includes(query) ||
-          (typeof post.content === "string" &&
-            post.content.toLowerCase().includes(query))
+          (typeof post.content === "string" && post.content.toLowerCase().includes(query))
       );
     }
 
@@ -83,6 +114,9 @@ export default function BlogPage() {
     if (filter) {
       filtered = filtered.filter((post) => post.category === filter);
     }
+
+    // Apply sorting
+    filtered = sortBlogPosts(filtered, sort);
 
     setFilteredBlogPosts(filtered);
   };
@@ -92,10 +126,11 @@ export default function BlogPage() {
     router.push(`/blog/${id}`);
   };
 
-  // Clear search and category filters
+  // Clear search, category filters and reset sort
   const clearFilters = () => {
     setSearchQuery("");
     setFilter(null);
+    setSort("newest"); // Reset to default sort
   };
 
   // Render content based on loading, error, or filtered results
@@ -116,20 +151,8 @@ export default function BlogPage() {
     if (!filteredBlogPosts || filteredBlogPosts.length === 0) {
       return (
         <div className="text-center py-10">
-          <h3 className="text-xl font-medium text-gray-700">
-            No blog posts found
-          </h3>
-          <p className="mt-2 text-gray-500">
-            Try adjusting your search or filter.
-          </p>
-          {(searchQuery || filter) && (
-            <button
-              onClick={clearFilters}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              Clear Filters
-            </button>
-          )}
+          <h3 className="text-xl font-medium text-gray-700">No blog posts found</h3>
+          <p className="mt-2 text-gray-500">Try adjusting your search or filter.</p>
         </div>
       );
     }
@@ -143,10 +166,7 @@ export default function BlogPage() {
           } catch (error) {
             console.error(`Error rendering post ${post.id}:`, error);
             return (
-              <div
-                key={post.id}
-                className="p-4 border rounded-md bg-red-50 text-red-500"
-              >
+              <div key={post.id} className="p-4 border rounded-md bg-red-50 text-red-500">
                 Error displaying post: {post.title}
               </div>
             );
@@ -166,13 +186,12 @@ export default function BlogPage() {
             <h1 className="text-3xl font-bold">Blog</h1>
             <div className="flex flex-col sm:flex-row gap-2 mt-4 md:mt-0">
               <span className="text-gray-500 self-center">
-                {filteredBlogPosts.length}{" "}
-                {filteredBlogPosts.length === 1 ? "post" : "posts"} found
+                {filteredBlogPosts.length} {filteredBlogPosts.length === 1 ? "innlegg" : "innlegg"} funnet
               </span>
             </div>
           </div>
 
-          {/* Search and Filter Bar */}
+          {/* Search, Filter, and Sort Bar */}
           <div className="flex flex-col sm:flex-row gap-4 mb-6 bg-gray-50 p-4 rounded-lg">
             <SearchBar
               searchQuery={searchQuery}
@@ -191,17 +210,15 @@ export default function BlogPage() {
                   label: category,
                 })),
               ]}
-              placeholder="Select category"
             />
 
-            {(searchQuery || filter) && (
-              <button
-                onClick={clearFilters}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-              >
-                Clear
-              </button>
-            )}
+            <SortDropdown
+              sort={sort}
+              setSort={setSort}
+              options={BLOG_SORT_OPTIONS}
+              ariaLabel="Sort blog posts"
+              placeholder="Sort by"
+            />
           </div>
         </div>
 
