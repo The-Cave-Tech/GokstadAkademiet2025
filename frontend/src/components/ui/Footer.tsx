@@ -147,7 +147,7 @@ export default function Footer() {
     >
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         <div className="space-y-3">
-          <SiteLogo className="w-32 sm:w-40 mb-2 sm:mb-4" />
+          <SiteLogo className="h-auto w-32 sm:w-40 mb-2 sm:mb-4" />
         </div>
 
         <div className="space-y-3">
