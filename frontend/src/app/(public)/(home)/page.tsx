@@ -7,11 +7,8 @@ import { eventsService } from "@/lib/data/services/eventService";
 import { projectService } from "@/lib/data/services/projectService";
 import ClientMessage from "@/components/ClientMessage";
 import { EventAttributes, ProjectAttributes } from "@/types/content.types";
-import { UniversalCard } from "@/components/dashboard/contentManager/ContentCard";
-import {
-  adaptProjectToCardProps,
-  adaptEventToCardProps,
-} from "@/lib/adapters/cardAdapter";
+import { UniversalContentCard } from "@/components/dashboard/contentManager/ContentCard";
+import { adaptProjectToCardProps, adaptEventToCardProps } from "@/lib/adapters/cardAdapter";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -53,9 +50,7 @@ const MediaRenderer = ({
 
   if (!url) {
     return (
-      <div
-        className={`bg-gray-300 flex items-center justify-center ${className}`}
-      >
+      <div className={`bg-gray-300 flex items-center justify-center ${className}`}>
         <p className="text-gray-600">Bilde mangler</p>
       </div>
     );
@@ -109,10 +104,7 @@ const transformResponseToPageData = (responseData: any): LandingPageData => {
 
   // For dypere analyse av bildeobjektene
   console.log("Hero image object:", heroComponent.heroImage);
-  console.log(
-    "Introduction image object:",
-    introductionComponent.introductionImage
-  );
+  console.log("Introduction image object:", introductionComponent.introductionImage);
 
   return {
     hero: {
@@ -137,10 +129,7 @@ const getImageUrl = (mediaObject: any): string | null => {
 
   // NYTT: Håndter hvis mediaObject er et array (ta første element)
   if (Array.isArray(mediaObject) && mediaObject.length > 0) {
-    console.log(
-      "Media object is an array, using first element:",
-      mediaObject[0]
-    );
+    console.log("Media object is an array, using first element:", mediaObject[0]);
     return getImageUrl(mediaObject[0]);
   }
 
@@ -153,9 +142,7 @@ const getImageUrl = (mediaObject: any): string | null => {
       const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "";
       const fullUrl = mediaObject.startsWith("http")
         ? mediaObject
-        : `${baseUrl}${
-            mediaObject.startsWith("/") ? mediaObject : `/${mediaObject}`
-          }`;
+        : `${baseUrl}${mediaObject.startsWith("/") ? mediaObject : `/${mediaObject}`}`;
       console.log("Found direct string URL:", fullUrl);
       return fullUrl;
     }
@@ -221,8 +208,7 @@ const getImageUrl = (mediaObject: any): string | null => {
       // Sjekk formats
       if (attributes.formats) {
         const formats = attributes.formats;
-        const formatToUse =
-          formats.medium || formats.small || formats.thumbnail;
+        const formatToUse = formats.medium || formats.small || formats.thumbnail;
 
         if (formatToUse && formatToUse.url) {
           const url = formatToUse.url;
@@ -239,9 +225,7 @@ const getImageUrl = (mediaObject: any): string | null => {
             } else if (url.startsWith("/api/uploads/")) {
               fullUrl = `${mediaBaseUrl}${url.replace("/api", "")}`;
             } else {
-              fullUrl = `${mediaBaseUrl}${
-                url.startsWith("/") ? url : `/${url}`
-              }`;
+              fullUrl = `${mediaBaseUrl}${url.startsWith("/") ? url : `/${url}`}`;
             }
           }
 
@@ -267,11 +251,7 @@ const getImageUrl = (mediaObject: any): string | null => {
         } else if (mediaObject.url.startsWith("/api/uploads/")) {
           fullUrl = `${mediaBaseUrl}${mediaObject.url.replace("/api", "")}`;
         } else {
-          fullUrl = `${mediaBaseUrl}${
-            mediaObject.url.startsWith("/")
-              ? mediaObject.url
-              : `/${mediaObject.url}`
-          }`;
+          fullUrl = `${mediaBaseUrl}${mediaObject.url.startsWith("/") ? mediaObject.url : `/${mediaObject.url}`}`;
         }
       }
 
@@ -281,19 +261,13 @@ const getImageUrl = (mediaObject: any): string | null => {
 
     // NYTT: Spesiell håndtering for dokumenter med ID og navn
     if (mediaObject.documentId && mediaObject.name) {
-      console.log(
-        "Found document with ID and name:",
-        mediaObject.documentId,
-        mediaObject.name
-      );
+      console.log("Found document with ID and name:", mediaObject.documentId, mediaObject.name);
       const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "";
       const mediaBaseUrl = baseUrl.replace(/\/api\/?$/, "");
 
       // Prøv å konstruere URL fra filnavn og hash hvis tilgjengelig
       if (mediaObject.hash) {
-        const fullUrl = `${mediaBaseUrl}/uploads/${
-          mediaObject.hash
-        }.${mediaObject.ext.replace(".", "")}`;
+        const fullUrl = `${mediaBaseUrl}/uploads/${mediaObject.hash}.${mediaObject.ext.replace(".", "")}`;
         console.log("Constructed URL from hash:", fullUrl);
         return fullUrl;
       }
@@ -317,9 +291,7 @@ const getImageUrl = (mediaObject: any): string | null => {
       if (helperUrl && helperUrl.includes("/api/uploads/")) {
         const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "";
         const mediaBaseUrl = baseUrl.replace(/\/api\/?$/, "");
-        const correctedUrl = helperUrl
-          .replace(baseUrl, mediaBaseUrl)
-          .replace("/api/uploads/", "/uploads/");
+        const correctedUrl = helperUrl.replace(baseUrl, mediaBaseUrl).replace("/api/uploads/", "/uploads/");
         console.log("Corrected helper URL:", correctedUrl);
         return correctedUrl;
       }
@@ -395,20 +367,14 @@ export default function LandingPageContent() {
 
         console.log("Full Strapi response:", response);
         console.log("Hero component data:", response.data.attributes?.hero);
-        console.log(
-          "Introduction component data:",
-          response.data.attributes?.introduction
-        );
+        console.log("Introduction component data:", response.data.attributes?.introduction);
 
         // Transform the response data to match our LandingPageData interface
         const transformedData = transformResponseToPageData(response.data);
         console.log("Transformed data:", transformedData);
 
         // Logg rådata for introduksjonsbildet for debugging
-        console.log(
-          "Raw introduction image data:",
-          transformedData.introduction.introductionImage
-        );
+        console.log("Raw introduction image data:", transformedData.introduction.introductionImage);
 
         // Store the transformed data
         setPageData(transformedData);
@@ -418,9 +384,7 @@ export default function LandingPageContent() {
         console.log("Hero image URL:", heroImageUrl);
         console.log("Hero image type:", getImageType(heroImageUrl));
 
-        const introImageUrl = getImageUrl(
-          transformedData.introduction.introductionImage
-        );
+        const introImageUrl = getImageUrl(transformedData.introduction.introductionImage);
         console.log("Introduction image URL result:", introImageUrl);
         console.log("Introduction image type:", getImageType(introImageUrl));
 
@@ -510,13 +474,8 @@ export default function LandingPageContent() {
   }, []);
 
   // Handle image load errors
-  const handleImageError = (
-    imageType: "hero" | "intro",
-    url: string | null
-  ) => {
-    console.error(
-      `Image load error for ${imageType} image. URL attempted: ${url}`
-    );
+  const handleImageError = (imageType: "hero" | "intro", url: string | null) => {
+    console.error(`Image load error for ${imageType} image. URL attempted: ${url}`);
 
     // Try to fix the URL
     if (url) {
@@ -569,10 +528,7 @@ export default function LandingPageContent() {
   if (errors.content || errors.events || errors.projects || !pageData) {
     return (
       <div className="text-center text-red-500 py-10">
-        {errors.content ||
-          errors.events ||
-          errors.projects ||
-          "Kunne ikke laste innhold"}
+        {errors.content || errors.events || errors.projects || "Kunne ikke laste innhold"}
       </div>
     );
   }
@@ -601,9 +557,7 @@ export default function LandingPageContent() {
           <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4">
             {pageData.hero?.Title || "Mangler tittel"}
           </h1>
-          <p className="text-base sm:text-lg md:text-2xl">
-            {pageData.hero?.Subtitle || "Mangler undertittel"}
-          </p>
+          <p className="text-base sm:text-lg md:text-2xl">{pageData.hero?.Subtitle || "Mangler undertittel"}</p>
         </div>
       </section>
 
@@ -628,9 +582,7 @@ export default function LandingPageContent() {
 
         {/* Text section */}
         <div>
-          <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-            {pageData.introduction?.Title || "Mangler tittel"}
-          </h2>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4">{pageData.introduction?.Title || "Mangler tittel"}</h2>
           <p className="text-base sm:text-lg leading-relaxed">
             {pageData.introduction?.IntroductionText || "Mangler tekst"}
           </p>
@@ -642,13 +594,9 @@ export default function LandingPageContent() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <Link href="/aktiviteter/projects">
-              <h2 className="text-3xl sm:text-4xl hover:underline font-bold mb-4 cursor-pointer">
-                Prosjekter
-              </h2>
+              <h2 className="text-3xl sm:text-4xl hover:underline font-bold mb-4 cursor-pointer">Prosjekter</h2>
             </Link>
-            <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-              Se våre nyeste og pågående prosjekter
-            </p>
+            <p className="text-lg text-gray-700 max-w-2xl mx-auto">Se våre nyeste og pågående prosjekter</p>
           </div>
 
           {/* Projects Grid using UniversalCard */}
@@ -657,10 +605,7 @@ export default function LandingPageContent() {
               projects
                 .slice(0, 3)
                 .map((project) => (
-                  <UniversalCard
-                    key={project.id}
-                    {...adaptProjectToCardProps(project, handleProjectClick)}
-                  />
+                  <UniversalContentCard key={project.id} {...adaptProjectToCardProps(project, handleProjectClick)} />
                 ))
             ) : (
               <div className="col-span-3 text-center py-10">
@@ -668,10 +613,7 @@ export default function LandingPageContent() {
               </div>
             )}
             <div className="col-span-full w-full">
-              <Link
-                href="/aktiviteter/projects"
-                className=" block text-right hover:underline text-sm"
-              >
+              <Link href="/aktiviteter/projects" className=" block text-right hover:underline text-sm">
                 Gå til prosjekter →
               </Link>
             </div>
@@ -684,13 +626,9 @@ export default function LandingPageContent() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <Link href="/aktiviteter/events">
-              <h2 className="text-3xl sm:text-4xl hover:underline font-bold mb-4 cursor-pointer">
-                Arrangementer
-              </h2>
+              <h2 className="text-3xl sm:text-4xl hover:underline font-bold mb-4 cursor-pointer">Arrangementer</h2>
             </Link>
-            <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-              Se våre kommende arrangementer
-            </p>
+            <p className="text-lg text-gray-700 max-w-2xl mx-auto">Se våre kommende arrangementer</p>
           </div>
 
           {/* Events Grid using UniversalCard */}
@@ -699,10 +637,7 @@ export default function LandingPageContent() {
               events
                 .slice(0, 3)
                 .map((event) => (
-                  <UniversalCard
-                    key={event.id}
-                    {...adaptEventToCardProps(event, handleEventClick)}
-                  />
+                  <UniversalContentCard key={event.id} {...adaptEventToCardProps(event, handleEventClick)} />
                 ))
             ) : (
               <div className="col-span-3 text-center py-10">
@@ -710,10 +645,7 @@ export default function LandingPageContent() {
               </div>
             )}
             <div className="col-span-full w-full">
-              <Link
-                href="/aktiviteter/events"
-                className=" block text-right hover:underline text-sm"
-              >
+              <Link href="/aktiviteter/events" className=" block text-right hover:underline text-sm">
                 Gå til arrangementer →
               </Link>
             </div>

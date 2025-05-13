@@ -200,9 +200,10 @@ export default function ProductDetailPage() {
                   </div>
                   <button
                     onClick={handleAddToCart}
-                    className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                    className="w-full bg-secondary text-white py-2 rounded-md transition-colors flex items-center justify-center gap-2"
                   >
                     <PageIcons name="cart" directory="shopIcons" size={24} alt="Handlekurv" />
+                    Legg til i handlekurv
                   </button>
                 </section>
               )}

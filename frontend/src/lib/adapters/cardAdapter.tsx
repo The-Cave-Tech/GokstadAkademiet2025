@@ -3,18 +3,9 @@
 import { MdCategory, MdLocationOn, MdAccessTime } from "react-icons/md";
 import { AiOutlineTool } from "react-icons/ai";
 import { FaTag, FaBoxOpen } from "react-icons/fa";
-import {
-  BlogResponse,
-  EventResponse,
-  ProjectResponse,
-} from "@/types/content.types";
+import { BlogResponse, EventResponse, ProjectResponse } from "@/types/content.types";
 import { ProductResponse } from "@/types/content.types";
-import {
-  UniversalCardProps,
-  Badge,
-  DetailItem,
-  Tag,
-} from "@/types/universal.content.types";
+import { UniversalCardProps, Badge, DetailItem, Tag } from "@/types/universal.content.types";
 import { formatDate } from "@/lib/utils/eventUtils";
 import { isDatePast } from "@/lib/utils/dateUtils";
 import AddToCartButton from "@/components/ui/custom/AddToCartButton";
@@ -33,10 +24,7 @@ export const formatTime = (timeString: string): string => {
 };
 
 // Helper function to format event date
-export const formatEventDate = (
-  startDate: string,
-  endDate?: string
-): string => {
+export const formatEventDate = (startDate: string, endDate?: string): string => {
   if (!startDate) return "Dato kommer";
 
   const formattedStart = formatDate(startDate);
@@ -99,20 +87,17 @@ export const formatPrice = (price: number): string => {
 };
 
 // Adapter for Blog content type
-export const adaptBlogToCardProps = (
-  blog: BlogResponse,
-  onCardClick?: (id: number) => void
-): UniversalCardProps => {
+export const adaptBlogToCardProps = (blog: BlogResponse, onCardClick?: (id: number) => void): UniversalCardProps => {
   // Format tags for display
   const formattedTags: Tag[] = Array.isArray(blog.tags)
     ? blog.tags.map((tag) => ({ text: tag, prefix: "#" }))
     : typeof blog.tags === "string"
-      ? blog.tags
-          .split(",")
-          .map((tag) => tag.trim())
-          .filter(Boolean)
-          .map((tag) => ({ text: tag, prefix: "#" }))
-      : [];
+    ? blog.tags
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean)
+        .map((tag) => ({ text: tag, prefix: "#" }))
+    : [];
 
   return {
     title: blog.title,
@@ -146,10 +131,7 @@ export const adaptBlogToCardProps = (
 };
 
 // Adapter for Event content type
-export const adaptEventToCardProps = (
-  event: EventResponse,
-  onCardClick?: (id: number) => void
-): UniversalCardProps => {
+export const adaptEventToCardProps = (event: EventResponse, onCardClick?: (id: number) => void): UniversalCardProps => {
   const isPastEvent = event.startDate ? isDatePast(event.startDate) : false;
 
   const details: DetailItem[] = [];
@@ -188,11 +170,7 @@ export const adaptEventToCardProps = (
     actionButton: {
       text: "Klikk for detaljer",
     },
-    cornerElement: isPastEvent ? (
-      <div className="p-2 bg-red-500 text-white text-xs">
-        Tidligere arrangement
-      </div>
-    ) : null,
+    cornerElement: isPastEvent ? <div className="p-2 bg-red-500 text-white text-xs">Tidligere arrangement</div> : null,
     onClick: onCardClick ? () => onCardClick(event.id) : undefined,
     variant: "horizontal",
     size: "medium",
@@ -327,7 +305,7 @@ export const adaptProductToCardProps = (
         productId={product.id}
         onAddToCart={(id) => onAddToCart(Number(id))}
         className="w-full mt-4"
-        variant="primary"
+        variant="secondary"
         showText={true}
       />
     ) : null;

@@ -37,9 +37,9 @@ export function AddToCartButton({
 
   // Variant styles
   const buttonStyles = {
-    primary: "bg-[#A67B5B] hover:bg-[#8C6A4E] text-white", // Light mellow brown
-    secondary: "bg-[#E6D3C6] hover:bg-[#D6C2B4] text-[#5C4433]", // Warm beige background with rich brown text
-    minimal: "bg-transparent hover:bg-[#F5ECE6] text-[#6B4F3B]", // Subtle and clean
+    primary: "bg-primary text-white",
+    secondary: "bg-secondary text-white",
+    minimal: "bg-transparent text-white",
   };
 
   return (
@@ -47,17 +47,13 @@ export function AddToCartButton({
       type="button"
       onClick={handleClick}
       disabled={disabled || isAnimating}
-      className={`rounded-md flex items-center justify-center transition-all duration-200 ${buttonStyles[variant]} ${showText ? "px-4 py-2" : "p-2"} ${className}`}
+      className={`rounded-md flex items-center justify-center transition-all duration-200 ${buttonStyles[variant]} ${
+        showText ? "px-4 py-2" : "p-2"
+      } ${className}`}
       aria-label="Legg til i handlekurv"
     >
       <div className={isAnimating ? "animate-bounce" : ""}>
-        <PageIcons
-          name="cart"
-          directory="shopIcons"
-          size={20}
-          alt=""
-          className={`${showText ? "mr-2" : ""}`}
-        />
+        <PageIcons name="cart" directory="shopIcons" size={20} alt="" className={`${showText ? "mr-2" : ""}`} />
       </div>
 
       {showText && <span>Legg til i handlekurv</span>}
