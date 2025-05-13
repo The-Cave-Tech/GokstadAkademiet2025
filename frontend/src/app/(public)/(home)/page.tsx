@@ -10,27 +10,27 @@ import { EventAttributes, ProjectAttributes } from "@/types/content.types";
 import { EventCard } from "@/components/dashboard/contentManager/EventCard";
 import ProjectCarousel from "@/components/ui/ProjectCarousel";
 
-// Updated interface to handle repeatable introduction component
+
 interface LandingPageData {
   hero: {
     Title: string;
     Subtitle: string;
-    heroImage: any; // Strapi media object
+    heroImage: any; 
   };
   introduction: Array<{
     Title: string;
     IntroductionText: string;
-    introductionImage: any; // Strapi media object
+    introductionImage: any; 
   }>;
 }
 
-// Funksjon for å sjekke bildetypen
+
 const getImageType = (url: string | null): "svg" | "other" => {
   if (!url) return "other";
   return url.toLowerCase().endsWith(".svg") ? "svg" : "other";
 };
 
-// MediaRenderer-komponent for å håndtere alle bildeformater
+
 const MediaRenderer = ({
   url,
   alt,
@@ -74,7 +74,6 @@ const MediaRenderer = ({
     );
   }
 
-  // Use regular img tag for auto height
   if (autoHeight) {
     return (
       <img
@@ -87,7 +86,6 @@ const MediaRenderer = ({
     );
   }
 
-  // Use Next.js Image with fill for fixed height containers
   return (
     <Image
       src={url}
@@ -103,17 +101,13 @@ const MediaRenderer = ({
   );
 };
 
-// Updated helper function to transform API response data to match our new component interface
 const transformResponseToPageData = (responseData: any): LandingPageData => {
   console.log("Raw response data:", responseData);
 
-  // I Strapi v4 finnes data ofte i attributes-objektet
   const attributes = responseData.attributes || responseData;
   console.log("Data attributes:", attributes);
 
-  // Komponenter i Strapi kommer med sin egen struktur
   const heroComponent = attributes.hero || {};
-  // Check if introduction is now an array, if not, convert it to an array
   const introductionComponents = Array.isArray(attributes.introduction)
     ? attributes.introduction
     : attributes.introduction
@@ -123,7 +117,6 @@ const transformResponseToPageData = (responseData: any): LandingPageData => {
   console.log("Hero component raw:", heroComponent);
   console.log("Introduction components raw:", introductionComponents);
 
-  // For dypere analyse av bildeobjektene
   console.log("Hero image object:", heroComponent.heroImage);
 
   return {
@@ -140,14 +133,12 @@ const transformResponseToPageData = (responseData: any): LandingPageData => {
   };
 };
 
-// Helper function to get image URL from Strapi media object (unchanged)
 const getImageUrl = (mediaObject: any): string | null => {
   if (!mediaObject) {
     console.log("Media object is null or undefined");
     return null;
   }
 
-  // NYTT: Håndter hvis mediaObject er et array (ta første element)
   if (Array.isArray(mediaObject) && mediaObject.length > 0) {
     console.log(
       "Media object is an array, using first element:",
@@ -160,7 +151,6 @@ const getImageUrl = (mediaObject: any): string | null => {
   console.log("Media object structure:", mediaObject);
 
   try {
-    // Hvis mediaObject er en direkte streng URL
     if (typeof mediaObject === "string") {
       const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "";
       const fullUrl = mediaObject.startsWith("http")
@@ -172,7 +162,6 @@ const getImageUrl = (mediaObject: any): string | null => {
       return fullUrl;
     }
 
-    // NYTT: Håndter direkte filreferanse med navn og url
     if (mediaObject.name && mediaObject.url) {
       const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "";
       const mediaBaseUrl = baseUrl.replace(/\/api\/?$/, "");
@@ -198,28 +187,23 @@ const getImageUrl = (mediaObject: any): string | null => {
       return fullUrl;
     }
 
-    // Sjekk for Strapi v4 struktur
     if (mediaObject.data && mediaObject.data.attributes) {
       const attributes = mediaObject.data.attributes;
-      // Fjern /api fra slutten av URL-en hvis den er der
       const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "";
       const mediaBaseUrl = baseUrl.replace(/\/api\/?$/, "");
 
       if (attributes.url) {
-        // Viktig: URL-en bør peke direkte til filen, ikke til API-endepunktet
         const url = attributes.url;
         let fullUrl = "";
 
         if (url.startsWith("http")) {
           fullUrl = url;
         } else {
-          // Spesielt for Strapi-bilder - URL-en kan peke feil
           if (url.startsWith("/uploads/")) {
             fullUrl = `${mediaBaseUrl}${url}`;
           } else if (url.startsWith("uploads/")) {
             fullUrl = `${mediaBaseUrl}/${url}`;
           } else if (url.startsWith("/api/uploads/")) {
-            // Direkte fiks for URL-er som starter med /api/uploads/
             fullUrl = `${mediaBaseUrl}${url.replace("/api", "")}`;
           } else {
             fullUrl = `${mediaBaseUrl}${url.startsWith("/") ? url : `/${url}`}`;
@@ -230,7 +214,6 @@ const getImageUrl = (mediaObject: any): string | null => {
         return fullUrl;
       }
 
-      // Sjekk formats
       if (attributes.formats) {
         const formats = attributes.formats;
         const formatToUse =
@@ -238,7 +221,6 @@ const getImageUrl = (mediaObject: any): string | null => {
 
         if (formatToUse && formatToUse.url) {
           const url = formatToUse.url;
-          // Samme korreksjon som ovenfor
           let fullUrl = "";
 
           if (url.startsWith("http")) {
@@ -263,7 +245,6 @@ const getImageUrl = (mediaObject: any): string | null => {
       }
     }
 
-    // Sjekk for direkte URL egenskap
     if (mediaObject.url) {
       const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "";
       const mediaBaseUrl = baseUrl.replace(/\/api\/?$/, "");
@@ -572,7 +553,6 @@ export default function LandingPageContent() {
     }
   };
 
-  // Debug log before render
   console.log("Render state:", {
     heroImageUrl,
     introImageUrls,
@@ -582,12 +562,10 @@ export default function LandingPageContent() {
     pageDataExists: !!pageData,
   });
 
-  // Show loading state if any data is still loading
   if (loading.content || loading.events || loading.projects) {
     return <p className="text-center py-10">Laster innhold...</p>;
   }
 
-  // Show error state if any errors occurred
   if (errors.content || errors.events || errors.projects || !pageData) {
     return (
       <div className="text-center text-red-500 py-10">
