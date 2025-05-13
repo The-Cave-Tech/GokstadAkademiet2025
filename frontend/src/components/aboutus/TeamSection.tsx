@@ -118,33 +118,24 @@ const TeamSection: React.FC<TeamSectionProps> = ({
                 <div
                   key={member.id || index}
                   className="bg-gray-50 rounded-lg overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
-                  style={{ width: "482px", height: "212px" }}
+                  style={{ width: "482px" }}
                 >
-                  <div className="flex h-full">
+                  <div className="flex">
                     {/* Bilde - venstre side */}
                     <div className="flex items-center">
                       {member.image && member.image.length > 0 ? (
-                        <div
-                          className="relative"
-                          style={{ height: "193px", width: "197px" }}
-                        >
-                          <Image
+                        <div className="h-auto w-48">
+                          <img
                             src={getStrapiImageUrl(member.image)}
                             alt={
                               getStrapiImageAlt(member.image) ||
                               `Bilde av ${member.name}`
                             }
-                            fill
-                            sizes="197px"
-                            priority={index < 2}
-                            className="object-cover"
+                            className="object-cover w-full h-auto"
                           />
                         </div>
                       ) : (
-                        <div
-                          className="flex items-center justify-center bg-gray-200"
-                          style={{ height: "193px", width: "197px" }}
-                        >
+                        <div className="flex items-center justify-center bg-gray-200 w-48 h-full">
                           <span className="text-gray-400 text-5xl">👤</span>
                         </div>
                       )}
