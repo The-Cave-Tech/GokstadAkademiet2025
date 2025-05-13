@@ -40,8 +40,15 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  // Redirect authenticated users from auth routes to dashboard
+  // Redirect authenticated users from auth routes, but respect redirect param
   if (isAuthRoute && isAuthenticated) {
+    // Sjekk om det finnes en redirect parameter i URL
+    const redirectParam = request.nextUrl.searchParams.get('redirect');
+    if (redirectParam) {
+      return NextResponse.redirect(new URL(redirectParam, request.url));
+    }
+    
+    // Ellers redirect til dashboard som før
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 

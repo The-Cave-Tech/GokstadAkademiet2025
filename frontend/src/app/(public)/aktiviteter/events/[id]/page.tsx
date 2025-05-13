@@ -8,7 +8,7 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { EventResponse } from "@/types/content.types";
 import { MdLocationOn, MdAccessTime, MdEvent } from "react-icons/md";
-import BackButton from "@/components/BackButton";
+import BackButton from "@/components/ui/BackButton";
 import ReactMarkdown from "react-markdown";
 
 export default function EventDetailPage() {

@@ -17,12 +17,12 @@ type PaymentFormProps = {
 export default function PaymentForm({ 
   paymentMethod, 
   setPaymentMethod,
-  cardInfo,
+  /* cardInfo,
   onChange,
-  errors = {}
+  errors = {} */
 }: PaymentFormProps) {
-  const inputClass = "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500";
-  
+/*   const inputClass = "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500";
+ */  
   return (
     <div className="space-y-6" role="group" aria-labelledby="payment-heading">
       <div>
@@ -32,12 +32,12 @@ export default function PaymentForm({
           </legend>
           
           <div className="space-y-3">
-            <PaymentOption 
+          {/*   <PaymentOption 
               value="card" 
               label="Kredittkort" 
               selected={paymentMethod === 'card'} 
               onChange={() => setPaymentMethod('card')} 
-            />
+            /> */}
             
             <PaymentOption 
               value="vipps" 
@@ -46,17 +46,17 @@ export default function PaymentForm({
               onChange={() => setPaymentMethod('vipps')} 
             />
             
-            <PaymentOption 
+          {/*   <PaymentOption 
               value="invoice" 
               label="Faktura (14 dagers betalingsfrist)" 
               selected={paymentMethod === 'invoice'} 
               onChange={() => setPaymentMethod('invoice')} 
-            />
+            /> */}
           </div>
         </fieldset>
       </div>
       
-      {paymentMethod === 'card' && (
+     {/*  {paymentMethod === 'card' && (
         <div className="pt-4 space-y-4" role="group" aria-labelledby="card-details-heading">
           <h3 id="card-details-heading" className="sr-only">Kortdetaljer</h3>
           
@@ -150,7 +150,7 @@ export default function PaymentForm({
             </div>
           </div>
         </div>
-      )}
+      )} */}
       
       {paymentMethod === 'vipps' && (
         <div className="pt-4">
@@ -160,13 +160,13 @@ export default function PaymentForm({
         </div>
       )}
       
-      {paymentMethod === 'invoice' && (
+    {/*   {paymentMethod === 'invoice' && (
         <div className="pt-4">
           <p className="text-gray-700">
             Faktura vil bli sendt til din e-postadresse. Betalingsfrist er 14 dager fra bestillingsdato.
           </p>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

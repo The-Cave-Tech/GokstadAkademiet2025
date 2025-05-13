@@ -5,7 +5,7 @@ import ContentForm from "@/components/dashboard/contentManager/ContentForm";
 import { projectService } from "@/lib/data/services/projectService";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
-import BackButton from "@/components/BackButton";
+import BackButton from "@/components/ui/BackButton";
 
 const colors = {
   primary: "rgb(121, 85, 72)", // Brown

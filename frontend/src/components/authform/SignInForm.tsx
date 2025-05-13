@@ -44,12 +44,18 @@ export function SignInForm() {
   ];
 
   // OAuth login
-  const handleSocialLogin = (provider: string) => {
-    const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL?.replace(/\/api$/, "") || "http://localhost:1337";
-    const callbackUrl = `${window.location.origin}/api/auth/callback/${provider}`;
-    
-    router.push(`${baseUrl}/api/connect/${provider}?callback=${encodeURIComponent(callbackUrl)}`);
-  };
+const handleSocialLogin = (provider: string) => {
+  const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL?.replace(/\/api$/, "") || "http://localhost:1337";
+  
+  // Get the redirect URL from the current URL query parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const redirectPath = urlParams.get('redirect') || '/';
+  
+  // Pass the redirect URL to the callback
+  const callbackUrl = `${window.location.origin}/api/auth/callback/${provider}?redirect=${encodeURIComponent(redirectPath)}`;
+  
+  router.push(`${baseUrl}/api/connect/${provider}?callback=${encodeURIComponent(callbackUrl)}`);
+};
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

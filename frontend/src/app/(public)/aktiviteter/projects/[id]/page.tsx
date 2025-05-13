@@ -9,7 +9,7 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { ProjectResponse } from "@/types/content.types";
 import { AiOutlineTool, AiOutlineGithub, AiOutlineLink } from "react-icons/ai";
 import { MdCategory } from "react-icons/md";
-import BackButton from "@/components/BackButton";
+import BackButton from "@/components/ui/BackButton";
 import ReactMarkdown from "react-markdown";
 
 export default function ProjectDetailPage() {

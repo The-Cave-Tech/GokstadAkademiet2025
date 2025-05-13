@@ -16,13 +16,11 @@ export interface AboutusGallery extends Struct.ComponentSchema {
 export interface AboutusHistory extends Struct.ComponentSchema {
   collectionName: 'components_aboutus_histories';
   info: {
+    description: '';
     displayName: 'History';
   };
   attributes: {
-    Image: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios',
-      true
-    >;
+    Image: Schema.Attribute.Media<'images' | 'files', true>;
     Text: Schema.Attribute.Text;
     Title: Schema.Attribute.String;
   };

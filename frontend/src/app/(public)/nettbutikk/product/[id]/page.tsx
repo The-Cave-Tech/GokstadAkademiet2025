@@ -12,7 +12,7 @@ import { MdCategory, MdShoppingBasket } from "react-icons/md";
 import { FaBoxOpen } from "react-icons/fa";
 import Link from "next/link";
 import { formatPrice } from "@/lib/adapters/cardAdapter";
-import BackButton from "@/components/BackButton";
+import BackButton from "@/components/ui/BackButton";
 import { useCart } from "@/lib/context/shopContext";
 
 export default function ProductDetailPage() {

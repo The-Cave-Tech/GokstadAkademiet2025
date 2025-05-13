@@ -1,3 +1,4 @@
+//frontend/lib/context/AuthContext.tsx
 "use server";
 
 // påminnelse til oss: fjerne alle konsoll logger når vi er ferdige, de eksponerer sensitiv informasjon

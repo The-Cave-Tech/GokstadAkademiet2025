@@ -396,8 +396,9 @@ export function validateProfileForm<T>(
 export const ALLOWED_IMAGE_TYPES = [
   "image/jpeg",
   "image/png",
-  "image/webp",
+  /* "image/webp", */ //trigger Internal Server Error, men fungerer av og til
   "image/gif",
+  "image/svg"
 ];
 
 export const MAX_IMAGE_SIZE = 5 * 1024 * 1024;

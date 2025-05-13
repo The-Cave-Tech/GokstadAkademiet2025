@@ -9,7 +9,7 @@ import { useCart } from '@/lib/context/shopContext';
 import { useAuth } from '@/lib/context/AuthContext';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { formatPrice } from '@/lib/adapters/cardAdapter';
-import BackButton from '@/components/BackButton';
+import BackButton from '@/components/ui/BackButton';
 
 export default function CartPage() {
   const router = useRouter();

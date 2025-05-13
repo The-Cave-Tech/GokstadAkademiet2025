@@ -69,8 +69,12 @@ export async function GET(
     }
     
     await setAuthCookie(data.jwt);
+
+    // Get redirect URL from the URL parameters
+    const redirectUrl = searchParams.get('redirect') || '/';
    
-    return NextResponse.redirect(new URL('/', request.url));
+    // Use redirectUrl in the redirect
+    return NextResponse.redirect(new URL(redirectUrl, request.url));
     
   } catch (error) {
     console.error("OAuth callback error:", error);
