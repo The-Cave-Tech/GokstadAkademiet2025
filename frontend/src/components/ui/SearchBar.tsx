@@ -25,34 +25,22 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className={`relative ${className}`}>
+    <form
+      onSubmit={handleSubmit}
+      className={`relative ${className}`}
+      aria-label="Search form" // Add aria-label for better accessibility
+    >
       <input
         type="text"
-        placeholder={placeholder}
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-full sm:w-auto border border-gray-300 rounded-md px-3 py-2 pr-10"
+        placeholder={placeholder}
         aria-label={ariaLabel}
+        className="w-full sm:w-auto border border-gray-300 rounded-md px-3 py-2 pr-10"
       />
       {onSearch && (
-        <button
-          type="submit"
-          className="absolute right-2 top-1/2 transform -translate-y-1/2"
-          aria-label="Submit search"
-        >
-          <svg
-            className="h-5 w-5 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
+        <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2">
+          Submit search
         </button>
       )}
     </form>
