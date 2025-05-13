@@ -3,8 +3,6 @@
 import React from "react";
 import Image from "next/image";
 import { Roboto } from "next/font/google";
-
-// Importer Roboto med italic-støtte
 const roboto = Roboto({
   subsets: ["latin"],
   weight: ["300", "400", "500", "700"],
@@ -100,7 +98,6 @@ const TeamSection: React.FC<TeamSectionProps> = ({
 
           <div className="flex flex-wrap justify-center gap-8 mb-12">
             {safeTeamMembers.map((member, index) => {
-              // Formatér telefonnummer til +47 400 40 101
               const cleanNumber = member.phoneNumber.replace(/\D/g, "");
               const numberOnly = cleanNumber.startsWith("47")
                 ? cleanNumber
