@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { strapiService } from "@/lib/data/services/strapiClient";
 import HistorySection, { HistoryItem } from "./HistorySection";
 
-// Oppdatert Strapi respons type basert på faktisk data
 interface StrapiResponse {
   data: {
     id: number;
@@ -12,7 +11,7 @@ interface StrapiResponse {
     updatedAt: string;
     publishedAt: string;
     documentId: string;
-    history: HistoryItem[]; // Direkte array med historie-elementer
+    history: HistoryItem[]; 
   };
   meta: any;
 }
@@ -28,24 +27,18 @@ export default function HistoryContainer() {
       setError(null);
 
       try {
-        // Hent data fra Strapi API - "about-us" single type med history-relasjonen
-        // Bruk riktig populate-parameter som Strapi aksepterer
         const response = await strapiService.fetch<StrapiResponse>("about-us", {
           params: {
-            // Bruk dot-notation for populate istedenfor 'deep'
             populate: "history.Image",
           },
         });
 
         console.log("Strapi full respons:", response);
-
-        // Sjekk om vi har historiedata direkte i history-feltet
         if (
           response?.data?.history &&
           Array.isArray(response.data.history) &&
           response.data.history.length > 0
         ) {
-          // Sett historiedata direkte - ingen konvertering nødvendig siden de kommer i riktig format
           setHistoryItems(response.data.history);
           console.log("Historie-data som ble satt:", response.data.history);
         } else {
