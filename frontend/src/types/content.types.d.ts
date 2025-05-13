@@ -36,10 +36,10 @@ export interface ProjectAttributes extends BaseContent {
   title: string;
   description: string;
   content?: string;
-  projectImage?: Media;
+  projectImage?: Media | null;
   state?: string;
-  category?: string;
-  technologies?: string[];
+  category?: string | null;
+  technologies?: string[] | null;
   demoUrl?: string;
   githubUrl?: string;
 }
@@ -67,7 +67,7 @@ export interface ProductAttributes extends BaseContent {
   price: number;
   discountedPrice?: number;
   stock: number;
-  category: string;
+  category: string | null;
   productImage?: Media;
 }
 
