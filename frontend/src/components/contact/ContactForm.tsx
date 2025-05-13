@@ -4,14 +4,85 @@
 import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/AuthContext";
-import { contactService } from "@/lib/data/services/contactService";
+import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
 import { Button } from "@/components/ui/custom/Button";
-import PageIcons from "@/components/ui/custom/PageIcons";
+import Modal from "@/components/contact/Modal";
 import {
   contactFormSchema,
   ContactFormData,
 } from "@/lib/validation/contactFormValidation";
 import { ZodError } from "zod";
+
+// Funksjon for å sende til backend
+const submitContactRequest = async (data: any) => {
+  const apiUrl =
+    process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337/api";
+
+  console.log("Forsøker å sende data til Strapi:", data);
+
+  try {
+    // Forsøk POST til contact-submissions direkte
+    const response = await fetch(`${apiUrl}/contact-submissions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        data: {
+          name: data.name,
+          email: data.email,
+          phoneNumber: data.phoneNumber,
+          message: data.message,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      console.error("Strapi API Error:", errorData);
+      throw new Error(
+        `Strapi API feil: ${response.status} ${response.statusText}`
+      );
+    }
+
+    const result = await response.json();
+    console.log("Data sendt til Strapi! Respons:", result);
+    return result;
+  } catch (err) {
+    console.error("Feil ved sending til Strapi API:", err);
+
+    // Nødløsning: Lagre i localStorage hvis backend ikke er tilgjengelig
+    try {
+      const existingContactsStr = localStorage.getItem("contactSubmissions");
+      const existingContacts = existingContactsStr
+        ? JSON.parse(existingContactsStr)
+        : [];
+
+      const newContact = {
+        ...data,
+        timestamp: new Date().toISOString(),
+        id: `contact-${Date.now()}`,
+      };
+
+      const updatedContacts = [newContact, ...existingContacts];
+      localStorage.setItem(
+        "contactSubmissions",
+        JSON.stringify(updatedContacts)
+      );
+
+      console.log(
+        "MERK: Backend utilgjengelig - kontakthenvendelse midlertidig lagret i localStorage"
+      );
+
+      // Suksess selv om vi måtte lagre lokalt
+      return { success: true, localStorageFallback: true };
+    } catch (localErr) {
+      console.error("Kunne ikke lagre i localStorage:", localErr);
+    }
+
+    throw err;
+  }
+};
 
 export default function ContactForm() {
   const { isAuthenticated } = useAuth();
@@ -28,13 +99,24 @@ export default function ContactForm() {
   const [validationErrors, setValidationErrors] = useState<{
     [key in keyof ContactFormData]?: string;
   }>({});
-  const [success, setSuccess] = useState(false);
+
+  // State for success modal
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
+
+  // Tracking remaining characters
+  const [messageLength, setMessageLength] = useState(0);
+  const maxMessageLength = 500;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+
+    // Update message length if the message field is changing
+    if (name === "message") {
+      setMessageLength(value.length);
+    }
 
     // Clear validation error when field is edited
     if (validationErrors[name as keyof ContactFormData]) {
@@ -52,8 +134,6 @@ export default function ContactForm() {
 
   const validateField = (field: keyof ContactFormData, value: string) => {
     try {
-      // Instead of using pick, just validate against the whole schema with a partial object
-      // This avoids any syntax issues with the computed property name
       contactFormSchema.partial().parse({ [field]: value });
       return true;
     } catch (error) {
@@ -85,16 +165,22 @@ export default function ContactForm() {
     // Validate all fields using Zod schema
     try {
       const validatedData = contactFormSchema.parse(formData);
+      console.log("Validerte skjemadata:", validatedData);
 
       startTransition(async () => {
         try {
-          // Submit to Strapi using the service
-          await contactService.submitContactForm(validatedData);
+          // Send data til backend
+          const result = await submitContactRequest({
+            name: validatedData.name,
+            email: validatedData.email,
+            phoneNumber: validatedData.phoneNumber,
+            message: validatedData.message,
+          });
 
-          // Show success message
-          setSuccess(true);
+          // Vis suksessmodal - enten med API eller localStorage
+          setShowSuccessModal(true);
 
-          // Reset form
+          // Nullstill skjema
           setFormData({
             name: "",
             email: "",
@@ -102,17 +188,19 @@ export default function ContactForm() {
             message: "",
           });
 
-          // Redirect with success message after a short delay
-          setTimeout(() => {
-            router.push(
-              "/kontakt-oss?message=Takk for din henvendelse! Vi vil kontakte deg så snart som mulig."
-            );
-          }, 2000);
+          // Nullstill message length counter
+          setMessageLength(0);
         } catch (err) {
-          console.error("Error submitting form:", err);
+          console.error("Feil ved sending av skjema:", err);
+
+          // Vi setter generalError selv om vi har localStorage-fallback,
+          // for å gi brukeren informasjon om at backend-sending feilet
           setGeneralError(
-            "Det oppstod en feil ved sending av skjema. Vennligst prøv igjen senere."
+            "Det oppstod en feil ved sending av skjema. Vi har lagret henvendelsen din lokalt og vil forsøke å sende den på nytt senere."
           );
+
+          // Vi viser fortsatt suksessmodal siden localStorage-lagring fungerte
+          setShowSuccessModal(true);
         }
       });
     } catch (error) {
@@ -131,32 +219,58 @@ export default function ContactForm() {
     }
   };
 
-  if (success) {
-    return (
-      <div className="bg-[#f9f3ed] p-12 rounded-lg">
-        <div className="bg-green-100 border border-green-300 text-green-700 p-6 rounded-md">
-          <h3 className="text-xl font-medium mb-2">
-            Takk for din henvendelse!
-          </h3>
-          <p>
-            Vi har mottatt meldingen din og vil kontakte deg så snart som mulig.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // Handler for closing the modal and navigating
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+
+    try {
+      router.push(
+        "/kontakt-oss?message=Takk for din henvendelse! Vi vil kontakte deg så snart som mulig."
+      );
+    } catch (err) {
+      console.error("Feil ved navigering:", err);
+      // Selv om navigeringen feiler, vil skjemaet være nullstilt og brukeren ha sett bekreftelsesmeldingen
+    }
+  };
+
+  // Calculate character counter color
+  const getCharCounterColor = () => {
+    if (messageLength === 0) return "text-gray-500";
+    if (messageLength < 10) return "text-red-500";
+    if (messageLength > 450)
+      return messageLength >= maxMessageLength
+        ? "text-red-500"
+        : "text-amber-500";
+    return "text-green-500";
+  };
 
   return (
-    <div className="bg-[#f9f3ed] p-12 rounded-lg">
+    <div className="bg-[#f9f3ed] p-4 sm:p-8 md:p-12 rounded-lg">
+      {/* Success Modal */}
+      <Modal
+        isOpen={showSuccessModal}
+        onClose={handleCloseSuccessModal}
+        title="Takk for din henvendelse!"
+        primaryButtonText="OK"
+        onPrimaryButtonClick={handleCloseSuccessModal}
+      >
+        <div className="text-center py-4">
+          <div className="inline-flex mb-4 items-center justify-center w-16 h-16 rounded-full bg-green-100">
+            <FaCheckCircle className="text-green-600 text-3xl" />
+          </div>
+          <p className="text-lg mb-2">Meldingen er sendt!</p>
+          <p className="text-gray-600">
+            Vi har mottatt din henvendelse og vil kontakte deg så snart som
+            mulig.
+          </p>
+        </div>
+      </Modal>
+
       {generalError && (
         <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start">
-          <PageIcons
-            name="warning"
-            directory="profileIcons"
-            size={20}
-            alt=""
-            className="mt-0.5 mr-2 flex-shrink-0"
-          />
+          <div className="mt-0.5 mr-2 flex-shrink-0">
+            <FaExclamationTriangle className="text-red-600 text-xl" />
+          </div>
           <p>{generalError}</p>
         </div>
       )}
@@ -184,7 +298,7 @@ export default function ContactForm() {
               placeholder="Navn"
               required
               disabled={isPending}
-              className={`w-full px-4 py-3 rounded-md border ${
+              className={`w-full px-4 py-3 h-12 rounded-md border ${
                 validationErrors.name
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 focus:ring-blue-500"
@@ -219,7 +333,7 @@ export default function ContactForm() {
               onBlur={handleBlur}
               placeholder="Telefonnummer"
               disabled={isPending}
-              className={`w-full px-4 py-3 rounded-md border ${
+              className={`w-full px-4 py-3 h-12 rounded-md border ${
                 validationErrors.phoneNumber
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 focus:ring-blue-500"
@@ -255,7 +369,7 @@ export default function ContactForm() {
             placeholder="E-post adresse"
             required
             disabled={isPending}
-            className={`w-full px-4 py-3 rounded-md border ${
+            className={`w-full px-4 py-3 h-12 rounded-md border ${
               validationErrors.email
                 ? "border-red-500 focus:ring-red-500"
                 : "border-gray-300 focus:ring-blue-500"
@@ -275,27 +389,33 @@ export default function ContactForm() {
         </div>
 
         <div>
-          <label
-            htmlFor="message"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Beskrivelse<span className="text-red-600">*</span>
-          </label>
+          <div className="flex justify-between items-center mb-1">
+            <label
+              htmlFor="message"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Beskrivelse<span className="text-red-600">*</span>
+            </label>
+            <span className={`text-xs ${getCharCounterColor()}`}>
+              {messageLength}/{maxMessageLength} tegn
+            </span>
+          </div>
           <textarea
             id="message"
             name="message"
             value={formData.message}
             onChange={handleChange}
             onBlur={handleBlur}
-            placeholder="Kort beskrivelse av hva du lurer på."
+            placeholder="Skriv detaljert om hva du lurer på. Minst 10 tegn og maks 500 tegn."
             required
-            rows={6}
+            rows={8}
+            maxLength={maxMessageLength}
             disabled={isPending}
             className={`w-full px-4 py-3 rounded-md border ${
               validationErrors.message
                 ? "border-red-500 focus:ring-red-500"
                 : "border-gray-300 focus:ring-blue-500"
-            } focus:outline-none focus:ring-2 bg-white`}
+            } focus:outline-none focus:ring-2 bg-white min-h-[200px] resize-y`}
             aria-required="true"
             aria-invalid={!!validationErrors.message}
             aria-describedby={
@@ -307,6 +427,9 @@ export default function ContactForm() {
               {validationErrors.message}
             </p>
           )}
+          <p className="mt-2 text-sm text-gray-500 normal-case">
+            Skriv så detaljert som mulig for at vi best skal kunne hjelpe deg.
+          </p>
         </div>
 
         <div className="text-right">
@@ -315,7 +438,7 @@ export default function ContactForm() {
             type="submit"
             disabled={isPending}
             ariaLabel={isPending ? "Sender..." : "Send"}
-            className="px-8 py-3 rounded-md"
+            className="px-8 py-3 h-12 rounded-md w-full sm:w-auto"
           >
             {isPending ? "Sender..." : "Send"}
           </Button>

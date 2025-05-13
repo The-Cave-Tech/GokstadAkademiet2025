@@ -21,7 +21,7 @@
       "type": "string"
     },
     "message": {
-      "type": "string"
+      "type": "text"
     }
   }
 }

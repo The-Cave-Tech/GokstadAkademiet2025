@@ -523,7 +523,7 @@ export interface ApiContactSubmissionContactSubmission
       'api::contact-submission.contact-submission'
     > &
       Schema.Attribute.Private;
-    message: Schema.Attribute.String;
+    message: Schema.Attribute.Text;
     name: Schema.Attribute.String;
     phoneNumber: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
