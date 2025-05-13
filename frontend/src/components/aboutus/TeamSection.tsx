@@ -63,13 +63,11 @@ export function getStrapiImageAlt(imageArray: any): string {
 }
 
 interface TeamSectionProps {
-  title: string;
-  description: string;
+  description?: string;
   teamMembers: TeamMember[];
 }
 
 const TeamSection: React.FC<TeamSectionProps> = ({
-  title = "Vårt Team",
   description = "",
   teamMembers = [],
 }) => {
@@ -79,7 +77,6 @@ const TeamSection: React.FC<TeamSectionProps> = ({
     return (
       <section className={`w-full py-12 bg-white ${roboto.className}`}>
         <div className="container mx-auto px-4 md:px-6 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">{title}</h2>
           {description && (
             <p className="text-lg text-center text-gray-700 mb-10">
               {description}
@@ -95,10 +92,6 @@ const TeamSection: React.FC<TeamSectionProps> = ({
     <section className={`w-full py-12 bg-white ${roboto.className}`}>
       <div className="container mx-auto px-4 md:px-6">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
-            {title}
-          </h2>
-
           {description && (
             <p className="text-lg text-center text-gray-700 mb-10">
               {description}
@@ -108,7 +101,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({
           <div className="flex flex-wrap justify-center gap-8 mb-12">
             {safeTeamMembers.map((member, index) => {
               // Formatér telefonnummer til +47 400 40 101
-              const cleanNumber = member.phoneNumber.replace(/\D/g, ""); // Fjern alt unntatt sifre
+              const cleanNumber = member.phoneNumber.replace(/\D/g, "");
               const numberOnly = cleanNumber.startsWith("47")
                 ? cleanNumber
                 : `47${cleanNumber}`;
@@ -158,7 +151,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({
                     </div>
 
                     {/* Informasjon - høyre side */}
-                    <div className="p-4 flex-grow flex flex-col justify-center">
+                    <div className="p-4 pl-6 flex-grow flex flex-col justify-center">
                       <h3 className="text-xl font-semibold text-gray-800 mb-1">
                         {member.name}
                       </h3>
