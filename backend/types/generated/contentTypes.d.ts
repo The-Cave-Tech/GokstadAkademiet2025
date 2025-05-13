@@ -643,7 +643,7 @@ export interface ApiLandingPageLandingPage extends Struct.SingleTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     hero: Schema.Attribute.Component<'landing-page.hero-section', false>;
-    introduction: Schema.Attribute.Component<'landing-page.intro', false>;
+    introduction: Schema.Attribute.Component<'landing-page.intro', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',

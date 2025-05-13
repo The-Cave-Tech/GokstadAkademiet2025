@@ -10,18 +10,18 @@ import { EventAttributes, ProjectAttributes } from "@/types/content.types";
 import { EventCard } from "@/components/dashboard/contentManager/EventCard";
 import ProjectCarousel from "@/components/ui/ProjectCarousel";
 
-// Interface that defines our component's data structure
+// Updated interface to handle repeatable introduction component
 interface LandingPageData {
   hero: {
     Title: string;
     Subtitle: string;
     heroImage: any; // Strapi media object
   };
-  introduction: {
+  introduction: Array<{
     Title: string;
     IntroductionText: string;
     introductionImage: any; // Strapi media object
-  };
+  }>;
 }
 
 // Funksjon for å sjekke bildetypen
@@ -37,12 +37,14 @@ const MediaRenderer = ({
   className,
   objectFit = "cover",
   onError,
+  autoHeight = false,
 }: {
   url: string | null;
   alt: string;
   className?: string;
   objectFit?: "cover" | "contain" | "fill" | "none" | "scale-down";
   onError?: () => void;
+  autoHeight?: boolean;
 }) => {
   const imageType = url ? getImageType(url) : "other";
 
@@ -72,6 +74,20 @@ const MediaRenderer = ({
     );
   }
 
+  // Use regular img tag for auto height
+  if (autoHeight) {
+    return (
+      <img
+        src={url}
+        alt={alt}
+        className={className}
+        style={{ maxWidth: "100%", height: "auto", objectFit }}
+        onError={onError}
+      />
+    );
+  }
+
+  // Use Next.js Image with fill for fixed height containers
   return (
     <Image
       src={url}
@@ -87,7 +103,7 @@ const MediaRenderer = ({
   );
 };
 
-// Helper function to transform API response data to match our component's interface
+// Updated helper function to transform API response data to match our new component interface
 const transformResponseToPageData = (responseData: any): LandingPageData => {
   console.log("Raw response data:", responseData);
 
@@ -97,17 +113,18 @@ const transformResponseToPageData = (responseData: any): LandingPageData => {
 
   // Komponenter i Strapi kommer med sin egen struktur
   const heroComponent = attributes.hero || {};
-  const introductionComponent = attributes.introduction || {};
+  // Check if introduction is now an array, if not, convert it to an array
+  const introductionComponents = Array.isArray(attributes.introduction)
+    ? attributes.introduction
+    : attributes.introduction
+    ? [attributes.introduction]
+    : [];
 
   console.log("Hero component raw:", heroComponent);
-  console.log("Introduction component raw:", introductionComponent);
+  console.log("Introduction components raw:", introductionComponents);
 
   // For dypere analyse av bildeobjektene
   console.log("Hero image object:", heroComponent.heroImage);
-  console.log(
-    "Introduction image object:",
-    introductionComponent.introductionImage
-  );
 
   return {
     hero: {
@@ -115,15 +132,15 @@ const transformResponseToPageData = (responseData: any): LandingPageData => {
       Subtitle: heroComponent.Subtitle || "",
       heroImage: heroComponent.heroImage || null,
     },
-    introduction: {
-      Title: introductionComponent.Title || "",
-      IntroductionText: introductionComponent.IntroductionText || "",
-      introductionImage: introductionComponent.introductionImage || null,
-    },
+    introduction: introductionComponents.map((component: any) => ({
+      Title: component.Title || "",
+      IntroductionText: component.IntroductionText || "",
+      introductionImage: component.introductionImage || null,
+    })),
   };
 };
 
-// Helper function to get image URL from Strapi media object
+// Helper function to get image URL from Strapi media object (unchanged)
 const getImageUrl = (mediaObject: any): string | null => {
   if (!mediaObject) {
     console.log("Media object is null or undefined");
@@ -335,7 +352,8 @@ export default function LandingPageContent() {
   const [events, setEvents] = useState<EventAttributes[]>([]);
   const [projects, setProjects] = useState<ProjectAttributes[]>([]);
   const [heroImageUrl, setHeroImageUrl] = useState<string | null>(null);
-  const [introImageUrl, setIntroImageUrl] = useState<string | null>(null);
+  // Updated to handle multiple introduction images
+  const [introImageUrls, setIntroImageUrls] = useState<(string | null)[]>([]);
 
   const [loading, setLoading] = useState({
     content: true,
@@ -351,7 +369,7 @@ export default function LandingPageContent() {
 
   const [imageLoadError, setImageLoadError] = useState({
     hero: false,
-    intro: false,
+    intro: {} as Record<number, boolean>, // Changed to object to track each intro image
   });
 
   // Fetch landing page data
@@ -388,42 +406,39 @@ export default function LandingPageContent() {
         const transformedData = transformResponseToPageData(response.data);
         console.log("Transformed data:", transformedData);
 
-        // Logg rådata for introduksjonsbildet for debugging
-        console.log(
-          "Raw introduction image data:",
-          transformedData.introduction.introductionImage
-        );
-
         // Store the transformed data
         setPageData(transformedData);
 
-        // Extract and process image URLs
+        // Extract and process hero image URL
         const heroImageUrl = getImageUrl(transformedData.hero.heroImage);
         console.log("Hero image URL:", heroImageUrl);
         console.log("Hero image type:", getImageType(heroImageUrl));
 
-        const introImageUrl = getImageUrl(
-          transformedData.introduction.introductionImage
-        );
-        console.log("Introduction image URL result:", introImageUrl);
-        console.log("Introduction image type:", getImageType(introImageUrl));
+        // Process all introduction image URLs
+        const introUrls = transformedData.introduction.map((intro) => {
+          const url = getImageUrl(intro.introductionImage);
+          console.log("Introduction image URL result:", url);
+          console.log("Introduction image type:", getImageType(url));
 
-        // Fiks URL-ene direkte hvis de inneholder "/api/uploads/"
+          // Fix URL if it contains "/api/uploads/"
+          if (url && url.includes("/api/uploads/")) {
+            const fixedUrl = url.replace("/api/uploads/", "/uploads/");
+            console.log("Fixed intro URL:", fixedUrl);
+            return fixedUrl;
+          }
+
+          return url;
+        });
+
+        // Fix hero URL if needed
         let fixedHeroUrl = heroImageUrl;
-        let fixedIntroUrl = introImageUrl;
-
         if (heroImageUrl && heroImageUrl.includes("/api/uploads/")) {
           fixedHeroUrl = heroImageUrl.replace("/api/uploads/", "/uploads/");
           console.log("Fixed hero URL:", fixedHeroUrl);
         }
 
-        if (introImageUrl && introImageUrl.includes("/api/uploads/")) {
-          fixedIntroUrl = introImageUrl.replace("/api/uploads/", "/uploads/");
-          console.log("Fixed intro URL:", fixedIntroUrl);
-        }
-
         setHeroImageUrl(fixedHeroUrl);
-        setIntroImageUrl(fixedIntroUrl);
+        setIntroImageUrls(introUrls);
 
         setErrors((prev) => ({ ...prev, content: null }));
       } catch (err) {
@@ -441,7 +456,7 @@ export default function LandingPageContent() {
     getLandingPageData();
   }, []);
 
-  // Fetch events
+  // Fetch events (unchanged)
   useEffect(() => {
     async function fetchEvents() {
       try {
@@ -466,7 +481,7 @@ export default function LandingPageContent() {
     fetchEvents();
   }, []);
 
-  // Fetch projects
+  // Fetch projects (unchanged)
   useEffect(() => {
     async function fetchProjects() {
       try {
@@ -491,53 +506,78 @@ export default function LandingPageContent() {
     fetchProjects();
   }, []);
 
-  // Handle image load errors
+  // Updated to handle multiple introduction images
   const handleImageError = (
     imageType: "hero" | "intro",
+    index: number = 0,
     url: string | null
   ) => {
     console.error(
-      `Image load error for ${imageType} image. URL attempted: ${url}`
+      `Image load error for ${imageType} image ${index}. URL attempted: ${url}`
     );
 
     // Try to fix the URL
     if (url) {
       console.log("Testing URL accessibility:", url);
 
-      // Prøv å generere en alternativ URL for testing
+      // Try to generate an alternative URL for testing
       let correctedUrl: string = url;
 
       if (url.includes("/api/uploads/")) {
         correctedUrl = url.replace("/api/uploads/", "/uploads/");
         console.log("Created corrected URL:", correctedUrl);
 
-        // Prøv den korrigerte URL-en
+        // Try the corrected URL
         if (imageType === "hero") {
           setHeroImageUrl(correctedUrl);
-        } else {
-          setIntroImageUrl(correctedUrl);
+        } else if (imageType === "intro") {
+          setIntroImageUrls((prev) => {
+            const newUrls = [...prev];
+            newUrls[index] = correctedUrl;
+            return newUrls;
+          });
         }
       } else {
-        // Hvis vi ikke kan korrigere URL-en, setter vi feilstatus
-        setImageLoadError((prev) => ({
-          ...prev,
-          [imageType]: true,
-        }));
+        // If we can't correct the URL, set error status
+        if (imageType === "hero") {
+          setImageLoadError((prev) => ({
+            ...prev,
+            hero: true,
+          }));
+        } else if (imageType === "intro") {
+          setImageLoadError((prev) => ({
+            ...prev,
+            intro: {
+              ...prev.intro,
+              [index]: true,
+            },
+          }));
+        }
       }
     } else {
-      setImageLoadError((prev) => ({
-        ...prev,
-        [imageType]: true,
-      }));
+      if (imageType === "hero") {
+        setImageLoadError((prev) => ({
+          ...prev,
+          hero: true,
+        }));
+      } else if (imageType === "intro") {
+        setImageLoadError((prev) => ({
+          ...prev,
+          intro: {
+            ...prev.intro,
+            [index]: true,
+          },
+        }));
+      }
     }
   };
 
   // Debug log before render
   console.log("Render state:", {
     heroImageUrl,
-    introImageUrl,
+    introImageUrls,
     heroImageType: getImageType(heroImageUrl),
-    introImageType: getImageType(introImageUrl),
+    introImageTypes: introImageUrls.map((url) => getImageType(url)),
     imageLoadError,
     pageDataExists: !!pageData,
   });
@@ -571,7 +611,7 @@ export default function LandingPageContent() {
               alt="Hero Background Image"
               className="w-full h-full opacity-50"
               objectFit="cover"
-              onError={() => handleImageError("hero", heroImageUrl)}
+              onError={() => handleImageError("hero", 0, heroImageUrl)}
             />
           ) : (
             <div className="w-full h-full bg-gray-700 flex items-center justify-center">
@@ -589,35 +629,54 @@ export default function LandingPageContent() {
         </div>
       </section>
 
-      {/* Introduction Section */}
-      <section className="py-16 px-4 max-w-6xl mx-auto grid gap-10 md:grid-cols-2 items-center">
-        {/* Image section */}
-        <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[500px] rounded-xl overflow-hidden shadow-lg">
-          {!imageLoadError.intro ? (
-            <MediaRenderer
-              url={introImageUrl}
-              alt="Introduction Image"
-              className="w-full h-full"
-              objectFit="contain"
-              onError={() => handleImageError("intro", introImageUrl)}
-            />
-          ) : (
-            <div className="w-full h-full bg-gray-300 flex items-center justify-center">
-              <p className="text-gray-600">Kunne ikke laste bildet</p>
-            </div>
-          )}
-        </div>
+      {/* Introduction Sections - Now supports multiple introduction components */}
+      {pageData.introduction.map((intro, index) => (
+        <section
+          key={`intro-${index}`}
+          className="py-16 px-4 max-w-6xl mx-auto grid gap-10 md:grid-cols-2 items-center md:grid-flow-dense"
+        >
+          {/* Image section - Always on the left */}
+          <div className="w-full rounded-xl overflow-hidden shadow-lg md:col-start-1">
+            {!imageLoadError.intro[index] ? (
+              <MediaRenderer
+                url={introImageUrls[index]}
+                alt={`Introduction Image ${index + 1}`}
+                className="w-full"
+                objectFit="contain"
+                autoHeight={true}
+                onError={() =>
+                  handleImageError("intro", index, introImageUrls[index])
+                }
+              />
+            ) : (
+              <div className="w-full h-64 bg-gray-300 flex items-center justify-center">
+                <p className="text-gray-600">Kunne ikke laste bildet</p>
+              </div>
+            )}
+          </div>
 
-        {/* Text section */}
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-            {pageData.introduction?.Title || "Mangler tittel"}
-          </h2>
-          <p className="text-base sm:text-lg leading-relaxed">
-            {pageData.introduction?.IntroductionText || "Mangler tekst"}
-          </p>
-        </div>
-      </section>
+          {/* Text section - Always on the right */}
+          <div className="md:col-start-2">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6">
+              {intro.Title || "Mangler tittel"}
+            </h2>
+            {/* Format the text with proper paragraph spacing */}
+            {intro.IntroductionText ? (
+              <div className="text-base sm:text-lg leading-relaxed space-y-4">
+                {intro.IntroductionText.split("\n\n").map(
+                  (paragraph, pIndex) => (
+                    <p key={`p-${index}-${pIndex}`}>{paragraph}</p>
+                  )
+                )}
+              </div>
+            ) : (
+              <p className="text-base sm:text-lg leading-relaxed">
+                Mangler tekst
+              </p>
+            )}
+          </div>
+        </section>
+      ))}
 
       {/* Projects Section */}
       <section className="py-20 px-4 bg-gradient-to-b from-secondary to-secondary/70">
