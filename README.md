@@ -10,3 +10,8 @@ cd frontend: npm run dev
 cd backend: npm run develop
 
 npm run test - to run test
+
+
+SendGrid:Unauthorised Error issue while using SendGrid Email API
+https://help.twilio.com/articles/10284917001627
+
