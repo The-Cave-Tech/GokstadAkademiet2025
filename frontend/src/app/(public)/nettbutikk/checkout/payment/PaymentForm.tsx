@@ -1,10 +1,8 @@
-// src/app/(public)/nettbutikk/checkout/payment/page.tsx
+// src/app/(public)/nettbutikk/checkout/payment/PaymentForm.tsx
 "use client";
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/context/AuthContext';
-import { useCart } from '@/lib/context/shopContext';
 import { useCheckout } from '@/lib/context/CheckoutContext';
 import { Card, CardHeader, CardBody, CardFooter } from '@/components/ui/Card';
 import { Button } from '@/components/ui/custom/Button';
@@ -12,56 +10,30 @@ import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import CheckoutSteps from '@/components/checkout/CheckoutSteps';
 import PaymentForm from '@/components/checkout/PaymentForm';
 import OrderSummary from '@/components/checkout/OrderSummary';
-import LoadingCheckout from '@/components/checkout/LoadingCheckout';
 import PageIcons from '@/components/ui/custom/PageIcons';
 
 export default function PaymentPage() {
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
-  const { cart } = useCart();
   const { 
     shippingInfo, 
     paymentMethod, 
     setPaymentMethod,
     cardInfo, 
     setCardInfo,
-    validatePaymentInfo 
+    validatePaymentInfo,
+    validateShippingInfo
   } = useCheckout();
   
   const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
-  const [isLoading, setIsLoading] = useState(true);
   
+  // Sjekk om leveringsinformasjon er utfylt
   useEffect(() => {
-    const checkRequirements = async () => {
-      try {
-        // Check if user is authenticated
-        if (!isAuthenticated) {
-          router.push(`/signin?redirect=${encodeURIComponent("/nettbutikk/checkout/payment")}&message=Du må være logget inn for å få tilgang til utsjekk.`);
-          return;
-        }
-        
-        // Check if cart has items
-        if (!cart?.items || cart.items.length === 0) {
-          router.push('/nettbutikk/cart');
-          return;
-        }
-        
-        // Check if shipping info is provided
-        if (!shippingInfo.fullName || !shippingInfo.address || !shippingInfo.postalCode || !shippingInfo.city || !shippingInfo.email) {
-          router.push('/nettbutikk/checkout/shipping');
-          return;
-        }
-      } catch (err) {
-        console.error('Error checking checkout requirements:', err);
-        setError('Det oppstod en feil ved lasting av utsjekksinformasjon');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    checkRequirements();
-  }, [isAuthenticated, router, cart, shippingInfo]);
+    const shippingValidation = validateShippingInfo();
+    if (!shippingValidation.valid) {
+      router.replace('/nettbutikk/checkout/shipping');
+    }
+  }, [shippingInfo, router, validateShippingInfo]);
   
   const handlePaymentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -85,10 +57,6 @@ export default function PaymentPage() {
   const prevStep = () => {
     router.push('/nettbutikk/checkout/shipping');
   };
-  
-  if (isLoading) {
-    return <LoadingCheckout />;
-  }
   
   return (
     <main className="container mx-auto px-4 py-8">

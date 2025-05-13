@@ -81,7 +81,7 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
   // Sjekk om brukeren er autentisert når konteksten lastes
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push('/signin?redirect=/nettbutikk/checkout/shipping&message=Du må være logget inn for å få tilgang til utsjekk.');
+      router.push('/signin?redirect=/nettbutikk/checkout/shipping');
     }
   }, [isAuthenticated, router]);
   

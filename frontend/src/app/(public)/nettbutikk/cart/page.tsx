@@ -33,14 +33,17 @@ export default function CartPage() {
     }
   };
 
-  // Handle checkout button click
+  // Handle checkout button click with redirection
   const handleCheckout = () => {
     if (!isAuthenticated) {
-      router.push(`/login?redirect=${encodeURIComponent("/nettbutikk/checkout")}`);
+      const redirectPath = '/nettbutikk/checkout/shipping';
+      const loginUrl = `/signin?redirect=${redirectPath}`;
+      console.log(`[CartPage] Generated login URL: ${loginUrl}`);
+      router.push(loginUrl);
       return;
     }
     
-    router.push('/nettbutikk/checkout');
+    router.push('/nettbutikk/checkout/shipping');
   };
 
   return (
@@ -49,25 +52,26 @@ export default function CartPage() {
       
       <div className="flex items-center justify-center mb-8">
         <h1 className="text-3xl font-bold">Handlekurv</h1>
-        <MdShoppingCart className="ml-2 text-3xl text-blue-600" />
+        <MdShoppingCart className="ml-2 text-3xl text-blue-600" aria-hidden="true" />
       </div>
       
       {isUpdating && (
-        <div className="mb-6 flex justify-center">
+        <div className="mb-6 flex justify-center" aria-live="polite" aria-busy="true">
           <LoadingSpinner size="small" />
         </div>
       )}
       
       {!cart.items || cart.items.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <MdRemoveShoppingCart className="mx-auto text-6xl text-gray-400 mb-4" />
-          <h2 className="text-xl font-semibold text-gray-700 mb-2">Handlekurven din er tom</h2>
+        <div className="text-center py-12 bg-gray-50 rounded-lg" role="alert" aria-labelledby="empty-cart-heading">
+          <MdRemoveShoppingCart className="mx-auto text-6xl text-gray-400 mb-4" aria-hidden="true" />
+          <h2 id="empty-cart-heading" className="text-xl font-semibold text-gray-700 mb-2">Handlekurven din er tom</h2>
           <p className="text-gray-600 mb-6">Legg til produkter for å komme i gang</p>
           <Link 
             href="/nettbutikk" 
             className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 inline-flex items-center"
+            aria-label="Se produkter i nettbutikken"
           >
-            <MdShoppingBasket className="mr-2" />
+            <MdShoppingBasket className="mr-2" aria-hidden="true" />
             Se butikk
           </Link>
         </div>
@@ -76,7 +80,7 @@ export default function CartPage() {
           {/* Cart Items */}
           <div className="lg:w-2/3">
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <table className="min-w-full divide-y divide-gray-200">
+              <table className="min-w-full divide-y divide-gray-200" aria-label="Produkter i handlekurven">
                 <thead className="bg-gray-50">
                   <tr>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -101,21 +105,21 @@ export default function CartPage() {
                     <tr key={index} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded bg-gray-100 mr-4">
+                          <figure className="h-12 w-12 flex-shrink-0 overflow-hidden rounded bg-gray-100 mr-4">
                             {item.image ? (
                               <Image
                                 src={item.image}
-                                alt={item.title}
+                                alt={`Bilde av ${item.title}`}
                                 width={48}
                                 height={48}
                                 className="h-full w-full object-cover"
                               />
                             ) : (
-                              <div className="h-full w-full flex items-center justify-center text-gray-500 font-bold">
+                              <figcaption className="h-full w-full flex items-center justify-center text-gray-500 font-bold" aria-hidden="true">
                                 {item.title.charAt(0)}
-                              </div>
+                              </figcaption>
                             )}
-                          </div>
+                          </figure>
                           <div>
                             <Link 
                               href={`/nettbutikk/product/${item.id}`}
@@ -128,21 +132,28 @@ export default function CartPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex justify-center">
-                          <div className="flex border border-gray-300 rounded">
+                          <div className="flex border border-gray-300 rounded" role="group" aria-labelledby={`quantity-label-${item.id}`}>
+                            <span id={`quantity-label-${item.id}`} className="sr-only">Juster antall av ${item.title}</span>
                             <button 
                               onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                               disabled={item.quantity <= 1 || isUpdating}
                               className="px-3 py-1 bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+                              aria-label={`Reduser antall ${item.title}`}
                             >
                               -
                             </button>
-                            <div className="w-12 text-center py-1 border-x border-gray-300">
+                            <output 
+                              className="w-12 text-center py-1 border-x border-gray-300" 
+                              aria-live="polite"
+                              aria-atomic="true"
+                            >
                               {item.quantity}
-                            </div>
+                            </output>
                             <button 
                               onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                               disabled={isUpdating}
                               className="px-3 py-1 bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+                              aria-label={`Øk antall ${item.title}`}
                             >
                               +
                             </button>
@@ -160,6 +171,7 @@ export default function CartPage() {
                           onClick={() => removeFromCart(item.id)}
                           disabled={isUpdating}
                           className="text-red-600 hover:text-red-900 disabled:opacity-50"
+                          aria-label={`Fjern ${item.title} fra handlekurven`}
                         >
                           Fjern
                         </button>
@@ -175,6 +187,7 @@ export default function CartPage() {
                 onClick={() => clearCart()}
                 disabled={isUpdating}
                 className="text-red-600 hover:text-red-900 disabled:opacity-50"
+                aria-label="Tøm handlekurv"
               >
                 Tøm handlekurv
               </button>
@@ -183,8 +196,8 @@ export default function CartPage() {
           
           {/* Order Summary */}
           <div className="lg:w-1/3">
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-lg font-semibold mb-4">Ordresammendrag</h2>
+            <div className="bg-white rounded-lg shadow-md p-6" aria-labelledby="order-summary-heading">
+              <h2 id="order-summary-heading" className="text-lg font-semibold mb-4">Ordresammendrag</h2>
               
               <div className="space-y-4">
                 <div className="flex justify-between">
@@ -206,7 +219,7 @@ export default function CartPage() {
                   </div>
                   
                   {subtotal >= 1000 && (
-                    <p className="text-green-600 text-sm mt-2">
+                    <p className="text-green-600 text-sm mt-2" aria-live="polite">
                       Du har kvalifisert til gratis frakt!
                     </p>
                   )}
@@ -222,8 +235,9 @@ export default function CartPage() {
                   onClick={handleCheckout}
                   disabled={cart.items.length === 0}
                   className="w-full mt-4 bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  aria-label="Gå til kassen"
                 >
-                  <MdShoppingBasket className="mr-2" />
+                  <MdShoppingBasket className="mr-2" aria-hidden="true" />
                   Gå til kassen
                 </button>
               </div>

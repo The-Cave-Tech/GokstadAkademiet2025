@@ -15,8 +15,7 @@ export default async function middleware(request: NextRequest) {
     isAuthenticated = !isTokenExpired(authCookie);
   }
 
-  // Legg til checkout i protected routes
-  const protectedRoutes = ["/dashboard", "/nettbutikk/checkout"];
+  const protectedRoutes = ["/dashboard"];
   const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route));
 
   const authRoutes = ["/signin", "/signup"];
@@ -25,7 +24,6 @@ export default async function middleware(request: NextRequest) {
   // Redirect unauthenticated users from protected routes to signin
   if (isProtectedRoute && !isAuthenticated) {
     const redirectUrl = new URL("/signin", request.url);
-    redirectUrl.searchParams.set("redirect", pathname);
     
     // Add a message if token was expired
     if (authCookie && isTokenExpired(authCookie)) {
@@ -42,13 +40,8 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  // Redirect authenticated users from auth routes to dashboard or redirect URL
+  // Redirect authenticated users from auth routes to dashboard
   if (isAuthRoute && isAuthenticated) {
-    // Sjekk om det finnes en redirect parameter, ellers gå til dashboard
-    const redirectTo = request.nextUrl.searchParams.get("redirect");
-    if (redirectTo) {
-      return NextResponse.redirect(new URL(redirectTo, request.url));
-    }
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
@@ -74,7 +67,6 @@ export default async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// Oppdater matcher til å inkludere checkout endepunktene
 export const config = {
-  matcher: ["/dashboard/:path*", "/signin", "/signup", "/nettbutikk/checkout/:path*"],
+  matcher: ["/dashboard/:path*", "/signin", "/signup"],
 };
