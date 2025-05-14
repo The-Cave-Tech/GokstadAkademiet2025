@@ -215,6 +215,17 @@ const handleSocialLogin = (provider: string) => {
                 </li>
               ))}
             </ul>
+              {/* Personvern og bruksvilkår lenker */}
+            <div className="flex gap-1 mt-3 justify-center flex-wrap text-center text-body-small text-typographySecondary">
+              <p>Ved å logge inn aksepterer du våre</p>
+              <Link href="/bruksvilkar" className="text-standard hover:text-standard-hover hover:underline">
+                bruksvilkår
+              </Link>
+              <p>og</p>
+              <Link href="/personvern" className="text-standard hover:text-standard-hover hover:underline">
+                personvernerklæring
+              </Link>
+            </div>
           </div>
         </CardFooter>
       </Card>
