@@ -209,7 +209,6 @@ export default function TeamContainer() {
   // Vanlig rendering med team-medlemmer
   return (
     <TeamSection
-      title={title}
       description={description}
       teamMembers={teamMembers}
     />
