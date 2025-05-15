@@ -91,9 +91,7 @@
 <summary><strong>
 🔐 1.Oppsett av Sendgrid </br> 
 **For testing:**
-</strong></summary>|||
-</details>
-
+</strong></summary>
 1. Enable emain on strapi adminpanel
 Settings --> Users & persmissons Plugin --> Providers --> Email --> Enable > True -->Save
 
@@ -110,6 +108,9 @@ Settings --> Users & persmissons Plugin --> Providers --> Email --> Enable > Tru
 
 #SendGrid:Unauthorised Error issue while using SendGrid Email API
 https://help.twilio.com/articles/10284917001627
+</details>
+
+
 
 
 </details>
