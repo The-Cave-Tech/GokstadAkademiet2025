@@ -5,6 +5,7 @@ import React from "react";
 import { useCart } from "@/lib/context/shopContext";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import Link from "next/link";
+import { useHydration } from "@/hooks/useHydration";
 
 interface CartIconProps {
   className?: string;
@@ -12,6 +13,7 @@ interface CartIconProps {
 
 export function CartIcon({ className = "" }: CartIconProps) {
   const { cart } = useCart();
+  const hasHydrated = useHydration();
 
   return (
     <Link href="/nettbutikk/cart" className={`relative ${className}`}>
@@ -23,7 +25,7 @@ export function CartIcon({ className = "" }: CartIconProps) {
           alt="Handlekurv"
         />
 
-        {cart.totalItems > 0 && (
+        {hasHydrated && cart.totalItems > 0 && (
           <div
             className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
             style={{ minWidth: "18px", height: "18px", padding: "2px" }}
