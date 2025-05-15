@@ -1,7 +1,7 @@
 # TheCaveTech
 
 <details>
-  <summary><strong>🚀 Kom i gang</strong></summary>
+  <summary><strong>🚀 Get started/ Set up</strong></summary>
 
 Hele setup er laget med tanke på testing og ikke deployment, siden bedriften ønsket å deploye selv
 
@@ -94,22 +94,22 @@ Hele setup er laget med tanke på testing og ikke deployment, siden bedriften ø
 🔐 2.Oppsett av Sendgrid </br> 
 **For testing:**
 </strong></summary>
-1. Enable emain on strapi adminpanel
+1. Enable emain on strapi adminpanel <br>
 Settings --> Users & persmissons Plugin --> Providers --> Email --> Enable > True -->Save
 
-2. Logg/registrer inn i https://app.sendgrid.com/
-3. Create new sender
-4. Verifiser email
-5. Gå i setting api og lag nøkkel
+2. Logg/registrer inn i https://app.sendgrid.com/ <br>
+3. Create new sender <br>
+4. Verifiser email <br>
+5. Gå i setting api og lag nøkkel <br>
 3. Etter oppsettet i nettsiden lagre api nøkkel i 
-.env i 
-   SENDGRID_API_KEY=
-   Skal være samme som ble skrevet når det ble opprettet det i punkt 3
-   DEFAULT_FROM_EMAIL=
-   DEFAULT_REPLY_TO_EMAIL=
+.env i <br>
+   SENDGRID_API_KEY= <br>
+   Skal være samme som ble skrevet når det ble opprettet det i punkt 3 <br>
+   DEFAULT_FROM_EMAIL= <br>
+   DEFAULT_REPLY_TO_EMAIL= <br>
 
-#SendGrid:Unauthorised Error issue while using SendGrid Email API
-https://help.twilio.com/articles/10284917001627
+#SendGrid:Unauthorised Error issue while using SendGrid Email API <br>
+https://help.twilio.com/articles/10284917001627 <br>
 </details>
 
 <details>
@@ -118,10 +118,10 @@ https://help.twilio.com/articles/10284917001627
 </strong></summary>
 
 I både frontend og backend har filer som heter .env.example </br>
-0. Lag .env filer både i front og backend og kopier innhholdet fra .env.exaple i .env.
+0. Lag .env filer både i front og backend og kopier innhholdet fra .env.exaple i .env. 
 
 <strong>Backend:</strong> </br>
-1. I prosjektes root mappe ligger den i zippa databasefil. 
+1. I prosjektes root mappe ligger den i zippa databasefil.  
 Unzip den </br>
 2. Start MySQL Workbench </br>
 3. Gå inn root conection i workbench -> Administration -> Users and Privileges -> Add Account -> 
@@ -133,40 +133,37 @@ skriv in DATABASE_USERNAME og DATABASE_PASSWORD= som du har i .env filen i backe
 8. Velg Import from Self-contained og legg til filen fra step 1. </br>
 9. I Default Schema to be Imported To velg new og skriv DATABASE_NAME= som du skrev i .env </br>
 10. Velg den Schema fra Default Target Schema og trukk på start Import. </br>
-11. Refresh Schemas, og Query skriv USE databesenavn fra .env </br>
+11. Refresh Schemas, og Query skriv USE "databesenavn fra .env"/ USE thecavetech hvis du bruker den som databasenavn </br>
 
 Gå inn i terminalen i koden og skriv, </br>
 12. cd backend </br>
 13. npm i </br>
-14. Skriv inn url fra terminalen eller hvis du bruker .env filen vår: http://localhost:1337/ </br>
+14. Naviger til backend url som du har skrevet i .env i frontend mappen </br>
 15. Hvis du har brukt vår database filen og får mulighet å lage egen bruker og passord, bruk </br>
 Email: test@den.no </br>
 Passord: Gokstad1234 </br>
 
+<strong>Frontend</strong>
+Etter .env er ordnet i root mappe med det står .env.example filen <br>
 
-
-
-
-
-Frontend:
-NEXT_PUBLIC_STRAPI_API_URL=http://localhost:1337/api
-NEXTAUTH_URL=http://localhost:3000
-NEXT_PUBLIC_STRAPI_STORE_URL=http://localhost:1337
-
-</details>
+I terminalen <br>
+1. Skriv cd frontend <br>
+2. Npm i <br>
+3. Naviger til fronend url som du har skrevet i .env <br>
 
 
 </details>
 
 
+</details>
 
+<details><summary><strong>#How to use Strapi</strong></summary>
+# Plugins.ts
+# 
 
+</details>
 
-Email:
-Akkurat nå det 
-
-
-#Setup
+<details><summary><strong>#How to use Strapi</strong></summary></details>
 
 
 #How pages work
@@ -174,7 +171,7 @@ Akkurat nå det
 
 #Universal components
 
-#How to use strapi
+
 
 
 
