@@ -27,22 +27,28 @@ Both frontend and backend have `.env.example` files.
 10. Select the schema from "Default Target Schema" and click Start Import  
 11. Refresh Schemas, and in Query, write `USE "database_name_from_env"` (e.g., `USE thecavetech`)
 
+<strong>Frontend:</strong>  
+After setting up `.env` in the root folder (where `.env.example` is):
+
 **To Run:**
+
+# Backend
 In your terminal:  
 12. `cd backend`  
 13. `npm i`  
+14. `npm run develop`
 14. Navigate to the backend URL specified in your frontend `.env`  
 15. If using our database file and prompted to create a user, use:  
         - Email: test@den.no  
         - Password: Gokstad1234  
 
-<strong>Frontend:</strong>  
-After setting up `.env` in the root folder (where `.env.example` is):
+#Frontend
 
 In the terminal:  
 1. `cd frontend`  
-2. `npm i`  
-3. Navigate to the frontend URL specified in your `.env`
+2. `npm i`
+3. `npm run dev`
+4. Navigate to the frontend URL specified in your `.env`
 
 **Testing:**  
 1. `cd frontend`  
