@@ -5,10 +5,9 @@
 
 <details>
 <summary><strong>
-🔐 1. OAuth / 3rd-party SSO providere </br> 
+🔐 1.Oppsett av OAuth / 3rd-party SSO providere </br> 
 **For testing:**
-</strong></summary>
----
+</strong></summary>|||
 
 #### ✅ Google
 
@@ -88,6 +87,29 @@
 </details>
 
 
+<details>
+<summary><strong>
+🔐 1.Oppsett av Sendgrid </br> 
+**For testing:**
+</strong></summary>|||
+</details>
+
+1. Enable emain on strapi adminpanel
+Settings --> Users & persmissons Plugin --> Providers --> Email --> Enable > True -->Save
+
+2. Logg/registrer inn i https://app.sendgrid.com/
+3. Create new sender
+4. Verifiser email
+5. Gå i setting api og lag nøkkel
+3. Etter oppsettet i nettsiden lagre api nøkkel i 
+.env i 
+   SENDGRID_API_KEY=
+   Skal være samme som ble skrevet når det ble opprettet det i punkt 3
+   DEFAULT_FROM_EMAIL=
+   DEFAULT_REPLY_TO_EMAIL=
+
+#SendGrid:Unauthorised Error issue while using SendGrid Email API
+https://help.twilio.com/articles/10284917001627
 
 
 </details>
@@ -130,6 +152,5 @@ cd backend: npm run develop
 npm run test - to run test
 
 
-SendGrid:Unauthorised Error issue while using SendGrid Email API
-https://help.twilio.com/articles/10284917001627
+
 

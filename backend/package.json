@@ -13,7 +13,7 @@
   "dependencies": {
     "@strapi/plugin-cloud": "5.10.3",
     "@strapi/plugin-users-permissions": "^5.13.0",
-    "@strapi/provider-email-sendgrid": "^5.12.7",
+    "@strapi/provider-email-sendgrid": "^5.13.0",
     "@strapi/strapi": "^5.13.0",
     "mysql2": "3.9.8",
     "react": "^18.0.0",
