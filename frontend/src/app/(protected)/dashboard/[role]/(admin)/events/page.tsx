@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { eventsService } from "@/lib/data/services/eventService";
 import { formatDate } from "@/lib/utils/eventUtils";
 import BackButton from "@/components/ui/BackButton";
-import { AdminTable, AdminColumn, AdminAction } from "@/components/dashboard/contentManager/AdminContentTable";
+import { AdminTable, AdminColumn, AdminAction } from "@/components/features/dashboard/contentManager/AdminContentTable";
 import { MdLocationOn, MdCalendarToday, MdAccessTime } from "react-icons/md";
 
 export default function EventsAdminPage() {

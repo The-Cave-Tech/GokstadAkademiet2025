@@ -2,12 +2,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Roboto } from "next/font/google";
 import "@/styles/global.css";
-import { Header } from "@/components/ui/Header";
+import { Header } from "@/components/layout/Header";
 import { AuthProvider } from "@/lib/context/AuthContext";
 import React from "react";
 import { ActivitiesProvider } from "@/lib/context/ActivityContext";
-import Footer from "@/components/ui/Footer";
-import { SessionHandler } from "@/components/auth/SessionHandler";
+import Footer from "@/components/layout/Footer";
+import { SessionHandler } from "@/components/features/auth/SessionHandler";
 import { CartProvider } from "@/lib/context/shopContext";
 
 const roboto = Roboto({

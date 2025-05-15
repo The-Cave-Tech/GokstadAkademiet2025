@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { ProjectAttributes } from "@/types/content.types";
-import { UniversalCard } from "../dashboard/contentManager/ContentCard";
+import { UniversalCard } from "../features/dashboard/contentManager/ContentCard";
 import { UniversalCardProps } from "@/types/universal.content.types";
 
 interface ProjectWithCardProps extends ProjectAttributes {

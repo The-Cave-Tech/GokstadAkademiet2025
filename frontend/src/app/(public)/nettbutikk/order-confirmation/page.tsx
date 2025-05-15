@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { Card, CardHeader, CardBody, CardFooter } from '@/components/ui/Card';
-import { Button } from '@/components/ui/custom/Button';
+import { Button } from '@/components/ui/Button';
 import PageIcons from '@/components/ui/custom/PageIcons';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/lib/context/shopContext';

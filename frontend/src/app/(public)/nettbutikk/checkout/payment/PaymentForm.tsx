@@ -5,11 +5,11 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCheckout } from "@/lib/context/CheckoutContext";
 import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
-import { Button } from "@/components/ui/custom/Button";
+import { Button } from "@/components/ui/Button";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
-import CheckoutSteps from "@/components/checkout/CheckoutSteps";
-import PaymentForm from "@/components/checkout/PaymentForm";
-import OrderSummary from "@/components/checkout/OrderSummary";
+import CheckoutSteps from "@/components/features/checkout/CheckoutSteps";
+import PaymentForm from "@/components/features/checkout/PaymentForm";
+import OrderSummary from "@/components/features/checkout/OrderSummary";
 import BackButton from "@/components/ui/BackButton";
 
 export default function PaymentPage() {

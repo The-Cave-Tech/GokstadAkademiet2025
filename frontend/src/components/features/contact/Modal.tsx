@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { Button } from "@/components/ui/custom/Button";
+import { Button } from "@/components/ui/Button";
 import { FaCheckCircle } from "react-icons/fa";
 
 interface ModalProps {

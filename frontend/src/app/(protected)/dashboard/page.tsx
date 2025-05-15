@@ -1,7 +1,7 @@
 // dashboard/page.tsx
 import { Suspense } from "react";
-import DashboardProfile from "@/components/dashboard/dashboardProfile";
-import DashboardMenu from "@/components/dashboard/dashboardMenu";
+import DashboardProfile from "@/components/features/dashboard/dashboardProfile";
+import DashboardMenu from "@/components/features/dashboard/dashboardMenu";
 
 export default function DashboardPage() {
   return (

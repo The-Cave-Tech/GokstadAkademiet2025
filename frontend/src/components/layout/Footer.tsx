@@ -3,7 +3,7 @@
 import React, { useEffect, useState, ReactElement } from "react";
 import Link from "next/link";
 import { strapiService } from "@/lib/data/services/strapiClient";
-import { SiteLogo } from "./SiteLogo";
+import { SiteLogo } from "../ui/SiteLogo";
 import { FaInstagram } from "react-icons/fa";
 
 interface SocialMediaBase {

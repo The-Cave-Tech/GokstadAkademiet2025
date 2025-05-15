@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { SiteLogo } from "@/components/ui/SiteLogo";
-import { LogoutButton } from "@/components/LogoutButton";
+import { LogoutButton } from "@/components/ui/LogoutButton";
 import { useAuth } from "@/lib/context/AuthContext";
 import {
   getUserProfile,

@@ -7,11 +7,11 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/context/shopContext";
 import { useCheckout } from "@/lib/context/CheckoutContext";
 import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
-import { Button } from "@/components/ui/custom/Button";
+import { Button } from "@/components/ui/Button";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
-import CheckoutSteps from "@/components/checkout/CheckoutSteps";
-import OrderSummary from "@/components/checkout/OrderSummary";
+import CheckoutSteps from "@/components/features/checkout/CheckoutSteps";
+import OrderSummary from "@/components/features/checkout/OrderSummary";
 import { formatPrice } from "@/lib/adapters/cardAdapter";
 import BackButton from "@/components/ui/BackButton";
 

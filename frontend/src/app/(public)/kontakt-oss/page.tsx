@@ -1,9 +1,9 @@
 // src/app/(public)/kontakt-oss/page.tsx
 import React, { Suspense } from "react";
 import { Metadata } from "next";
-import ContactForm from "@/components/contact/ContactForm";
-import ContactInfo from "@/components/contact/ContactInfo";
-import ClientMessage from "@/components/ClientMessage";
+import ContactForm from "@/components/features/contact/ContactForm";
+import ContactInfo from "@/components/features/contact/ContactInfo";
+import ClientMessage from "@/components/common/ClientMessage";
 
 export const metadata: Metadata = {
   title: "Kontakt oss | The Cave Tech",

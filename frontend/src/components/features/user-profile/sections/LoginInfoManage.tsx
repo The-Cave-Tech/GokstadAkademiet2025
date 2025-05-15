@@ -3,10 +3,10 @@
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { useState, useEffect } from "react";
 import PageIcons from "@/components/ui/custom/PageIcons";
-import { Button } from "@/components/ui/custom/Button";
+import { Button } from "@/components/ui/Button";
 import { LoginInfoManageProps, ModalType, UserCredentials } from "@/types/loginInfoManage.types";
-import { EmailChangeModal } from "@/components/user-profile/modals/EmailChangeModal";
-import { EmailVerificationModal } from "@/components/user-profile/modals/EmailVerificationModal";
+import { EmailChangeModal } from "@/components/features/user-profile/modals/EmailChangeModal";
+import { EmailVerificationModal } from "@/components/features/user-profile/modals/EmailVerificationModal";
 import { UsernameChangeModal } from "../modals/UsernameChangeModal";
 import { PasswordChangeModal } from "../modals/PasswordChangeModal";
 import { getUserCredentials } from "@/lib/data/services/userProfile";

@@ -1,5 +1,5 @@
 "use client";
-import { SignUpForm } from "@/components/authform/SignUpForm"; 
+import { SignUpForm } from "@/components/features/authform/SignUpForm"; 
 import { AuthBackgroundImage } from "@/components/ui/AuthBackgroundImage";
 
 

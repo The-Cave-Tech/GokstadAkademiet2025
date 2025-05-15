@@ -2,10 +2,10 @@
 
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/custom/Button";
+import { Button } from "@/components/ui/Button";
 import { PageIcons } from "@/components/ui/custom/PageIcons";
 import { DatePicker } from "@/components/ui/custom/DatePciker";
-import { ZodErrors } from "@/components/ZodErrors";
+import { ZodErrors } from "@/components/common/ZodErrors";
 import { usePersonalInfoValidation } from "@/hooks/useProfileValidation";
 import { profileFieldError } from "@/lib/utils/serverAction-errorHandler";
 

@@ -2,10 +2,10 @@
 
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ActivitiesLayout } from "@/components/layouts/ActivitiesLayout";
+import { ActivitiesLayout } from "@/components/layout/ActivitiesLayout";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useActivities } from "@/lib/context/ActivityContext";
-import { UniversalCard } from "@/components/dashboard/contentManager/ContentCard";
+import { UniversalCard } from "@/components/features/dashboard/contentManager/ContentCard";
 import { adaptEventToCardProps } from "@/lib/adapters/cardAdapter";
 
 export default function EventsPage() {

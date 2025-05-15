@@ -1,26 +1,24 @@
 "use client";
+
 import { useState, useRef, useEffect } from "react";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
-import { Button } from "@/components/ui/custom/Button";
+import { Button } from "@/components/ui/Button";
+import { VerificationModalProps } from "@/types/loginInfoManage.types";
 import PageIcons from "@/components/ui/custom/PageIcons";
-import { AccountEmailVerificationModalProps } from "@/types/accountAdministration.types";
-import { useAccountDeletionVerificationValidation } from "@/hooks/useProfileValidation";
-import { ZodErrors } from "@/components/ZodErrors";
-import { profileFieldError, handleStrapiError } from "@/lib/utils/serverAction-errorHandler";
-import { z } from "zod";
+import { ZodErrors } from "@/components/common/ZodErrors";
 import { universalVerificationCodeValidation } from "@/lib/validation/universalValidation";
+import { handleStrapiError } from "@/lib/utils/serverAction-errorHandler";
+import { z } from "zod";
 
-export function AccountDeletionVerificationModal({
+export function EmailVerificationModal({
   isOpen,
   onClose,
   onVerify,
   email,
   isLoading,
   setIsLoading,
-  deletionReason,
-  setDeletionReason,
-  onResendCode 
-}: AccountEmailVerificationModalProps) {
+  onResendCode // New prop to handle resending code
+}: VerificationModalProps) {
   const [verificationCode, setVerificationCode] = useState("");
   const [error, setError] = useState("");
   const [validationError, setValidationError] = useState<string[]>([]);
@@ -30,9 +28,6 @@ export function AccountDeletionVerificationModal({
   
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  
-  // Get validation hook
-  const { validationErrors, validateField, validateForm } = useAccountDeletionVerificationValidation();
   
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -67,19 +62,13 @@ export function AccountDeletionVerificationModal({
       setResendDisabled(false);
     }
   }, [resendCountdown, resendDisabled]);
-
-  const resetForm = () => {
-    setVerificationCode("");
-    setError("");
-  };
   
   // Handle verification code input change
   const handleVerificationCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '').slice(0, 6);
     setVerificationCode(value);
-    validateField("verificationCode", value);
     
-    // Direct Zod validation for immediate feedback
+    // Validate the verification code
     try {
       universalVerificationCodeValidation.parse(value);
       setValidationError([]);
@@ -96,18 +85,12 @@ export function AccountDeletionVerificationModal({
       }
     }
   };
-
-  const handleDeletionReasonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const value = e.target.value;
-    setDeletionReason(value);
-    validateField("deletionReason", value);
-  };
   
   const handleSubmit = async () => {
     setError("");
     setResendSuccess(false);
     
-    // Direct validation for verification code
+    // Validate the verification code before submitting
     try {
       universalVerificationCodeValidation.parse(verificationCode);
     } catch (err) {
@@ -117,25 +100,16 @@ export function AccountDeletionVerificationModal({
             .filter(e => e.message)
             .map(e => e.message)
         );
-        return;
+      } else if (err instanceof Error) {
+        setValidationError([err.message]);
       }
-    }
-    
-    // Validate the entire form with hook
-    const formData = {
-      verificationCode,
-      deletionReason
-    };
-    
-    const isValid = validateForm(formData);
-    
-    if (!isValid) {
       return;
     }
     
     try {
       setIsLoading(true);
-      await onVerify(verificationCode, deletionReason);
+      await onVerify(verificationCode);
+      setTimeout(onClose, 1500);
     } catch (error) {
       console.error("Feil ved verifisering:", error);
       setError(handleStrapiError(error));
@@ -190,7 +164,7 @@ export function AccountDeletionVerificationModal({
         <Card className="w-full shadow-xl rounded-lg border">
           <CardHeader className="px-6 py-4 border-b border-gray-200">
             <h2 id="verification-modal-title" className="text-xl font-semibold text-gray-900">
-              Bekreft sletting av konto
+              Sjekk din e-post
             </h2>
           </CardHeader>
           
@@ -205,7 +179,7 @@ export function AccountDeletionVerificationModal({
                 <span>{error}</span>
               </div>
             )}
-
+            
             {resendSuccess && (
               <div 
                 className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-md flex items-start"
@@ -245,45 +219,9 @@ export function AccountDeletionVerificationModal({
                     disabled={isLoading}
                     aria-describedby="code-description"
                   />
-                  {/* Show both validation errors */}
-                  <ZodErrors 
-                    error={validationError.length > 0 ? 
-                      validationError : 
-                      profileFieldError(validationErrors, null, "verificationCode")
-                    } 
-                  />
+                  <ZodErrors error={validationError} />
                   <p id="code-description" className="text-sm text-gray-500">
                     Koden er 6 siffer
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <label htmlFor="deletion-reason" className="block text-gray-700 font-medium">
-                    Hvorfor ønsker du å slette kontoen din? (valgfritt)
-                  </label>
-                  <textarea
-                    id="deletion-reason"
-                    className="w-full rounded-md border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={deletionReason}
-                    onChange={handleDeletionReasonChange}
-                    placeholder="Din tilbakemelding er viktig for oss..."
-                    disabled={isLoading}
-                    rows={3}
-                    maxLength={256}
-                  />
-                  <ZodErrors
-                    error={profileFieldError(
-                      validationErrors,
-                      null,
-                      "deletionReason"
-                    )}
-                  />
-                  <div className="text-xs text-gray-500 text-right">
-                  {deletionReason.length}/256 tegn
-                </div>
-                  <p className="text-sm text-gray-500">
-                    Din tilbakemelding blir sendt til vårt team på e-post (maad1006@gmail.com), 
-                    men vil ikke bli lagret i systemet ettersom kontoen din slettes umiddelbart.
                   </p>
                 </div>
                 
@@ -306,10 +244,7 @@ export function AccountDeletionVerificationModal({
                 <div className="flex justify-end gap-2 pt-4">
                   <Button
                     variant="secondary"
-                    onClick={() => {
-                      resetForm();
-                      onClose();
-                    }}
+                    onClick={onClose}
                     disabled={isLoading}
                     ariaLabel="Avbryt"
                     type="button"
@@ -318,14 +253,14 @@ export function AccountDeletionVerificationModal({
                     Avbryt
                   </Button>
                   <Button
-                    variant="danger"
+                    variant="primary"
                     onClick={handleSubmit}
-                    disabled={isLoading || validationErrors.verificationCode?.length > 0 || validationError.length > 0 || verificationCode.length !== 6}
-                    ariaLabel={isLoading ? "Verifiserer..." : "Bekreft sletting"}
+                    disabled={isLoading || validationError.length > 0 || verificationCode.length !== 6}
+                    ariaLabel={isLoading ? "Verifiserer..." : "Gå videre"}
                     type="button"
                     className="px-6 py-2 rounded-3xl"
                   >
-                    {isLoading ? "Verifiserer..." : "Bekreft sletting"}
+                    {isLoading ? "Verifiserer..." : "Gå videre"}
                   </Button>
                 </div>
               </div>

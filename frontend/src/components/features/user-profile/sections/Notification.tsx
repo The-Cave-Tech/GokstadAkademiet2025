@@ -7,7 +7,7 @@ import PageIcons from "@/components/ui/custom/PageIcons";
 import { UserProfile } from "@/lib/data/services/userProfile";
 import { updateImportantUpdates, updateNewsletter } from "@/lib/data/services/profileSections/notificationService";
 import { useNotificationSettingsValidation } from "@/hooks/useProfileValidation";
-import { ZodErrors } from "@/components/ZodErrors";
+import { ZodErrors } from "@/components/common/ZodErrors";
 import { profileFieldError } from "@/lib/utils/serverAction-errorHandler";
 import { 
   NotificationFormData, 

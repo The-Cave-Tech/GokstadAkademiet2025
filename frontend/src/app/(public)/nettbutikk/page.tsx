@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { UniversalCard } from "@/components/dashboard/contentManager/ContentCard";
+import { UniversalCard } from "@/components/features/dashboard/contentManager/ContentCard";
 import { productService } from "@/lib/data/services/productService";
 import { adaptProductToCardProps } from "@/lib/adapters/cardAdapter";
 import { ProductResponse } from "@/types/content.types";

@@ -5,11 +5,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCheckout } from "@/lib/context/CheckoutContext";
 import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
-import { Button } from "@/components/ui/custom/Button";
+import { Button } from "@/components/ui/Button";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
-import CheckoutSteps from "@/components/checkout/CheckoutSteps";
-import ShippingForm from "@/components/checkout/ShippingForm";
-import OrderSummary from "@/components/checkout/OrderSummary";
+import CheckoutSteps from "@/components/features/checkout/CheckoutSteps";
+import ShippingForm from "@/components/features/checkout/ShippingForm";
+import OrderSummary from "@/components/features/checkout/OrderSummary";
 import BackButton from "@/components/ui/BackButton";
 
 export default function ShippingPage() {

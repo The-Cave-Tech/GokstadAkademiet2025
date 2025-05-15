@@ -15,8 +15,8 @@ import {
 } from "@/types/auth.types";
 import { SignInFormData } from "@/lib/validation/userAuthValidation";
 import { authFieldError } from "@/lib/utils/serverAction-errorHandler";
-import { ZodErrors } from "../ZodErrors";
-import { PasswordToggle } from "../ui/custom/PasswordToggle";
+import { ZodErrors } from "../../common/ZodErrors";
+import { PasswordToggle } from "../../ui/custom/PasswordToggle";
 import { useAuth } from "@/lib/context/AuthContext";
 import { PageIcons } from "@/components/ui/custom/PageIcons";
 

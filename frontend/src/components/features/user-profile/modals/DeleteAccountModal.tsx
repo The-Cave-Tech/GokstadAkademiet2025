@@ -2,11 +2,11 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
-import { Button } from "@/components/ui/custom/Button";
+import { Button } from "@/components/ui/Button";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import { AccountDeletionModalProps } from "@/types/accountAdministration.types";
 import { useAccountDeletionValidation } from "@/hooks/useProfileValidation";
-import { ZodErrors } from "@/components/ZodErrors";
+import { ZodErrors } from "@/components/common/ZodErrors";
 import { profileFieldError, handleStrapiError } from "@/lib/utils/serverAction-errorHandler";
 import { useAuth } from "@/lib/context/AuthContext";
 
