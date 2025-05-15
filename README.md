@@ -4,7 +4,51 @@
     <summary><strong>🚀 Getting Started / Setup</strong></summary>
 
 This setup is designed for testing purposes only, as the company prefers to handle deployment themselves.
+<details>
+<summary><strong>
+3. Installation
+</strong></summary>
 
+Both frontend and backend have `.env.example` files.  
+0. Create `.env` files in both frontend and backend folders and copy the contents from `.env.example` into `.env`.
+
+<strong>Backend:</strong>  
+1. In the project root, you'll find a zipped database file.  
+     Unzip it.  
+2. Start MySQL Workbench  
+3. Go to your root connection in Workbench → Administration → Users and Privileges → Add Account →  
+     Enter `DATABASE_USERNAME` and `DATABASE_PASSWORD` as specified in your backend `.env` file  
+4. In Administrative Roles, select all and click Apply  
+5. Go to MySQL Connections and create a connection with the username from step 3  
+6. Enter the connection you just created  
+7. From the menu, select Server → Data Import  
+8. Choose "Import from Self-contained File" and select the file from step 1  
+9. For "Default Schema to be Imported To", choose "New" and enter `DATABASE_NAME` as in your `.env`  
+10. Select the schema from "Default Target Schema" and click Start Import  
+11. Refresh Schemas, and in Query, write `USE "database_name_from_env"` (e.g., `USE thecavetech`)
+
+**To Run:**
+In your terminal:  
+12. `cd backend`  
+13. `npm i`  
+14. Navigate to the backend URL specified in your frontend `.env`  
+15. If using our database file and prompted to create a user, use:  
+        - Email: test@den.no  
+        - Password: Gokstad1234  
+
+<strong>Frontend:</strong>  
+After setting up `.env` in the root folder (where `.env.example` is):
+
+In the terminal:  
+1. `cd frontend`  
+2. `npm i`  
+3. Navigate to the frontend URL specified in your `.env`
+
+**Testing:**  
+1. `cd frontend`  
+2. `npm run test` to run tests
+
+</details>
 <details>
 <summary><strong>
 🔐 1. Setting up OAuth / 3rd-party SSO Providers <br>
@@ -114,51 +158,7 @@ This setup is designed for testing purposes only, as the company prefers to hand
 
 </details>
 
-<details>
-<summary><strong>
-3. Installation
-</strong></summary>
 
-Both frontend and backend have `.env.example` files.  
-0. Create `.env` files in both frontend and backend folders and copy the contents from `.env.example` into `.env`.
-
-<strong>Backend:</strong>  
-1. In the project root, you'll find a zipped database file.  
-     Unzip it.  
-2. Start MySQL Workbench  
-3. Go to your root connection in Workbench → Administration → Users and Privileges → Add Account →  
-     Enter `DATABASE_USERNAME` and `DATABASE_PASSWORD` as specified in your backend `.env` file  
-4. In Administrative Roles, select all and click Apply  
-5. Go to MySQL Connections and create a connection with the username from step 3  
-6. Enter the connection you just created  
-7. From the menu, select Server → Data Import  
-8. Choose "Import from Self-contained File" and select the file from step 1  
-9. For "Default Schema to be Imported To", choose "New" and enter `DATABASE_NAME` as in your `.env`  
-10. Select the schema from "Default Target Schema" and click Start Import  
-11. Refresh Schemas, and in Query, write `USE "database_name_from_env"` (e.g., `USE thecavetech`)
-
-**To Run:**
-In your terminal:  
-12. `cd backend`  
-13. `npm i`  
-14. Navigate to the backend URL specified in your frontend `.env`  
-15. If using our database file and prompted to create a user, use:  
-        - Email: test@den.no  
-        - Password: Gokstad1234  
-
-<strong>Frontend:</strong>  
-After setting up `.env` in the root folder (where `.env.example` is):
-
-In the terminal:  
-1. `cd frontend`  
-2. `npm i`  
-3. Navigate to the frontend URL specified in your `.env`
-
-**Testing:**  
-1. `cd frontend`  
-2. `npm run test` to run tests
-
-</details>
 
 </details>
 
