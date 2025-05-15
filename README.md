@@ -3,9 +3,11 @@
 <details>
   <summary><strong>🚀 Kom i gang</strong></summary>
 
+<details>
+<summary><strong>
 ### 🔐 1. OAuth / 3rd-party SSO providere  
-**Til testing:**
-
+**For testing:**
+</strong></summary>
 ---
 
 #### ✅ Google
@@ -83,6 +85,10 @@
   > 🔄 Husk å oppdatere **Authorized redirect URIs** når applikasjonen deployes, slik at de peker til riktig produksjons-URL.
 
 </details>
+</details>
+
+
+
 
 </details>
 
