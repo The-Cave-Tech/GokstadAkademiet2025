@@ -9,9 +9,9 @@ This setup is designed for testing purposes only, as the company prefers to hand
 1. Installation
 </strong></summary>
 
-[!IMPORTANT]
 # <strong>Til sensor</strong>
 Du kan hoppe over steg 0
+</br>
 Both frontend and backend have `.env.example` files.  
 0. Create `.env` files in both frontend and backend folders and copy the contents from `.env.example` into `.env`.
 
