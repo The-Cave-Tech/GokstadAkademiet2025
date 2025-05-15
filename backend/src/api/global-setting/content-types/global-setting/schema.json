@@ -4,23 +4,29 @@
   "info": {
     "singularName": "global-setting",
     "pluralName": "global-settings",
-    "displayName": "GlobalSetting",
+    "displayName": "SiteLogo",
     "description": ""
   },
   "options": {
     "draftAndPublish": true
   },
   "attributes": {
-    "SiteLogo": {
+    "HeaderLogo": {
       "type": "media",
       "multiple": false,
       "required": false,
       "allowedTypes": [
         "images",
-        "files",
-        "videos",
-        "audios"
+        "files"
       ]
+    },
+    "FooterLogo": {
+      "allowedTypes": [
+        "images",
+        "files"
+      ],
+      "type": "media",
+      "multiple": false
     }
   }
 }
