@@ -34,6 +34,6 @@ export const contactFormSchema = z.object({
   message: z
     .string()
     .min(10, "Beskrivelsen må være minst 10 tegn.")
-    .max(500, "Beskrivelsen kan ikke være mer enn 500 tegn.")
+    .max(256, "Beskrivelsen kan ikke være mer enn 256 tegn.")
     .trim(),
 });

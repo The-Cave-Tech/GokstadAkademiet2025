@@ -108,7 +108,7 @@ export default function ContactForm() {
 
   // Tracking remaining characters
   const [messageLength, setMessageLength] = useState(0);
-  const maxMessageLength = 500;
+  const maxMessageLength = 256;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
