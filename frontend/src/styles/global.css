@@ -38,8 +38,12 @@
   --margin-lg: 1rem; /* Stor margin (mb-4) */
   --margin-button: 0.75rem; /* Knapp margin (ml-3) */
 
-  /* Desktop dashboard header */
+  /* Desktop dashboard */
   --dashboard-header: 20px; /* Desktop small */
+  --dashboard-body-small: 16px; /* Desktop small */
+
+  /* Desktop Landing/home page */
+  --landing-body-small: 16px; /* Desktop small */
 
   /* Main title sizes for desktop */
   --main-title-big: 64px; /* Desktop big */
@@ -72,7 +76,11 @@
 @media (max-width: 1024px) {
   :root {
     /* Desktop dashboard header */
-    --dashboard-header: 18px; /* Desktop small */
+    --dashboard-header: 18px; /* Desktop header */
+    --dashboard-body-small: 15px; /* Desktop body small */
+
+    /* Desktop Landing/home page */
+    --landing-body-small: 15px; /* Desktop small */
 
     /* Main title sizes for tablets */
     --main-title-big: 40px; /* Tablet big */
@@ -107,6 +115,10 @@
   :root {
     /* Desktop dashboard header */
     --dashboard-header: 18px; /* Desktop small */
+    --dashboard-body-small: 14px; /* Desktop body small */
+
+    /* Desktop Landing/home page */
+    --landing-body-small: 14px; /* Desktop small */
 
     /* Main title sizes for phones */
     --main-title-big: 32px; /* Phone big */

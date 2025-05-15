@@ -79,13 +79,19 @@ export default function DashboardMenu() {
             <Link key={item.href} href={item.href} className="no-underline">
               <Card className="relative flex flex-col shadow-md p-4 h-full bg-background rounded-lg">
                 <CardHeader>
-                  <h3 className="text-dashboard-header text-typographyPrimary font-semibold">{item.title}</h3>
+                  <h3 className="text-dashboard-header text-typographyPrimary font-semibold">
+                    {item.title}
+                  </h3>
                 </CardHeader>
                 <CardBody>
-                  <p className="text-body-small text-typographySecondary">{item.desc}</p>
+                  <p className="text-dashboard-body-small text-typographySecondary">
+                    {item.desc}
+                  </p>
                 </CardBody>
                 <CardFooter>
-                  <aside className="absolute bottom-4 right-4 text-typographySecondary text-body-small">→</aside>
+                  <aside className="absolute bottom-4 right-4 text-typographySecondary text-dashboard-body-small">
+                    →
+                  </aside>
                 </CardFooter>
               </Card>
             </Link>
@@ -104,13 +110,19 @@ export default function DashboardMenu() {
               <Link key={item.href} href={item.href} className="no-underline">
                 <Card className="relative flex flex-col shadow-md p-4 h-full bg-background rounded-lg">
                   <CardHeader>
-                    <h3 className="text-dashboard-header text-typographyPrimary font-semibold">{item.title}</h3>
+                    <h3 className="text-dashboard-header text-typographyPrimary font-semibold">
+                      {item.title}
+                    </h3>
                   </CardHeader>
                   <CardBody>
-                    <p className="text-body-small text-typographySecondary">{item.desc}</p>
+                    <p className="text-body-small text-typographySecondary">
+                      {item.desc}
+                    </p>
                   </CardBody>
                   <CardFooter>
-                    <aside className="absolute bottom-4 right-4 text-typographySecondary text-body-small">→</aside>
+                    <aside className="absolute bottom-4 right-4 text-typographySecondary text-body-small">
+                      →
+                    </aside>
                   </CardFooter>
                 </Card>
               </Link>
