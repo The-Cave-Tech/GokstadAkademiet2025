@@ -5,7 +5,7 @@
 
 <details>
 <summary><strong>
-### 🔐 1. OAuth / 3rd-party SSO providere  
+🔐 1. OAuth / 3rd-party SSO providere </br> 
 **For testing:**
 </strong></summary>
 ---
