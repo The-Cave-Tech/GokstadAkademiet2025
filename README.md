@@ -1,196 +1,183 @@
 # TheCaveTech
 
 <details>
-  <summary><strong>🚀 Get started/ Set up</strong></summary>
+    <summary><strong>🚀 Getting Started / Setup</strong></summary>
 
-Hele setup er laget med tanke på testing og ikke deployment, siden bedriften ønsket å deploye selv
+This setup is designed for testing purposes only, as the company prefers to handle deployment themselves.
 
 <details>
 <summary><strong>
-🔐 1.Oppsett av OAuth / 3rd-party SSO providere </br> 
-**For testing:**
+🔐 1. Setting up OAuth / 3rd-party SSO Providers <br>
+<strong>For testing:</strong>
 </strong></summary>
 
 #### ✅ Google
 
-1. Gå til: [https://console.cloud.google.com/welcome](https://console.cloud.google.com/welcome)  
-   Klikk på **Select a project** og opprett et nytt prosjekt.
+1. Go to: [https://console.cloud.google.com/welcome](https://console.cloud.google.com/welcome)  
+     Click **Select a project** and create a new project.
 
-2. Gå til: [https://console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials)  
-   Klikk på **Create credentials** → Velg **OAuth client ID**
+2. Go to: [https://console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials)  
+     Click **Create credentials** → Select **OAuth client ID**
 
-   - **Application type:** Web Application  
-   - **Navn:** Valgfritt navn for klienten  
-   - **Authorized redirect URIs (for testing):**
-     - `http://localhost:3000/api/auth/callback/google`
-     - `http://localhost:1337/api/connect/google/callback`
+     - **Application type:** Web Application  
+     - **Name:** Any name for your client  
+     - **Authorized redirect URIs (for testing):**
+         - `http://localhost:3000/api/auth/callback/google`
+         - `http://localhost:1337/api/connect/google/callback`
 
-3. Gå til: [https://console.cloud.google.com/auth/branding](https://console.cloud.google.com/auth/branding)  
-   Her kan du konfigurere samtykkesiden (**OAuth consent screen**).  
-   Følgende er **ikke nødvendig for testing**, men **kreves ved deployment**:
+3. Go to: [https://console.cloud.google.com/auth/branding](https://console.cloud.google.com/auth/branding)  
+     Here you can configure the **OAuth consent screen**.  
+     The following is **not required for testing**, but **mandatory for deployment**:
 
-   - Applikasjonsnavn  
-   - Brukerstøtte-e-post  
-   - Applikasjonslogo (valgfritt)  
-   - Personvernerklæring og bruksvilkår  
-   - Autoriserte domener som:
-     - `https://www.thecavetech.org`
-     - Domenenavn brukt i redirect URIs
+     - Application name  
+     - Support email  
+     - Application logo (optional)  
+     - Privacy policy and terms of service  
+     - Authorized domains such as:
+         - `https://www.thecavetech.org`
+         - Domains used in redirect URIs
 
 ---
 
 #### ✅ Facebook
 
-1. Gå til: [https://developers.facebook.com/](https://developers.facebook.com/)  
-   Opprett en ny app for OAuth.
+1. Go to: [https://developers.facebook.com/](https://developers.facebook.com/)  
+     Create a new app for OAuth.
 
-2. Følg guiden:  
-   [Learning Strapi Authentication Flows with the Facebook Provider](https://strapi.io/blog/learning-strapi-authentication-flows-with-the-facebook-provider)
+2. Follow the guide:  
+     [Learning Strapi Authentication Flows with the Facebook Provider](https://strapi.io/blog/learning-strapi-authentication-flows-with-the-facebook-provider)
 
-3. **Testing lokalt med Ngrok:**  
-   - Kjør `ngrok http 3000` for å generere en offentlig URL.  
-   - Bruk denne som redirect URI i Facebook Developer Portal, f.eks:  
-     `https://abc123.ngrok.io/api/auth/callback/facebook`  
-   - Ved deployment, bytt ut med produksjons-URL:  
-     `https://dittdomene.no/api/auth/callback/facebook`
+3. **Testing locally with Ngrok:**  
+     - Run `ngrok http 3000` to generate a public URL.  
+     - Use this as the redirect URI in the Facebook Developer Portal, e.g.:  
+         `https://abc123.ngrok.io/api/auth/callback/facebook`  
+     - For deployment, replace with your production URL:  
+         `https://yourdomain.com/api/auth/callback/facebook`
 
 ---
 
 #### ⚠️ Microsoft
 
-- **Ikke testet**, da det krever bankkort for prøveperiode.  
-- Koden er implementert **universelt** og bør fungere med Microsoft og andre providere som Google og Facebook.
+- **Not tested**, as it requires a credit card for the trial period.  
+- The code is implemented **universally** and should work with Microsoft and other providers like Google and Facebook.
 
 ---
 
-### ⚙️ Konfigurasjon i Strapi
+### ⚙️ Configuration in Strapi
 
-1. Gå til **Strapi Admin Panel**
-2. Gå til **Innstillinger**
-3. Under **Users & Permissions Plugin**, velg **Providers**
-4. Velg ønsket OAuth-provider
-5. Fyll inn:
-   - **Client ID** og **Client Secret** fra tidligere steg (Google/Facebook)
-6. Legg til følgende redirect URLs:
+1. Go to the **Strapi Admin Panel**
+2. Navigate to **Settings**
+3. Under **Users & Permissions Plugin**, select **Providers**
+4. Choose your desired OAuth provider
+5. Enter:
+     - **Client ID** and **Client Secret** from previous steps (Google/Facebook)
+6. Add the following redirect URLs:
 
-   - Google: `http://localhost:3000/api/auth/callback/google`  
-   - Facebook: `http://localhost:3000/api/auth/callback/facebook`
+     - Google: `http://localhost:3000/api/auth/callback/google`  
+     - Facebook: `http://localhost:3000/api/auth/callback/facebook`
 
-7. For Microsoft: Redirect URL genereres automatisk i Strapi
-
-<details>
-  <summary><strong>🖼️ Vis bilde</strong></summary>
-
-  ![Skjermbilde](/ImagesForReadme/StrapiAddOauth.png)
-
-  > 🔄 Husk å oppdatere **Authorized redirect URIs** når applikasjonen deployes, slik at de peker til riktig produksjons-URL.
-
-</details>
-</details>
-
+7. For Microsoft: The redirect URL is generated automatically in Strapi
 
 <details>
-<summary><strong>
-🔐 2.Oppsett av Sendgrid </br> 
-**For testing:**
-</strong></summary>
-1. Enable emain on strapi adminpanel <br>
-Settings --> Users & persmissons Plugin --> Providers --> Email --> Enable > True -->Save
+    <summary><strong>🖼️ Show Image</strong></summary>
 
-2. Logg/registrer inn i https://app.sendgrid.com/ <br>
-3. Create new sender <br>
-4. Verifiser email <br>
-5. Gå i setting api og lag nøkkel <br>
-3. Etter oppsettet i nettsiden lagre api nøkkel i 
-.env i <br>
-   SENDGRID_API_KEY= <br>
-   Skal være samme som ble skrevet når det ble opprettet det i punkt 3 <br>
-   DEFAULT_FROM_EMAIL= <br>
-   DEFAULT_REPLY_TO_EMAIL= <br>
+    ![Screenshot](/ImagesForReadme/StrapiAddOauth.png)
 
-#SendGrid:Unauthorised Error issue while using SendGrid Email API <br>
-https://help.twilio.com/articles/10284917001627 <br>
+    > 🔄 Remember to update **Authorized redirect URIs** when deploying the application so they point to the correct production URL.
+
+</details>
 </details>
 
 <details>
 <summary><strong>
- 3.Instalasjon
+🔐 2. Setting up SendGrid <br>
+<strong>For testing:</strong>
 </strong></summary>
 
-I både frontend og backend har filer som heter .env.example </br>
-0. Lag .env filer både i front og backend og kopier innhholdet fra .env.exaple i .env. 
+1. Enable email in the Strapi admin panel:  
+     Settings → Users & Permissions Plugin → Providers → Email → Enable > True → Save
 
-<strong>Backend:</strong> </br>
-1. I prosjektes root mappe ligger den i zippa databasefil.  
-Unzip den </br>
-2. Start MySQL Workbench </br>
-3. Gå inn root conection i workbench -> Administration -> Users and Privileges -> Add Account -> 
-skriv in DATABASE_USERNAME og DATABASE_PASSWORD= som du har i .env filen i backend mappe </br>
-4. I administrative roles velg alt og trukk på apply. </br>
-5. Gå til Mysql connections og lag en connection med brukeren navnet/DATABASE_USERNAME i step 3 </br>
-6. Gå inn i connection som nettop ble opprettet. </br>
-7. Finn frem og trukk på server fra fanen og velg Data </br> 
-8. Velg Import from Self-contained og legg til filen fra step 1. </br>
-9. I Default Schema to be Imported To velg new og skriv DATABASE_NAME= som du skrev i .env </br>
-10. Velg den Schema fra Default Target Schema og trukk på start Import. </br>
-11. Refresh Schemas, og Query skriv USE "databesenavn fra .env"/ USE thecavetech hvis du bruker den som databasenavn </br>
+2. Log in or register at https://app.sendgrid.com/  
+3. Create a new sender  
+4. Verify your email  
+5. Go to API settings and create an API key  
+6. After setup, save the API key in your `.env` file:  
+     ```
+     SENDGRID_API_KEY=
+     DEFAULT_FROM_EMAIL=
+     DEFAULT_REPLY_TO_EMAIL=
+     ```
+     Use the same values as when you created the sender.
 
-Gå inn i terminalen i koden og skriv, </br>
-12. cd backend </br>
-13. npm i </br>
-14. Naviger til backend url som du har skrevet i .env i frontend mappen </br>
-15. Hvis du har brukt vår database filen og får mulighet å lage egen bruker og passord, bruk </br>
-Email: test@den.no </br>
-Passord: Gokstad1234 </br>
-
-<strong>Frontend</strong>
-Etter .env er ordnet i root mappe med det står .env.example filen <br>
-
-I terminalen <br>
-1. Skriv cd frontend <br>
-2. Npm i <br>
-3. Naviger til fronend url som du har skrevet i .env <br>
-
+**SendGrid: Unauthorized Error issue while using SendGrid Email API**  
+[Help Article](https://help.twilio.com/articles/10284917001627)
 
 </details>
 
+<details>
+<summary><strong>
+3. Installation
+</strong></summary>
+
+Both frontend and backend have `.env.example` files.  
+0. Create `.env` files in both frontend and backend folders and copy the contents from `.env.example` into `.env`.
+
+<strong>Backend:</strong>  
+1. In the project root, you'll find a zipped database file.  
+     Unzip it.  
+2. Start MySQL Workbench  
+3. Go to your root connection in Workbench → Administration → Users and Privileges → Add Account →  
+     Enter `DATABASE_USERNAME` and `DATABASE_PASSWORD` as specified in your backend `.env` file  
+4. In Administrative Roles, select all and click Apply  
+5. Go to MySQL Connections and create a connection with the username from step 3  
+6. Enter the connection you just created  
+7. From the menu, select Server → Data Import  
+8. Choose "Import from Self-contained File" and select the file from step 1  
+9. For "Default Schema to be Imported To", choose "New" and enter `DATABASE_NAME` as in your `.env`  
+10. Select the schema from "Default Target Schema" and click Start Import  
+11. Refresh Schemas, and in Query, write `USE "database_name_from_env"` (e.g., `USE thecavetech`)
+
+**To Run:**
+In your terminal:  
+12. `cd backend`  
+13. `npm i`  
+14. Navigate to the backend URL specified in your frontend `.env`  
+15. If using our database file and prompted to create a user, use:  
+        - Email: test@den.no  
+        - Password: Gokstad1234  
+
+<strong>Frontend:</strong>  
+After setting up `.env` in the root folder (where `.env.example` is):
+
+In the terminal:  
+1. `cd frontend`  
+2. `npm i`  
+3. Navigate to the frontend URL specified in your `.env`
+
+**Testing:**  
+1. `cd frontend`  
+2. `npm run test` to run tests
 
 </details>
 
-<details><summary><strong>#How to use Strapi</strong></summary>
+</details>
+
+<details><summary><strong># How to use Strapi</strong></summary>
 # Plugins.ts
-# 
-
+#
 </details>
 
-<details><summary><strong>#How to use Strapi</strong></summary></details>
+<details><summary><strong># How to use Strapi</strong></summary></details>
+
+<details><summary><strong># How pages work</strong></summary></details>
+
+<details><summary><strong># Universal components</strong></summary></details>
 
 
-#How pages work
+**Strapi Admin Panel** – The main admin panel for content management on the site, allowing you to manage all content, users, and settings for your application.
 
+- To remove ESLint feedback about "unknown at rule" errors in Tailwind CSS, install the PostCSS Language Support extension for VSCode. This extension helps with syntax highlighting and can be enabled or disabled as needed for color visualization.
 
-#Universal components
-
-
-
-
-
-
-
-
-
-
-
-\*Strapi AdminPanel-The main admin panel for content managing on site.
-
-- Installer PostCSS Language Support vscode extension for å ungå unknown at rule i tailwind: kan enkelt aktiveres og deaktiveres ved visuelt farge bytte
-
-\*Run
-
-cd frontend: npm run dev
-cd backend: npm run develop
-
-npm run test - to run test
 
 
 
