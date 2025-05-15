@@ -3,7 +3,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { ProjectAttributes } from "@/types/content.types";
-import { ProjectCard } from "@/components/dashboard/contentManager/ProjectCard";
+import { UniversalContentCard } from "../dashboard/contentManager/ContentCard";
+import { adaptProjectToCardProps } from "@/lib/adapters/cardAdapter"; // Import the adapter function
 
 interface ProjectCarouselProps {
   projects: ProjectAttributes[];
@@ -97,31 +98,25 @@ export const ProjectCarousel = ({ projects }: ProjectCarouselProps) => {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {Array.from({ length: Math.ceil(projects.length / itemsToShow) }).map(
-          (_, pageIndex) => (
-            <div
-              key={`page-${pageIndex}`}
-              className="w-full flex-shrink-0 flex flex-wrap gap-6"
-            >
-              {projects
-                .slice(pageIndex * itemsToShow, (pageIndex + 1) * itemsToShow)
-                .map((project) => (
-                  <div
-                    key={project.id}
-                    className={`w-full ${
-                      itemsToShow === 3
-                        ? "sm:w-[calc(33.333%-16px)]"
-                        : itemsToShow === 2
-                        ? "sm:w-[calc(50%-12px)]"
-                        : "w-full"
-                    }`}
-                  >
-                    <ProjectCard project={project} />
-                  </div>
-                ))}
-            </div>
-          )
-        )}
+        {Array.from({ length: Math.ceil(projects.length / itemsToShow) }).map((_, pageIndex) => (
+          <div key={`page-${pageIndex}`} className="w-full flex-shrink-0 flex flex-wrap gap-6">
+            {projects.slice(pageIndex * itemsToShow, (pageIndex + 1) * itemsToShow).map((project) => (
+              <div
+                key={project.id}
+                className={`w-full ${
+                  itemsToShow === 3
+                    ? "sm:w-[calc(33.333%-16px)]"
+                    : itemsToShow === 2
+                    ? "sm:w-[calc(50%-12px)]"
+                    : "w-full"
+                }`}
+              >
+                {/* Use adaptProjectToCardProps to map project data */}
+                <UniversalContentCard {...adaptProjectToCardProps(project)} />
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
 
       {/* Navigation Arrows */}
