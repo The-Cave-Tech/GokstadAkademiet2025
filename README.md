@@ -60,7 +60,7 @@ Facebook: http://localhost:3000/api/auth/callback/facebook
 <details>
   <summary><strong>🖼️ Vis bilde</strong></summary>
 
-  ![Skjermbilde](StrapiAddOauth.png)
+  ![Skjermbilde](/ImagesForReadme/StrapiAddOauth.png)
 
 </details>
 
