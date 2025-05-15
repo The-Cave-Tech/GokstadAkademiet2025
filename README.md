@@ -28,11 +28,13 @@ Both frontend and backend have `.env.example` files.
 11. Refresh Schemas, and in Query, write `USE "database_name_from_env"` (e.g., `USE thecavetech`)
 
 # <strong>Frontend:</strong>  
+Her trenges det bare å kopiere innholdet fra .env.example over til .env
+
 After setting up `.env` in the root folder (where `.env.example` is):
 
 **Run:**
 
-# Backend
+#Backend
 In your terminal:  
 12. `cd backend`  
 13. `npm i`  
@@ -42,7 +44,7 @@ In your terminal:
         - Email: test@den.no  
         - Password: Gokstad1234  
 
-# Frontend
+#Frontend
 
 In the terminal:  
 1. `cd frontend`  
@@ -60,6 +62,8 @@ In the terminal:
 🔐 2. Setting up OAuth / 3rd-party SSO Providers <br>
 <strong>For testing:</strong>
 </strong></summary>
+
+# After npm run 
 
 #### ✅ Google
 
