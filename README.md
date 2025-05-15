@@ -3,6 +3,8 @@
 <details>
   <summary><strong>🚀 Kom i gang</strong></summary>
 
+Hele setup er laget med tanke på testing og ikke deployment, siden bedriften ønsket å deploye selv
+
 <details>
 <summary><strong>
 🔐 1.Oppsett av OAuth / 3rd-party SSO providere </br> 
@@ -119,6 +121,32 @@ I både frontend og backend har filer som heter .env.example
 Lag .env filer både i front og backend og kopier innhholdet fra .env.exaple i .env.
 
 Backend:
+1. 
+I prosjektes root mappe ligger den i zippa databasefil. 
+Unzip den
+2. Start MySQL Workbench
+3. Gå inn root conection i workbench -> Administration -> Users and Privileges -> Add Account -> 
+skriv in DATABASE_USERNAME og DATABASE_PASSWORD= som du har i .env filen i backend mappe
+4. I administrative roles velg alt og trukk på apply.
+5. Gå til Mysql connections og lag en connection med brukeren navnet/DATABASE_USERNAME i step 3
+6. Gå inn i connection som nettop ble opprettet.
+7. Finn frem og trukk på server fra fanen og velg Data 
+8. Velg Import from Self-contained og legg til filen fra step 1. 
+9. I Default Schema to be Imported To velg new og skriv DATABASE_NAME= som du skrev i .env
+10. Velg den Schema fra Default Target Schema og trukk på start Import.
+11. Refresh Schemas, og Query skriv USE databesenavn fra .env
+
+Gå inn i terminalen i koden og skriv, 
+12. cd backend
+13. npm i
+14. Skriv inn url fra terminalen eller hvis du bruker .env filen vår: http://localhost:1337/
+15. Hvis du har brukt vår database filen og får mulighet å lage egen bruker og passord, bruk </br>
+Email: test@den.no
+Passord: Gokstad1234
+
+
+
+
 .env:
 
 Server
@@ -135,13 +163,16 @@ JWT_SECRET: JWT-nøkkel for brukerautentisering.
 Database
 DATABASE_CLIENT= Bruker MySQL.
 DATABASE_HOST= Lokal databasevert.
-DATABASE_PORT=3306: MySQL standardport.
+DATABASE_PORT= MySQL standardport.
 DATABASE_NAME= 
 DATABASE_USERNAME=
 DATABASE_PASSWORD=
 DATABASE_SSL=false: Ingen SSL for databasetilkobling.
 
-
+Frontend:
+NEXT_PUBLIC_STRAPI_API_URL=http://localhost:1337/api
+NEXTAUTH_URL=http://localhost:3000
+NEXT_PUBLIC_STRAPI_STORE_URL=http://localhost:1337
 
 </details>
 
