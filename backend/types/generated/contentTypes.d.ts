@@ -563,7 +563,7 @@ export interface ApiContactSubmissionContactSubmission
       'api::contact-submission.contact-submission'
     > &
       Schema.Attribute.Private;
-    message: Schema.Attribute.String;
+    message: Schema.Attribute.Text;
     name: Schema.Attribute.String;
     phoneNumber: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
@@ -684,7 +684,7 @@ export interface ApiLandingPageLandingPage extends Struct.SingleTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     hero: Schema.Attribute.Component<'landing-page.hero-section', false>;
-    introduction: Schema.Attribute.Component<'landing-page.intro', false>;
+    introduction: Schema.Attribute.Component<'landing-page.intro', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',

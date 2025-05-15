@@ -3,11 +3,10 @@
 import React from "react";
 import Image from "next/image";
 
-// Forenklet TypeScript-type som nøyaktig matcher din Strapi-modell
 export interface HistoryItem {
   id: number;
-  Title: string; // short text
-  Text: string; // long text
+  Title: string; 
+  Text: string; 
   Image: Array<{
     id: number;
     url: string;
@@ -20,19 +19,14 @@ export interface HistoryItem {
     };
   }>;
 }
-
-// Helper-funksjoner for å håndtere Strapi-medier
 export function getStrapiImageUrl(imageArray: any): string {
-  // Sjekk om det er et array
   if (Array.isArray(imageArray) && imageArray.length > 0) {
     const image = imageArray[0];
 
-    // Lag full URL
     const baseUrl =
       process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
     const strapiBaseUrl = baseUrl.replace(/\/api$/, "");
 
-    // Bruk medium format hvis tilgjengelig, ellers original URL
     let imageUrl = "";
     if (image.formats && image.formats.medium) {
       imageUrl = image.formats.medium.url;
@@ -40,7 +34,6 @@ export function getStrapiImageUrl(imageArray: any): string {
       imageUrl = image.url;
     }
 
-    // Sikre at URL-en har komplett domene
     if (imageUrl.startsWith("/")) {
       imageUrl = `${strapiBaseUrl}${imageUrl}`;
     }
@@ -48,7 +41,7 @@ export function getStrapiImageUrl(imageArray: any): string {
     return imageUrl;
   }
 
-  return "/images/placeholder.jpg"; // Fallback
+  return "/images/placeholder.jpg"; 
 }
 
 export function getStrapiImageAlt(imageArray: any): string {

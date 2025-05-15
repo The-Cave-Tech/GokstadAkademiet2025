@@ -19,7 +19,7 @@
     "introduction": {
       "displayName": "Intro",
       "type": "component",
-      "repeatable": false,
+      "repeatable": true,
       "component": "landing-page.intro"
     }
   }

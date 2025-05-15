@@ -1,14 +1,15 @@
 {
   "collectionName": "components_aboutus_team_cards",
   "info": {
-    "displayName": "TeamCard"
+    "displayName": "TeamCard",
+    "description": ""
   },
   "options": {},
   "attributes": {
-    "Name": {
+    "name": {
       "type": "string"
     },
-    "nickName": {
+    "role": {
       "type": "string"
     },
     "email": {
@@ -16,6 +17,16 @@
     },
     "phoneNumber": {
       "type": "biginteger"
+    },
+    "image": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": true
     }
   }
 }

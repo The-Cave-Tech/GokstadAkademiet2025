@@ -29,13 +29,18 @@ export interface AboutusHistory extends Struct.ComponentSchema {
 export interface AboutusTeamCard extends Struct.ComponentSchema {
   collectionName: 'components_aboutus_team_cards';
   info: {
+    description: '';
     displayName: 'TeamCard';
   };
   attributes: {
     email: Schema.Attribute.Email;
-    Name: Schema.Attribute.String;
-    nickName: Schema.Attribute.String;
+    image: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+    name: Schema.Attribute.String;
     phoneNumber: Schema.Attribute.BigInteger;
+    role: Schema.Attribute.String;
   };
 }
 
