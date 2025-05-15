@@ -3,10 +3,15 @@
 
 import { useState, useEffect, useRef } from "react";
 import { ProjectAttributes } from "@/types/content.types";
-import { ProjectCard } from "@/components/dashboard/contentManager/ProjectCard";
+import { UniversalCard } from "../dashboard/contentManager/ContentCard";
+import { UniversalCardProps } from "@/types/universal.content.types";
+
+interface ProjectWithCardProps extends ProjectAttributes {
+  cardProps: UniversalCardProps;
+}
 
 interface ProjectCarouselProps {
-  projects: ProjectAttributes[];
+  projects: ProjectWithCardProps[];
 }
 
 export const ProjectCarousel = ({ projects }: ProjectCarouselProps) => {
@@ -42,6 +47,7 @@ export const ProjectCarousel = ({ projects }: ProjectCarouselProps) => {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const maxIndex = Math.max(0, Math.ceil(projects.length / itemsToShow) - 1);
@@ -116,7 +122,8 @@ export const ProjectCarousel = ({ projects }: ProjectCarouselProps) => {
                         : "w-full"
                     }`}
                   >
-                    <ProjectCard project={project} />
+                    {/* Bruker de ferdige cardProps direkte */}
+                    <UniversalCard {...project.cardProps} />
                   </div>
                 ))}
             </div>

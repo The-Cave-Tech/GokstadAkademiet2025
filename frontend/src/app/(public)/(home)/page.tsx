@@ -6,26 +6,28 @@ import { strapiService } from "@/lib/data/services/strapiClient";
 import { eventsService } from "@/lib/data/services/eventService";
 import { projectService } from "@/lib/data/services/projectService";
 import ClientMessage from "@/components/ClientMessage";
-import { EventAttributes, ProjectAttributes } from "@/types/content.types";
+import { EventAttributes, Media, ProjectAttributes } from "@/types/content.types";
 import { UniversalCard } from "@/components/dashboard/contentManager/ContentCard";
 import {
-  adaptProjectToCardProps,
   adaptEventToCardProps,
+  adaptProjectToCardProps,
 } from "@/lib/adapters/cardAdapter";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useHydration } from "@/hooks/useHydration";
+import { ProjectCarousel } from "@/components/ui/ProjectCarousel";
 
 
 interface LandingPageData {
   hero: {
     Title: string;
     Subtitle: string;
-    heroImage: any; 
+    heroImage: Media; 
   };
   introduction: Array<{
     Title: string;
     IntroductionText: string;
-    introductionImage: any; 
+    introductionImage: Media; 
   }>;
 }
 
@@ -35,76 +37,6 @@ const getImageType = (url: string | null): "svg" | "other" => {
   return url.toLowerCase().endsWith(".svg") ? "svg" : "other";
 };
 
-
-const MediaRenderer = ({
-  url,
-  alt,
-  className,
-  objectFit = "cover",
-  onError,
-  autoHeight = false,
-}: {
-  url: string | null;
-  alt: string;
-  className?: string;
-  objectFit?: "cover" | "contain" | "fill" | "none" | "scale-down";
-  onError?: () => void;
-  autoHeight?: boolean;
-}) => {
-  const imageType = url ? getImageType(url) : "other";
-
-  if (!url) {
-    return (
-      <div
-        className={`bg-gray-300 flex items-center justify-center ${className}`}
-      >
-        <p className="text-gray-600">Bilde mangler</p>
-      </div>
-    );
-  }
-
-  if (imageType === "svg") {
-    return (
-      <div
-        className={className}
-        style={{
-          backgroundImage: `url('${url}')`,
-          backgroundSize: objectFit,
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-        role="img"
-        aria-label={alt}
-      />
-    );
-  }
-
-  if (autoHeight) {
-    return (
-      <img
-        src={url}
-        alt={alt}
-        className={className}
-        style={{ maxWidth: "100%", height: "auto", objectFit }}
-        onError={onError}
-      />
-    );
-  }
-
-  return (
-    <Image
-      src={url}
-      alt={alt}
-      fill
-      className={className}
-      style={{ objectFit }}
-      priority
-      unoptimized={true}
-      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-      onError={onError}
-    />
-  );
-};
 
 const transformResponseToPageData = (responseData: any): LandingPageData => {
   console.log("Raw response data:", responseData);
@@ -341,6 +273,7 @@ export default function LandingPageContent() {
   const [heroImageUrl, setHeroImageUrl] = useState<string | null>(null);
   // Updated to handle multiple introduction images
   const [introImageUrls, setIntroImageUrls] = useState<(string | null)[]>([]);
+  const hasHydrated = useHydration();
 
   const [loading, setLoading] = useState({
     content: true,
@@ -601,14 +534,20 @@ export default function LandingPageContent() {
       <section className="relative text-center py-20 px-4 bg-gray-900 text-white">
         <ClientMessage />
         <div className="absolute inset-0 z-0">
-          {!imageLoadError.hero ? (
-            <MediaRenderer
-              url={heroImageUrl}
-              alt="Hero Background Image"
-              className="w-full h-full opacity-50"
-              objectFit="cover"
-              onError={() => handleImageError("hero", 0, heroImageUrl)}
-            />
+          {!imageLoadError.hero && heroImageUrl ? (
+            <div className="relative w-full h-full">
+              <Image
+                src={heroImageUrl}
+                alt="Hero Background Image"
+                className="w-full h-full opacity-50"
+                fill
+                style={{ objectFit: "cover" }}
+                priority
+                unoptimized={true}
+                sizes="100vw"
+                onError={() => handleImageError("hero", 0, heroImageUrl)}
+              />
+            </div>
           ) : (
             <div className="w-full h-full bg-gray-700 flex items-center justify-center">
               <p className="text-white opacity-70">Kunne ikke laste bildet</p>
@@ -625,38 +564,41 @@ export default function LandingPageContent() {
         </div>
       </section>
 
-      {/* Introduction Sections - Now supports multiple introduction components */}
+      {/* Introduction Sections */}
       {pageData.introduction.map((intro, index) => (
         <section
           key={`intro-${index}`}
           className="py-16 px-4 max-w-6xl mx-auto grid gap-10 md:grid-cols-2 items-center md:grid-flow-dense"
         >
-          {/* Image section - Always on the left */}
+          {/* Image section */}
           <div className="w-full rounded-xl overflow-hidden shadow-lg md:col-start-1">
-            {!imageLoadError.intro[index] ? (
-              <MediaRenderer
-                url={introImageUrls[index]}
-                alt={`Introduction Image ${index + 1}`}
-                className="w-full"
-                objectFit="contain"
-                autoHeight={true}
-                onError={() =>
-                  handleImageError("intro", index, introImageUrls[index])
-                }
-              />
+            {!imageLoadError.intro[index] && introImageUrls[index] ? (
+              <div className="relative w-full" style={{ height: "400px" }}>
+                <Image
+                  src={introImageUrls[index] as string}
+                  alt={`Introduction Image ${index + 1}`}
+                  className="rounded-xl"
+                  fill
+                  style={{ objectFit: "cover" }}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  onError={() =>
+                    handleImageError("intro", index, introImageUrls[index])
+                  }
+                  unoptimized={true}
+                />
+              </div>
             ) : (
-              <div className="w-full h-64 bg-gray-300 flex items-center justify-center">
+              <div className="w-full h-64 bg-gray-300 flex items-center justify-center rounded-xl">
                 <p className="text-gray-600">Kunne ikke laste bildet</p>
               </div>
             )}
           </div>
 
-          {/* Text section - Always on the right */}
+          {/* Text section */}
           <div className="md:col-start-2">
             <h2 className="text-2xl sm:text-3xl font-bold mb-6">
               {intro.Title || "Mangler tittel"}
             </h2>
-            {/* Format the text with proper paragraph spacing */}
             {intro.IntroductionText ? (
               <div className="text-base sm:text-lg leading-relaxed space-y-4">
                 {intro.IntroductionText.split("\n\n").map(
@@ -674,7 +616,7 @@ export default function LandingPageContent() {
         </section>
       ))}
 
-      {/* Projects Section */}
+      {/* Projects Section med ProjectCarousel */}
       <section className="py-20 px-4 bg-gradient-to-b from-secondary to-secondary/70">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
@@ -688,30 +630,27 @@ export default function LandingPageContent() {
             </p>
           </div>
 
-          {/* Projects Grid using UniversalCard */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.length > 0 ? (
-              projects
-                .slice(0, 3)
-                .map((project) => (
-                  <UniversalCard
-                    key={project.id}
-                    {...adaptProjectToCardProps(project, handleProjectClick)}
-                  />
-                ))
-            ) : (
-              <div className="col-span-3 text-center py-10">
-                <p className="text-gray-500">Ingen prosjekter funnet</p>
-              </div>
-            )}
-            <div className="col-span-full w-full">
-              <Link
-                href="/aktiviteter/projects"
-                className=" block text-right hover:underline text-sm"
-              >
-                Gå til prosjekter →
-              </Link>
+          {/* Bruk ProjectCarousel med adaptProjectToCardProps */}
+          {hasHydrated && projects.length > 0 ? (
+            <ProjectCarousel 
+              projects={projects.map(project => ({
+                ...project, 
+                cardProps: adaptProjectToCardProps(project, handleProjectClick)
+              }))} 
+            />
+          ) : (
+            <div className="text-center py-10">
+              <p className="text-gray-500">Laster prosjekter...</p>
             </div>
+          )}
+          
+          <div className="mt-6 w-full">
+            <Link
+              href="/aktiviteter/projects"
+              className="block text-right hover:underline text-sm"
+            >
+              Gå til prosjekter →
+            </Link>
           </div>
         </div>
       </section>
@@ -749,7 +688,7 @@ export default function LandingPageContent() {
             <div className="col-span-full w-full">
               <Link
                 href="/aktiviteter/events"
-                className=" block text-right hover:underline text-sm"
+                className="block text-right hover:underline text-sm"
               >
                 Gå til arrangementer →
               </Link>
