@@ -7,7 +7,7 @@
 <summary><strong>
 🔐 1.Oppsett av OAuth / 3rd-party SSO providere </br> 
 **For testing:**
-</strong></summary>|||
+</strong></summary>
 
 #### ✅ Google
 
@@ -89,7 +89,7 @@
 
 <details>
 <summary><strong>
-🔐 1.Oppsett av Sendgrid </br> 
+🔐 2.Oppsett av Sendgrid </br> 
 **For testing:**
 </strong></summary>
 1. Enable emain on strapi adminpanel
@@ -110,7 +110,40 @@ Settings --> Users & persmissons Plugin --> Providers --> Email --> Enable > Tru
 https://help.twilio.com/articles/10284917001627
 </details>
 
+<details>
+<summary><strong>
+ 3.Instalasjon
+</strong></summary>
 
+I både frontend og backend har filer som heter .env.example
+Lag .env filer både i front og backend og kopier innhholdet fra .env.exaple i .env.
+
+Backend:
+.env:
+
+Server
+HOST: IP-adressen serveren lytter på
+PORT: 1337 er standardporten for Strapi serveren kjører på.
+
+Hemmeligheter
+APP_KEYS: Nøkler for token-signering (flere for rotasjon).
+API_TOKEN_SALT: Salt for API-tokens.
+ADMIN_JWT_SECRET: JWT-nøkkel for admin-autentisering.
+TRANSFER_TOKEN_SALT: Salt for dataoverføringstokens.
+JWT_SECRET: JWT-nøkkel for brukerautentisering.
+
+Database
+DATABASE_CLIENT= Bruker MySQL.
+DATABASE_HOST= Lokal databasevert.
+DATABASE_PORT=3306: MySQL standardport.
+DATABASE_NAME= 
+DATABASE_USERNAME=
+DATABASE_PASSWORD=
+DATABASE_SSL=false: Ingen SSL for databasetilkobling.
+
+
+
+</details>
 
 
 </details>
