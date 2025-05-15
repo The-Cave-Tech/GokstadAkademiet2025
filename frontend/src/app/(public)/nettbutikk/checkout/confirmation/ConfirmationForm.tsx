@@ -206,7 +206,7 @@ export default function ConfirmationPage() {
                     <h3 id="terms-heading" className="sr-only">
                       Vilkår og betingelser
                     </h3>
-                    <label className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-3">
                       <input
                         type="checkbox"
                         id="terms"
@@ -216,17 +216,25 @@ export default function ConfirmationPage() {
                         required
                         aria-required="true"
                       />
-                      <span className="text-sm text-gray-700">
-                        Jeg godtar{" "}
+                      <div className="flex gap-1 mt-3 justify-center flex-wrap text-center text-body-small text-typographySecondary">
+                        <p>Ved å logge inn aksepterer du våre</p>
                         <Link
-                          href="/vilkår"
-                          className="text-blue-600 hover:underline"
+                          href="/bruksvilkar"
+                          className="text-standard hover:text-standard-hover hover:underline"
+                          target="_blank"
                         >
-                          vilkår og betingelser
-                        </Link>{" "}
-                        for kjøp
-                      </span>
-                    </label>
+                          bruksvilkår
+                        </Link>
+                        <p>og</p>
+                        <Link
+                          href="/personvern"
+                          className="text-standard hover:text-standard-hover hover:underline"
+                          target="_blank"
+                        >
+                          personvernerklæring
+                        </Link>
+                      </div>
+                    </div>
                   </section>
                 </CardBody>
               </Card>
