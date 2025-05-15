@@ -12,7 +12,7 @@ This setup is designed for testing purposes only, as the company prefers to hand
 Both frontend and backend have `.env.example` files.  
 0. Create `.env` files in both frontend and backend folders and copy the contents from `.env.example` into `.env`.
 
-<strong>Backend:</strong>  
+# <strong>Backend:</strong>  
 1. In the project root, you'll find a zipped database file.  
      Unzip it.  
 2. Start MySQL Workbench  
@@ -27,10 +27,10 @@ Both frontend and backend have `.env.example` files.
 10. Select the schema from "Default Target Schema" and click Start Import  
 11. Refresh Schemas, and in Query, write `USE "database_name_from_env"` (e.g., `USE thecavetech`)
 
-<strong>Frontend:</strong>  
+# <strong>Frontend:</strong>  
 After setting up `.env` in the root folder (where `.env.example` is):
 
-**To Run:**
+**Run:**
 
 # Backend
 In your terminal:  
@@ -42,7 +42,7 @@ In your terminal:
         - Email: test@den.no  
         - Password: Gokstad1234  
 
-#Frontend
+# Frontend
 
 In the terminal:  
 1. `cd frontend`  
