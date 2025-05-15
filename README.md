@@ -6,7 +6,7 @@
 This setup is designed for testing purposes only, as the company prefers to handle deployment themselves.
 <details>
 <summary><strong>
-3. Installation
+1. Installation
 </strong></summary>
 
 Both frontend and backend have `.env.example` files.  
@@ -51,7 +51,7 @@ In the terminal:
 </details>
 <details>
 <summary><strong>
-🔐 1. Setting up OAuth / 3rd-party SSO Providers <br>
+🔐 2. Setting up OAuth / 3rd-party SSO Providers <br>
 <strong>For testing:</strong>
 </strong></summary>
 
@@ -134,7 +134,7 @@ In the terminal:
 
 <details>
 <summary><strong>
-🔐 2. Setting up SendGrid <br>
+🔐 3. Setting up SendGrid <br>
 <strong>For testing:</strong>
 </strong></summary>
 
