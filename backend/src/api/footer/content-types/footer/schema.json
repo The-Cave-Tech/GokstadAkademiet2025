@@ -1,0 +1,26 @@
+{
+  "kind": "singleType",
+  "collectionName": "footers",
+  "info": {
+    "singularName": "footer",
+    "pluralName": "footers",
+    "displayName": "Footer",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "openingHours": {
+      "type": "component",
+      "repeatable": true,
+      "component": "footer.opening-hours"
+    },
+    "instaGram": {
+      "displayName": "socialLinks",
+      "type": "component",
+      "repeatable": false,
+      "component": "footer.social-links"
+    }
+  }
+}

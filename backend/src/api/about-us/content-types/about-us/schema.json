@@ -1,0 +1,27 @@
+{
+  "kind": "singleType",
+  "collectionName": "about_uses",
+  "info": {
+    "singularName": "about-us",
+    "pluralName": "about-uses",
+    "displayName": "AboutUs",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "history": {
+      "displayName": "History",
+      "type": "component",
+      "repeatable": true,
+      "component": "aboutus.history"
+    },
+    "teamCard": {
+      "displayName": "TeamCard",
+      "type": "component",
+      "repeatable": true,
+      "component": "aboutus.team-card"
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "collectionName": "components_user_profile_personal_informations",
+  "info": {
+    "displayName": "Personal Information",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "fullName": {
+      "type": "string",
+      "required": true
+    },
+    "birthDate": {
+      "type": "date"
+    },
+    "gender": {
+      "type": "enumeration",
+      "enum": [
+        "Mann",
+        "Kvinne",
+        "Annet"
+      ]
+    },
+    "phoneNumber": {
+      "type": "string"
+    },
+    "streetAddress": {
+      "type": "string"
+    },
+    "postalCode": {
+      "type": "string",
+      "maxLength": 4,
+      "minLength": 4,
+      "regex": "^[0-9]{4}$"
+    },
+    "city": {
+      "type": "string"
+    }
+  }
+}

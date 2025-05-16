@@ -1,0 +1,26 @@
+{
+  "kind": "singleType",
+  "collectionName": "landing_pages",
+  "info": {
+    "singularName": "landing-page",
+    "pluralName": "landing-pages",
+    "displayName": "landingPageHero",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "hero": {
+      "type": "component",
+      "repeatable": false,
+      "component": "landing-page.hero-section"
+    },
+    "introduction": {
+      "displayName": "Intro",
+      "type": "component",
+      "repeatable": true,
+      "component": "landing-page.intro"
+    }
+  }
+}
