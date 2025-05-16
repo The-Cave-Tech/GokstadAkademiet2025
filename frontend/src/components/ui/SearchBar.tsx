@@ -25,7 +25,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className={`relative ${className}`}>
+    <form onSubmit={handleSubmit} className={`relative ${className}`} aria-label="Search form">
       <input
         type="text"
         placeholder={placeholder}
@@ -40,12 +40,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           className="absolute right-2 top-1/2 transform -translate-y-1/2"
           aria-label="Submit search"
         >
-          <svg
-            className="h-5 w-5 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
+          <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
