@@ -50,7 +50,6 @@ export default function NettbutikkPage() {
   const loadProducts = async () => {
     setIsLoading(true);
     try {
-      // Fetch from the API, but use mock data if it fails
       let data: ProductResponse[] = [];
 
       try {
@@ -60,16 +59,14 @@ export default function NettbutikkPage() {
         });
 
         console.log("Successfully fetched products:", data);
+        setError(null); // <-- flytt denne hit
       } catch (e) {
         console.error("Error fetching from API, using mock data:", e);
+        setError("An error occurred while loading products."); // <-- flytt denne hit
       }
 
       setProducts(data);
-      setFilteredProducts(data); // Initially show all products
-      setError(null);
-    } catch (err) {
-      console.error("Error loading products:", err);
-      setError("An error occurred while loading products.");
+      setFilteredProducts(data);
     } finally {
       setIsLoading(false);
     }
@@ -205,8 +202,7 @@ export default function NettbutikkPage() {
         <div className="mb-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
             <h1 className="text-3xl font-bold">Nettbutikk</h1>
-            <div className="flex flex-col sm:flex-row gap-2 mt-4 md:mt-0">
-            </div>
+            <div className="flex flex-col sm:flex-row gap-2 mt-4 md:mt-0"></div>
           </div>
 
           {/* Search, Filter, and Sort Bar */}
