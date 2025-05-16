@@ -28,6 +28,11 @@ const config = {
         "dashboard-header": "var(--dashboard-header)",
         "dashboard-body-small": "var(--dashboard-body-small)",
         "landing-body-small": "var(--landing-body-small)",
+        "landing-body-big": "var(--landing-body-big)",
+        "landing-main-header": "var(--landing-main-header)",
+        "landing-sub-header": "var(--landing-sub-header)",
+        "landing-category-header": "var(--landing-category-header)",
+        "landing-section-header": "var(--landing-section-header)",
       },
 
       fontFamily: {

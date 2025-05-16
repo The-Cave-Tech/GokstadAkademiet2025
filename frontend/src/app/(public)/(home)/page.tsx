@@ -6,7 +6,11 @@ import { strapiService } from "@/lib/data/services/strapiClient";
 import { eventsService } from "@/lib/data/services/eventService";
 import { projectService } from "@/lib/data/services/projectService";
 import ClientMessage from "@/components/ui/ClientMessage";
-import { EventAttributes, Media, ProjectAttributes } from "@/types/content.types";
+import {
+  EventAttributes,
+  Media,
+  ProjectAttributes,
+} from "@/types/content.types";
 import { UniversalCard } from "@/components/pageSpecificComponents/dashboard/contentManager/ContentCard";
 import {
   adaptEventToCardProps,
@@ -17,26 +21,23 @@ import Link from "next/link";
 import { useHydration } from "@/hooks/useHydration";
 import { ProjectCarousel } from "@/components/ui/ProjectCarousel";
 
-
 interface LandingPageData {
   hero: {
     Title: string;
     Subtitle: string;
-    heroImage: Media; 
+    heroImage: Media;
   };
   introduction: Array<{
     Title: string;
     IntroductionText: string;
-    introductionImage: Media; 
+    introductionImage: Media;
   }>;
 }
-
 
 const getImageType = (url: string | null): "svg" | "other" => {
   if (!url) return "other";
   return url.toLowerCase().endsWith(".svg") ? "svg" : "other";
 };
-
 
 const transformResponseToPageData = (responseData: any): LandingPageData => {
   console.log("Raw response data:", responseData);
@@ -555,10 +556,10 @@ export default function LandingPageContent() {
           )}
         </div>
         <div className="relative z-10 max-w-4xl mx-auto px-4">
-          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4">
+          <h1 className="text-landing-main-header font-bold mb-4">
             {pageData.hero?.Title || "Mangler tittel"}
           </h1>
-          <p className="text-base sm:text-lg md:text-2xl">
+          <p className="text-landing-sub-header">
             {pageData.hero?.Subtitle || "Mangler undertittel"}
           </p>
         </div>
@@ -596,11 +597,11 @@ export default function LandingPageContent() {
 
           {/* Text section */}
           <div className="md:col-start-2">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-6">
+            <h2 className="text-landing-section-header font-bold mb-6">
               {intro.Title || "Mangler tittel"}
             </h2>
             {intro.IntroductionText ? (
-              <div className="text-base sm:text-lg leading-relaxed space-y-4">
+              <div className="text-landing-body-big leading-relaxed space-y-4">
                 {intro.IntroductionText.split("\n\n").map(
                   (paragraph, pIndex) => (
                     <p key={`p-${index}-${pIndex}`}>{paragraph}</p>
@@ -608,7 +609,7 @@ export default function LandingPageContent() {
                 )}
               </div>
             ) : (
-              <p className="text-base sm:text-lg leading-relaxed">
+              <p className="text-landing-body-big leading-relaxed">
                 Mangler tekst
               </p>
             )}
@@ -621,7 +622,7 @@ export default function LandingPageContent() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <Link href="/aktiviteter/projects">
-              <h2 className="text-3xl sm:text-4xl hover:underline font-bold mb-4 cursor-pointer">
+              <h2 className="text-landing-category-header hover:underline font-bold mb-4 cursor-pointer">
                 Prosjekter
               </h2>
             </Link>
@@ -632,18 +633,18 @@ export default function LandingPageContent() {
 
           {/* Bruk ProjectCarousel med adaptProjectToCardProps */}
           {hasHydrated && projects.length > 0 ? (
-            <ProjectCarousel 
-              projects={projects.map(project => ({
-                ...project, 
-                cardProps: adaptProjectToCardProps(project, handleProjectClick)
-              }))} 
+            <ProjectCarousel
+              projects={projects.map((project) => ({
+                ...project,
+                cardProps: adaptProjectToCardProps(project, handleProjectClick),
+              }))}
             />
           ) : (
             <div className="text-center py-10">
               <p className="text-gray-500">Laster prosjekter...</p>
             </div>
           )}
-          
+
           <div className="mt-6 w-full">
             <Link
               href="/aktiviteter/projects"
@@ -660,7 +661,7 @@ export default function LandingPageContent() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <Link href="/aktiviteter/events">
-              <h2 className="text-3xl sm:text-4xl hover:underline font-bold mb-4 cursor-pointer">
+              <h2 className="text-landing-category-header hover:underline font-bold mb-4 cursor-pointer">
                 Arrangementer
               </h2>
             </Link>

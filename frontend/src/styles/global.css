@@ -43,6 +43,11 @@
   --dashboard-body-small: 16px; /* Desktop small */
 
   /* Desktop Landing/home page */
+  --landing-main-header: 60px;
+  --landing-sub-header: 24px;
+  --landing-category-header: 36px;
+  --landing-section-header: 30px;
+  --landing-body-big: 18px; /* Desktop big */
   --landing-body-small: 16px; /* Desktop small */
 
   /* Main title sizes for desktop */
@@ -80,6 +85,11 @@
     --dashboard-body-small: 15px; /* Desktop body small */
 
     /* Desktop Landing/home page */
+    --landing-main-header: 36px;
+    --landing-sub-header: 18px;
+    --landing-category-header: 30px;
+    --landing-section-header: 24px;
+    --landing-body-big: 16px; /* Desktop big */
     --landing-body-small: 15px; /* Desktop small */
 
     /* Main title sizes for tablets */
@@ -118,6 +128,11 @@
     --dashboard-body-small: 14px; /* Desktop body small */
 
     /* Desktop Landing/home page */
+    --landing-main-header: 30px;
+    --landing-sub-header: 16px;
+    --landing-category-header: 30px;
+    --landing-section-header: 24px;
+    --landing-body-big: 16px; /* Desktop big */
     --landing-body-small: 14px; /* Desktop small */
 
     /* Main title sizes for phones */
