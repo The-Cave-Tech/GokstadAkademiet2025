@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import ContentForm from "@/components/features/dashboard/contentManager/ContentForm";
+import ContentForm from "@/components/pageSpecificComponents/dashboard/contentManager/ContentForm";
 import { projectService } from "@/lib/data/services/projectService";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";

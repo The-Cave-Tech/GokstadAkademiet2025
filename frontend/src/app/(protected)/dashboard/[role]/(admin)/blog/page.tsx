@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { blogService } from "@/lib/data/services/blogService";
 import { formatDate } from "@/lib/utils/eventUtils";
 import BackButton from "@/components/ui/BackButton";
-import { AdminTable, AdminColumn, AdminAction } from "@/components/features/dashboard/contentManager/AdminContentTable";
+import { AdminTable, AdminColumn, AdminAction } from "@/components/pageSpecificComponents/dashboard/contentManager/AdminContentTable";
 import { MdPerson } from "react-icons/md";
 
 export default function BlogAdminPage() {

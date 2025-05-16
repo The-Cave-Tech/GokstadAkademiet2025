@@ -1,7 +1,7 @@
 // src/app/(protected)/dashboard/my-acoount.page.tsx
 "use client";
 
-import { ProfilePageContainer } from "@/components/features/user-profile/ProfilePageContainer";
+import { ProfilePageContainer } from "@/components/pageSpecificComponents/user-profile/ProfilePageContainer";
 import { Suspense } from "react";
 import "@/styles/profile-page.css";
 import BackButton from "@/components/ui/BackButton";

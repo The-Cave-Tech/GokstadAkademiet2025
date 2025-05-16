@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { UniversalCard } from "@/components/features/dashboard/contentManager/ContentCard";
+import { UniversalCard } from "@/components/pageSpecificComponents/dashboard/contentManager/ContentCard";
 import { blogService } from "@/lib/data/services/blogService";
 import { adaptBlogToCardProps } from "@/lib/adapters/cardAdapter";
 import { BlogResponse } from "@/types/content.types";

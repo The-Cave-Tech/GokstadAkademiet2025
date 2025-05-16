@@ -4,7 +4,7 @@
 import { useRouter, useParams } from "next/navigation";
 import { useCart } from "@/lib/context/shopContext";
 import { useHydration } from "@/hooks/useHydration";
-import LoadingCheckout from "@/components/features/checkout/LoadingCheckout";
+import LoadingCheckout from "@/components/pageSpecificComponents/checkout/LoadingCheckout";
 import ShippingPage from "../shipping/ShippingForm";
 import PaymentPage from "../payment/PaymentForm";
 import ConfirmationPage from "../confirmation/ConfirmationForm";

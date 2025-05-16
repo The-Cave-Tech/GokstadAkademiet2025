@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ActivitiesLayout } from "@/components/layout/ActivitiesLayout";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useActivities } from "@/lib/context/ActivityContext";
-import { UniversalCard } from "@/components/features/dashboard/contentManager/ContentCard";
+import { UniversalCard } from "@/components/pageSpecificComponents/dashboard/contentManager/ContentCard";
 import { adaptProjectToCardProps } from "@/lib/adapters/cardAdapter";
 
 export default function ProjectsPage() {

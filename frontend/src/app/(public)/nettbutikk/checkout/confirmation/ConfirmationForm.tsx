@@ -10,8 +10,8 @@ import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
-import CheckoutSteps from "@/components/features/checkout/CheckoutSteps";
-import OrderSummary from "@/components/features/checkout/OrderSummary";
+import CheckoutSteps from "@/components/pageSpecificComponents/checkout/CheckoutSteps";
+import OrderSummary from "@/components/pageSpecificComponents/checkout/OrderSummary";
 import { formatPrice } from "@/lib/adapters/cardAdapter";
 import BackButton from "@/components/ui/BackButton";
 

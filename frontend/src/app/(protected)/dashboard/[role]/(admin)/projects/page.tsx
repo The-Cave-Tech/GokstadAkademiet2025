@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { projectService } from "@/lib/data/services/projectService";
 import { formatDate } from "@/lib/utils/eventUtils";
 import BackButton from "@/components/ui/BackButton";
-import { AdminTable, AdminColumn, AdminAction } from "@/components/features/dashboard/contentManager/AdminContentTable";
+import { AdminTable, AdminColumn, AdminAction } from "@/components/pageSpecificComponents/dashboard/contentManager/AdminContentTable";
 import { MdCategory } from "react-icons/md";
 import { Theme } from "@/styles/activityTheme";
 

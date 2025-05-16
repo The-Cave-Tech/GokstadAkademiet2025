@@ -13,7 +13,7 @@ import {
   updateShowPhone, 
   updateShowAddress,
 } from '@/lib/data/services/profileSections/publicProfileService';
-import { ProfileImageUploader } from '@/components/features/user-profile/profileImage/ProfileImageUploader';
+import { ProfileImageUploader } from '@/components/pageSpecificComponents/user-profile/profileImage/ProfileImageUploader';
 import { UserProfile } from '@/lib/data/services/userProfile';
 import { Button } from '@/components/ui/Button';
 

@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/AuthContext";
 import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
 import { Button } from "@/components/ui/Button";
-import Modal from "@/components/features/contact/Modal";
+import Modal from "@/components/pageSpecificComponents/contact/Modal";
 import {
  contactFormSchema,
  ContactFormData,

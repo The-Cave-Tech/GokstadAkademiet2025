@@ -7,7 +7,7 @@ import { eventsService } from "@/lib/data/services/eventService";
 import { projectService } from "@/lib/data/services/projectService";
 import ClientMessage from "@/components/ui/ClientMessage";
 import { EventAttributes, Media, ProjectAttributes } from "@/types/content.types";
-import { UniversalCard } from "@/components/features/dashboard/contentManager/ContentCard";
+import { UniversalCard } from "@/components/pageSpecificComponents/dashboard/contentManager/ContentCard";
 import {
   adaptEventToCardProps,
   adaptProjectToCardProps,

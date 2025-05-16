@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import HistoryContainer from "@/components/features/aboutus/HistoryContainer";
-import TeamContainer from "@/components/features/aboutus/TeamContainer";
+import HistoryContainer from "@/components/pageSpecificComponents/aboutus/HistoryContainer";
+import TeamContainer from "@/components/pageSpecificComponents/aboutus/TeamContainer";
 
 type SectionType = "history" | "team";
 

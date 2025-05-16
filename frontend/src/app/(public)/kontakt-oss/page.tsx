@@ -1,8 +1,8 @@
 // src/app/(public)/kontakt-oss/page.tsx
 import React, { Suspense } from "react";
 import { Metadata } from "next";
-import ContactForm from "@/components/features/contact/ContactForm";
-import ContactInfo from "@/components/features/contact/ContactInfo";
+import ContactForm from "@/components/pageSpecificComponents/contact/ContactForm";
+import ContactInfo from "@/components/pageSpecificComponents/contact/ContactInfo";
 import ClientMessage from "@/components/ui/ClientMessage";
 
 export const metadata: Metadata = {
