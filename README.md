@@ -222,6 +222,8 @@ Strapi uses roles to manage access and permissions:
 5. Adjust permissions as needed.
 6. Click **Save** to apply changes.
 
+![Screenshot](/ImagesForReadme/StrapiPermisions.png)
+
 #### How to Manage Roles
 
 - To edit an existing role, click the pencil icon next to the role.
