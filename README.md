@@ -190,98 +190,99 @@ In the terminal:
 </details>
 
 <details><summary><strong>#Strapi Admin Panel</strong></summary>
-**Strapi Admin Panel** – The main admin panel for content management on the site, allowing you to manage all content, users, and settings for your application.
+## Strapi Admin Panel
 
-- To remove ESLint feedback about "unknown at rule" errors in Tailwind CSS, install the PostCSS Language Support extension for VSCode. This extension helps with syntax highlighting and can be enabled or disabled as needed for color visualization.
+The Strapi Admin Panel is the main interface for managing all content, users, and settings in your application.
 
-**Admin Roles in the System**
-Admin roles, their functions, and best practices for managing permissions in the system.
-Role Types and Areas of Responsibility
-Superadmin has full access to all system functions and is only used for critical system tasks.
-How to Change Roles:
-To change roles in the system, follow these steps:
+---
 
-1 Log in to the Strapi administration panel
-2 Go to "Settings" in the side menu
-3 Select "Roles" under the USERS & PERMISSIONS PLUGIN section
-4 You will now see a list of available roles
-5 Click on the role you want to modify
-6 This will open the permissions list where you can change permissions for the different plugins and functions
-7 Remember to click "Save" after making changes to activate the new permissions.
+### 🛠️ Tips
 
-**Users & Permissions Plugin**
-The system includes predefined roles with specific permission levels:
+- **ESLint & Tailwind CSS:**  
+     If you see "unknown at rule" errors in Tailwind CSS, install the **PostCSS Language Support** extension for VSCode. This improves syntax highlighting and color visualization.
 
-Author: Users with this role can manage the content they have created.
-Editor: Users with this role can manage and publish contents, including those of other users.
-Super Admin: Users with this role can access and manage all features and settings within the system.
+---
 
-How to Manage Roles
+### 👤 Admin Roles & Permissions
 
-Log in to the Strapi administration panel
-Go to "Settings" in the side menu
-Navigate to the "USERS & PERMISSIONS PLUGIN" section
-Select "Roles"
-You will see a list of available roles with their descriptions and user count
-To edit an existing role, click on the edit icon (pencil) next to the role
-To add a new role, click the "+ Add new role" button at the top right
-When editing a role, you can configure permissions for different plugins and functions
-Remember to click "Save" after making changes to activate the new permissions
+Strapi uses roles to manage access and permissions:
 
-**Content Management**
-The Content Management System is built on Strapi and allows you to create, edit, and publish different types of content for your website. The system is organized into Collection Types and Single Types to manage various content structures.
+| Role         | Description                                                                 |
+|--------------|-----------------------------------------------------------------------------|
+| **Super Admin** | Full access to all system functions. Used for critical system tasks.         |
+| **Editor**      | Can manage and publish all content, including content from other users.      |
+| **Author**      | Can manage only the content they have created.                              |
 
-Accessing the CMS
-1 Log in to the administration panel using your credentials
-2 You will be directed to the Content Manager dashboard
-3 The left sidebar contains navigation to all content types
+#### How to Change Roles
 
-Content Types
-The CMS is organized into two main categories:
+1. Log in to the Strapi admin panel.
+2. Go to **Settings** in the sidebar.
+3. Under **USERS & PERMISSIONS PLUGIN**, select **Roles**.
+4. Click on a role to view or modify its permissions.
+5. Adjust permissions as needed.
+6. Click **Save** to apply changes.
 
-Collection Types (Multiple Entries)
-Collection Types allow you to create multiple entries of the same structure:
+#### How to Manage Roles
 
-1 Blog: For managing blog posts
-2 ContactSubmission: For viewing and managing form submissions
-3 Event: For creating and managing event listings
-4 Project: For showcasing projects
-5 User: For managing user accounts
-6 User Profile: For managing extended user information
+- To edit an existing role, click the pencil icon next to the role.
+- To add a new role, click **+ Add new role** at the top right.
+- Configure permissions for different plugins and features.
+- Remember to **Save** after making changes.
 
-Single Types (One-off Pages)
-Single Types are used for unique pages or sections that appear only once on your website:
+---
 
-1 AboutUs: Company information and team members
-2 AuthSetting: Authentication settings
-3 ContactPage: Contact page configuration
-4 Footer: Website footer content
-5 GlobalSetting: Site-wide settings
-6 LandingPageHero: Hero section for the landing page
+### 📦 Content Management
 
-Managing Content
-1 Click on the desired content type in the sidebar
-2 For Collection Types, you'll see a list of all entries
-3 For Single Types, you'll be taken directly to the editing interface
+Strapi organizes content into **Collection Types** (multiple entries) and **Single Types** (unique pages).
 
-Creating New Entries (Collection Types)
-1 Navigate to the desired Collection Type
-2 Click the "+ Add an entry" button
-3 Fill in the required fields
-4 Click "Save" to save as draft or "Publish" to make it live
+#### Accessing the CMS
 
-Editing Content
+1. Log in to the admin panel.
+2. The **Content Manager** dashboard appears.
+3. Use the left sidebar to navigate content types.
 
-1 Click on the entry you wish to edit
-2 Make your changes in the editing interface
-3 Click "Save" to save changes as draft
-4 Click "Publish" to make changes live
+#### Content Types
 
-Publishing Workflow
-The system supports a basic publishing workflow:
+- **Collection Types:**  
+     - Blog: Manage blog posts  
+     - ContactSubmission: View form submissions  
+     - Event: Manage events  
+     - Project: Showcase projects  
+     - User: Manage user accounts  
+     - User Profile: Extended user info
 
-1 Draft: Content is saved but not publicly visible
-2 Published: Content is live and visible on the website
+- **Single Types:**  
+     - AboutUs: Company info and team  
+     - AuthSetting: Authentication settings  
+     - ContactPage: Contact page config  
+     - Footer: Website footer content  
+     - GlobalSetting: Site-wide settings  
+     - LandingPageHero: Landing page hero section
+
+#### Managing Content
+
+- **View/Edit:**  
+     - Click a content type in the sidebar.
+     - For Collection Types: See a list of entries.
+     - For Single Types: Go directly to the editing interface.
+
+- **Create New Entry (Collection Types):**  
+     1. Select the Collection Type.
+     2. Click **+ Add an entry**.
+     3. Fill in the fields.
+     4. Click **Save** (draft) or **Publish** (live).
+
+- **Edit Entry:**  
+     1. Click the entry to edit.
+     2. Make changes.
+     3. Click **Save** (draft) or **Publish** (live).
+
+#### Publishing Workflow
+
+- **Draft:** Content is saved but not visible to the public.
+- **Published:** Content is live and visible on the website.
+
+---
 
 
 </details>
