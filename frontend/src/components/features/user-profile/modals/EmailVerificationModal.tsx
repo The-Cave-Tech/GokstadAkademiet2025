@@ -5,7 +5,7 @@ import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { VerificationModalProps } from "@/types/loginInfoManage.types";
 import PageIcons from "@/components/ui/custom/PageIcons";
-import { ZodErrors } from "@/components/common/ZodErrors";
+import { ZodErrors } from "@/components/ui/ZodErrors";
 import { universalVerificationCodeValidation } from "@/lib/validation/universalValidation";
 import { handleStrapiError } from "@/lib/utils/serverAction-errorHandler";
 import { z } from "zod";

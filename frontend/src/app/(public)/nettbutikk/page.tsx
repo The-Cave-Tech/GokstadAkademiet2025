@@ -11,7 +11,7 @@ import { ProductResponse } from "@/types/content.types";
 import { SearchBar } from "@/components/ui/SearchBar";
 import { FilterDropdown } from "@/components/ui/FilterDropdown";
 import { SortDropdown, SortOption } from "@/components/ui/SortDropdown";
-import CartIcon from "@/components/ui/CartIcon";
+import CartIcon from "@/components/ui/custom/CartIcon";
 import { useCart } from "@/lib/context/shopContext";
 
 // Define sort options for products

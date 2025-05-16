@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import { PasswordToggle } from "@/components/ui/custom/PasswordToggle";
 import { usePasswordChangeValidation } from "@/hooks/useProfileValidation";
-import { ZodErrors } from "@/components/common/ZodErrors";
+import { ZodErrors } from "@/components/ui/ZodErrors";
 import { profileFieldError, handleStrapiError } from "@/lib/utils/serverAction-errorHandler";
 import PasswordStrengthMeter from "@/components/ui/custom/PasswordStrengthMeter";
 

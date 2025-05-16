@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardBody, CardFooter, CardHeader } from '@/components/ui/Card';
 import ToggleSwitch from '@/components/ui/custom/ToogleSwith';
 import PageIcons from '@/components/ui/custom/PageIcons';
-import { ZodErrors } from "@/components/common/ZodErrors";
+import { ZodErrors } from "@/components/ui/ZodErrors";
 import { usePublicProfileValidation } from "@/hooks/useProfileValidation";
 import { profileFieldError } from "@/lib/utils/serverAction-errorHandler";
 import { 

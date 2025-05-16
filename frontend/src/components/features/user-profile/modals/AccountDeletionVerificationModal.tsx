@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/Button";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import { AccountEmailVerificationModalProps } from "@/types/accountAdministration.types";
 import { useAccountDeletionVerificationValidation } from "@/hooks/useProfileValidation";
-import { ZodErrors } from "@/components/common/ZodErrors";
+import { ZodErrors } from "@/components/ui/ZodErrors";
 import { profileFieldError, handleStrapiError } from "@/lib/utils/serverAction-errorHandler";
 import { z } from "zod";
 import { universalVerificationCodeValidation } from "@/lib/validation/universalValidation";

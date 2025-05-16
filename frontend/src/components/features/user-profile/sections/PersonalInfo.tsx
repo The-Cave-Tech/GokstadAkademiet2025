@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { PageIcons } from "@/components/ui/custom/PageIcons";
 import { DatePicker } from "@/components/ui/custom/DatePciker";
-import { ZodErrors } from "@/components/common/ZodErrors";
+import { ZodErrors } from "@/components/ui/ZodErrors";
 import { usePersonalInfoValidation } from "@/hooks/useProfileValidation";
 import { profileFieldError } from "@/lib/utils/serverAction-errorHandler";
 

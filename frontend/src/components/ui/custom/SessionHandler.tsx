@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useAuth } from "@/lib/context/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { getAuthCookie } from "@/lib/utils/cookie";
-import { UniversalModal } from "@/components/ui/UniversalModal";
+import { UniversalModal } from "@/components/ui/custom/UniversalModal";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import { formatTimeRemaining, getTimeToExpiration } from "@/lib/utils/jwt";
 

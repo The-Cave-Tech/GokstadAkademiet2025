@@ -6,7 +6,7 @@ import { UsernameModalProps } from "@/types/loginInfoManage.types";
 import { Button } from "@/components/ui/Button";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import { useUsernameChangeValidation } from "@/hooks/useProfileValidation";
-import { ZodErrors } from "@/components/common/ZodErrors";
+import { ZodErrors } from "@/components/ui/ZodErrors";
 import { profileFieldError, handleStrapiError } from "@/lib/utils/serverAction-errorHandler";
 
 export function UsernameChangeModal({

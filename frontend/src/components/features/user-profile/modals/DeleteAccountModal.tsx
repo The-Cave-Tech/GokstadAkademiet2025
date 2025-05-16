@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import PageIcons from "@/components/ui/custom/PageIcons";
 import { AccountDeletionModalProps } from "@/types/accountAdministration.types";
 import { useAccountDeletionValidation } from "@/hooks/useProfileValidation";
-import { ZodErrors } from "@/components/common/ZodErrors";
+import { ZodErrors } from "@/components/ui/ZodErrors";
 import { profileFieldError, handleStrapiError } from "@/lib/utils/serverAction-errorHandler";
 import { useAuth } from "@/lib/context/AuthContext";
 

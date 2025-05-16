@@ -6,7 +6,7 @@ import Link from "next/link";
 import { SiteLogo } from "@/components/ui/SiteLogo";
 import { register } from "@/lib/data/actions/auth";
 import { useActionState } from "react";
-import { ZodErrors } from "@/components/common/ZodErrors";
+import { ZodErrors } from "@/components/ui/ZodErrors";
 import { PasswordToggle } from "@/components/ui/custom/PasswordToggle";
 import PasswordStrengthMeter from "@/components/ui/custom/PasswordStrengthMeter";
 import { authFieldError } from "@/lib/utils/serverAction-errorHandler"; 

@@ -19,7 +19,6 @@ export function AddToCartButton({
   onAddToCart,
   className = "",
   variant = "primary",
-  quantity = 1,
   disabled = false,
   showText = true,
 }: AddToCartButtonProps) {

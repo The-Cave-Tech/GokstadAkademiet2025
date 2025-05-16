@@ -7,7 +7,7 @@ import { AuthProvider } from "@/lib/context/AuthContext";
 import React from "react";
 import { ActivitiesProvider } from "@/lib/context/ActivityContext";
 import Footer from "@/components/layout/Footer";
-import { SessionHandler } from "@/components/features/auth/SessionHandler";
+import { SessionHandler } from "@/components/ui/custom/SessionHandler";
 import { CartProvider } from "@/lib/context/shopContext";
 
 const roboto = Roboto({
