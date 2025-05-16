@@ -35,7 +35,6 @@ export const strapiService = {
       const token = await getAuthCookie();
       if (token) {
         if (isTokenExpired(token)) {
-          console.log("[strapiClient] Token expired before making request");
           await removeAuthCookie();
           
           if (typeof window !== 'undefined') {

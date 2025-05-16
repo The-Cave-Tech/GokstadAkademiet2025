@@ -130,9 +130,8 @@ export function logValidationErrors(
   
   if (hasErrors) {
     console.group(`Validation errors in ${context}:`);
-    Object.entries(errors).forEach(([field, messages]) => {
+    Object.entries(errors).forEach(([messages]) => {
       if (messages.length > 0) {
-        console.log(`${field}:`, messages);
       }
     });
     console.groupEnd();

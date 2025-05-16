@@ -17,7 +17,6 @@ export function extractRouteParams(pathname: string): {
   if (!pathname) return result;
 
   // Log for debugging
-  console.log("Extracting params from:", pathname);
 
   try {
     // Check if it's a query parameter format

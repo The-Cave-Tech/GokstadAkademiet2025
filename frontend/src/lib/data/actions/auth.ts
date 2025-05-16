@@ -1,7 +1,4 @@
-//frontend/lib/context/AuthContext.tsx
 "use server";
-
-// påminnelse til oss: fjerne alle konsoll logger når vi er ferdige, de eksponerer sensitiv informasjon
 
 import { signInSchema, signUpSchema } from "@/lib/validation/userAuthValidation";
 import { redirect } from "next/navigation";
@@ -33,13 +30,8 @@ export async function register(
     string,
     string
   >;
-  console.log("[Server] Auth - Input data:", fields);
 
   const validation = signUpSchema.safeParse(fields);
-  console.log("[Server] Auth - Validation result:", {
-    success: validation.success,
-    errors: validation.success ? null : validation.error.flatten().fieldErrors,
-  });
 
   if (!validation.success) {
     const errors = handleValidationErrors(validation.error, {
@@ -48,8 +40,6 @@ export async function register(
       password: [],
       repeatPassword: [],
     }) as SignUpValidationErrors;
-
-    console.warn("[Server] Auth - Validation failed:", errors);
 
     return {
       ...prevState,
@@ -61,17 +51,10 @@ export async function register(
 
   try {
     const { username, email, password } = fields;
-    const response = await registerUserService({ username, email, password });
+    await registerUserService({ username, email, password });
 
-    console.log("[Server] Register - Success. JWT:", response.jwt);
-
-    // NB: Vi setter IKKE auth-cookie her siden brukeren skal bekrefte e-post i fremtiden
-
-    //lenken skal byttes ut senere
   } catch (error) {
     const errorMessage = handleStrapiError(error);
-    console.error("[Server] Register - Error:", error);
-
     return {
       ...prevState,
       zodErrors: null,

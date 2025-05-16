@@ -14,7 +14,6 @@ export async function updateBirthDate(birthDate: string): Promise<unknown> {
     const [day, month, year] = birthDate.split('.');
     if (day && month && year) {
       const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-      console.log(`Konverterer dato fra ${birthDate} til ${isoDate}`);
       return sendProfileUpdate('birthDate', isoDate);
     }
   }

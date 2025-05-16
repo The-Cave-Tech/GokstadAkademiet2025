@@ -67,7 +67,6 @@ export async function uploadProfileImage(file: File): Promise<UserProfile> {
   const formData = new FormData();
   formData.append("files", file);
 
-  console.log("Uploading profile image");
   try {
     // Last opp bildet til Strapi ved hjelp av strapiService.fetch
     const uploadedFiles = await strapiService.fetch<UploadedFile[]>("upload", {
@@ -75,9 +74,6 @@ export async function uploadProfileImage(file: File): Promise<UserProfile> {
       body: formData,
     });
 
-    console.log("Uploaded files:", uploadedFiles);
-
-    // Oppdater profileimage-feltet med upload id
     return sendProfileUpdate('profileimage', uploadedFiles[0].id);
   } catch (error) {
     console.error("Upload error:", error);

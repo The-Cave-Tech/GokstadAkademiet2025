@@ -4,7 +4,6 @@ import { cookies } from "next/headers";
 
 export async function setAuthCookie(token: string): Promise<void> {
   const cookieStore = await cookies();
-  /* const maxAge = 7 * 60 * 60; */
   const maxAge = 7 * 60 * 60; // 6 minutes for testing
 
   cookieStore.set("authToken", token, {
@@ -17,7 +16,6 @@ export async function setAuthCookie(token: string): Promise<void> {
     path: "/",
   });
 
-  console.log("[Server] Auth - Set JWT cookie with 2 hours expiration");
 }
 
 export async function removeAuthCookie(): Promise<void> {
@@ -49,8 +47,6 @@ export async function removeAuthCookie(): Promise<void> {
     path: "/",
     domain,
   });
-
-  console.log("[Server] Auth - JWT cookie and session cookies removed");
 }
 
 export async function getAuthCookie(): Promise<string | null> {
@@ -58,10 +54,8 @@ export async function getAuthCookie(): Promise<string | null> {
   const cookie = cookieStore.get("authToken");
 
   if (!cookie?.value) {
-    console.log("[Server] Auth - No JWT cookie found");
     return null;
   }
 
-  console.log("[Server] Auth - JWT cookie accessed");
   return cookie.value;
 }

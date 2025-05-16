@@ -23,9 +23,6 @@ export const blogService = {
         console.warn("No blog posts found or data is not an array");
         return [];
       }
-
-      console.log("Fetched blog posts:", response.data);
-
       // Transform the response to match our BlogResponse type
       return response.data.map((item) => {
         // Extract the base blog data

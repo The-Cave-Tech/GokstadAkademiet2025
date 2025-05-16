@@ -20,8 +20,6 @@ export const productService = {
       // Use the collection's find method
       const response = await productsCollection.find(queryParams);
 
-      console.log("Response from Strapi:", response);
-
       if (!response.data || !Array.isArray(response.data)) {
         console.warn("No products found or data is not an array");
         return [];
