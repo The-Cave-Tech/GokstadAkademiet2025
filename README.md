@@ -189,11 +189,7 @@ In the terminal:
 #
 </details>
 
-<details><summary><strong># How pages work</strong></summary></details>
-
-<details><summary><strong># Universal components</strong></summary></details>
-
-
+<details><summary><strong>#Strapi Admin Panel</strong></summary>
 **Strapi Admin Panel** – The main admin panel for content management on the site, allowing you to manage all content, users, and settings for your application.
 
 - To remove ESLint feedback about "unknown at rule" errors in Tailwind CSS, install the PostCSS Language Support extension for VSCode. This extension helps with syntax highlighting and can be enabled or disabled as needed for color visualization.
@@ -286,3 +282,11 @@ The system supports a basic publishing workflow:
 
 1 Draft: Content is saved but not publicly visible
 2 Published: Content is live and visible on the website
+
+
+</details>
+
+
+
+
+
