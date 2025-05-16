@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 
 export async function setAuthCookie(token: string): Promise<void> {
   const cookieStore = await cookies();
-  const maxAge = 7 * 60 * 60; // 6 minutes for testing
+  const maxAge = 7 * 60 * 60; 
 
   cookieStore.set("authToken", token, {
     httpOnly: true,

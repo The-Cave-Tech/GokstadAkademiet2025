@@ -185,8 +185,42 @@ In the terminal:
 </details>
 
 <details><summary><strong># How to use Strapi</strong></summary>
-# Plugins.ts
-#
+## 🔑 JWT Token Expiry
+
+To change how long JWT tokens are valid:
+
+- **backend/config/plugins.ts**
+     - Find: `expiresIn: "7h"`
+     - Change `"7h"` to your desired duration (e.g., `"24h"` for 24 hours).
+
+- **lib/util/cookie.ts**
+     - Find: `const maxAge = 7 * 60 * 60;`
+     - Change `7` to the number of hours you want (e.g., `24 * 60 * 60` for 24 hours).
+
+---
+
+## ✉️ Email Configuration & Templates
+
+### 1. Environment Variables
+
+- Set email-related variables in your backend `.env` file.
+
+### 2. Plugin Configuration
+
+- **backend/config/plugins.ts**
+     - Configure your email provider and settings here.
+
+### 3. Email Service & Templates
+
+- **backend/src/service/**
+     - All email logic, templates, and text changes are handled here.
+     - To update email content or templates, edit the relevant files in this folder.
+
+---
+
+**Tip:**  
+For custom email text and templates, always update files in `backend/src/service` to match your requirements.
+
 </details>
 
 <details><summary><strong>#Strapi Admin Panel</strong></summary>
