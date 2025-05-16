@@ -195,6 +195,22 @@ In the terminal:
 
 - To remove ESLint feedback about "unknown at rule" errors in Tailwind CSS, install the PostCSS Language Support extension for VSCode. This extension helps with syntax highlighting and can be enabled or disabled as needed for color visualization.
 
+**Admin Roles in the System**
+Admin roles, their functions, and best practices for managing permissions in the system.
+Role Types and Areas of Responsibility
+Superadmin has full access to all system functions and is only used for critical system tasks.
+How to Change Roles:
+To change roles in the system, follow these steps:
+
+1 Log in to the Strapi administration panel
+2 Go to "Settings" in the side menu
+3 Select "Roles" under the USERS & PERMISSIONS PLUGIN section
+4 You will now see a list of available roles
+5 Click on the role you want to modify
+6 This will open the permissions list where you can change permissions for the different plugins and functions
+7 Remember to click "Save" after making changes to activate the new permissions.
+
+
 
 
 
