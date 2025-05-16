@@ -222,6 +222,17 @@ Strapi uses roles to manage access and permissions:
 5. Adjust permissions as needed.
 6. Click **Save** to apply changes.
 
+# For Public users
+Choose find and find one on every thing to show content from strapi
+
+
+
+# For Admin
+Choose every thing
+
+
+
+
 ![Screenshot](/ImagesForReadme/StrapiPermisions.png)
 
 #### How to Manage Roles
@@ -230,6 +241,8 @@ Strapi uses roles to manage access and permissions:
 - To add a new role, click **+ Add new role** at the top right.
 - Configure permissions for different plugins and features.
 - Remember to **Save** after making changes.
+- We have only implemented </br>
+![Screenshot](/ImagesForReadme/userRoles.png)
 
 ---
 
