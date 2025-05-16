@@ -50,6 +50,11 @@ In your terminal:
 15. If using our database file and prompted to create a user, use:  
         - Email: test@den.no  
         - Password: Gokstad1234  
+     # OR 
+     admin@admin.no </br>
+     Admin1234 </br>
+
+
 
 #Frontend
 
@@ -183,8 +188,6 @@ In the terminal:
 # Plugins.ts
 #
 </details>
-
-<details><summary><strong># How to use Strapi</strong></summary></details>
 
 <details><summary><strong># How pages work</strong></summary></details>
 
