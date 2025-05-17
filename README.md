@@ -9,8 +9,6 @@ This setup is designed for testing purposes only, as the company prefers to hand
 1. Installation
 </strong></summary>
 
-# <strong>Til sensor</strong>
-Du kan hoppe over steg 0
 </br>
 Both frontend and backend have `.env.example` files.  
 0. Create `.env` files in both frontend and backend folders and copy the contents from `.env.example` into `.env`.
@@ -35,7 +33,7 @@ Both frontend and backend have `.env.example` files.
 11. Refresh Schemas, and in Query, write `USE "database_name_from_env"` (e.g., `USE thecavetech`)
 
 # <strong>Frontend:</strong>  
-Her trenges det bare å kopiere innholdet fra .env.example over til .env
+Here, you just need to copy the contents from .env.example into .env.
 
 After setting up `.env` in the root folder (where `.env.example` is):
 
