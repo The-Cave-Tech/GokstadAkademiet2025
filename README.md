@@ -184,7 +184,7 @@ In the terminal:
 
 </details>
 
-<details><summary><strong># How to use Strapi</strong></summary>
+<details><summary><strong># How to use</strong></summary>
 ## 🔑 JWT Token Expiry
 
 To change how long JWT tokens are valid:
