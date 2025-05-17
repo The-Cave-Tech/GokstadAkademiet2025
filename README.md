@@ -14,8 +14,7 @@ Both frontend and backend have `.env.example` files.
 0. Create `.env` files in both frontend and backend folders and copy the contents from `.env.example` into `.env`.
 
 
-# database filen innheolder kun data ikke bilder
-
+# The database file contains only data, not images.
 
 # <strong>Backend:</strong>  
 1. In the project root, you'll find a zipped database file.  
