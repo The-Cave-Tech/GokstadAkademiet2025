@@ -347,6 +347,13 @@ Strapi organizes content into **Collection Types** (multiple entries) and **Sing
 That's it! You'll then see all submitted contact forms with name, email, phone, and status. You can search, filter, and change message status from there.
 </details>
 
+<details>
+    <summary>
+        <strong>Abot us guide<strong>
+            
+</summary>
+</details>
+
 
 
 
