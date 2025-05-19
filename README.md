@@ -339,10 +339,10 @@ Strapi organizes content into **Collection Types** (multiple entries) and **Sing
      </summary>
     To access messages in Strapi:
 
-Log in to the Strapi admin panel
-Click on "Content Manager" in the left menu
-Under "Collection Types" select "ContactSubmission"
-Click on a message (name) to open it and see all details
+1. Log in to the Strapi admin panel
+2. Click on "Content Manager" in the left menu
+3. Under "Collection Types" select "ContactSubmission"
+4. Click on a message (name) to open it and see all details
 
 That's it! You'll then see all submitted contact forms with name, email, phone, and status. You can search, filter, and change message status from there.
 </details>
