@@ -337,7 +337,14 @@ Strapi organizes content into **Collection Types** (multiple entries) and **Sing
     <summary>
         <strong>Contact us guide<strong>
      </summary>
-    Kontakt oss
+    To access messages in Strapi:
+
+Log in to the Strapi admin panel
+Click on "Content Manager" in the left menu
+Under "Collection Types" select "ContactSubmission"
+Click on a message (name) to open it and see all details
+
+That's it! You'll then see all submitted contact forms with name, email, phone, and status. You can search, filter, and change message status from there.
 </details>
 
 
