@@ -9,15 +9,12 @@ This setup is designed for testing purposes only, as the company prefers to hand
 1. Installation
 </strong></summary>
 
-# <strong>Til sensor</strong>
-Du kan hoppe over steg 0
 </br>
 Both frontend and backend have `.env.example` files.  
 0. Create `.env` files in both frontend and backend folders and copy the contents from `.env.example` into `.env`.
 
 
-# database filen innheolder kun data ikke bilder
-
+# The database file contains only data, not images.
 
 # <strong>Backend:</strong>  
 1. In the project root, you'll find a zipped database file.  
@@ -35,7 +32,7 @@ Both frontend and backend have `.env.example` files.
 11. Refresh Schemas, and in Query, write `USE "database_name_from_env"` (e.g., `USE thecavetech`)
 
 # <strong>Frontend:</strong>  
-Her trenges det bare å kopiere innholdet fra .env.example over til .env
+Here, you just need to copy the contents from .env.example into .env.
 
 After setting up `.env` in the root folder (where `.env.example` is):
 
@@ -184,7 +181,7 @@ In the terminal:
 
 </details>
 
-<details><summary><strong># How to use Strapi</strong></summary>
+<details><summary><strong># How to</strong></summary>
 ## 🔑 JWT Token Expiry
 
 To change how long JWT tokens are valid:
@@ -334,6 +331,13 @@ Strapi organizes content into **Collection Types** (multiple entries) and **Sing
 ---
 
 
+</details>
+
+<details>
+    <summary>
+        <strong>Contact us guide<strong>
+     </summary>
+    Kontakt oss
 </details>
 
 
