@@ -333,6 +333,13 @@ Strapi organizes content into **Collection Types** (multiple entries) and **Sing
 
 </details>
 
+<details>
+    <summary>
+        <strong>Contact us guide<strong>
+            Kontakt oss
+    </summary>
+</details>
+
 
 
 
