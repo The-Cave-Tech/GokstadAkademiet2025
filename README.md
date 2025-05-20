@@ -374,6 +374,54 @@ In the Content Manager, content is organized into two main categories:
 3. To add content, click on the plus icon (+) or on the text "No entry yet. Click to add one."
 </details>
 
+<details>
+    <summary><strong>Footer guide<strong></summary>
+The Footer configuration allows you to manage website footer content, including business hours and social media (Instagram) information.
+        Navigation:
+
+1. You're in the "Footer" section under "SINGLE TYPES" in the left sidebar
+2. Footer is highlighted in blue in the menu
+3. There's a "Back" button at the top to return to the previous screen
+
+
+Footer Content Sections:
+
+1. openingHours (0): Empty section with "No entry yet. Click to add one." message and a plus icon
+2. instaGram: Contains two fields:
+
+- url: Empty text input field for the Instagram profile URL
+- icon: Empty media field with "Click to add an asset or drag and drop one in this area" message and a plus icon
+
+
+
+
+Status:
+
+1. The Footer is marked as "Published" (green label)
+2. You can switch between "DRAFT" and "PUBLISHED" versions using the tabs
+
+
+Action Buttons:
+
+1. In the ENTRY panel on the right:
+
+- "Publish" button: To publish changes
+- "Save" button: To save without publishing
+
+
+
+
+
+To update the Footer content:
+
+1. For opening hours: Click the plus icon to add entries to the openingHours section
+For Instagram:
+
+- Type your Instagram URL in the url field
+- Upload an Instagram icon by clicking the plus icon in the icon field
+</details>
+
+
 
 
 
