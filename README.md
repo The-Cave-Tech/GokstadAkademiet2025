@@ -351,7 +351,7 @@ That's it! You'll then see all submitted contact forms with name, email, phone, 
     <summary>
         <strong>About us guide<strong>
             </summary>
-</details>
+
            Strapi is a headless CMS (Content Management System) that allows you to manage content independently from frontend presentation. "AboutUs" is set up as a Single Type in your Strapi configuration, meaning it's a single content page with two main components: a history section and a team section.
 
 <strong>Log in to Strapi:<strong>
@@ -372,7 +372,7 @@ In the Content Manager, content is organized into two main categories:
 1. After clicking on "AboutUs", you'll arrive at the editing screen shown in the image
 2. Here you'll see two main sections: "history" and "teamCard" (both are empty with "(0)" indicating no entries)
 3. To add content, click on the plus icon (+) or on the text "No entry yet. Click to add one."
-
+</details>
 
 
 
