@@ -1,7 +1,61 @@
 # TheCaveTech
 
+## Plattformen er en universell applikasjon der brukere kan vise frem interesser, arbeider og selge produkter. Alt innhold håndteres enkelt via Strapi-adminpanelet og oppsett av custom admin panel for et mer personlig panel alternativ.
+
+The Cave Tech bruker denne platformen for å vise sine prosjekter til sine bekjente, arrangere arrangementer som kollegaer kan delta på, og butikken for å selge lokalt produserte produkter. Internt kan man legge ut blogger for å beskrive mer følelser og hverdagslige ting til hverandre, og brukeren kan skrive blogg poster som admin kan godkjenne eller avkrefte.
+
+Administratorer har full kontroll i Strapi og kan administrere prosjekter, arrangementer, blogginnlegg og brukerinformasjon. Autentisering skjer via lokal eller tredjeparts pålogging. Vanlige brukere kan også bidra med blogginnlegg.
+
+Plattformen mangler full CRM, men alle kontaktmeldinger og brukerdata lagres i db og er tilgjengelig i strapi admin panel. Kjøpshistorikk er delvis implementert.
+
+Tech Stack
+Frontend: Next.js, TypeScript, Tailwind CSS
+Backend: Strapi (Headless CMS)
+Database: Compatible with Strapi (MySQL)
+
 <details>
-    <summary><strong>🚀 Getting Started / Setup</strong></summary>
+    <summary><strong>Application features and how they work</strong></summary>
+    
+The Cave Tech platform offers the following key features:
+
+### User Features
+- **Project Showcase** - Display your creative work and tech projects to your network
+- **Event Management** - Create and join events with colleagues and community members
+- **Blog Platform** - Share thoughts and experiences with content moderation system
+- **E-Commerce Shop** - Sell and purchase locally crafted products
+- **Community Connection** - Digital hub for internal community engagement
+
+### Admin Features
+- **Content Management** - Full control via Strapi admin panel or web interface
+- **User Management** - Role-based permissions system for controlled access
+- **Approval Workflow** - Review and approve/reject user-submitted content
+- **CRM Integration** - Store contact messages and user data for follow-up
+
+### Authentication
+- **Multiple Login Options** - Local credentials or third-party SSO (Google, Facebook)
+- **Role-Based Access** - Different permission levels for admins and regular users
+
+### Data Management
+- **Order History** - Track customer purchases (partially implemented)
+- **Contact Storage** - All form submissions stored in database
+- **User Profiles** - Extended profile information for community members
+<details>
+
+
+
+1.Beskrive prosjektet ok
+2.Installasjon ok
+3.Strapi guide ok
+4.Nettside guide 
+5.Kode guide/ hvordan bruke universelle komponenter
+eksemp. PageIcons- hvordan bruke page icons
+6.Hva som gjenstår (Known issues)
+
+
+
+
+<details>
+    <summary><strong>🚀 Getting Started / How to install</strong></summary>
 
 This setup is designed for testing purposes only, as the company prefers to handle deployment themselves.
 <details>
