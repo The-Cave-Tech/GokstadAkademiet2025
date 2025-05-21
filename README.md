@@ -15,7 +15,7 @@ Database: Compatible with Strapi (MySQL)
 
 <details>
     <summary><strong>Application features and how they work</strong></summary>
-    
+
 The Cave Tech platform offers the following key features:
 
 ### User Features
@@ -39,7 +39,8 @@ The Cave Tech platform offers the following key features:
 - **Order History** - Track customer purchases (partially implemented)
 - **Contact Storage** - All form submissions stored in database
 - **User Profiles** - Extended profile information for community members
-<details>
+
+</details>
 
 
 
