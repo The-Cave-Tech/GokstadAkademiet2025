@@ -90,7 +90,7 @@ export const blogService = {
   },
 
   // Get media URL helper
-  getMediaUrl: (media: any): string => {
+  getMediaUrl: (media: Media): string => {
     return strapiService.media.getMediaUrl(media);
   },
 
@@ -244,7 +244,7 @@ export const blogService = {
   ): Promise<BlogResponse> => {
     try {
       // Process tags if they come as a comma-separated string
-      let updatedData = { ...data };
+      const updatedData = { ...data };
 
       if (typeof data.tags === "string") {
         updatedData.tags = data.tags
