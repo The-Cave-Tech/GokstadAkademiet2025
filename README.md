@@ -13,35 +13,6 @@ Frontend: Next.js, TypeScript, Tailwind CSS
 Backend: Strapi (Headless CMS)
 Database: Compatible with Strapi (MySQL)
 
-<details>
-    <summary><strong>Application features and how they work</strong></summary>
-
-The Cave Tech platform offers the following key features:
-
-### User Features
-- **Project Showcase** - Display your creative work and tech projects to your network
-- **Event Management** - Create and join events with colleagues and community members
-- **Blog Platform** - Share thoughts and experiences with content moderation system
-- **E-Commerce Shop** - Sell and purchase locally crafted products
-- **Community Connection** - Digital hub for internal community engagement
-
-### Admin Features
-- **Content Management** - Full control via Strapi admin panel or web interface
-- **User Management** - Role-based permissions system for controlled access
-- **Approval Workflow** - Review and approve/reject user-submitted content
-- **CRM Integration** - Store contact messages and user data for follow-up
-
-### Authentication
-- **Multiple Login Options** - Local credentials or third-party SSO (Google, Facebook)
-- **Role-Based Access** - Different permission levels for admins and regular users
-
-### Data Management
-- **Order History** - Track customer purchases (partially implemented)
-- **Contact Storage** - All form submissions stored in database
-- **User Profiles** - Extended profile information for community members
-
-</details>
-
 
 
 1.Beskrive prosjektet ok
@@ -387,6 +358,37 @@ Strapi organizes content into **Collection Types** (multiple entries) and **Sing
 
 
 </details>
+
+
+<details>
+    <summary><strong>Application features and how they work</strong></summary>
+
+The Cave Tech platform offers the following key features:
+
+### User Features
+- **Project Showcase** - Display your creative work and tech projects to your network
+- **Event Management** - Create and join events with colleagues and community members
+- **Blog Platform** - Share thoughts and experiences with content moderation system
+- **E-Commerce Shop** - Sell and purchase locally crafted products
+- **Community Connection** - Digital hub for internal community engagement
+
+### Admin Features
+- **Content Management** - Full control via Strapi admin panel or web interface
+- **User Management** - Role-based permissions system for controlled access
+- **Approval Workflow** - Review and approve/reject user-submitted content
+- **CRM Integration** - Store contact messages and user data for follow-up
+
+### Authentication
+- **Multiple Login Options** - Local credentials or third-party SSO (Google, Facebook)
+- **Role-Based Access** - Different permission levels for admins and regular users
+
+### Data Management
+- **Order History** - Track customer purchases (partially implemented)
+- **Contact Storage** - All form submissions stored in database
+- **User Profiles** - Extended profile information for community members
+
+</details>
+
 
 <details>
     <summary>
