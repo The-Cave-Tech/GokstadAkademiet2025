@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import ContentForm from "@/components/layouts/dashboard/contentManager/ContentForm";
 import { blogService } from "@/lib/data/services/blogService";
 import { useRouter } from "next/navigation";
+import ContentForm from "@/components/pageSpecificComponents/dashboard/contentManager/ContentForm";
 
 const colors = {
   primary: "rgb(121, 85, 72)", // Brown
