@@ -448,7 +448,7 @@ The Cave Tech platform offers the following key features:
 <details>
     <summary><strong>Universal components</strong></summary>
 <details>
-    <summary>ContentCard</summary>
+    <summary>📇 ContentCard</summary>
 
 The `ContentCard` is a universal card component used throughout the application to display different types of content—such as projects, events, blogs, and products—in a consistent and visually appealing way.
 
@@ -496,7 +496,7 @@ import { adaptEventToCardProps } from "@/lib/adapters/cardAdapter";
 
 </details>
 <details>
-    <summary>SearchBar</summary>
+    <summary>🔎 SearchBar</summary>
 
 The `SearchBar` is a universal component used throughout the application to help users quickly find relevant content, such as projects, events, blogs, or products. It provides a simple and consistent search experience on all pages where searching is needed. This can also easily change your search logic since now it's mostly really basic searching.
 
@@ -533,6 +533,82 @@ export default function ExamplePage() {
         onSearch={handleSearch}
       />
       {/* Render your filtered content here */}
+    </div>
+  );
+}
+```
+
+</details>
+<details>
+    <summary>🔀 SortDropdown</summary>
+
+The `SortDropdown` is a universal component that lets users easily sort lists of content, such as projects, events, blogs, or products. It provides a consistent and user-friendly way to choose how items are ordered on any page.
+
+#### How it works
+
+- The `SortDropdown` displays a dropdown menu with different sorting options (for example: newest first, oldest first, alphabetical).
+- When the user selects an option, the list updates to show the content in the chosen order.
+- The component is flexible and can be used for any type of content by passing in the available sort options and a function to update the sort state.
+
+#### Example usage
+
+**Using the SortDropdown in a page or component:**
+
+```tsx
+import { SortDropdown } from "@/components/ui/SortDropdown";
+import { useState } from "react";
+
+const sortOptions = [
+  { value: "newest", label: "Newest first" },
+  { value: "oldest", label: "Oldest first" },
+  { value: "az", label: "A-Z" },
+  { value: "za", label: "Z-A" },
+];
+
+export default function ExamplePage() {
+  const [sort, setSort] = useState("newest");
+
+  return (
+    <div>
+      <SortDropdown
+        sort={sort}
+        setSort={setSort}
+        options={sortOptions}
+        placeholder="Sort by"
+      />
+      {/* Render your sorted content here */}
+    </div>
+  );
+}
+```
+
+</details>
+<details>
+    <summary>↻ LoadingSpinner</summary>
+
+The `LoadingSpinner` is a universal component that shows a spinning animation while the app is loading data. It helps users understand that something is happening in the background and improves the user experience by providing visual feedback.
+
+#### How it works
+
+- The `LoadingSpinner` displays a spinning circle to indicate that content is loading.
+- You can choose different sizes (small, medium, large) to fit different parts of your app.
+- The spinner can be reused anywhere you need to show a loading state, such as when fetching projects, events, or blog posts.
+
+#### Example usage
+
+**Using the LoadingSpinner in a page or component:**
+
+```tsx
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+
+export default function ExamplePage({ isLoading }) {
+  return (
+    <div>
+      {isLoading ? (
+        <LoadingSpinner size="medium" />
+      ) : (
+        <div>Your loaded content here</div>
+      )}
     </div>
   );
 }
