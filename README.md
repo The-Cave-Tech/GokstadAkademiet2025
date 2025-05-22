@@ -448,7 +448,7 @@ The Cave Tech platform offers the following key features:
 <details>
     <summary><strong>Universal components</strong></summary>
 <details>
-    <summary><strong>ContentCard</strong></summary>
+    <summary>ContentCard</summary>
 
 The `ContentCard` is a universal card component used throughout the application to display different types of content—such as projects, events, blogs, and products—in a consistent and visually appealing way.
 
@@ -458,7 +458,7 @@ The `ContentCard` is a universal card component used throughout the application 
 - An **adapter** (for example, `cardAdapter`) transforms the data for each content type (project, event, blog, product) into a format that the `ContentCard` understands.
 - This makes it easy to add new content types or update the card design in one place, and have the changes reflected everywhere.
 
-#### Example usage
+#### Example usages
 
 **Displaying a list of projects:**
 
@@ -472,6 +472,23 @@ import { adaptProjectToCardProps } from "@/lib/adapters/cardAdapter";
     <UniversalCard
       key={project.id}
       {...adaptProjectToCardProps(project, handleProjectClick)}
+    />
+  ))}
+</div>;
+```
+
+**Displaying a list of events:**
+
+```tsx
+import { UniversalCard } from "@/components/pageSpecificComponents/dashboard/contentManager/ContentCard";
+import { adaptEventToCardProps } from "@/lib/adapters/cardAdapter";
+
+// Inside your component render:
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  {events.map((event) => (
+    <UniversalCard
+      key={event.id}
+      {...adaptEventToCardProps(event, handleEventClick)}
     />
   ))}
 </div>;
@@ -479,36 +496,56 @@ import { adaptProjectToCardProps } from "@/lib/adapters/cardAdapter";
 
 </details>
 <details>
-    <summary><strong>ContentCard</strong></summary>
+    <summary>SearchBar</summary>
 
-The `ContentCard` is a universal card component used throughout the application to display different types of content—such as projects, events, blogs, and products—in a consistent and visually appealing way.
+The `SearchBar` is a universal component used throughout the application to help users quickly find relevant content, such as projects, events, blogs, or products. It provides a simple and consistent search experience on all pages where searching is needed. This can also easily change your search logic since now it's mostly really basic searching.
 
 #### How it works
 
-- The same `ContentCard` component is used for all content types.
-- An **adapter** (for example, `cardAdapter`) transforms the data for each content type (project, event, blog, product) into a format that the `ContentCard` understands.
-- This makes it easy to add new content types or update the card design in one place, and have the changes reflected everywhere.
+- The `SearchBar` displays a text input where users can type their search query.
+- As the user types, the search query is updated in real time.
+- Optionally, a search button can be shown for submitting the search (for example, by pressing Enter or clicking the button).
+- The component is flexible and can be used for any type of content by simply passing the current search query and a function to update it.
 
 #### Example usage
 
-**Displaying a list of projects:**
+**Using the SearchBar in a page or component:**
 
 ```tsx
-import { UniversalCard } from "@/components/pageSpecificComponents/dashboard/contentManager/ContentCard";
-import { adaptProjectToCardProps } from "@/lib/adapters/cardAdapter";
+import { SearchBar } from "@/components/ui/SearchBar";
+import { useState } from "react";
 
-// Inside your component render:
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-  {projects.map((project) => (
-    <UniversalCard
-      key={project.id}
-      {...adaptProjectToCardProps(project, handleProjectClick)}
-    />
-  ))}
-</div>;
+export default function ExamplePage() {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Optional: handle search submit
+  const handleSearch = (query: string) => {
+    // Perform search logic here
+    console.log("Searching for:", query);
+  };
+
+  return (
+    <div>
+      <SearchBar
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        placeholder="Search projects or events"
+        onSearch={handleSearch}
+      />
+      {/* Render your filtered content here */}
+    </div>
+  );
+}
 ```
 
 </details>
+**Why use universal components?**
+
+- **Saves time** - Makes you only build and update one feature, and it will work everywhere in the application where needed.
+- **Consistent look** - The application as a whole will have a much full and clean look to it by using universal components. This helps for easier user flow and understandability for users.
+- **Easy to maintain** - If the application needs to change something in the code, you only need to change in one place. Removes all grunt work needed to maintainabilty by redoing changes everywhere when they do the same.
+- **Flexibility** - You can easy flex your application for when you need to add new content. This means you will only need to add without having to rewrite alot of extra code.
+- **Scalability** - It makes everything in the code organized. This helps when the project starts growing with more features that needs to be added.
 </details>
 
 <details>
