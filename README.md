@@ -1,6 +1,8 @@
 # TheCaveTech
 
-## Plattformen er en modulær applikasjon bestående av en backend del bygget i Strapi på toppen av mySQL med et frontend brukergrenssnitt hvor brukere av denne kan vise frem prosjektporteføljen, arrangementer og ha muligheten til å selge produkter. I tillegg til nettsiden finnes det en CRM funksjon hvor medlemmer av organisasjonen kan lage en profil og få tilgang til en del av de modulære funksjonene. Applikasjonen håndteres enkelt via Strapi-administratorpanelet og her finnes det tilpasningsmuligheter for et mer personlig preg. I tilegg til et eget rollebasert panel med valgmuligheter for tilnærming hvis man vil bruke det instedenfor Strapi sitt panel. Platformen er designet og bygget på en generisk måte slik at andre makerspace kan ta dette i bruk.
+## Plattformen er en modulær applikasjon bestående av en backend del bygget i Strapi på toppen av mySQL med et frontend brukergrenssnitt hvor brukere av denne kan vise frem prosjektporteføljen, arrangementer og ha muligheten til å selge produkter. I tillegg til nettsiden finnes det en CRM funksjon hvor medlemmer av organisasjonen kan lage en profil og få tilgang til en del av de modulære funksjonene.
+
+## Applikasjonen håndteres enkelt via Strapi-administratorpanelet og her finnes det tilpasningsmuligheter for et mer personlig preg. I tilegg til et eget rollebasert panel med valgmuligheter for tilnærming hvis man vil bruke det instedenfor Strapi sitt panel. Platformen er designet og bygget på en generisk måte slik at andre makerspace kan ta dette i bruk.
 
 The Cave Tech bruker denne platformen for å vise sine prosjekter og produkter til sine interessenter. De kan lage arrangementer som medlemmer og andre interessenter kan melde seg på og delta i. Det er lagt til rette for en nettbutikken for å kunne selge egne produkter for å kunne få en ekstra inntektskilde til organisasjonen. Det er bloggfunksjon for å beskrive pågående prosjekter og dele faglig innhold. Her kan brukeren skrive bloggposter som admin kan godkjenne eller avkrefte.
 
@@ -44,10 +46,10 @@ Both frontend and backend have `.env.example` files.
 # <strong>Backend:</strong>
 
 1. In the project root, you'll find a zipped database file.  
-    Unzip it.
+   Unzip it.
 2. Start MySQL Workbench
 3. Go to your root connection in Workbench → Administration → Users and Privileges → Add Account →  
-    Enter `DATABASE_USERNAME` and `DATABASE_PASSWORD` as specified in your backend `.env` file
+   Enter `DATABASE_USERNAME` and `DATABASE_PASSWORD` as specified in your backend `.env` file
 4. In Administrative Roles, select all and click Apply
 5. Go to MySQL Connections and create a connection with the username from step 3
 6. Enter the connection you just created
@@ -70,10 +72,13 @@ In your terminal:
 12. `cd backend`  
 13. `npm i`  
 14. `npm run develop` 14. Navigate to the backend URL specified in your frontend `.env`  
-15. If using our database file and prompted to create a user, use:  
- - Email: test@den.no  
- - Password: Gokstad1234  
- # OR
+15. If using our database file and prompted to create a user, use:
+
+- Email: test@den.no
+- Password: Gokstad1234
+
+# OR
+
 admin@admin.no </br>
 Admin1234 </br>
 
@@ -103,7 +108,7 @@ In the terminal:
 #### ✅ Google
 
 1. Go to: [https://console.cloud.google.com/welcome](https://console.cloud.google.com/welcome)  
-    Click **Select a project** and create a new project.
+   Click **Select a project** and create a new project.
 
 2. Go to: [https://console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials)  
     Click **Create credentials** → Select **OAuth client ID**
@@ -131,10 +136,10 @@ In the terminal:
 #### ✅ Facebook
 
 1. Go to: [https://developers.facebook.com/](https://developers.facebook.com/)  
-    Create a new app for OAuth.
+   Create a new app for OAuth.
 
 2. Follow the guide:  
-    [Learning Strapi Authentication Flows with the Facebook Provider](https://strapi.io/blog/learning-strapi-authentication-flows-with-the-facebook-provider)
+   [Learning Strapi Authentication Flows with the Facebook Provider](https://strapi.io/blog/learning-strapi-authentication-flows-with-the-facebook-provider)
 
 3. **Testing locally with Ngrok:**
    - Run `ngrok http 3000` to generate a public URL.
@@ -184,7 +189,7 @@ In the terminal:
 </strong></summary>
 
 1. Enable email in the Strapi admin panel:  
-    Settings → Users & Permissions Plugin → Providers → Email → Enable > True → Save
+   Settings → Users & Permissions Plugin → Providers → Email → Enable > True → Save
 
 2. Log in or register at https://app.sendgrid.com/
 3. Create a new sender
@@ -379,8 +384,7 @@ The Cave Tech platform offers the following key features:
   - Users should be able to add blogg with a simple "add new blog" button on top right of container. (Not fully implemented, but has components needed)
   - Users can also by clicking on posts get taken to another page with detailed information about the clicked post.
   - Every blog posts should be connected to a specific user that made the posts (Author), with a way to show that user on the detail page.
-- **E-Commerce Shop**
-  -
+- ## **E-Commerce Shop**
 - **Community Connection** - Digital hub for internal community engagement
 
 ### Admin Features
