@@ -376,26 +376,66 @@ The Cave Tech platform offers the following key features:
   - Users can filter the activities after status. If you want to see upcoming events, or projects in planning phase.
   - Users can sort between the activities aphabetical, reverse, newest or oldest first. Newest first is set as default.
 
-- **Blog Platform**
+- **Blog page**
+
   - Same as activities here users can see all blogs posted on application.
   - Users can also filter, search and sort similar just adapted to blogg posts instead. Here the filter is category based.
   - Users should be able to add blogg with a simple "add new blog" button on top right of container. (Not fully implemented, but has components needed)
   - Users can also by clicking on posts get taken to another page with detailed information about the clicked post.
   - Every blog posts should be connected to a specific user that made the posts (Author), with a way to show that user on the detail page.
-- ## **E-Commerce Shop**
-- **Community Connection** - Digital hub for internal community engagement
+
+- **E-Commerce Shop**
+
+  - Users can easily see all products created by The Cave Tech that they have put on their store. This is shown in a clean grid card format
+  - Users can search after products inside the store.
+  - Users can filter products they want shown based on categories.
+  - Users can sort after newest or oldest products.
+  - Users can add product they want to cart by clicking on "Legg til i handlekurv" button on product they want.
+  - Users can go to their cart to be taken to another page for showing all products inside their own cart.
+
+- **About us page**
+
+  - Here the users can switch between reading about The Cave Tech history or their team.
+  - History will contain information about how The Cave Tech became who they are today. Their journey.
+  - Their team will contain information about each member in The Cave Tech.
+
+- **Contact Page**
+
+  - Users can see information about The Cave Tech.
+  - Users can contact The Cave Tech using a submit form for submiting a message directly to their mail.
 
 ### Admin Features
 
-- **Content Management** - Full control via Strapi admin panel or web interface
-- **User Management** - Role-based permissions system for controlled access
-- **Approval Workflow** - Review and approve/reject user-submitted content
-- **CRM Integration** - Store contact messages and user data for follow-up
+- **Content Management**
+
+  - Admins can customize content on pages inside Strapi admin panel that is set up with our frontend
+  - Admins will also get a custom panel with their userpanel only for admin permissions.
+  - Admins will in custom admin panel be able to use functionalities for administrating projects, events and blogs.
+  - When choosing what to administrate admins will be taken to a table of chosen content. Here they can add, delete, edit or view details.
+
+- **User Management**
+
+  - Inside Strapi admins will have access to view all different users using their system/application
+  - Admins can here delete users that breach terms of service on web application or for other reasons.
+  - Admins can change and control permissions for different aspects of application.
 
 ### Authentication
 
-- **Multiple Login Options** - Local credentials or third-party SSO (Google, Facebook)
-- **Role-Based Access** - Different permission levels for admins and regular users
+- **Login and register**
+
+  - Users can login with local account created for access to The Cave Tech application
+  - Users can login with third party providers like google, microsoft or facebook.
+  - Logging in with third party providers will create local account connected to provider used.
+  - Users will be validated with security validation when creating local account. This helps users create a safe and secure account.
+  - Validation on register and login will be live and server based.
+  - When creating an account the "create" button will be grayed out and unclickable before all validation is followed.
+  - Login and register uses forms for a clean and effective design and user experience.
+
+- **Role-Based Access**
+  - Application will have a role based system where you will see and have different actions based on your permissions.
+  - Admins will be users with extra persmissions that allow for customization on content for the application.
+  - There are different actions that cant be preformed before you have logged into an account. Includes sign up for events and being able to use the CRM functionality.
+  - Header will be different depending on logged in status since if not logged in you will not have CRM access at all.
 
 ### Data Management
 
