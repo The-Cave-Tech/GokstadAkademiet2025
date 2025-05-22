@@ -448,6 +448,35 @@ The Cave Tech platform offers the following key features:
 <details>
     <summary><strong>Universal components</strong></summary>
 
+### ContentCard
+
+The `ContentCard` is a universal card component used throughout the application to display different types of content—such as projects, events, blogs, and products—in a consistent and visually appealing way.
+
+#### How it works
+
+- The same `ContentCard` component is used for all content types.
+- An **adapter** (for example, `cardAdapter`) transforms the data for each content type (project, event, blog, product) into a format that the `ContentCard` understands.
+- This makes it easy to add new content types or update the card design in one place, and have the changes reflected everywhere.
+
+#### Example usage
+
+**Displaying a list of projects:**
+
+```tsx
+import { UniversalCard } from "@/components/pageSpecificComponents/dashboard/contentManager/ContentCard";
+import { adaptProjectToCardProps } from "@/lib/adapters/cardAdapter";
+
+// Inside your component render:
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  {projects.map((project) => (
+    <UniversalCard
+      key={project.id}
+      {...adaptProjectToCardProps(project, handleProjectClick)}
+    />
+  ))}
+</div>;
+```
+
 </details>
 
 <details>
