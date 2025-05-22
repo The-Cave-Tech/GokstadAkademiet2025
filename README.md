@@ -615,6 +615,42 @@ export default function ExamplePage({ isLoading }) {
 ```
 
 </details>
+<details>
+    <summary>Card</summary>
+
+The `Card` component is a universal building block used throughout the application to display content in a clean, organized, and visually appealing way. It provides a consistent layout for different types of information, such as projects, events, blogs, or products.
+
+#### How it works
+
+- The `Card` component wraps content in a styled box with rounded corners and a shadow, making information easy to read and visually separated from other elements.
+- It can be combined with `CardHeader`, `CardBody`, and `CardFooter` subcomponents to organize content into sections (for example: image at the top, details in the middle, actions at the bottom).
+- The card is flexible and can be used for any type of content by simply placing your content inside the card sections.
+
+#### Example usage
+
+**Using the Card component in a page or component:**
+
+```tsx
+import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
+
+export default function ExamplePage() {
+  return (
+    <Card>
+      <CardHeader>
+        <h3>Project Title</h3>
+      </CardHeader>
+      <CardBody>
+        <p>This is a short description of the project or content.</p>
+      </CardBody>
+      <CardFooter>
+        <button>Read more</button>
+      </CardFooter>
+    </Card>
+  );
+}
+```
+
+</details>
 **Why use universal components?**
 
 - **Saves time** - Makes you only build and update one feature, and it will work everywhere in the application where needed.
