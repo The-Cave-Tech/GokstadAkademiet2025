@@ -311,7 +311,7 @@ Avstander: Bruk CSS-enheter som rem, px, eller em (f.eks. 1rem, 16px).
 For custom email text and templates, always update files in `backend/src/service` to match your requirements.
 </details>
 
-<details><summary><strong>How to use: Reusable universal components</strong></summary>
+<details><summary><strong>Reusable universal components</strong></summary>
 <details><summary><strong>PageIcons</strong></summary>
 `PageIcons`-komponenten brukes til å hente og vise SVG-ikoner fra `public/`-mappen der det er behov for det i prosjektet.  
 📁 Plassering i prosjektet: `//frontend/src/components/ui/custom/PageIcons.tsx`  
@@ -641,7 +641,8 @@ import BackButton from "@/components/ui/BackButton";
 ```
 </details>
 </details>
-<details><summary><strong>#Strapi Admin Panel</strong></summary>
+</details>
+<details><summary><strong>Strapi Admin Panel</strong></summary>
 ## Strapi Admin Panel
 
 The Strapi Admin Panel is the main interface for managing all content, users, and settings in your application.
