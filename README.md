@@ -19,7 +19,7 @@ Plattformen har foreløpig ikke et fullverdig CRM-system, men alle kontaktmeldin
 Frontend: Next.js, TypeScript, Tailwind CSS  
 Backend: Strapi (Headless CMS)  
 Database: Compatible with Strapi (MySQL)
-<details>
+</details>
 <br>
 1. Beskrive prosjektet ok
 2. Installasjon ok
