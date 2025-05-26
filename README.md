@@ -311,7 +311,7 @@ Avstander: Bruk CSS-enheter som rem, px, eller em (f.eks. 1rem, 16px).
 For custom email text and templates, always update files in `backend/src/service` to match your requirements.
 </details>
 
-# <details><summary><strong>How to use: Reusable universal components</strong></summary>
+<details><summary><strong>How to use: Reusable universal components</strong></summary>
 <details><summary><strong>PageIcons</strong></summary>
 `PageIcons`-komponenten brukes til å hente og vise SVG-ikoner fra `public/`-mappen der det er behov for det i prosjektet.  
 📁 Plassering i prosjektet: `//frontend/src/components/ui/custom/PageIcons.tsx`  
@@ -332,7 +332,7 @@ import PageIcons from "@/components/ui/custom/PageIcons";
 ```
 </details>
 
-# <details><summary><strong>How to use: Reusable universal components</strong></summary>
+
 <details><summary><strong>SiteLogo</strong></summary>
 SiteLogo er dynamisk komponent som henter og viser logoer (header eller footer) som er lagret i Strapi-backenden.  
 
