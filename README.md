@@ -1,4 +1,6 @@
 # TheCaveTech
+<details><summary><strong>About</strong></summary>
+<pr>
 
 ## Om dette prosjektet
 Denne webapplikasjonen er utviklet for et makerspace, hvor organisasjonen The Cave Tech viser frem prosjektene og produktene sine til et lukket miljø bestående av venner og bekjente. Plattformen brukes til å arrangere arrangementer, dele faglig innhold gjennom en blogg, samt selge sine produkter via en nettbutikk for å generere ekstra inntekter. Prosjektet er publisert som åpen kildekode og kan fungere som en universell plattform som enkelt kan skaleres til andre formål.
@@ -17,7 +19,8 @@ Plattformen har foreløpig ikke et fullverdig CRM-system, men alle kontaktmeldin
 Frontend: Next.js, TypeScript, Tailwind CSS  
 Backend: Strapi (Headless CMS)  
 Database: Compatible with Strapi (MySQL)
-
+<details>
+<br>
 1. Beskrive prosjektet ok
 2. Installasjon ok
 3. Strapi guide ok
@@ -389,14 +392,36 @@ The `ContentCard` is a universal card component used throughout the application 
 - An **adapter** (for example, `cardAdapter`) transforms the data for each content type (project, event, blog, product) into a format that the `ContentCard` understands.
 - This makes it easy to add new content types or update the card design in one place, and have the changes reflected everywhere.
 
-#### Example usages
+#### How to add a new card type
+
+1. **Create or update an adapter function:**  
+   When you want to display a new type of content (for example, a new card for a new feature), you add a new function in the `cardAdapter` file.  
+   This function should take your new content type and return an object with the properties that `ContentCard` expects (like title, description, image, etc).
+
+2. **Example:**  
+   If you add a new content type called "Resource", you would add a function like this in `cardAdapter.tsx`:
+   ```tsx
+   export function adaptResourceToCardProps(resource, onClick) {
+     return {
+       title: resource.name,
+       description: resource.summary,
+       image: { src: resource.imageUrl, alt: resource.name },
+       onClick: () => onClick(resource.id),
+       // ...other properties as needed
+     };
+   }
+   ```
+
+#### Example usage
 
 **Displaying a list of events (example):**
+
 1. Import UniversalContentCard component and adapted props based on what you want the card to have
 ```tsx
 import { UniversalContentCard } from "@/components/pageSpecificComponents/dashboard/contentManager/ContentCard";
 import { adaptEventToCardProps } from "@/lib/adapters/cardAdapter";
 ```
+2. Use the card inside your component’s render/return:
 ```tsx
 // Inside your component render:
 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
