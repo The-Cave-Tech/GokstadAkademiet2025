@@ -241,9 +241,9 @@ Nettbrett (opptil 1024px):<br/>
 Mobil (opptil 639px):<br/>
 --landing-main-header: 30px;
 <br/>
-ønskes det å legge til flere font størrelse typer i fremtiden, legges de inn i global.css sin root som f.eks
-:root{
-/_ Desktop (over 1024px) about header _/
+ønskes det å legge til flere font størrelse typer i fremtiden, legges de inn i global.css sin root som f.eks<br/>
+:root{<br/>
+</_> Desktop (over 1024px) about header _/
 --about-main-header: 60px;
 
     @media (max-width: 1024px) {
