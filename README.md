@@ -243,7 +243,7 @@ Mobil (opptil 639px):<br/>
 <br/>
 ønskes det å legge til flere font størrelse typer i fremtiden, legges de inn i global.css sin root som f.eks<br/>
 :root{<br/>
-</_> Desktop (over 1024px) about header _/
+<!-- Desktop (over 1024px) about header --><br/>
 --about-main-header: 60px;
 
     @media (max-width: 1024px) {
