@@ -74,8 +74,9 @@ In your terminal:
 
 OR
 
-admin@admin.no  
-Admin1234  
+- admin@admin.no  
+- Admin1234  
+<br>
 
 #Frontend
 
