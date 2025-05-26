@@ -209,10 +209,8 @@ For testing:
 
 </details>
 
-<details><summary><strong>How to</strong></summary>
+<details><summary><strong><p style="font-size:20px; color:red;">How to</p></strong></summary>
 <br>
-<p style="font-size:20px; color:red;">
-
 <details><summary><strong>Change Global style</strong></summary>
 
 <!-- Desktop (over 1024px) about header -->
@@ -472,7 +470,7 @@ export default function ExamplePage() {
 
 </details>
 <details>
-   <summary>🔀 SortDropdown</summary>
+    <summary>🔀 SortDropdown</summary>
 
 The `SortDropdown` is a universal component that lets users easily sort lists of content, such as projects, events, blogs, or products. It provides a consistent and user-friendly way to choose how items are ordered on any page.
 
@@ -486,12 +484,11 @@ The `SortDropdown` is a universal component that lets users easily sort lists of
 
 **Using the SortDropdown in a page or component:**
 
-1. Import SortDropdown component and useState
 ```tsx
 import { SortDropdown } from "@/components/ui/SortDropdown";
 import { useState } from "react";
 ```
-2. Set up what options of sorting you want and the state for it, here you can add a default state as well
+2. Add variables for options of sorting, create your function and initialize the state with a default state if wanted
 ```tsx
 const sortOptions = [
   { value: "newest", label: "Newest first" },
@@ -503,8 +500,21 @@ const sortOptions = [
 export default function ExamplePage() {
   const [sort, setSort] = useState("newest");
 ```
-
-3. 
+3. Use the SortDropdown in your return with needed props from component and give the values on your page
+```tsx
+  return (
+    <div>
+      <SortDropdown
+        sort={sort}
+        setSort={setSort}
+        options={sortOptions}
+        placeholder="Sort by"
+      />
+      {/* Render your sorted content here */}
+    </div>
+  );
+}
+```
 </details>
 <details>
     <summary>↻ LoadingSpinner</summary>
@@ -637,10 +647,11 @@ The `BackButton` is a universal navigation component that lets users easily go b
 
 **Using the BackButton in a page or component:**
 
+1. Import BackButton component
 ```tsx
 import BackButton from "@/components/ui/BackButton";
 ```
-2. Use 
+2. Use component where you want. It has different implementing versions for what you want it to do
 ```tsx
 // Standard back button (goes to previous page)
 <BackButton />
@@ -664,8 +675,6 @@ import BackButton from "@/components/ui/BackButton";
 ```
 </details>
 </details>
-
-</p>
 </details>
 
 <details><summary><strong>Strapi Admin Panel</strong></summary>
