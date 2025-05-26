@@ -206,8 +206,8 @@ For testing:
 [Help Article](https://help.twilio.com/articles/10284917001627)
 
 </details>
-
 </details>
+<br>
 
 <details><summary><strong>How to</strong></summary>
 <br>
@@ -391,9 +391,9 @@ The `ContentCard` is a universal card component used throughout the application 
 #### Example usages
 
 **Displaying a list of events (example):**
-1. Import 
+1. Import UniversalContentCard component and adapted props based on what you want the card to have
 ```tsx
-import { UniversalCard } from "@/components/pageSpecificComponents/dashboard/contentManager/ContentCard";
+import { UniversalContentCard } from "@/components/pageSpecificComponents/dashboard/contentManager/ContentCard";
 import { adaptEventToCardProps } from "@/lib/adapters/cardAdapter";
 ```
 ```tsx
@@ -785,6 +785,7 @@ Strapi organizes content into **Collection Types** (multiple entries) and **Sing
 ---
 
 </details>
+<br>
 
 <details><summary><strong>Application features and how they works</strong></summary>
   
