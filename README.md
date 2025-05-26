@@ -1,34 +1,32 @@
 # TheCaveTech
 
-## Om dette prosjektet <br>
- Denne webapplikasjonen er utviklet for et makerspace, hvor organisasjonen The Cave Tech viser frem prosjektene og produktene sine til et lukket miljø bestående av venner og bekjente. Plattformen brukes til å arrangere arrangementer, dele faglig innhold gjennom en blogg, samt selge sine produkter via en nettbutikk for å generere ekstra inntekter. Prosjektet er publisert som åpen kildekode og kan fungere som en universell plattform som enkelt kan skaleres til andre formål.
+## Om dette prosjektet
+Denne webapplikasjonen er utviklet for et makerspace, hvor organisasjonen The Cave Tech viser frem prosjektene og produktene sine til et lukket miljø bestående av venner og bekjente. Plattformen brukes til å arrangere arrangementer, dele faglig innhold gjennom en blogg, samt selge sine produkter via en nettbutikk for å generere ekstra inntekter. Prosjektet er publisert som åpen kildekode og kan fungere som en universell plattform som enkelt kan skaleres til andre formål.
 
-### Teknologi og funksjonalitet <br>
+### Teknologi og funksjonalitet
 Applikasjonen er bygget med Next.js, TypeScript og Tailwind CSS, og bruker Strapi som headless CMS og REST API for backend-funksjonalitet. Innhold administreres gjennom Strapi sitt adminpanel, hvor databaserelasjoner opprettes automatisk ved tilføyelse av innhold. Webapplikasjonen inkluderer et eget dashboard der medlemmer av The Cave Tech kan administrere prosjekter, arrangementer og blogginnlegg. Strapi-adminpanelet brukes primært til å håndtere produkter i nettbutikken, administrere innhold og utvikle ny funksjonalitet.
 
 
-#### Rolletilgang <br>
-
+#### Rolletilgang
 Administratorer har full kontroll i Strapi og kan administrere prosjekter, arrangementer, blogginnlegg og brukerinformasjon. Autentisering skjer via lokal eller tredjeparts pålogging. Vanlige brukere kan også bidra med blogginnlegg.
 
-##### Status <br>
-
+##### Status
 Plattformen har foreløpig ikke et fullverdig CRM-system, men alle kontaktmeldinger og brukerdata lagres i databasen og er tilgjengelige via Strapi sitt administrasjonspanel. Kjøpshistorikk er delvis implementert. Betalingsløsningen er for øyeblikket hardkodet og krever videre utvikling. I det interne administrasjonspanelet mangler det støtte for arkivering, og bruken av WYSIWYG-editor mot Strapi er utfordrende grunnet formateringsforskjeller – dette krever også videreutvikling. Blogg skal være koblet opp mot en bruker, denne delen er ikke implementert. For nå så kan bare admin legge til blogg innlegg via Strapi og eget panel - videreutviklingen her skal også være en legg til knapp på blogg siden som bruker ContentForm komponenten for å få tilgang til universalt skjema for content.
 
-##### Tech Stack <br>
-Frontend: Next.js, TypeScript, Tailwind CSS <br>
-Backend: Strapi (Headless CMS) <br>
-Database: Compatible with Strapi (MySQL) <br>
+##### Tech Stack
+Frontend: Next.js, TypeScript, Tailwind CSS  
+Backend: Strapi (Headless CMS)  
+Database: Compatible with Strapi (MySQL)
 
-1.Beskrive prosjektet ok
-2.Installasjon ok
-3.Strapi guide ok
-4.Nettside guide -tilpasse
-5.Kode guide/ hvordan bruke universelle komponenter 
+1. Beskrive prosjektet ok
+2. Installasjon ok
+3. Strapi guide ok
+4. Nettside guide -tilpasse
+5. Kode guide/ hvordan bruke universelle komponenter 
 eksemp. PageIcons- hvordan bruke page icons
-6.Hva som gjenstår (Known issues)
+6. Hva som gjenstår (Known issues)
 
-## <details><summary><strong>🚀 Getting Started / How to install</strong></summary>
+<details><summary><strong>🚀 Getting Started / How to install</strong></summary>
 
 This setup is designed for testing purposes only, as the company prefers to handle deployment themselves.
 
@@ -37,7 +35,7 @@ This setup is designed for testing purposes only, as the company prefers to hand
 1. Installation
 </strong></summary>
 
-</br>
+<br/>
 Both frontend and backend have `.env.example` files.  
 0. Create `.env` files in both frontend and backend folders and copy the contents from `.env.example` into `.env`.
 
@@ -46,10 +44,10 @@ Both frontend and backend have `.env.example` files.
 # <strong>Backend:</strong>
 
 1. In the project root, you'll find a zipped database file.  
-   Unzip it.
+  Unzip it.
 2. Start MySQL Workbench
 3. Go to your root connection in Workbench → Administration → Users and Privileges → Add Account →  
-   Enter `DATABASE_USERNAME` and `DATABASE_PASSWORD` as specified in your backend `.env` file
+  Enter `DATABASE_USERNAME` and `DATABASE_PASSWORD` as specified in your backend `.env` file
 4. In Administrative Roles, select all and click Apply
 5. Go to MySQL Connections and create a connection with the username from step 3
 6. Enter the connection you just created
@@ -71,16 +69,17 @@ After setting up `.env` in the root folder (where `.env.example` is):
 In your terminal:  
 12. `cd backend`  
 13. `npm i`  
-14. `npm run develop` 14. Navigate to the backend URL specified in your frontend `.env`  
-15. If using our database file and prompted to create a user, use:
+14. `npm run develop`  
+15. Navigate to the backend URL specified in your frontend `.env`  
+16. If using our database file and prompted to create a user, use:
 
 - Email: test@den.no
 - Password: Gokstad1234
 
 # OR
 
-admin@admin.no </br>
-Admin1234 </br>
+admin@admin.no  
+Admin1234  
 
 #Frontend
 
@@ -108,45 +107,45 @@ In the terminal:
 #### ✅ Google
 
 1. Go to: [https://console.cloud.google.com/welcome](https://console.cloud.google.com/welcome)  
-   Click **Select a project** and create a new project.
+  Click **Select a project** and create a new project.
 
 2. Go to: [https://console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials)  
-    Click **Create credentials** → Select **OAuth client ID**
+  Click **Create credentials** → Select **OAuth client ID**
 
-   - **Application type:** Web Application
-   - **Name:** Any name for your client
-   - **Authorized redirect URIs (for testing):**
-     - `http://localhost:3000/api/auth/callback/google`
-     - `http://localhost:1337/api/connect/google/callback`
+  - **Application type:** Web Application
+  - **Name:** Any name for your client
+  - **Authorized redirect URIs (for testing):**
+    - `http://localhost:3000/api/auth/callback/google`
+    - `http://localhost:1337/api/connect/google/callback`
 
 3. Go to: [https://console.cloud.google.com/auth/branding](https://console.cloud.google.com/auth/branding)  
-    Here you can configure the **OAuth consent screen**.  
-    The following is **not required for testing**, but **mandatory for deployment**:
+  Here you can configure the **OAuth consent screen**.  
+  The following is **not required for testing**, but **mandatory for deployment**:
 
-   - Application name
-   - Support email
-   - Application logo (optional)
-   - Privacy policy and terms of service
-   - Authorized domains such as:
-     - `https://www.thecavetech.org`
-     - Domains used in redirect URIs
+  - Application name
+  - Support email
+  - Application logo (optional)
+  - Privacy policy and terms of service
+  - Authorized domains such as:
+    - `https://www.thecavetech.org`
+    - Domains used in redirect URIs
 
 ---
 
 #### ✅ Facebook
 
 1. Go to: [https://developers.facebook.com/](https://developers.facebook.com/)  
-   Create a new app for OAuth.
+  Create a new app for OAuth.
 
 2. Follow the guide:  
-   [Learning Strapi Authentication Flows with the Facebook Provider](https://strapi.io/blog/learning-strapi-authentication-flows-with-the-facebook-provider)
+  [Learning Strapi Authentication Flows with the Facebook Provider](https://strapi.io/blog/learning-strapi-authentication-flows-with-the-facebook-provider)
 
 3. **Testing locally with Ngrok:**
-   - Run `ngrok http 3000` to generate a public URL.
-   - Use this as the redirect URI in the Facebook Developer Portal, e.g.:  
-      `https://abc123.ngrok.io/api/auth/callback/facebook`
-   - For deployment, replace with your production URL:  
-      `https://yourdomain.com/api/auth/callback/facebook`
+  - Run `ngrok http 3000` to generate a public URL.
+  - Use this as the redirect URI in the Facebook Developer Portal, e.g.:  
+    `https://abc123.ngrok.io/api/auth/callback/facebook`
+  - For deployment, replace with your production URL:  
+    `https://yourdomain.com/api/auth/callback/facebook`
 
 ---
 
@@ -164,20 +163,20 @@ In the terminal:
 3. Under **Users & Permissions Plugin**, select **Providers**
 4. Choose your desired OAuth provider
 5. Enter:
-   - **Client ID** and **Client Secret** from previous steps (Google/Facebook)
+  - **Client ID** and **Client Secret** from previous steps (Google/Facebook)
 6. Add the following redirect URLs:
 
-   - Google: `http://localhost:3000/api/auth/callback/google`
-   - Facebook: `http://localhost:3000/api/auth/callback/facebook`
+  - Google: `http://localhost:3000/api/auth/callback/google`
+  - Facebook: `http://localhost:3000/api/auth/callback/facebook`
 
 7. For Microsoft: The redirect URL is generated automatically in Strapi
 
 <details>
-    <summary><strong>🖼️ Show Image</strong></summary>
+   <summary><strong>🖼️ Show Image</strong></summary>
 
-    ![Screenshot](/ImagesForReadme/StrapiAddOauth.png)
+   ![Screenshot](/ImagesForReadme/StrapiAddOauth.png)
 
-    > 🔄 Remember to update **Authorized redirect URIs** when deploying the application so they point to the correct production URL.
+   > 🔄 Remember to update **Authorized redirect URIs** when deploying the application so they point to the correct production URL.
 
 </details>
 </details>
@@ -189,19 +188,19 @@ In the terminal:
 </strong></summary>
 
 1. Enable email in the Strapi admin panel:  
-   Settings → Users & Permissions Plugin → Providers → Email → Enable > True → Save
+  Settings → Users & Permissions Plugin → Providers → Email → Enable > True → Save
 
 2. Log in or register at https://app.sendgrid.com/
 3. Create a new sender
 4. Verify your email
 5. Go to API settings and create an API key
 6. After setup, save the API key in your `.env` file:
-   ```
-   SENDGRID_API_KEY=
-   DEFAULT_FROM_EMAIL=
-   DEFAULT_REPLY_TO_EMAIL=
-   ```
-   Use the same values as when you created the sender.
+  ```
+  SENDGRID_API_KEY=
+  DEFAULT_FROM_EMAIL=
+  DEFAULT_REPLY_TO_EMAIL=
+  ```
+  Use the same values as when you created the sender.
 
 **SendGrid: Unauthorized Error issue while using SendGrid Email API**  
 [Help Article](https://help.twilio.com/articles/10284917001627)
@@ -210,67 +209,82 @@ In the terminal:
 
 </details>
 
-## <details><summary><strong>How to</strong></summary>
+<details><summary><strong>How to</strong></summary>
 <details><summary><strong>Change Global style</strong></summary>
-<!-- Desktop (over 1024px) about header --><br/>
---about-main-header: 60px;
-Veiledning for tilpasning av profilsidens design<br/>
-Denne guiden forklarer hvordan du kan endre farger, fonter, avstander og andre designelementer i appkikasjonen uten å måtte endre koden direkte.
-Hvor finner du stilene?<br/>
-Alle globale designinnstillinger er definert som CSS-variabler i :root i filen src/styles/global.css. Disse variablene brukes gjennom hele prosjektet for å sikre konsistent styling.
-<pr/>
-Eksmempel på hvordan stylen kan byttes ut.
-<br/>
-Finn variabelen du vil endre, for eksempel:<br/>
---color-primary: #d5bdaf;<!-- Header and dropdown menus  -->
-<br/>
-Bytt ut verdien for å endre fargen globalt:
---color-primary: #007bff;<!-- Blå  -->
-<pr/>
 
-responsivitet<br/>
-Egne verdier er definert for ulike skjermstørrelser via media queries:<br/>
-<br/>
-Desktop (over 1024px):<br/>
---landing-main-header: 60px;
-<br/>
-<br/>
-Nettbrett (opptil 1024px):<br/>
---landing-main-header: 36px;
-<br/>
-<br/>
-Mobil (opptil 639px):<br/>
---land
-    @media (max-width: 1024px) {<br/>
-    :root {<br/>
-        --about-main-header: 36px;<br/>
-    }<br/>
-<br/>
-<br/>
-    @media (max-width: 639px) {<br/>
-    :root {<br/>
-        --about-main-header: 30px;<br/>
-    }<br/>
-<br/>
-}<br/>
-<pr/>
-så må du videre inn i tailwind.config.ts<br/>
-<br/>
-theme: {<br/>
-extend: {<br/>
-fontSize: {<br/>
-"about-main-header": "var(--about-main-header)",<br/>
-},<br/>
-<br/>
-```tsx
-      ønsker du da å bruke denne må du skrive text-about-main-header i classname for tekstelementet
+<!-- Desktop (over 1024px) about header -->
+--about-main-header: 60px;
+
+### Veiledning for tilpasning av profilsidens design
+
+Denne guiden forklarer hvordan du kan endre farger, fonter, avstander og andre designelementer i appkikasjonen uten å måtte endre koden direkte.
+
+#### Hvor finner du stilene?
+Alle globale designinnstillinger er definert som CSS-variabler i :root i filen `src/styles/global.css`. Disse variablene brukes gjennom hele prosjektet for å sikre konsistent styling.
+
+#### Eksmempel på hvordan stylen kan byttes ut
+
+Finn variabelen du vil endre, for eksempel:
+```css
+--color-primary: #d5bdaf; /* Header and dropdown menus */
 ```
 
-Farger: Bruk hex-koder
-Fonter: Bruk fontnavn tilgjengelig via Google Fonts eller systemfonter (f.eks. "Arial, sans-serif").
-Avstander: Bruk CSS-enheter som rem, px, eller em (f.eks. 1rem, 16px).
-<pr/>
-<br/>
+Bytt ut verdien for å endre fargen globalt:
+```css
+--color-primary: #007bff; /* Blå */
+```
+
+#### Responsivitet
+Egne verdier er definert for ulike skjermstørrelser via media queries:
+
+Desktop (over 1024px):
+```css
+--landing-main-header: 60px;
+```
+
+Nettbrett (opptil 1024px):
+```css
+--landing-main-header: 36px;
+```
+
+Mobil (opptil 639px):
+```css
+--landing-main-header: 30px;
+```
+
+Mediaqueries eksempel:
+```css
+@media (max-width: 1024px) {
+   :root {
+      --about-main-header: 36px;
+   }
+}
+
+@media (max-width: 639px) {
+<br/> {
+      --about-main-header: 30px;
+   }
+}
+```
+
+Videre må du inn i `tailwind.config.ts`:
+```ts
+theme: {
+   extend: {
+      fontSize: {
+        "about-main-header": "var(--about-main-header)",
+      },
+   }
+}
+```
+
+For å bruke denne størrelsen, skriv `text-about-main-header` i classname for tekstelementet.
+
+#### Verdier
+- Farger: Bruk hex-koder
+- Fonter: Bruk fontnavn tilgjengelig via Google Fonts eller systemfonter (f.eks. "Arial, sans-serif")
+- Avstander: Bruk CSS-enheter som rem, px, eller em (f.eks. 1rem, 16px)
+
 </details>
 
 <details><summary><strong>🔑 To change JWT Token Expiry/ how long JWT tokens are valid:</strong></summary>
@@ -312,6 +326,7 @@ For custom email text and templates, always update files in `backend/src/service
 
 <details><summary><strong>Reusable universal components</strong></summary>
 <details><summary><strong>PageIcons</strong></summary>
+
 `PageIcons`-komponenten brukes til å hente og vise SVG-ikoner fra `public/`-mappen der det er behov for det i prosjektet.  
 📁 Plassering i prosjektet: `//frontend/src/components/ui/custom/PageIcons.tsx`  
 
@@ -333,6 +348,7 @@ import PageIcons from "@/components/ui/custom/PageIcons";
 
 
 <details><summary><strong>SiteLogo</strong></summary>
+
 SiteLogo er dynamisk komponent som henter og viser logoer (header eller footer) som er lagret i Strapi-backenden.  
 
 📍 **Filplassering:**  
@@ -361,7 +377,7 @@ import { SiteLogo } from "@/components/ui/SiteLogo";
 
 
 <details>
-    <summary>📇 ContentCard</summary>
+   <summary>📇 ContentCard</summary>
 
 The `ContentCard` is a universal card component used throughout the application to display different types of content—such as projects, events, blogs, and products—in a consistent and visually appealing way.
 
@@ -382,10 +398,10 @@ import { adaptProjectToCardProps } from "@/lib/adapters/cardAdapter";
 // Inside your component render:
 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
   {projects.map((project) => (
-    <UniversalCard
-      key={project.id}
-      {...adaptProjectToCardProps(project, handleProjectClick)}
-    />
+   <UniversalCard
+    key={project.id}
+    {...adaptProjectToCardProps(project, handleProjectClick)}
+   />
   ))}
 </div>;
 ```
@@ -399,17 +415,17 @@ import { adaptEventToCardProps } from "@/lib/adapters/cardAdapter";
 // Inside your component render:
 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
   {events.map((event) => (
-    <UniversalCard
-      key={event.id}
-      {...adaptEventToCardProps(event, handleEventClick)}
-    />
+   <UniversalCard
+    key={event.id}
+    {...adaptEventToCardProps(event, handleEventClick)}
+   />
   ))}
 </div>;
 ```
 
 </details>
 <details>
-    <summary>🔎 SearchBar</summary>
+   <summary>🔎 SearchBar</summary>
 
 The `SearchBar` is a universal component used throughout the application to help users quickly find relevant content, such as projects, events, blogs, or products. It provides a simple and consistent search experience on all pages where searching is needed. This can also easily change your search logic since now it's mostly really basic searching.
 
@@ -433,27 +449,27 @@ export default function ExamplePage() {
 
   // Optional: handle search submit
   const handleSearch = (query: string) => {
-    // Perform search logic here
-    console.log("Searching for:", query);
+   // Perform search logic here
+   console.log("Searching for:", query);
   };
 
   return (
-    <div>
-      <SearchBar
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        placeholder="Search projects or events"
-        onSearch={handleSearch}
-      />
-      {/* Render your filtered content here */}
-    </div>
+   <div>
+    <SearchBar
+      searchQuery={searchQuery}
+      setSearchQuery={setSearchQuery}
+      placeholder="Search projects or events"
+      onSearch={handleSearch}
+    />
+    {/* Render your filtered content here */}
+   </div>
   );
 }
 ```
 
 </details>
 <details>
-    <summary>🔀 SortDropdown</summary>
+   <summary>🔀 SortDropdown</summary>
 
 The `SortDropdown` is a universal component that lets users easily sort lists of content, such as projects, events, blogs, or products. It provides a consistent and user-friendly way to choose how items are ordered on any page.
 
@@ -467,10 +483,13 @@ The `SortDropdown` is a universal component that lets users easily sort lists of
 
 **Using the SortDropdown in a page or component:**
 
+1. Import SortDropdown component and useState
 ```tsx
 import { SortDropdown } from "@/components/ui/SortDropdown";
 import { useState } from "react";
-
+```
+2. Set up what options of sorting 
+```tsx
 const sortOptions = [
   { value: "newest", label: "Newest first" },
   { value: "oldest", label: "Oldest first" },
@@ -480,20 +499,9 @@ const sortOptions = [
 
 export default function ExamplePage() {
   const [sort, setSort] = useState("newest");
-
-  return (
-    <div>
-      <SortDropdown
-        sort={sort}
-        setSort={setSort}
-        options={sortOptions}
-        placeholder="Sort by"
-      />
-      {/* Render your sorted content here */}
-    </div>
-  );
-}
 ```
+
+3. 
 </details>
 <details>
     <summary>↻ LoadingSpinner</summary>
@@ -510,9 +518,12 @@ The `LoadingSpinner` is a universal component that shows a spinning animation wh
 
 **Using the LoadingSpinner in a page or component:**
 
+1. Import the LoadingSpinner component
 ```tsx
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-
+```
+2. Use it where you want to show a loading state
+```tsx
 export default function ExamplePage({ isLoading }) {
   return (
     <div>
@@ -526,24 +537,23 @@ export default function ExamplePage({ isLoading }) {
 }
 ```
 </details>
-<details>
-    <summary>Card</summary>
-
-The `Card` component is a universal building block used throughout the application to display content in a clean, organized, and visually appealing way. It provides a consistent layout for different types of information, such as projects, events, blogs, or products.
+<details> <summary>Card</summary>
+The Card component is a universal building block used throughout the application to display content in a clean, organized, and visually appealing way. It provides a consistent layout for different types of information, such as projects, events, blogs, or products.
 
 #### How it works
-
-- The `Card` component wraps content in a styled box with rounded corners and a shadow, making information easy to read and visually separated from other elements.
-- It can be combined with `CardHeader`, `CardBody`, and `CardFooter` subcomponents to organize content into sections (for example: image at the top, details in the middle, actions at the bottom).
-- The card is flexible and can be used for any type of content by simply placing your content inside the card sections.
+The Card component wraps content in a styled box with rounded corners and a shadow, making information easy to read and visually separated from other elements.
+It can be combined with CardHeader, CardBody, and CardFooter subcomponents to organize content into sections (for example: image at the top, details in the middle, actions at the bottom).
+The card is flexible and can be used for any type of content by simply placing your content inside the card sections.
 
 #### Example usage
 
-**Using the Card component in a page or component:**
-
+1. Import the Card and its subcomponents:
 ```tsx
 import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
+```
 
+2. Use the Card in your component:
+```tsx
 export default function ExamplePage() {
   return (
     <Card>
@@ -589,7 +599,7 @@ export default function ExampleForm() {
   const [content, setContent] = useState("");
 }
 ```
-3. Add a return on the function that returns a form with the editor usag
+3. Add a return on the function that returns a form with the editor usage and needed props
 ```tsx
 export default function ExampleForm() {
   
@@ -651,7 +661,8 @@ import BackButton from "@/components/ui/BackButton";
 </details>
 </details>
 
-## <details><summary><strong>Strapi Admin Panel</strong></summary>
+<details><summary><strong>Strapi Admin Panel</strong></summary>
+
 ## Strapi Admin Panel
 
 The Strapi Admin Panel is the main interface for managing all content, users, and settings in your application.
