@@ -27,7 +27,7 @@ eksemp. PageIcons- hvordan bruke page icons
 6. Hva som gjenstår (Known issues)
 
 <details><summary><strong>🚀 Getting Started / How to install</strong></summary>
-
+<br>
 This setup is designed for testing purposes only, as the company prefers to handle deployment themselves.
 
 <details>
