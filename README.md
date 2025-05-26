@@ -1,27 +1,30 @@
 # TheCaveTech
 
-## Dette prosjektet er en universell webapplikasjon utviklet med tanke på et makerspace, der brukere kan vise frem interesser og arbeider gjennom prosjekter, arrangementer, blogginnlegg og samtidig selge sine produkter. Applikasjonen er bygget med Next.js, TypeScript og Tailwind CSS, og bruker Strapi som headless CMS og REST API. Databaserelasjoner opprettes automatisk når innhold legges til i Strapi sitt adminpanel, og alt innhold som vises i webapplikasjonen kan administreres via dette panelet. </br> </br> Webapplikasjonen har også sitt eget dashboard, hvor medlemmer av organisasjonen kan administrere innhold som prosjekter, arrangementer og blogginnlegg. Strapi sitt adminpanel brukes hovedsakelig til å legge til produkter i nettbutikken, administrere alt innhold og bygge videre med mer funksjonalitet.
+## Om dette prosjektet <br>
+ Denne webapplikasjonen er utviklet for et makerspace, hvor organisasjonen The Cave Tech viser frem prosjektene og produktene sine til et lukket miljø bestående av venner og bekjente. Plattformen brukes til å arrangere arrangementer, dele faglig innhold gjennom en blogg, samt selge sine produkter via en nettbutikk for å generere ekstra inntekter. Prosjektet er publisert som åpen kildekode og kan fungere som en universell plattform som enkelt kan skaleres til andre formål.
 
-The Cave Tech bruker denne platformen for å vise sine prosjekter og produkter til sine interessenter. De kan lage arrangementer som medlemmer og andre interessenter kan melde seg på og delta i. Det er lagt til rette for en nettbutikken for å kunne selge egne produkter for å kunne få en ekstra inntektskilde til organisasjonen. Det er bloggfunksjon for å beskrive pågående prosjekter og dele faglig innhold. Her kan brukeren skrive bloggposter som admin kan godkjenne eller avkrefte.
+### Teknologi og funksjonalitet <br>
+Applikasjonen er bygget med Next.js, TypeScript og Tailwind CSS, og bruker Strapi som headless CMS og REST API for backend-funksjonalitet. Innhold administreres gjennom Strapi sitt adminpanel, hvor databaserelasjoner opprettes automatisk ved tilføyelse av innhold. Webapplikasjonen inkluderer et eget dashboard der medlemmer av The Cave Tech kan administrere prosjekter, arrangementer og blogginnlegg. Strapi-adminpanelet brukes primært til å håndtere produkter i nettbutikken, administrere innhold og utvikle ny funksjonalitet.
 
-Rolletilgang:
+
+#### Rolletilgang <br>
 
 Administratorer har full kontroll i Strapi og kan administrere prosjekter, arrangementer, blogginnlegg og brukerinformasjon. Autentisering skjer via lokal eller tredjeparts pålogging. Vanlige brukere kan også bidra med blogginnlegg.
 
-Status:
+##### Status <br>
 
-Plattformen mangler full CRM, men alle kontaktmeldinger og brukerdata lagres i db og er tilgjengelig i strapi admin panel. Kjøpshistorikk er delvis implementert. I eget panel mangler arkiveringsfunksjonalitet og bruken av WYSIWYG editor opp mot Strapi på grunn av format forskjeller (holder på å bli fikset)
+Plattformen har foreløpig ikke et fullverdig CRM-system, men alle kontaktmeldinger og brukerdata lagres i databasen og er tilgjengelige via Strapi sitt administrasjonspanel. Kjøpshistorikk er delvis implementert. Betalingsløsningen er for øyeblikket hardkodet og krever videre utvikling. I det interne administrasjonspanelet mangler det støtte for arkivering, og bruken av WYSIWYG-editor mot Strapi er utfordrende grunnet formateringsforskjeller – dette krever også videreutvikling.
 
-Tech Stack
-Frontend: Next.js, TypeScript, Tailwind CSS
-Backend: Strapi (Headless CMS)
-Database: Compatible with Strapi (MySQL)
+###### Tech Stack <br>
+Frontend: Next.js, TypeScript, Tailwind CSS <br>
+Backend: Strapi (Headless CMS) <br>
+Database: Compatible with Strapi (MySQL) <br>
 
 1.Beskrive prosjektet ok
 2.Installasjon ok
 3.Strapi guide ok
-4.Nettside guide
-5.Kode guide/ hvordan bruke universelle komponenter
+4.Nettside guide -tilpasse
+5.Kode guide/ hvordan bruke universelle komponenter 
 eksemp. PageIcons- hvordan bruke page icons
 6.Hva som gjenstår (Known issues)
 
