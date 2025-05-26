@@ -25,6 +25,7 @@ Database: Compatible with Strapi (MySQL)
 5. Kode guide/ hvordan bruke universelle komponenter 
 eksemp. PageIcons- hvordan bruke page icons
 6. Hva som gjenstår (Known issues)
+<br>
 
 <details><summary><strong>🚀 Getting Started / How to install</strong></summary>
 <br>
