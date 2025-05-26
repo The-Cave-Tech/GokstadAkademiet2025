@@ -28,8 +28,7 @@ Database: Compatible with Strapi (MySQL) <br>
 eksemp. PageIcons- hvordan bruke page icons
 6.Hva som gjenstår (Known issues)
 
-<details>
-    <summary><strong>🚀 Getting Started / How to install</strong></summary>
+## <details><summary><strong>🚀 Getting Started / How to install</strong></summary>
 
 This setup is designed for testing purposes only, as the company prefers to handle deployment themselves.
 
@@ -211,8 +210,8 @@ In the terminal:
 
 </details>
 
-<details><summary><strong># How to</strong></summary>
-<details><summary><strong># Change Global style</strong></summary>
+## <details><summary><strong>How to</strong></summary>
+<details><summary><strong>Change Global style</strong></summary>
 <!-- Desktop (over 1024px) about header --><br/>
 --about-main-header: 60px;
 Veiledning for tilpasning av profilsidens design<br/>
@@ -578,13 +577,22 @@ The `TipTapEditor` is a universal rich text editor component used throughout the
 
 **Using the TipTapEditor in a form or page:**
 
+1. Import editor component on where to use it
 ```tsx
 import TipTapEditor from "@/components/ui/TipTapEditor";
+```
+2. Import useState and use it in created function
+```tsx
 import { useState } from "react";
 
 export default function ExampleForm() {
   const [content, setContent] = useState("");
-
+}
+```
+3. Add a return on the function that returns a form with the editor usag
+```tsx
+export default function ExampleForm() {
+  
   return (
     <form>
       <label htmlFor="editor" className="block mb-2 font-medium">
@@ -642,7 +650,8 @@ import BackButton from "@/components/ui/BackButton";
 </details>
 </details>
 </details>
-<details><summary><strong>Strapi Admin Panel</strong></summary>
+
+## <details><summary><strong>Strapi Admin Panel</strong></summary>
 ## Strapi Admin Panel
 
 The Strapi Admin Panel is the main interface for managing all content, users, and settings in your application.
@@ -754,235 +763,8 @@ Strapi organizes content into **Collection Types** (multiple entries) and **Sing
 
 </details>
 
-<details>
-    <summary><strong>Application features and how they works</strong></summary>
+## <details><summary><strong>Application features and how they works</strong></summary>
   
-   ### 🧩 Features Overview for LandingPage:
-
-    ✅ 1. Hero Section
-Displays a full-width banner with:
-
-A hero image (dynamically fetched from Strapi)
-
-Title and subtitle text
-
-Supports error handling for image loading (fallback if image fails)
-
-✅ 2. Introduction Sections
-Renders one or more content blocks with:
-
-Title
-
-Text content (supports paragraph formatting with line breaks)
-
-Introduction image (supports responsive loading and error fallback)
-
-Automatically adapts layout responsively (image + text)
-
-✅ 3. Projects Carousel
-Shows the latest 3 projects using a scrollable carousel component
-
-Each project includes:
-
-Title, short description
-
-Tech stack tags
-
-Clickable card that navigates to full project details
-
-Data is fetched via projectService from Strapi API
-
-✅ 4. Events Grid
-Displays up to 3 upcoming events
-
-Each event includes:
-
-Title, description, image
-
-Clickable card to view details
-
-Fetched using eventsService from Strapi API
-
-✅ 5. Centralized Image Handling
-getImageUrl() handles:
-
-Single image fields
-
-Arrays of media
-
-Media from nested data.attributes
-
-Fallbacks for incorrect or legacy paths (/api/uploads/ → /uploads/)
-
-getImageType() distinguishes .svg for optimized rendering
-
-✅ 6. Full Error Handling
-Custom state for loading and error messages
-
-Error display if:
-
-Content is missing from Strapi
-
-Media fails to load
-
-API requests fail
-
-✅ 7. Modular & Extendable
-Data adapters (adaptEventToCardProps, adaptProjectToCardProps) for flexible component use
-
-Services layer abstracts Strapi API calls
-
-Reusable components (UniversalCard, ProjectCarousel, etc.)
-
-The Cave Tech platform offers the following key features:
-
-### 🧩 Footer Component:
-
-📌 1. Dynamic Text and Background
-footerText and footerBackgroundColor are fetched from Strapi and used to render custom text and background color.
-
-🕒 2. Opening Hours
-Displays weekly opening hours (Monday–Sunday) dynamically based on Strapi content.
-
-Handles both flat and nested attributes structures.
-
-📲 3. Social Media
-Currently supports Instagram.
-
-Displays icon and link to the social media profile.
-
-Handles both single and array-based structures (instaGram as object or array).
-
-Falls back to a default icon if the URL is missing.
-
-🌐 4. Navigation Links
-Provides links to key pages: Activities, Shop, Blog, About Us, Contact Us.
-
-🖼 5. Logo Display
-Uses the SiteLogo component to display a footer-specific logo.
-
-📅 6. Year and Copyright
-Displays the current year dynamically (new Date().getFullYear()).
-
-Falls back to default text if footerText is not defined.
-
-### Contact Page
-
-🧭 1. Metadata for SEO
-Configured with title, description, and keywords for search engine optimization using Next.js Metadata.
-
-🖼 2. Skeleton Loaders
-While loading data or awaiting components, the page shows:
-
-A contact info skeleton placeholder (gray boxes styled with Tailwind)
-
-A contact form skeleton placeholder for smoother user experience
-
-💬 3. ClientMessage Component
-A custom component for displaying contextual messages or alerts to the user.
-
-🧾 4. Contact Information
-Loaded asynchronously using Suspense with fallback UI
-
-Displayed on the left column (on desktop)
-
-📝 5. Contact Form
-A full contact form component for user input (name, email, subject, message)
-
-Rendered on the right column (on desktop)
-
-Styled and structured responsively with Tailwind CSS
-
-🌐 6. Accessibility
-Uses aria-label, aria-labelledby, and sr-only elements to improve screen reader support and overall accessibility.
-
-📥 7. Contact Form Submission
-Form data (name, email, subject, message) is sent via POST to /api/contact
-
-Backend validates and stores or processes the message
-
-🔒 8. Validation & Security
-Basic validation (e.g., required fields, valid email format)
-
-Protection against spam and malicious input
-📧 9. Optional: Email Notifications
-Backend can trigger an email to admins or auto-reply to user using:
-
-Nodemailer (Node.js)
-
-Strapi Email Plugin
-
-Third-party API (SendGrid, Mailgun, etc.)
-
-🗃 10. Optional: Persistent Storage
-Stores messages in a database
-
-Alternatively stored in a CMS collection (e.g., Strapi collection type contacts)
-
-### About Page
-
-🧭 Tab Navigation
-Users can toggle between:
-
-"Historie" – company background
-
-"Vårt Team" – team overview
-
-Active tab is underlined with a smooth animation
-
-Responsive and sticky navigation on scroll
-
-📦 Modular Content Sections
-<HistoryContainer />:
-
-Renders company story and values
-
-May include rich text, images, timelines
-
-<TeamContainer />:
-
-Displays list of team members with:
-
-Name, title, bio, profile image
-
-Optional social links
-
-🎨 Styling & UX
-Built with Tailwind CSS for clean, responsive layout
-
-State-managed tab switching via React useState
-
-Only the active section is rendered for performance
-
-🔗 Backend Features (Strapi or Custom API)
-📂 Data Sources
-Single Type: about-us or equivalent
-
-Components:
-
-history: Text content and media (e.g. title, description, image)
-
-team: Repeatable component for team members with fields:
-
-name, title, bio, photo, linkedin
-
-📡 API Endpoints
-Example Strapi API structure:
-
-GET /api/about-us?populate[history]=*&populate[team][populate]=photo
-
-Optional Admin Features
-Non-technical team members can manage content via Strapi Admin Panel
-
-Role-based access to limit editing rights
-
-
-
-
-
-
-
-
 ### User Features
 
 - **Activity page**
