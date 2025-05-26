@@ -212,15 +212,9 @@ In the terminal:
 </details>
 
 <details><summary><strong># How to</strong></summary>
-
-ing-main-header: 30px;
-<br/>
-ønskes det å legge til flere font størrelse typer i fremtiden, legges de inn i global.css sin root som f.eks<br/>
-:root{<br/>
+<details><summary><strong># Change Global style</strong></summary>
 <!-- Desktop (over 1024px) about header --><br/>
 --about-main-header: 60px;
-<br/><details><summary><strong># Change Global style</strong></summary>
-
 Veiledning for tilpasning av profilsidens design<br/>
 Denne guiden forklarer hvordan du kan endre farger, fonter, avstander og andre designelementer i appkikasjonen uten å måtte endre koden direkte.
 Hvor finner du stilene?<br/>
@@ -267,7 +261,9 @@ fontSize: {<br/>
 "about-main-header": "var(--about-main-header)",<br/>
 },<br/>
 <br/>
+```tsx
       <!-- ønsker du da å bruke denne må du skrive text-about-main-header i classname for tekstelementet -->
+```
 
 Farger: Bruk hex-koder
 Fonter: Bruk fontnavn tilgjengelig via Google Fonts eller systemfonter (f.eks. "Arial, sans-serif").
@@ -325,23 +321,112 @@ SVG-filen må ligge i public/[directory]/-mappen. <br>
 
 Eksempel på bruk:
 1. Importer komponentet der den skal brukes: <br>
+```tsx
 import PageIcons from "@/components/ui/custom/PageIcons";
+```
 
 2. Velg plassering der ikonet ligger i public mappen og navnet på ikonet. Der etter kan det velges str og alt tekst som det ønskes <br>
+```tsx
 <PageIcons name="lock" directory="profileIcons" size={18} alt="Låst" />
-
+```
 </details>
 
 </details>
+<details>
+<summary>✏️ TipTapEditor</summary>
+The TipTapEditor provides a rich text editor for creating and editing content like blog posts, project descriptions, and event details. It offers a complete WYSIWYG editing experience with toolbar controls.
 
-<details><summary><strong>TipTapEditor</strong></summary>
-This editor is an WYSIWYG version where the user can add different type of content inside its own editor. It's an editor that can be used in later components if an text editor is needed. In this editor you have many customization options on how you want the editor to act. You can program everything by adding additions to the editor component.
+#### How it works
 
-For changing what universal editor does.
-1. Go into component at
+- WYSIWYG (What You See Is What You Get) editor with comprehensive formatting toolbar
+- Text formatting: bold, italic, headings (H2, H3), bullet lists, and numbered lists
+- Image upload functionality with alignment controls (left, center, right)
+- Link insertion and management
+- Text alignment options for paragraphs and headings
+- Can be used in read-only mode for displaying formatted content
+- Integrates with your image upload system through callback function
+- Auto-saves content as HTML that can be stored and displayed
 
-2. Scroll down to return, here you can add how you want the editor to look like and act. 
+#### Example usage
+
+Basic editor for blog posts:
+```tsx
+import TipTapEditor from "@/components/ui/TipTapEditor";
+import { useState } from "react";
+
+export default function CreateBlogPost() {
+  const [content, setContent] = useState("");
+
+  const handleSubmit = () => {
+    // The content is in HTML format, ready to be saved
+    console.log("Blog content:", content);
+    // Save to database or API
+  };
+
+  return (
+    <div>
+      <h2>Create New Blog Post</h2>
+      <TipTapEditor
+        value={content}
+        onChange={setContent}
+        placeholder="Write your blog post content here..."
+      />
+      
+      <button onClick={handleSubmit}>
+        Publish Blog Post
+      </button>
+    </div>
+  );
+}
+```
+Editor with image upload functionality:
+```tsx
+function EditProject() {
+  const [description, setDescription] = useState("");
+
+  const handleImageUpload = async (file: File): Promise<string> => {
+    // Upload image to your server/cloud storage
+    const formData = new FormData();
+    formData.append("image", file);
+    
+    const response = await fetch("/api/upload-image", {
+      method: "POST",
+      body: formData
+    });
+    
+    const { imageUrl } = await response.json();
+    return imageUrl; // Return the URL to be inserted into the editor
+  };
+
+  return (
+    <TipTapEditor
+      value={description}
+      onChange={setDescription}
+      placeholder="Describe your project in detail..."
+      onImageUpload={handleImageUpload}
+    />
+  );
+}
+```
+Read-only mode for displaying content:
+```tsx
+function ViewBlogPost({ blogPost }) {
+  return (
+    <div>
+      <h1>{blogPost.title}</h1>
+      <TipTapEditor
+        value={blogPost.content}
+        onChange={() => {}} // No-op since it's read-only
+        disabled={true}
+      />
+    </div>
+  );
+}
+```
+</details> 
 </details>
+
+
 
 </details>
 
