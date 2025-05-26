@@ -31,9 +31,9 @@ eksemp. PageIcons- hvordan bruke page icons
 This setup is designed for testing purposes only, as the company prefers to handle deployment themselves.
 
 <details>
-<summary><strong>
+<summary>
 1. Installation
-</strong></summary>
+</summary>
 
 <br/>
 Both frontend and backend have `.env.example` files.  
@@ -97,10 +97,10 @@ In the terminal:
 
 </details>
 <details>
-<summary><strong>
+<summary>
 🔐 2. Setting up OAuth / 3rd-party SSO Providers <br>
 <strong>For testing:</strong>
-</strong></summary>
+</summary>
 
 # After npm run
 
@@ -182,10 +182,10 @@ In the terminal:
 </details>
 
 <details>
-<summary><strong>
+<summary>
 🔐 3. Setting up SendGrid <br>
-<strong>For testing:</strong>
-</strong></summary>
+For testing:
+</summary>
 
 1. Enable email in the Strapi admin panel:  
   Settings → Users & Permissions Plugin → Providers → Email → Enable > True → Save
