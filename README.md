@@ -488,7 +488,7 @@ The `SortDropdown` is a universal component that lets users easily sort lists of
 import { SortDropdown } from "@/components/ui/SortDropdown";
 import { useState } from "react";
 ```
-2. Set up what options of sorting 
+2. Set up what options of sorting you want and the state for it, here you can add a default state as well
 ```tsx
 const sortOptions = [
   { value: "newest", label: "Newest first" },
@@ -774,7 +774,7 @@ Strapi organizes content into **Collection Types** (multiple entries) and **Sing
 
 </details>
 
-## <details><summary><strong>Application features and how they works</strong></summary>
+<details><summary><strong>Application features and how they works</strong></summary>
   
 ### User Features
 
