@@ -211,6 +211,8 @@ For testing:
 
 <details><summary><strong>How to</strong></summary>
 <br>
+<p style="font-size:20px; color:red;">
+
 <details><summary><strong>Change Global style</strong></summary>
 
 <!-- Desktop (over 1024px) about header -->
@@ -621,7 +623,7 @@ export default function ExampleForm() {
 ```
 </details>
 <details>
-    <summary>BackButton</summary>
+    <summary>◀️ BackButton</summary>
 
 The `BackButton` is a universal navigation component that lets users easily go back to the previous page or to a specific route. It helps users navigate the app more intuitively and can be customized to fit different designs and needs.
 
@@ -637,7 +639,9 @@ The `BackButton` is a universal navigation component that lets users easily go b
 
 ```tsx
 import BackButton from "@/components/ui/BackButton";
-
+```
+2. Use 
+```tsx
 // Standard back button (goes to previous page)
 <BackButton />
 
@@ -660,6 +664,8 @@ import BackButton from "@/components/ui/BackButton";
 ```
 </details>
 </details>
+
+</p>
 </details>
 
 <details><summary><strong>Strapi Admin Panel</strong></summary>
