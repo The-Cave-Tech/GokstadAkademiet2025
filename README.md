@@ -360,7 +360,7 @@ import { SiteLogo } from "@/components/ui/SiteLogo";
 ```
 </details>
 
-</details>
+
 <details>
     <summary>📇 ContentCard</summary>
 
@@ -640,7 +640,7 @@ import BackButton from "@/components/ui/BackButton";
 <BackButton iconName="arrow-left" iconDirectory="navIcons" />
 ```
 </details>
-
+</details>
 <details><summary><strong>#Strapi Admin Panel</strong></summary>
 ## Strapi Admin Panel
 
