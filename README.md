@@ -358,7 +358,7 @@ The idea behind the component is to reuse the company's logo across the entire w
 1. **Strapi admin panel:**
 How to change logos:
 Under the singletype `SiteLogo`, upload and publish the logos.
-Currently only the `HeaderLogo` and `FooterLogo` fields are available.
+Currently fields available: ![CurrentlyFields](/ImagesForReadme/CurrentlyFields.png)
 
 2.  **Import the component where it will be used:**
 ```tsx
