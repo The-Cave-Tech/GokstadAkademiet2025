@@ -390,29 +390,13 @@ The `ContentCard` is a universal card component used throughout the application 
 
 #### Example usages
 
-**Displaying a list of projects:**
-
-```tsx
-import { UniversalCard } from "@/components/pageSpecificComponents/dashboard/contentManager/ContentCard";
-import { adaptProjectToCardProps } from "@/lib/adapters/cardAdapter";
-
-// Inside your component render:
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-  {projects.map((project) => (
-   <UniversalCard
-    key={project.id}
-    {...adaptProjectToCardProps(project, handleProjectClick)}
-   />
-  ))}
-</div>;
-```
-
-**Displaying a list of events:**
-
+**Displaying a lø:**
+1.
 ```tsx
 import { UniversalCard } from "@/components/pageSpecificComponents/dashboard/contentManager/ContentCard";
 import { adaptEventToCardProps } from "@/lib/adapters/cardAdapter";
-
+```
+```tsx
 // Inside your component render:
 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
   {events.map((event) => (
@@ -441,7 +425,7 @@ The `SearchBar` is a universal component used throughout the application to help
 
 **Using the SearchBar in a page or component:**
 
-1. Import SearchBar component and
+1. Import SearchBar component and state
 ```tsx
 import { SearchBar } from "@/components/ui/SearchBar";
 import { useState } from "react";
@@ -687,6 +671,8 @@ import BackButton from "@/components/ui/BackButton";
 </details>
 </details>
 </details>
+
+<br><br>
 
 <details><summary><strong>Strapi Admin Panel</strong></summary>
 
