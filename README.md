@@ -245,22 +245,22 @@ Mobil (opptil 639px):<br/>
 :root{<br/>
 <!-- Desktop (over 1024px) about header --><br/>
 --about-main-header: 60px;
-
-    @media (max-width: 1024px) {
-    :root {
-        --about-main-header: 36px;
-    }
-
-
-    @media (max-width: 639px) {
-    :root {
-        --about-main-header: 30px;
-    }
-
-}
-
-så må du videre inn i tailwind.config.ts
-
+<br/>
+    @media (max-width: 1024px) {<br/>
+    :root {<br/>
+        --about-main-header: 36px;<br/>
+    }<br/>
+<br/>
+<br/>
+    @media (max-width: 639px) {<br/>
+    :root {<br/>
+        --about-main-header: 30px;<br/>
+    }<br/>
+<br/>
+}<br/>
+<pr/>
+så må du videre inn i tailwind.config.ts<br/>
+<br/>
 theme: {
 extend: {
 fontSize: {
@@ -314,7 +314,7 @@ For custom email text and templates, always update files in `backend/src/service
 
 <details><summary><strong>How to use icon komponent</strong></summary>
 
-<details>
+</details>
 
 </details>
 
