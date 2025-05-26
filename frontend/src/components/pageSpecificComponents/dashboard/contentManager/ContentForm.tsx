@@ -29,7 +29,7 @@ const ContentForm: React.FC<ContentFormProps> = ({
       config.fields.forEach((field) => {
         initialData[field.name] = "";
       });
-      setFormData(initialData);
+      setFormData(initialData);z
     }
   }, [data, event, config.fields]);
 

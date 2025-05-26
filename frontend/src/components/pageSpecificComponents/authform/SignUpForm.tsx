@@ -94,7 +94,11 @@ export function SignUpForm() {
         <Card className="w-full sm:w-[26rem] max-w-full mx-auto shadow-lg">
           <CardHeader className="pb-3 sm:pb-4">
             <section className="flex flex-col items-center gap-2 sm:gap-4">
-              <SiteLogo className="dark:invert" style={{ width: "auto", height: "45px", maxWidth: "100%" }} />
+               <SiteLogo
+              className="/* Style as you wish */"
+              type="signUp"
+              style={{ width: "auto", height: "45px"}}
+            />
               <h1 className="text-section-title-small sm:text-section-title-medium font-semibold text-typographyPrimary">Opprett Konto</h1>
               <div className="flex gap-1 text-captions-small sm:text-captions-big text-typographySecondary">
                 <p>Har du allerede en konto?</p>

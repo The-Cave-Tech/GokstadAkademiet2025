@@ -324,39 +324,43 @@ For custom email text and templates, always update files in `backend/src/service
 <details><summary><strong>Reusable universal components</strong></summary>
 <details><summary><strong>PageIcons</strong></summary>
 
-`PageIcons`-komponenten brukes til å hente og vise SVG-ikoner fra `public/`-mappen der det er behov for det i prosjektet.  
-📁 Plassering i prosjektet: `//frontend/src/components/ui/custom/PageIcons.tsx`  
+The `PageIcons` component is used to retrieve and display SVG icons from the `public/` folder wherever needed in the project.  
+**File location:**  
+`//frontend/src/components/ui/custom/PageIcons.tsx`  
 
-- Dersom ikonet ikke lastes inn, vises en fallback med teksten **"Icon not available"**.  
-- `alt`-teksten er viktig for tilgjengelighet (skjermlesere). Hvis `isDecorative` er satt til `true`, utelates `alt`.  
-- SVG-filen må ligge i `public/[directory]/`-mappen.
+- If the icon fails to load, a fallback with the text **"Icon not available"** is displayed.  
+- The `alt` text is important for accessibility (screen readers). If `isDecorative` is set to `true`, the `alt` attribute is omitted.  
+- The SVG file must be located in the `public/[directory]/` folder.
 
-### Eksempel på bruk:
-1. **Importer komponenten der den skal brukes:**
+### Example of usage with import:
+1. **Import the component where it will be used:**
 ```tsx
 import PageIcons from "@/components/ui/custom/PageIcons";
 ```
 
-2. Velg plassering der ikonet ligger i public mappen og navnet på ikonet. Der etter kan det velges str og alt tekst som det ønskes <br>
+2. Select the location where the icon is stored in the public folder and the name of the icon. Then you can choose size and alt text as desired <br>
 ```tsx
-<PageIcons name="lock" directory="profileIcons" size={18} alt="Låst" />
+<PageIcons name="lock" directory="profileIcons" size={18} alt="Locked" />
 ```
 </details>
 
 
 <details><summary><strong>SiteLogo</strong></summary>
 
-SiteLogo er dynamisk komponent som henter og viser logoer (header eller footer) som er lagret i Strapi-backenden.  
+SiteLogo is a dynamic component that retrieves and displays logos uploaded in the Strapi admin panel.  
+The idea behind the component is to reuse the company's logo across the entire website, primarily in the header and footer. This component is also used on the registration and login pages, and can be used elsewhere where branding is needed.
 
-📍 **Filplassering:**  
+**File location:**  
 `/frontend/src/components/ui/SiteLogo.tsx`
 
-### Eksempel på bruk:
+### Example of usage with import:
 
-1. **Strapi adminpanel:**
-Under singletypen `SiteLogo`, last opp loge i feltene `HeaderLogo` og `FooterLogo`.
+1. **Strapi admin panel:**
+How to change logos:
+Under the singletype `SiteLogo`, upload and publish the logos.
+Currently only the `HeaderLogo` and `FooterLogo` fields are available.
 
-2.  **Importer komponenten der den skal brukes:**
+2.  **Import the component where it will be used:**
 ```tsx
 import { SiteLogo } from "@/components/ui/SiteLogo";
 ```
@@ -366,23 +370,44 @@ import { SiteLogo } from "@/components/ui/SiteLogo";
 <SiteLogo style={{ width: "auto", height: "45px" }} />
 ```
 
- **For footer logo**
+ **For other types of logos**
  ```tsx
 <SiteLogo type="footer" style={{ width: "auto", height: "45px" }} />
+<SiteLogo type="signIn" style={{ width: "auto", height: "45px" }} />
+/* Examples: type="name of the logo that was added" */
 ```
+4. Example of how to style when using the component <br>
+```tsx
+<SiteLogo
+  className="rounded-full overflow-hidden border" /* Tailwind CSS works and is recommended, but struggles with image size */
+  type="signIn"
+  style={{ width: "45px", height: "45px" }} 
+/>
+```
+<br>
+For more control over image size, use style with inline CSS. className (Tailwind) can also be used but it's difficult to get precise control over size
+<br>
+
+# Scale by supporting more types of logos:
+1. In the content type builder in the Strapi admin panel, go to SiteLogo and add more fields.
+![Add New Field For Logo in Strapi](/ImagesForReadme/AddNewFieildForLogo.png)
+2. Go into the code and follow steps 1 and 2.
+![How to add more typefields in SiteLogo.ts](/ImagesForReadme/SiteLogoFields.png)
 </details>
 
 
 <details>
    <summary>📇 ContentCard</summary>
 
-The `ContentCard` is a universal card component used throughout the application to display different types of content—such as projects, events, blogs, and products—in a consistent and visually appealing way.
+The `ContentCard` is a universal card component used throughout the application to display different types of content such as projects, events, blogs, and products in a consistent and visually appealing way.
 
 #### How it works
 
 - The same `ContentCard` component is used for all content types.
 - An **adapter** (for example, `cardAdapter`) transforms the data for each content type (project, event, blog, product) into a format that the `ContentCard` understands.
 - This makes it easy to add new content types or update the card design in one place, and have the changes reflected everywhere.
+- It has scalebility for responsive design by having a way to choose which card size you want to use.
+- Card has customization that makes it easy to implement and add new things if you want more functionality that the card should offer.
 
 #### How to add a new card type
 
@@ -393,6 +418,7 @@ The `ContentCard` is a universal card component used throughout the application 
 2. **Example:**  
    If you add a new content type called "Resource", you would add a function like this in `cardAdapter.tsx`:
    ```tsx
+   // Resource needs to be added on Strapi before usage if u want to get information from backend
    export function adaptResourceToCardProps(resource, onClick) {
      return {
        title: resource.name,
@@ -422,7 +448,6 @@ import { adaptResourceToCardProps } from "@/lib/adapters/cardAdapter";
   />
 ))}
 ```
-
 </details>
 <details>
    <summary>🔎 SearchBar</summary>
@@ -522,6 +547,51 @@ export default function ExamplePage() {
 }
 ```
 </details>
+<details>
+    <summary>🗂️ FilterDropdown</summary>
+
+The `FilterDropdown` is a universal component that lets users easily filter lists of content, such as products, projects, events, or blogs. It provides a consistent and user-friendly way to narrow down what is shown on any page.
+
+#### How it works
+
+- The `FilterDropdown` displays a dropdown menu with different filter options (for example: categories, tags, or statuses).
+- When the user selects an option, the list updates to show only the content that matches the chosen filter.
+- The component is flexible and can be used for any type of content by passing in the available filter options and a function to update the filter state.
+
+#### Example usage
+
+1. Import the FilterDropdown and useState:
+```tsx
+import { FilterDropdown } from "@/components/ui/FilterDropdown";
+import { useState } from "react";
+```
+2. Set up filter options and state:
+```tsx
+const filterOptions = [
+  { value: "", label: "All categories" },
+  { value: "electronics", label: "Electronics" },
+  { value: "books", label: "Books" },
+  { value: "clothing", label: "Clothing" },
+];
+```
+3. Use the FilterDropdown in your return with right props and values from page its implemented on
+```tsx
+export default function ExamplePage() {
+  const [filter, setFilter] = useState("");
+
+    return (
+    <div>
+      <FilterDropdown
+        filter={filter}
+        setFilter={setFilter}
+        options={filterOptions}
+        ariaLabel="Filter by category"
+        placeholder="Select category"
+      />
+      {/* Render your filtered content here */}
+    </div>
+  );
+}
 <details>
     <summary>↻ LoadingSpinner</summary>
 
@@ -687,6 +757,29 @@ import BackButton from "@/components/ui/BackButton";
 </details>
 </details>
 <br>
+<details><summary><strong>Fetching</strong></summary>
+
+<details>
+  <summary>Fetching strategy</summary>
+  
+  ### StrapiClient
+  Our application uses a custom Strapi client to fetch and manage all content from the backend (Strapi CMS). 
+  This approach ensures that all data fetching is consistent, secure, and easy to maintain.
+  Out from this StrapiClient we have created seperate fetching for things on our page. at least for the collection types in Strapi.
+
+  #### How it works
+
+  - The Strapi client is a reusable service that handles all communication with the Strapi backend.
+  - It provides three main ways to fetch data:
+      `.collection(name)` – Fetches a list of items (for example, all projects, events, or products).
+      `.single(name)` – Fetches a single entry (for example, the About Us page or global settings).
+      `.fetch(endpoint, options)` – Makes a custom API request to any endpoint, with full control over method, headers, and parameters.
+  - The client manages authentication automatically, so users only see the content they have permission to access.
+  - The client also handles token expiration and error messages, improving the user experience and security.
+  - The client handling the token also makes it so we dont need to get the cookies every time we are fetching, but then we need to use `.fetch`
+</details>
+</details>
+</details>
 <pr>
 <details><summary><strong>Strapi Admin Panel</strong></summary>
 

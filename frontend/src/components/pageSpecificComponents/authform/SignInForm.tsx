@@ -104,11 +104,12 @@ export function SignInForm() {
       <Card className="max-w-md mx-auto">
         <CardHeader>
           <section className="flex flex-col items-center gap-4">
-            <h1 className="text-section-title-small font-semibold">Logg Inn</h1>
-            <SiteLogo
-              className="/* Dark mode støtte */"
+              <SiteLogo
+              className="/* Style as you wish */"
+              type="signIn"
               style={{ width: "auto", height: "45px" }}
             />
+            <h1 className="text-section-title-small font-semibold">Logg Inn</h1>
           </section>
         </CardHeader>
 
