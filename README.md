@@ -29,7 +29,7 @@ eksemp. PageIcons- hvordan bruke page icons
 <details><summary><strong>🚀 Getting Started / How to install</strong></summary>
 <br>
 This setup is designed for testing purposes only, as the company prefers to handle deployment themselves.
-
+<br>
 <details>
 <summary>
 1. Installation
@@ -99,7 +99,7 @@ In the terminal:
 <details>
 <summary>
 🔐 2. Setting up OAuth / 3rd-party SSO Providers <br>
-<strong>For testing:</strong>
+For testing:
 </summary>
 
 # After npm run
