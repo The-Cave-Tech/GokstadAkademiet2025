@@ -209,7 +209,7 @@ For testing:
 
 </details>
 
-<details><summary><strong><p style="font-size:20px; color:red;">How to</p></strong></summary>
+<details><summary><strong>How to</strong></summary>
 <br>
 <details><summary><strong>Change Global style</strong></summary>
 
@@ -444,7 +444,8 @@ The `SearchBar` is a universal component used throughout the application to help
 ```tsx
 import { SearchBar } from "@/components/ui/SearchBar";
 import { useState } from "react";
-
+```
+```tsx
 export default function ExamplePage() {
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -453,7 +454,9 @@ export default function ExamplePage() {
    // Perform search logic here
    console.log("Searching for:", query);
   };
-
+```
+3. Use SearchBar component in your return 
+```tsx
   return (
    <div>
     <SearchBar
@@ -531,11 +534,11 @@ The `LoadingSpinner` is a universal component that shows a spinning animation wh
 
 **Using the LoadingSpinner in a page or component:**
 
-1. Import the LoadingSpinner component
+1. Import LoadingSpinner component
 ```tsx
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 ```
-2. Use it where you want to show a loading state
+2. Use component inside the component or page you want it used on to show loading state
 ```tsx
 export default function ExamplePage({ isLoading }) {
   return (
@@ -550,22 +553,26 @@ export default function ExamplePage({ isLoading }) {
 }
 ```
 </details>
-<details> <summary>Card</summary>
-The Card component is a universal building block used throughout the application to display content in a clean, organized, and visually appealing way. It provides a consistent layout for different types of information, such as projects, events, blogs, or products.
+<details>
+    <summary>Card</summary>
+
+The `Card` component is a universal building block used throughout the application to display content in a clean, organized, and visually appealing way. It provides a consistent layout for different types of information, such as projects, events, blogs, or products.
 
 #### How it works
-The Card component wraps content in a styled box with rounded corners and a shadow, making information easy to read and visually separated from other elements.
-It can be combined with CardHeader, CardBody, and CardFooter subcomponents to organize content into sections (for example: image at the top, details in the middle, actions at the bottom).
-The card is flexible and can be used for any type of content by simply placing your content inside the card sections.
+
+- The `Card` component wraps content in a styled box with rounded corners and a shadow, making information easy to read and visually separated from other elements.
+- It can be combined with `CardHeader`, `CardBody`, and `CardFooter` subcomponents to organize content into sections (for example: image at the top, details in the middle, actions at the bottom).
+- The card is flexible and can be used for any type of content by simply placing your content inside the card sections.
 
 #### Example usage
 
-1. Import the Card and its subcomponents:
+**Using the Card component in a page or component:**
+
+1. Import the Card component and its subcomponents
 ```tsx
 import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
 ```
-
-2. Use the Card in your component:
+2. Use the card on page or component wanted. Component also have different styling and props you can implement (Look at component)
 ```tsx
 export default function ExamplePage() {
   return (
