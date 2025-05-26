@@ -390,8 +390,8 @@ The `ContentCard` is a universal card component used throughout the application 
 
 #### Example usages
 
-**Displaying a lø:**
-1.
+**Displaying a list of events (example):**
+1. Import 
 ```tsx
 import { UniversalCard } from "@/components/pageSpecificComponents/dashboard/contentManager/ContentCard";
 import { adaptEventToCardProps } from "@/lib/adapters/cardAdapter";
@@ -671,8 +671,7 @@ import BackButton from "@/components/ui/BackButton";
 </details>
 </details>
 </details>
-
-<br><br>
+<br>
 
 <details><summary><strong>Strapi Admin Panel</strong></summary>
 
