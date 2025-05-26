@@ -21,7 +21,7 @@ Backend: Strapi (Headless CMS)
 Database: Compatible with Strapi (MySQL)
 </details>
 <br>
-
+<pr>
 <details><summary><strong>🚀 Getting Started / How to install</strong></summary>
 <br>
 This setup is designed for testing purposes only, as the company prefers to handle deployment themselves.<br><br>
@@ -204,7 +204,7 @@ For testing:
 </details>
 </details>
 <br>
-
+<pr>
 <details><summary><strong>How to</strong></summary>
 <br>
 <details><summary><strong>Change Global style</strong></summary>
@@ -411,19 +411,16 @@ The `ContentCard` is a universal card component used throughout the application 
 1. Import UniversalContentCard component and adapted props based on what you want the card to have
 ```tsx
 import { UniversalContentCard } from "@/components/pageSpecificComponents/dashboard/contentManager/ContentCard";
-import { adaptEventToCardProps } from "@/lib/adapters/cardAdapter";
+import { adaptResourceToCardProps } from "@/lib/adapters/cardAdapter";
 ```
 2. Use the card inside your component’s render/return:
 ```tsx
-// Inside your component render:
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-  {events.map((event) => (
-   <UniversalCard
-    key={event.id}
-    {...adaptEventToCardProps(event, handleEventClick)}
-   />
-  ))}
-</div>;
+{resources.map((resource) => (
+  <UniversalCard
+    key={resource.id}
+    {...adaptResourceToCardProps(resource, handleResourceClick)}
+  />
+))}
 ```
 
 </details>
@@ -690,7 +687,7 @@ import BackButton from "@/components/ui/BackButton";
 </details>
 </details>
 <br>
-
+<pr>
 <details><summary><strong>Strapi Admin Panel</strong></summary>
 
 ## Strapi Admin Panel
@@ -886,7 +883,8 @@ Strapi organizes content into **Collection Types** (multiple entries) and **Sing
 - **User Profiles** - Extended profile information for community members
 
 </details>
-
+<br>
+<pr>
 <details>
     <summary>
         <strong>About us guide<strong>
