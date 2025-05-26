@@ -67,12 +67,12 @@ In your terminal:
 13. `npm i`  
 14. `npm run develop`  
 15. Navigate to the backend URL specified in your frontend `.env`  
-16. If using our database file and prompted to create a user, use:
+16. If using our database file and not prompted to create new user, use:
 
 - Email: test@den.no
 - Password: Gokstad1234
 
-# OR
+OR
 
 admin@admin.no  
 Admin1234  
