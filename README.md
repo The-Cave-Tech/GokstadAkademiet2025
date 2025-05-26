@@ -15,7 +15,7 @@ Administratorer har full kontroll i Strapi og kan administrere prosjekter, arran
 
 Plattformen har foreløpig ikke et fullverdig CRM-system, men alle kontaktmeldinger og brukerdata lagres i databasen og er tilgjengelige via Strapi sitt administrasjonspanel. Kjøpshistorikk er delvis implementert. Betalingsløsningen er for øyeblikket hardkodet og krever videre utvikling. I det interne administrasjonspanelet mangler det støtte for arkivering, og bruken av WYSIWYG-editor mot Strapi er utfordrende grunnet formateringsforskjeller – dette krever også videreutvikling.
 
-###### Tech Stack <br>
+##### Tech Stack <br>
 Frontend: Next.js, TypeScript, Tailwind CSS <br>
 Backend: Strapi (Headless CMS) <br>
 Database: Compatible with Strapi (MySQL) <br>
@@ -212,9 +212,70 @@ In the terminal:
 </details>
 
 <details><summary><strong># How to</strong></summary>
-## 🔑 JWT Token Expiry
 
-To change how long JWT tokens are valid:
+<details><summary><strong># Change Global style</strong></summary>
+
+Veiledning for tilpasning av profilsidens design<br/>
+Denne guiden forklarer hvordan du kan endre farger, fonter, avstander og andre designelementer i appkikasjonen uten å måtte endre koden direkte.
+Hvor finner du stilene?<br/>
+Alle globale designinnstillinger er definert som CSS-variabler i :root i filen src/styles/global.css. Disse variablene brukes gjennom hele prosjektet for å sikre konsistent styling.
+<pr/>
+Eksmempel på hvordan stylen kan byttes ut.
+<br/>
+Finn variabelen du vil endre, for eksempel:<br/>
+--color-primary: #d5bdaf;<!-- Header and dropdown menus  -->
+<br/>
+Bytt ut verdien for å endre fargen globalt:
+--color-primary: #007bff;<!-- Blå  -->
+<pr/>
+
+responsivitet<br/>
+Egne verdier er definert for ulike skjermstørrelser via media queries:<br/>
+<br/>
+Desktop (over 1024px):<br/>
+--landing-main-header: 60px;
+<br/>
+Nettbrett (opptil 1024px):<br/>
+--landing-main-header: 36px;
+<br/>
+Mobil (opptil 639px):<br/>
+--landing-main-header: 30px;
+<br/>
+ønskes det å legge til flere font størrelse typer i fremtiden, legges de inn i global.css sin root som f.eks
+:root{
+/_ Desktop (over 1024px) about header _/
+--about-main-header: 60px;
+
+    @media (max-width: 1024px) {
+    :root {
+        --about-main-header: 36px;
+    }
+
+
+    @media (max-width: 639px) {
+    :root {
+        --about-main-header: 30px;
+    }
+
+}
+
+så må du videre inn i tailwind.config.ts
+
+theme: {
+extend: {
+fontSize: {
+"about-main-header": "var(--about-main-header)",
+},
+
+      ønsker du da å bruke denne må du skrive text-about-main-header i classname for tekstelementet
+
+Farger: Bruk hex-koder
+Fonter: Bruk fontnavn tilgjengelig via Google Fonts eller systemfonter (f.eks. "Arial, sans-serif").
+Avstander: Bruk CSS-enheter som rem, px, eller em (f.eks. 1rem, 16px).
+
+</details>
+
+<details><summary><strong>🔑 To change JWT Token Expiry/ how long JWT tokens are valid:</strong></summary>
 
 - **backend/config/plugins.ts**
 
@@ -225,20 +286,20 @@ To change how long JWT tokens are valid:
   - Find: `const maxAge = 7 * 60 * 60;`
   - Change `7` to the number of hours you want (e.g., `24 * 60 * 60` for 24 hours).
 
----
+</details>
 
-## ✉️ Email Configuration & Templates
+<details><summary><strong>✉️ Email Configuration & Templates</strong></summary>
 
-### 1. Environment Variables
+## 1. Environment Variables
 
 - Set email-related variables in your backend `.env` file.
 
-### 2. Plugin Configuration
+## 2. Plugin Configuration
 
 - **backend/config/plugins.ts**
   - Configure your email provider and settings here.
 
-### 3. Email Service & Templates
+## 3. Email Service & Templates
 
 - **backend/src/service/**
   - All email logic, templates, and text changes are handled here.
@@ -248,6 +309,12 @@ To change how long JWT tokens are valid:
 
 **Tip:**  
 For custom email text and templates, always update files in `backend/src/service` to match your requirements.
+</details>
+
+
+<details><summary><strong>How to use icon komponent</strong></summary>
+
+<details>
 
 </details>
 
