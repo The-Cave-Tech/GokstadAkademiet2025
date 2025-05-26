@@ -1,4 +1,4 @@
-// components/SiteLogo.tsx
+//frontend/src/components/ui/SiteLogo.tsx
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -71,12 +71,3 @@ export function SiteLogo({
     <p>Loading {type} logo...</p>
   );
 }
-/* How to use when importing
-
-// For header logo (default)
-<SiteLogo style={{ width: "auto", height: "45px" }} />
-
-// For footer logo
-<SiteLogo type="footer" style={{ width: "auto", height: "45px" }} />
-
-*/

@@ -235,8 +235,10 @@ Egne verdier er definert for ulike skjermstørrelser via media queries:<br/>
 Desktop (over 1024px):<br/>
 --landing-main-header: 60px;
 <br/>
+<br/>
 Nettbrett (opptil 1024px):<br/>
 --landing-main-header: 36px;
+<br/>
 <br/>
 Mobil (opptil 639px):<br/>
 --land
@@ -262,7 +264,7 @@ fontSize: {<br/>
 },<br/>
 <br/>
 ```tsx
-      <!-- ønsker du da å bruke denne må du skrive text-about-main-header i classname for tekstelementet -->
+      ønsker du da å bruke denne må du skrive text-about-main-header i classname for tekstelementet
 ```
 
 Farger: Bruk hex-koder
@@ -309,18 +311,17 @@ Avstander: Bruk CSS-enheter som rem, px, eller em (f.eks. 1rem, 16px).
 For custom email text and templates, always update files in `backend/src/service` to match your requirements.
 </details>
 
-<details><summary><strong>Reusable universal components</strong></summary>
-<details><summary><strong>How to use icon komponent</strong></summary>
+# <details><summary><strong>How to use: Reusable universal components</strong></summary>
+<details><summary><strong>PageIcons</strong></summary>
+`PageIcons`-komponenten brukes til å hente og vise SVG-ikoner fra `public/`-mappen der det er behov for det i prosjektet.  
+📁 Plassering i prosjektet: `//frontend/src/components/ui/custom/PageIcons.tsx`  
 
-PageIcons-komponenten er laget for å hente og vise SVG-ikoner fra public/-mappen der det er behov for det i prosjektet. <br>
-Denne komponenten ligger: //frontend/src/components/ui/custom/PageIcons.tsx <br>
+- Dersom ikonet ikke lastes inn, vises en fallback med teksten **"Icon not available"**.  
+- `alt`-teksten er viktig for tilgjengelighet (skjermlesere). Hvis `isDecorative` er satt til `true`, utelates `alt`.  
+- SVG-filen må ligge i `public/[directory]/`-mappen.
 
-Dersom ikonet ikke lastes, vises en fallback med teksten "Icon not available". <br>
-alt-teksten er viktig for tilgjengelighet (skjermlesere). Hvis isDecorative er satt til true, utelates alt-teksten. <br>
-SVG-filen må ligge i public/[directory]/-mappen. <br>
-
-Eksempel på bruk:
-1. Importer komponentet der den skal brukes: <br>
+### Eksempel på bruk:
+1. **Importer komponenten der den skal brukes:**
 ```tsx
 import PageIcons from "@/components/ui/custom/PageIcons";
 ```
@@ -331,103 +332,313 @@ import PageIcons from "@/components/ui/custom/PageIcons";
 ```
 </details>
 
+# <details><summary><strong>How to use: Reusable universal components</strong></summary>
+<details><summary><strong>SiteLogo</strong></summary>
+SiteLogo er dynamisk komponent som henter og viser logoer (header eller footer) som er lagret i Strapi-backenden.  
+
+📍 **Filplassering:**  
+`/frontend/src/components/ui/SiteLogo.tsx`
+
+### Eksempel på bruk:
+
+1. **Strapi adminpanel:**
+Under singletypen `SiteLogo`, last opp loge i feltene `HeaderLogo` og `FooterLogo`.
+
+2.  **Importer komponenten der den skal brukes:**
+```tsx
+import { SiteLogo } from "@/components/ui/SiteLogo";
+```
+
+3. **For header logo (default)**
+```tsx
+<SiteLogo style={{ width: "auto", height: "45px" }} />
+```
+
+ **For footer logo**
+ ```tsx
+<SiteLogo type="footer" style={{ width: "auto", height: "45px" }} />
+```
+</details>
+
 </details>
 <details>
-<summary>✏️ TipTapEditor</summary>
-The TipTapEditor provides a rich text editor for creating and editing content like blog posts, project descriptions, and event details. It offers a complete WYSIWYG editing experience with toolbar controls.
+    <summary>📇 ContentCard</summary>
+
+The `ContentCard` is a universal card component used throughout the application to display different types of content—such as projects, events, blogs, and products—in a consistent and visually appealing way.
 
 #### How it works
 
-- WYSIWYG (What You See Is What You Get) editor with comprehensive formatting toolbar
-- Text formatting: bold, italic, headings (H2, H3), bullet lists, and numbered lists
-- Image upload functionality with alignment controls (left, center, right)
-- Link insertion and management
-- Text alignment options for paragraphs and headings
-- Can be used in read-only mode for displaying formatted content
-- Integrates with your image upload system through callback function
-- Auto-saves content as HTML that can be stored and displayed
+- The same `ContentCard` component is used for all content types.
+- An **adapter** (for example, `cardAdapter`) transforms the data for each content type (project, event, blog, product) into a format that the `ContentCard` understands.
+- This makes it easy to add new content types or update the card design in one place, and have the changes reflected everywhere.
+
+#### Example usages
+
+**Displaying a list of projects:**
+
+```tsx
+import { UniversalCard } from "@/components/pageSpecificComponents/dashboard/contentManager/ContentCard";
+import { adaptProjectToCardProps } from "@/lib/adapters/cardAdapter";
+
+// Inside your component render:
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  {projects.map((project) => (
+    <UniversalCard
+      key={project.id}
+      {...adaptProjectToCardProps(project, handleProjectClick)}
+    />
+  ))}
+</div>;
+```
+
+**Displaying a list of events:**
+
+```tsx
+import { UniversalCard } from "@/components/pageSpecificComponents/dashboard/contentManager/ContentCard";
+import { adaptEventToCardProps } from "@/lib/adapters/cardAdapter";
+
+// Inside your component render:
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  {events.map((event) => (
+    <UniversalCard
+      key={event.id}
+      {...adaptEventToCardProps(event, handleEventClick)}
+    />
+  ))}
+</div>;
+```
+
+</details>
+<details>
+    <summary>🔎 SearchBar</summary>
+
+The `SearchBar` is a universal component used throughout the application to help users quickly find relevant content, such as projects, events, blogs, or products. It provides a simple and consistent search experience on all pages where searching is needed. This can also easily change your search logic since now it's mostly really basic searching.
+
+#### How it works
+
+- The `SearchBar` displays a text input where users can type their search query.
+- As the user types, the search query is updated in real time.
+- Optionally, a search button can be shown for submitting the search (for example, by pressing Enter or clicking the button).
+- The component is flexible and can be used for any type of content by simply passing the current search query and a function to update it.
 
 #### Example usage
 
-Basic editor for blog posts:
+**Using the SearchBar in a page or component:**
+
+```tsx
+import { SearchBar } from "@/components/ui/SearchBar";
+import { useState } from "react";
+
+export default function ExamplePage() {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Optional: handle search submit
+  const handleSearch = (query: string) => {
+    // Perform search logic here
+    console.log("Searching for:", query);
+  };
+
+  return (
+    <div>
+      <SearchBar
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        placeholder="Search projects or events"
+        onSearch={handleSearch}
+      />
+      {/* Render your filtered content here */}
+    </div>
+  );
+}
+```
+
+</details>
+<details>
+    <summary>🔀 SortDropdown</summary>
+
+The `SortDropdown` is a universal component that lets users easily sort lists of content, such as projects, events, blogs, or products. It provides a consistent and user-friendly way to choose how items are ordered on any page.
+
+#### How it works
+
+- The `SortDropdown` displays a dropdown menu with different sorting options (for example: newest first, oldest first, alphabetical).
+- When the user selects an option, the list updates to show the content in the chosen order.
+- The component is flexible and can be used for any type of content by passing in the available sort options and a function to update the sort state.
+
+#### Example usage
+
+**Using the SortDropdown in a page or component:**
+
+```tsx
+import { SortDropdown } from "@/components/ui/SortDropdown";
+import { useState } from "react";
+
+const sortOptions = [
+  { value: "newest", label: "Newest first" },
+  { value: "oldest", label: "Oldest first" },
+  { value: "az", label: "A-Z" },
+  { value: "za", label: "Z-A" },
+];
+
+export default function ExamplePage() {
+  const [sort, setSort] = useState("newest");
+
+  return (
+    <div>
+      <SortDropdown
+        sort={sort}
+        setSort={setSort}
+        options={sortOptions}
+        placeholder="Sort by"
+      />
+      {/* Render your sorted content here */}
+    </div>
+  );
+}
+```
+</details>
+<details>
+    <summary>↻ LoadingSpinner</summary>
+
+The `LoadingSpinner` is a universal component that shows a spinning animation while the app is loading data. It helps users understand that something is happening in the background and improves the user experience by providing visual feedback.
+
+#### How it works
+
+- The `LoadingSpinner` displays a spinning circle to indicate that content is loading.
+- You can choose different sizes (small, medium, large) to fit different parts of your app.
+- The spinner can be reused anywhere you need to show a loading state, such as when fetching projects, events, or blog posts.
+
+#### Example usage
+
+**Using the LoadingSpinner in a page or component:**
+
+```tsx
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+
+export default function ExamplePage({ isLoading }) {
+  return (
+    <div>
+      {isLoading ? (
+        <LoadingSpinner size="medium" />
+      ) : (
+        <div>Your loaded content here</div>
+      )}
+    </div>
+  );
+}
+```
+</details>
+<details>
+    <summary>Card</summary>
+
+The `Card` component is a universal building block used throughout the application to display content in a clean, organized, and visually appealing way. It provides a consistent layout for different types of information, such as projects, events, blogs, or products.
+
+#### How it works
+
+- The `Card` component wraps content in a styled box with rounded corners and a shadow, making information easy to read and visually separated from other elements.
+- It can be combined with `CardHeader`, `CardBody`, and `CardFooter` subcomponents to organize content into sections (for example: image at the top, details in the middle, actions at the bottom).
+- The card is flexible and can be used for any type of content by simply placing your content inside the card sections.
+
+#### Example usage
+
+**Using the Card component in a page or component:**
+
+```tsx
+import { Card, CardHeader, CardBody, CardFooter } from "@/components/ui/Card";
+
+export default function ExamplePage() {
+  return (
+    <Card>
+      <CardHeader>
+        <h3>Project Title</h3>
+      </CardHeader>
+      <CardBody>
+        <p>This is a short description of the project or content.</p>
+      </CardBody>
+      <CardFooter>
+        <button>Read more</button>
+      </CardFooter>
+    </Card>
+  );
+}
+```
+</details>
+<details>
+    <summary>✏️ TipTapEditor</summary>
+
+The `TipTapEditor` is a universal rich text editor component used throughout the application for writing and editing content, such as blog posts, project descriptions, or event details. It provides a user-friendly interface for adding formatted text, images, and links.
+
+#### How it works
+
+- The `TipTapEditor` allows users to write and format text with options like bold, italic, headings, lists, and links.
+- Users can easily upload and insert images directly into their content.
+- The editor supports text alignment and image alignment (left, center, right).
+- It is flexible and can be used for any type of content that requires rich text editing.
+
+#### Example usage
+
+**Using the TipTapEditor in a form or page:**
+
 ```tsx
 import TipTapEditor from "@/components/ui/TipTapEditor";
 import { useState } from "react";
 
-export default function CreateBlogPost() {
+export default function ExampleForm() {
   const [content, setContent] = useState("");
 
-  const handleSubmit = () => {
-    // The content is in HTML format, ready to be saved
-    console.log("Blog content:", content);
-    // Save to database or API
-  };
-
   return (
-    <div>
-      <h2>Create New Blog Post</h2>
+    <form>
+      <label htmlFor="editor" className="block mb-2 font-medium">
+        Content
+      </label>
       <TipTapEditor
         value={content}
         onChange={setContent}
-        placeholder="Write your blog post content here..."
+        placeholder="Write your content here..."
       />
-      
-      <button onClick={handleSubmit}>
-        Publish Blog Post
-      </button>
-    </div>
+      {/* Other form fields and submit button */}
+    </form>
   );
 }
 ```
-Editor with image upload functionality:
-```tsx
-function EditProject() {
-  const [description, setDescription] = useState("");
-
-  const handleImageUpload = async (file: File): Promise<string> => {
-    // Upload image to your server/cloud storage
-    const formData = new FormData();
-    formData.append("image", file);
-    
-    const response = await fetch("/api/upload-image", {
-      method: "POST",
-      body: formData
-    });
-    
-    const { imageUrl } = await response.json();
-    return imageUrl; // Return the URL to be inserted into the editor
-  };
-
-  return (
-    <TipTapEditor
-      value={description}
-      onChange={setDescription}
-      placeholder="Describe your project in detail..."
-      onImageUpload={handleImageUpload}
-    />
-  );
-}
-```
-Read-only mode for displaying content:
-```tsx
-function ViewBlogPost({ blogPost }) {
-  return (
-    <div>
-      <h1>{blogPost.title}</h1>
-      <TipTapEditor
-        value={blogPost.content}
-        onChange={() => {}} // No-op since it's read-only
-        disabled={true}
-      />
-    </div>
-  );
-}
-```
-</details> 
 </details>
+<details>
+    <summary>BackButton</summary>
 
+The `BackButton` is a universal navigation component that lets users easily go back to the previous page or to a specific route. It helps users navigate the app more intuitively and can be customized to fit different designs and needs.
 
+#### How it works
 
+- The `BackButton` displays a button (optionally with an icon and custom label) that, when clicked, takes the user back to the previous page or to a specified route.
+- You can customize the icon, label, size, and style to match your page.
+- The button can be used anywhere in the app where you want to provide a clear way for users to go back or navigate.
+
+#### Example usage
+
+**Using the BackButton in a page or component:**
+
+```tsx
+import BackButton from "@/components/ui/BackButton";
+
+// Standard back button (goes to previous page)
+<BackButton />
+
+// Back button to a specific route
+<BackButton route="/dashboard" />
+
+// Custom design and label
+<BackButton 
+  className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center"
+  iconClassName="mr-2"
+>
+  Go to Dashboard
+</BackButton>
+
+// Without icon
+<BackButton showIcon={false} />
+
+// With a different icon
+<BackButton iconName="arrow-left" iconDirectory="navIcons" />
+```
 </details>
 
 <details><summary><strong>#Strapi Admin Panel</strong></summary>
