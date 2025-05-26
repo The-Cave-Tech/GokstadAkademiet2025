@@ -210,6 +210,7 @@ For testing:
 </details>
 
 <details><summary><strong>How to</strong></summary>
+<br>
 <details><summary><strong>Change Global style</strong></summary>
 
 <!-- Desktop (over 1024px) about header -->
