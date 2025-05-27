@@ -866,35 +866,6 @@ import BackButton from "@/components/ui/BackButton";
 <BackButton iconName="arrow-left" iconDirectory="navIcons" />
 ```
 </details>
-
-<br>
-
-
-</details>
-</details>
-<br>
-
-<details><summary><strong>Fetching</strong></summary>
-<br>
-<details>
-  <summary>Fetching strategy</summary>
-  
-  ### StrapiClient
-  Our application uses a custom Strapi client to fetch and manage all content from the backend (Strapi CMS). 
-  This approach ensures that all data fetching is consistent, secure, and easy to maintain.
-  Out from this StrapiClient we have created seperate fetching for things on our page. at least for the collection types in Strapi.
-
-  #### How it works
-
-  - The Strapi client is a reusable service that handles all communication with the Strapi backend.
-  - It provides three main ways to fetch data:
-      `.collection(name)` – Fetches a list of items (for example, all projects, events, or products).
-      `.single(name)` – Fetches a single entry (for example, the About Us page or global settings).
-      `.fetch(endpoint, options)` – Makes a custom API request to any endpoint, with full control over method, headers, and parameters.
-  - The client manages authentication automatically, so users only see the content they have permission to access.
-  - The client also handles token expiration and error messages, improving the user experience and security.
-  - The client handling the token also makes it so we dont need to get the cookies every time we are fetching, but then we need to use `.fetch`
-</details>
 </details>
 ## Additional UI Components
 
@@ -929,6 +900,31 @@ import { ComponentName } from "@/components/ui/custom/ComponentName";
 
 <ComponentName prop="value" />
 ```
+</details>
+<br>
+
+<details><summary><strong>Fetching</strong></summary>
+<br>
+<details>
+  <summary>Fetching strategy</summary>
+  
+  ### StrapiClient
+  Our application uses a custom Strapi client to fetch and manage all content from the backend (Strapi CMS). 
+  This approach ensures that all data fetching is consistent, secure, and easy to maintain.
+  Out from this StrapiClient we have created seperate fetching for things on our page. at least for the collection types in Strapi.
+
+  #### How it works
+
+  - The Strapi client is a reusable service that handles all communication with the Strapi backend.
+  - It provides three main ways to fetch data:
+      `.collection(name)` – Fetches a list of items (for example, all projects, events, or products).
+      `.single(name)` – Fetches a single entry (for example, the About Us page or global settings).
+      `.fetch(endpoint, options)` – Makes a custom API request to any endpoint, with full control over method, headers, and parameters.
+  - The client manages authentication automatically, so users only see the content they have permission to access.
+  - The client also handles token expiration and error messages, improving the user experience and security.
+  - The client handling the token also makes it so we dont need to get the cookies every time we are fetching, but then we need to use `.fetch`
+</details>
+</details>
 </details>
 <br>
 
