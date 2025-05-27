@@ -895,7 +895,7 @@ import BackButton from "@/components/ui/BackButton";
   - The client also handles token expiration and error messages, improving the user experience and security.
   - The client handling the token also makes it so we dont need to get the cookies every time we are fetching, but then we need to use `.fetch`
 </details>
-
+</details>
 ## Additional UI Components
 
 The project includes many additional specialized UI components that follow the same import and usage patterns as the components documented above. These components serve specific purposes and most of thoose are designed for reusability across the application.
@@ -929,7 +929,6 @@ import { ComponentName } from "@/components/ui/custom/ComponentName";
 
 <ComponentName prop="value" />
 ```
-</details>
 </details>
 <br>
 
