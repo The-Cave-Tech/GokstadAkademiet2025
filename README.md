@@ -866,6 +866,41 @@ import BackButton from "@/components/ui/BackButton";
 <BackButton iconName="arrow-left" iconDirectory="navIcons" />
 ```
 </details>
+
+## Additional UI Components
+
+The project includes many additional specialized UI components that follow the same import and usage patterns as the components documented above. These components serve specific purposes and most of thoose are designed for reusability across the application.
+<br>
+
+- **AuthBackgroundImage** - Displays dynamic background images from Strapi for authentication pages
+- **ClientMessage** - Displays URL parameter messages with auto-dismiss
+- **ErrorMessage** - Standardized error display component
+- **LoadingSpinner** - Configurable loading indicator with theme support
+- **ProjectCarousel** - Touch-enabled carousel for project display
+- **TabSelector** - Tabbed navigation component
+- **ZodErrors** - Validation error display component
+- **AddToCartButton** - E-commerce cart functionality with animations
+- **CartIcon** - Shopping cart icon with item count badge
+- **DatePicker** - Custom date picker with calendar interface
+- **PasswordStrengthMeter** - Visual password strength indicator
+- **PasswordToggle** - Show/hide password visibility toggle
+- **ToggleSwitch** - Styled toggle switch component
+- **UniversalModal** - Reusable modal dialog component
+
+### Specialized Components:
+- **SessionHandler** - Automatic session management and warnings (not reusable - application-specific)
+
+### Usage Pattern:
+All components follow the same import and usage pattern:
+
+```tsx
+import { ComponentName } from "@/components/ui/ComponentName";
+// or for custom components:
+import { ComponentName } from "@/components/ui/custom/ComponentName";
+
+<ComponentName prop="value" />
+```
+
 </details>
 </details>
 <br>
