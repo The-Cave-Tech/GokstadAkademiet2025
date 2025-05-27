@@ -24,6 +24,8 @@ Plattformen har foreløpig ikke:
 - Blogg skal være koblet opp mot en bruker, denne delen er ikke implementert. For nå så kan bare admin legge til blogg innlegg via Strapi og eget panel - videreutviklingen her skal også være en legg til knapp på blogg siden som bruker ContentForm komponenten for å få tilgang til universalt skjema for content.
 - Mangler velkomst melding og tilsending av aktiverings kode for nye brukere
 
+- Innhold i Bruksvilkår og personvern sider er generert med https://app.freeprivacypolicy.com og må redigeres til den riktige.
+
 
 ##### Tech Stack
 Frontend: Next.js, TypeScript, Tailwind CSS  
@@ -333,6 +335,7 @@ For custom email text and templates, always update files in `backend/src/service
 </details>
 
 <details><summary><strong>Reusable universal components</strong></summary>
+<br>
 <details><summary><strong>PageIcons</strong></summary>
 
 The `PageIcons` component is used to retrieve and display SVG icons from the `public/` folder wherever needed in the project.  
@@ -768,8 +771,9 @@ import BackButton from "@/components/ui/BackButton";
 </details>
 </details>
 <br>
-<details><summary><strong>Fetching</strong></summary>
 
+<details><summary><strong>Fetching</strong></summary>
+<br>
 <details>
   <summary>Fetching strategy</summary>
   
@@ -791,7 +795,8 @@ import BackButton from "@/components/ui/BackButton";
 </details>
 </details>
 </details>
-<pr>
+<br>
+
 <details><summary><strong>Strapi Admin Panel</strong></summary>
 
 ## Strapi Admin Panel
