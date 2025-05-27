@@ -2,6 +2,9 @@
 <details><summary><strong>About</strong></summary>
 <pr>
 
+## Cave Tech som organisasjon
+Cave Tech er et høyteknologisk skaperverksted og lukket fellesskap bestående av folk med teknisk bakgrunn som har fulltidsjobber ved siden av. Vi er en invitasjonsbegrenset non-profit organisasjon basert på tillit og felles lidenskap for teknologi. Vi lager praktiske prosjekter sammen på fritida ved hjelp av utstyr som 3D-printere, symaskiner og diverse elektronikk. Vi deler kunnskap, hjelper hverandre med å løse problemer og lære nye ferdigheter. Gjennom nettverket vårt av venner og bekjente verden rundt deler vi også kunnskapen videre for å lære teknologi i utviklingsland. All innsats og støtte går tilbake til fellesskapet - i form av utstyr, kunnskap og åpne prosjekter. Målet er vekst, skaperglede og mennesker som blomstrer sammen og gir noe tilbake. Vår filosofi: "Low effort, high impact" - vi tror på å skape ting som faller ut naturlig!
+
 ## Om dette prosjektet
 Denne webapplikasjonen er utviklet for et makerspace, hvor organisasjonen The Cave Tech viser frem prosjektene og produktene sine til et lukket miljø bestående av venner og bekjente. Plattformen brukes til å arrangere arrangementer, dele faglig innhold gjennom en blogg, samt selge sine produkter via en nettbutikk for å generere ekstra inntekter. Prosjektet er publisert som åpen kildekode og kan fungere som en universell plattform som enkelt kan skaleres til andre formål.
 
@@ -13,7 +16,14 @@ Applikasjonen er bygget med Next.js, TypeScript og Tailwind CSS, og bruker Strap
 Administratorer har full kontroll i Strapi og kan administrere prosjekter, arrangementer, blogginnlegg og brukerinformasjon. Autentisering skjer via lokal eller tredjeparts pålogging. Vanlige brukere kan også bidra med blogginnlegg.
 
 ##### Status
-Plattformen har foreløpig ikke et fullverdig CRM-system, men alle kontaktmeldinger og brukerdata lagres i databasen og er tilgjengelige via Strapi sitt administrasjonspanel. Kjøpshistorikk er delvis implementert. Betalingsløsningen er for øyeblikket hardkodet og krever videre utvikling. I det interne administrasjonspanelet mangler det støtte for arkivering, og bruken av WYSIWYG-editor mot Strapi er utfordrende grunnet formateringsforskjeller – dette krever også videreutvikling. Blogg skal være koblet opp mot en bruker, denne delen er ikke implementert. For nå så kan bare admin legge til blogg innlegg via Strapi og eget panel - videreutviklingen her skal også være en legg til knapp på blogg siden som bruker ContentForm komponenten for å få tilgang til universalt skjema for content.
+Plattformen har foreløpig ikke:
+- Et fullverdig CRM-system, men alle kontaktmeldinger og brukerdata lagres i databasen og er tilgjengelige via Strapi sitt administrasjonspanel. 
+- Kjøpshistorikk er delvis implementert. 
+- Betalingsløsningen er for øyeblikket hardkodet og krever videre utvikling. 
+- I det interne administrasjonspanelet mangler det støtte for arkivering, og bruken av WYSIWYG-editor mot Strapi er utfordrende grunnet formateringsforskjeller – dette krever også videreutvikling. 
+- Blogg skal være koblet opp mot en bruker, denne delen er ikke implementert. For nå så kan bare admin legge til blogg innlegg via Strapi og eget panel - videreutviklingen her skal også være en legg til knapp på blogg siden som bruker ContentForm komponenten for å få tilgang til universalt skjema for content.
+- Mangler velkomst melding og tilsending av aktiverings kode for nye brukere
+
 
 ##### Tech Stack
 Frontend: Next.js, TypeScript, Tailwind CSS  
@@ -898,24 +908,26 @@ Strapi organizes content into **Collection Types** (multiple entries) and **Sing
 
 <details><summary><strong>Application features and how they works</strong></summary>
   
-### User Features
+### Public Features
+
+- **Landing page**
+
+  - Displays a dynamic hero section with title, subtitle and background image loaded from Strapi CMS.
+  - Shows multiple introduction sections with images and text that present the organization.
+  - Features the 3 newest projects at once in an interactive carousel with navigation buttons.
+  - Displays the 3 upcoming events in a card format.
+  - Provides direct navigation to detailed project and event pages by clicking on cards.
+  - Includes quick access links "Go to projects →" and "Go to events →" for easy navigation.
+  - Handles responsive image loading with automatic error handling and fallback display.
 
 - **Activity page**
 
-  - Gives an easy overview of every project and events in a clean card format.
+  - Gives an easy overview of every project and events in a card format.
   - Gives users an easy switching between showing project or events with a selector in top right
   - Gives users a way to search for names of projects or events depending of which is shown.
   - Users can click on each activity card to be taken to another page with that cards information
   - Users can filter the activities after status. If you want to see upcoming events, or projects in planning phase.
   - Users can sort between the activities aphabetical, reverse, newest or oldest first. Newest first is set as default.
-
-- **Blog page**
-
-  - Same as activities here users can see all blogs posted on application.
-  - Users can also filter, search and sort similar just adapted to blogg posts instead. Here the filter is category based.
-  - Users should be able to add blogg with a simple "add new blog" button on top right of container. (Not fully implemented, but has components needed)
-  - Users can also by clicking on posts get taken to another page with detailed information about the clicked post.
-  - Every blog posts should be connected to a specific user that made the posts (Author), with a way to show that user on the detail page.
 
 - **E-Commerce Shop**
 
@@ -925,6 +937,14 @@ Strapi organizes content into **Collection Types** (multiple entries) and **Sing
   - Users can sort after newest or oldest products.
   - Users can add product they want to cart by clicking on "Legg til i handlekurv" button on product they want.
   - Users can go to their cart to be taken to another page for showing all products inside their own cart.
+
+  - **Blog page**
+
+  - Same as activities here users can see all blogs posted on application.
+  - Users can also filter, search and sort similar just adapted to blogg posts instead. Here the filter is category based.
+  - Users should be able to add blogg with a simple "add new blog" button on top right of container. (Not fully implemented, but has components needed)
+  - Users can also by clicking on posts get taken to another page with detailed information about the clicked post.
+  - Every blog posts should be connected to a specific user that made the posts (Author), with a way to show that user on the detail page.
 
 - **About us page**
 
@@ -937,7 +957,9 @@ Strapi organizes content into **Collection Types** (multiple entries) and **Sing
   - Users can see information about The Cave Tech.
   - Users can contact The Cave Tech using a submit form for submiting a message directly to their mail.
 
-### Admin Features
+### Features in userpanel
+
+### Features in adminpanel
 
 - **Content Management**
 
@@ -957,9 +979,8 @@ Strapi organizes content into **Collection Types** (multiple entries) and **Sing
 - **Login and register**
 
   - Users can login with local account created for access to The Cave Tech application
-  - Users can login with third party providers like google, microsoft or facebook.
+  - Users can login with third party providers. 
   - Logging in with third party providers will create local account connected to provider used.
-  - Users will be validated with security validation when creating local account. This helps users create a safe and secure account.
   - Validation on register and login will be live and server based.
   - When creating an account the "create" button will be grayed out and unclickable before all validation is followed.
   - Login and register uses forms for a clean and effective design and user experience.
