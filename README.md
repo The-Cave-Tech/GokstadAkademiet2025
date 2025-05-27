@@ -34,7 +34,7 @@ Database: Compatible with Strapi (MySQL)
 </details>
 <br>
 <pr>
-<details><summary><strong>🚀 Getting Started / How to install</strong></summary>
+<details><summary><strong>Getting Started / How to install</strong></summary>
 <br>
 This setup is designed for testing purposes only, as the company prefers to handle deployment themselves.<br><br>
 
@@ -358,6 +358,27 @@ import PageIcons from "@/components/ui/custom/PageIcons";
 ```
 </details>
 
+<details><summary><strong>LogoutButton</strong></summary>
+
+The `LogoutButton` component is used to retrieve and display SVG icons from the `public/` folder wherever needed in the project.  
+**File location:**  
+`//frontend/src/components/ui/custom/PageIcons.tsx`  
+
+- If the icon fails to load, a fallback with the text **"Icon not available"** is displayed.  
+- The `alt` text is important for accessibility (screen readers). If `isDecorative` is set to `true`, the `alt` attribute is omitted.  
+- The SVG file must be located in the `public/[directory]/` folder.
+
+### Example of usage with import:
+1. **Import the component where it will be used:**
+```tsx
+import PageIcons from "@/components/ui/custom/PageIcons";
+```
+
+2. Select the location where the icon is stored in the public folder and the name of the icon. Then you can choose size and alt text as desired <br>
+```tsx
+<PageIcons name="lock" directory="profileIcons" size={18} alt="Locked" />
+```
+</details>
 
 <details><summary><strong>SiteLogo</strong></summary>
 
@@ -400,6 +421,14 @@ import { SiteLogo } from "@/components/ui/SiteLogo";
 ```
 <br>
 For more control over image size, use style with inline CSS. className (Tailwind) can also be used but it's difficult to get precise control over size
+
+# Available Props:
+- `type`
+- `className`
+- `style`
+- `className`
+- `width`
+- `height`
 <br>
 
 # Scale by supporting more types of logos:
@@ -409,6 +438,74 @@ For more control over image size, use style with inline CSS. className (Tailwind
 ![How to add more typefields in SiteLogo.ts](/ImagesForReadme/SiteLogoFields.png)
 </details>
 
+<details><summary><strong>Button</strong></summary>
+
+The `Button` component is a reusable button component with multiple variants and states for consistent styling across the project.  
+**File location:**  
+`//frontend/src/components/ui/Button.tsx`  
+
+- The component supports different variants: `primary`, `secondary`, `outline`, `danger`, `change`, and `modalChange`.
+- For `change` variant, the `changeState` prop is required with values: `edit`, `save`, or `loading`.
+- For `modalChange` variant, the `modalState` prop is required with values: `edit`, `save`, or `loading`.
+- The component includes built-in accessibility features with `ariaLabel` support.
+- Size options available: `sm`, `md` (default), `lg`.
+
+### Example of usage with import:
+
+1. **Import the component where it will be used:**
+```tsx
+import { Button } from "@/components/ui/Button";
+```
+
+2. **For basic button (default)**
+```tsx
+<Button variant="primary" onClick={handleClick}>
+  Click me
+</Button>
+```
+
+3. **Button with change state (for edit/save functionality):**
+```tsx
+<Button 
+  variant="change" 
+  changeState="edit" 
+  size="md"
+  onClick={handleEdit}
+  ariaLabel="Endre offentlig profil"
+/>
+```
+
+4. **Modal change button:**
+```tsx
+<Button 
+  variant="modalChange" 
+  modalState="save" 
+  size="lg"
+  onClick={handleModalSave}
+/>
+```
+5. **Full width button with custom styling:**
+```tsx
+<Button 
+  variant="danger" 
+  fullWidth={true}
+  className="mt-4"
+  disabled={isLoading}
+>
+  Delete Account
+</Button>
+```
+# Available Props:
+- `variant`
+- `fullWidth`
+- `disabled`
+- `className`
+- `onClick`
+- `type`
+- `ariaLabel`
+- `changeState`
+- `modalState`
+- `size`
 
 <details>
    <summary>📇 ContentCard</summary>
@@ -768,6 +865,10 @@ import BackButton from "@/components/ui/BackButton";
 <BackButton iconName="arrow-left" iconDirectory="navIcons" />
 ```
 </details>
+
+<br>
+
+
 </details>
 </details>
 <br>
@@ -793,6 +894,9 @@ import BackButton from "@/components/ui/BackButton";
   - The client also handles token expiration and error messages, improving the user experience and security.
   - The client handling the token also makes it so we dont need to get the cookies every time we are fetching, but then we need to use `.fetch`
 </details>
+
+
+
 </details>
 </details>
 <br>

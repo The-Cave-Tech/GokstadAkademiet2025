@@ -3,6 +3,7 @@
 import { useTransition } from "react";
 import { logout } from "@/lib/data/actions/auth";
 import { useAuth } from "@/lib/context/AuthContext";
+import { Button } from "@/components/ui/Button"; // Adjust path as needed
 
 export function LogoutButton({ className = "" }: { className?: string }) {
   const [isPending, startTransition] = useTransition();
@@ -21,15 +22,14 @@ export function LogoutButton({ className = "" }: { className?: string }) {
   };
 
   return (
-    <button
+    <Button
       onClick={handleLogout}
       disabled={isPending}
-      className={`text-sm hover:underline focus:outline-none focus:ring-2 ${
-        isPending ? "text-gray-400" : "text-white"
-      } ${className}`}
-      aria-label="Logg ut"
+      variant="secondary" 
+      className={`text-sm hover:underline !justify-start focus:ring-2 ${className}`}
+      ariaLabel="Logg ut"
     >
       {isPending ? "Logger ut..." : "Logg ut"}
-    </button>
+    </Button>
   );
 }
