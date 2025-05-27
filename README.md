@@ -22,8 +22,9 @@ Plattformen har foreløpig ikke:
 - Betalingsløsningen er for øyeblikket hardkodet og krever videre utvikling. 
 - I det interne administrasjonspanelet mangler det støtte for arkivering, og bruken av WYSIWYG-editor mot Strapi er utfordrende grunnet formateringsforskjeller – dette krever også videreutvikling. 
 - Blogg skal være koblet opp mot en bruker, denne delen er ikke implementert. For nå så kan bare admin legge til blogg innlegg via Strapi og eget panel - videreutviklingen her skal også være en legg til knapp på blogg siden som bruker ContentForm komponenten for å få tilgang til universalt skjema for content.
-- Mangler velkomst melding og tilsending av aktiverings kode for nye brukere
-
+<br>
+- Kan implementeres:E-postutsending av automatiske velkomstmeldinger og aktiveringskoder for nye brukere.
+<br>
 - Innhold i Bruksvilkår og personvern sider er generert med https://app.freeprivacypolicy.com og må redigeres til den riktige.
 
 
